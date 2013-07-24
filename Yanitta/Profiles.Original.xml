@@ -1,0 +1,5040 @@
+<?xml version="1.0"?>
+<ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Version>0.0.2.25</Version>
+  <Author>Konctantin</Author>
+  <Url>https://www.dropbox.com/s/786ny8lptlgi17x/Profiles.xml</Url>
+  <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
+ShowInChat   = true;    -- показывать сообщения в чате
+DebugEnabled = true;    -- показывать отладочные сообщения в чате
+ping         = 0;       -- текущий пинг
+-- Константы горячих клавиш
+mkLeftShift     = 1;
+mkLeftControl   = 2;
+mkLeftAlt       = 3;
+mkRightShift    = 4;
+mkRightControl  = 5;
+mkRightAlt      = 6;
+
+-- Структура таблицы способностей: SpellId Name Target DropChanel IsRangeCheck IsAttackedCheck IsCheckInCombat SetRecastDelay Func
+AbilityTable = { };
+
+-- Возвращает ограниченное сверху и снизу значение
+function asc(m_value, m_min, m_max)
+    if m_value < m_min then
+        return m_min;
+    elseif m_value > m_max then
+        return m_max;
+    end
+    return m_value;
+end
+
+function CheckAndCastAbility(ability)
+    -- Если способность требует проверки в бою
+    if ability.IsCheckInCombat then
+        if not UnitAffectingCombat("player") then
+            return;
+        end
+    end
+
+    -- Имитация задержки на повторное произнесение заклинания
+    local recastDelay = 0;
+    if ability.SetRecastDelay then
+        -- установка задержки, для текущего заклинания
+        recastDelay = 300;
+        if ((GetTime() - ability.LastCastingTime) < 1) then
+            return;
+        end
+    end
+
+    -- вычисление задержки от пинга
+    local pingin, pingout = select(3, GetNetStats());
+    ping = ((pingin + pingout) / 1000);
+    ping = asc(ping, 0.05, 0.40);
+    local castPing = (ping * 1000) - recastDelay;
+
+    -- Если не указан ид заклинания,
+    -- тогда выполняем только код проверки, и дальше не идем
+    if ability.SpellId < 1 then
+        return ability.Func();
+    end
+
+    -- проверка на возможность использовать заклинание
+    -- тут входит и проверка на основной ресурс и условия к применению.
+    -- На пример, если произношение заклинания требует  меньше 20% здоровья цели.
+    -- ВАЖНО. Не надо городить кучи проверок, лучше использовать эту функцию
+    -- Не делает проверку на доступность заклинания по уровню
+    if not IsUsableSpell(ability.SpellId) then
+        return;
+    end
+
+    -- Проверка на то, читает ли в этот момент персонаж заклинание (с учетом пинга)
+    if not ability.CencelCasting then
+        local endTime = select(6, UnitCastingInfo("player"));
+        if ((endTime or 0) - (GetTime() * 1000)) >= castPing then
+            return;
+        end
+    end
+
+    -- Проверка на то, поддерживает ли в этот момент персонаж заклинание (с учетом пинга)
+    if not ability.DropChanel then
+        local endTime = select(6, UnitChannelInfo("player"));
+        if ((endTime or 0) - (GetTime() * 1000)) >= castPing then
+            return;
+        end
+    end
+
+    -- вычисление кулдаунка заклинания
+    local start, duration, enable = GetSpellCooldown(ability.SpellId);
+    if enable == 1 and ((duration + start) - GetTime()) > ping then
+        return;
+    end
+
+    -- Выполняем функцию проверки
+    local mEnable, mTarget = ability.Func();
+    if not mEnable then
+        return;
+    end
+    --и если она нам возвращает новую цель, тогда делаем ее присваивание.
+    if type(mTarget) == "string" then
+        ability.Target = mTarget;
+    end
+
+    -- Поскольку многие функции требуют имени заклинания, получим его.
+    local spellInfo = GetSpellInfo(ability.SpellId);
+    if not spellInfo then
+        return;
+    end
+
+    -- проверку на доступность цели делаем только для определенных видов целей
+    if ability.Target ~= "none" and ability.Target ~= "player" and ability.Target ~= "mouselocation" then
+
+        -- Проверка на доступность юнита, тоесть есть ли он.
+        if not UnitExists(ability.Target) then
+            return;
+        end
+
+        -- проверка, если стоит свойство на возможность атаковать
+        if ability.IsAttackedCheck then
+            -- если юнит дух или мертв, тогда не выполняем ротацию
+            local deadOrGhost = UnitIsDeadOrGhost(ability.Target);
+            if deadOrGhost == 1 then
+                return;
+            end
+
+            -- если цель незьзя атаковать
+            local isCanAttack = UnitCanAttack("player", ability.Target);
+            if isCanAttack ~= 1 then
+                return;
+            end
+        end
+
+        -- Проверка на досягаемость цели
+        -- эта функция работает не для всех заклинаний, поэтому нужна постоянная проверка.
+        -- Если эта функция возвращает nil, тогда проверка не проходит, и надо извращатся.
+        -- Если проверка не проходит используйте стнадартную проверку:
+        -- IsSpellInRange([заклинание одинаковое по радиусу действия], unit)
+        if ability.IsRangeCheck then
+            local isRange = IsSpellInRange(spellInfo, ability.Target);
+            if isRange == nil and DebugEnabled then
+                print("|cfff5360c Ошибка IsSpellInRange: ["..tostring(ability.SpellId).."] "..spellInfo..".|r");
+            end
+            if isRange ~= 1 then
+                return;
+            end
+        end
+    end
+
+    -- прерываем канальное или потоковое заклинание,
+    -- ести стоит соответствующая установка
+    if ability.CencelCasting or ability.DropChanel then
+        SpellStopCasting();
+    end
+
+    -- чтение заклинания по области
+    if ability.Target == "mouselocation" then
+        CastSpellByName(spellInfo, nil);
+        CameraOrSelectOrMoveStart();
+        CameraOrSelectOrMoveStop();
+        -- для того, чтобы была видна область действия заклинания
+        CastSpellByName(spellInfo, nil);
+    -- чтения заклинания без цели
+    elseif ability.Target == "none" then
+        CastSpellByName(spellInfo, nil);
+    -- чтение заклинания по конкретной цели
+    else
+        CastSpellByName(spellInfo, ability.Target);
+    end
+
+    return true;
+end
+
+-- Включение/выключение текущей ротации
+function ChangeRotation(rotation)
+    -- Если ротация пустая, или новая ротация такая же как и текущая, тогда выключаем
+    if (not rotation or rotation == CurentRotation) and CurentRotation then
+        CurentRotation = nil;
+        AddonEnabled   = false;
+        -- [красный]Ротация отключена.
+        print("|cfff5360cРотация отключена.|r");
+        PlaySound("PAPERDOLLCLOSE", "Master");
+
+        -- При выключении ротации, снимаем регистрацию с событий
+        if AddonFrame then
+            for _,event in ipairs(EventList) do
+                AddonFrame:UnregisterEvent(event);
+            end
+        end
+    else
+        if AddonFrame then
+            for _,event in ipairs(EventList) do
+                AddonFrame:RegisterEvent(event);
+            end
+        end
+
+        -- Иначе запускаем ротацию
+        CurentRotation = rotation;
+        AddonEnabled   = true;
+        -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
+        print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.." |r|cff15bd05 - Включена.|r");
+        PlaySound("PAPERDOLLOPEN", "Master");
+    end
+end
+
+function AddonFrame_OnEvent(self, event, ...)
+    if event == "PLAYER_ENTERING_WORLD" then
+        if AddonFrame then
+            AddonFrame:Show();
+        end
+    elseif event == "PLAYER_LOGOUT" then
+        ChangeRotation();
+    elseif event == "UI_ERROR_MESSAGE" then
+        local errorMsg = ...;
+        if errorMsg == SPELL_FAILED_NOT_BEHIND then
+            LastNotBehindTime     = GetTime();
+        elseif errorMsg == SPELL_FAILED_LINE_OF_SIGHT then
+            LastFailedLineOfSight = GetTime();
+        end
+    --elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+    --    local unitID, spell, rank, lineID, spellID = ...;
+        --
+    elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        local timestamp, subEvent, hideCaster,
+              sourceGUID,srcName,  sourceFlags,sourceFlags2,
+              destGUID,  destName, destFlags,  destFlags2,
+              spellId,   spellName,spellSchool = ...;
+        if (subEvent == "SPELL_CAST_SUCCESS" and type(AbilityTable) == "table" and sourceGUID == UnitGUID("player")) then
+            for i, ability in ipairs(AbilityTable) do
+                if (ability.SetRecastDelay and (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target))) then
+                    -- Устанавливаем время последнего удачного каста
+                    ability.LastCastingTime = GetTime();
+                    break;
+                end
+            end
+        end
+    end
+end
+
+function AddonFrame_OnUpdate(self, elapsed)
+    -- таймер
+    if type(AbilityTable) == "table" then
+        if GetTime() >= LastTime and #AbilityTable > 0 then
+            if AddonEnabled and not UnitIsDeadOrGhost("player") then
+                -- Для того, чтобы определить, сколько времени двигается персонаж
+                -- Запишем время начала движения.
+                local speed = GetUnitSpeed("player");
+                if speed == 0 then
+                    LastStartMovingTime = 0;
+                elseif speed > 0 and LastStartMovingTime == 0 then
+                    LastStartMovingTime = GetTime();
+                end
+
+                -- Передираем способности, и останавляваемся, если условия выполнены
+                for _,ability in ipairs(AbilityTable) do
+                    if CheckAndCastAbility(ability) then
+                        break;
+                    end
+                end
+            end
+            LastTime = GetTime() + (Delay / 1000);
+        end
+    end
+end
+
+if not AddonFrame then
+    CurentRotation  = nil;      -- текущая ротация
+    AddonEnabled    = false;    -- признак включенного аддона
+    Delay           = 250;      -- интервал таймера (милисекунды)
+    LastTime        = 0;        -- служебная переменная для таймера
+
+    LastStartMovingTime   = 0;
+    LastNotBehindTime     = 0;
+    LastFailedLineOfSight = 0;
+
+    EventList = {
+        "COMBAT_LOG_EVENT_UNFILTERED",
+        "PLAYER_ENTERING_WORLD",
+        "PLAYER_LOGOUT",
+        "UI_ERROR_MESSAGE",
+        --"UNIT_SPELLCAST_SUCCEEDED"
+    };
+
+    AddonFrame = CreateFrame("Frame");
+    AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
+    AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);
+    AddonFrame:Show();
+end]]></Core>
+  <Func><![CDATA[-- Заклинания (бафы), которые позволяют произносить заклинания на ходу
+moving_spell_table = {
+    97128, -- Опаляющее перо (Алисразор)
+    79206, -- Благосклонность предков (Шанам) [заносим в общее, так как предается через симбиоз]
+};
+
+-- Возвращает, есть ли один из перечисленных бафов на персонаже
+-- Параметры:
+--  unit - Цель ("palyer", "target", "focus", "mouseover")
+--  ... - перечень бафов
+function HasBuff(unit, spellId, filter)
+
+    local spell_table = { };
+    if type(spellId) == "table" then
+        spell_table = spellId;
+    elseif type(spellId) == "number" then
+        spell_table = { spellId };
+    end
+
+    for _,spell_id in ipairs(spell_table) do
+        local spellName, spellRank = GetSpellInfo(spell_id);
+        if spellName then
+            local name,_,_,count,_,_,expires = UnitBuff(unit, spellName, spellRank, filter or "PLAYER");
+            if name then
+                local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                return name, count or 1, rem;
+            end
+        end
+    end
+end
+
+-- Возвращает, есть ли один из перечисленных дебафов на персонаже
+-- Параметры:
+--  unit - Цель ("palyer", "target", "focus", "mouseover")
+--  ... - перечень дебафов
+function HasDebuff(unit, spellId, filter)
+
+    local spell_table = { };
+    if type(spellId) == "table" then
+        spell_table = spellId;
+    elseif type(spellId) == "number" then
+        spell_table = { spellId };
+    end
+
+    for _,spell_id in ipairs(spell_table) do
+        local spellName, spellRank = GetSpellInfo(spell_id);
+        if spellName then
+            local name,_,_,count,_,_,expires = UnitDebuff(unit, spellName, spellRank, filter or "PLAYER");
+            if name then
+                local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                return name, count or 1, rem;
+            end
+        end
+    end
+end
+
+function UnitBuffId(target, spellId, filter)
+    local spellName, spellRank = GetSpellInfo(spellId);
+    if spellName then
+        return UnitBuff(target, spellName, spellRank, fileter);
+    end
+end
+
+function UnitDebuffId(target, spellId, filter)
+    local spellName, spellRank = GetSpellInfo(spellId);
+    if spellName then
+        return UnitDebuff(target, spellName, spellRank, fileter);
+    end
+end
+
+-- Вызвращает время до восстановления заклинания
+-- Параметр: ид заклинания
+function SpellCD(m_spell)
+    local start, duration = GetSpellCooldown(m_spell);
+    if ((duration + start) - GetTime()) > 0 then
+        return (duration + start) - GetTime();
+    else
+        return 0;
+    end
+end
+
+-- Начинает чтение заклинания, если пройдена проверка:
+function CastSpellEx(m_spell, m_target)
+    local start, duration, enable = GetSpellCooldown(m_spell);
+    local isCasting = (UnitCastingInfo("player") or UnitChannelInfo("player"));
+    local isUsable  = IsUsableSpell(m_spell);
+
+    if not isCasting and duration == 0 and enable == 1 and isUsable then
+        if m_target ~= "player" then
+            CastSpellByName(GetSpellInfo(m_spell), m_target or "target");
+            return true;
+        else
+            CastSpellByName(GetSpellInfo(m_spell), "player");
+            return true;
+        end
+    end
+end
+
+-- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
+-- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шанам)
+-- Параметры:
+--    sec - Количество секунд, сколько должен двигатся персонаж.
+function IsMoving(sec)
+    local sec = sec or 0;
+
+    for _,spell in ipairs(moving_spell_table) do
+        local spellInfo = GetSpellInfo(spell);
+        if spellInfo then
+            if UnitBuff("player", spellInfo, nil, nil) then
+                return;
+            end
+        end
+    end
+
+    -- Для определения значениря, двигается ли персонаж, необходимо
+    -- записать его время начала движения, а потом мы можем определить, сколько двигается персонаж.
+    if sec == 0 then
+        return LastStartMovingTime ~= 0;
+    else
+        return GetTime() - LastStartMovingTime >= sec;
+    end
+end
+
+-- Проверка на нахождение персонажа за спиной цели
+function IsNotBehind(sec)
+    local sec = sec or 1;
+    if (GetTime() - LastNotBehindTime <= sec) then
+        return true;
+    end
+end
+
+-- Проверка на нахождение цели в зоне видимости персонажа
+function IsNotLineOfSight(sec)
+    local sec = sec or 1;
+    if (GetTime() - LastFailedLineOfSight <= sec) then
+        return true;
+    end
+end
+
+-- возвращает текущее значение здоровья в процентах
+function HealthByPercent(m_target)
+    if UnitExists(m_target) then
+        return 100 * (UnitHealth(m_target) or 1) / (UnitHealthMax(m_target) or 1);
+    end
+    return 0;
+end
+
+-- возвращает текущее значение ресурса (мана, энергия, фокус, ярость ...) в процентах
+function PowerByPercent(m_target, m_powertype)
+    if UnitExists(m_target) then
+        return 100 * (UnitPower(m_target, m_powertype) or 1) / (UnitPowerMax(m_target, m_powertype) or 1);
+    end
+    return 0;
+end
+
+-- Проверка, была ли зажата клавиша модификатор mk*
+function IsModKeyDown(m_key)
+    local m_key = m_key or 0;
+    if     m_key == mkLeftShift    and not GetCurrentKeyBoardFocus() and IsLeftShiftKeyDown()    then return true;  -- 1
+    elseif m_key == mkLeftControl  and not GetCurrentKeyBoardFocus() and IsLeftControlKeyDown()  then return true;  -- 2
+    elseif m_key == mkLeftAlt      and not GetCurrentKeyBoardFocus() and IsLeftAltKeyDown()      then return true;  -- 3
+    elseif m_key == mkRightShift   and not GetCurrentKeyBoardFocus() and IsRightShiftKeyDown()   then return true;  -- 4
+    elseif m_key == mkRightControl and not GetCurrentKeyBoardFocus() and IsRightControlKeyDown() then return true;  -- 5
+    elseif m_key == mkRightAlt     and not GetCurrentKeyBoardFocus() and IsRightAltKeyDown()     then return true;  -- 6
+    end
+end
+
+-- Проверка дистанции между 2 игроками (рейд или группа)
+function GetDistance(unit1, unit2)
+    local x1, y1 = GetPlayerMapPosition(unit1);
+    local x2, y2 = GetPlayerMapPosition(unit2);
+
+    return sqrt( (x1 or 0 - x2 or 0) ^ 2 + (y1 or 0 - y2 or 0) ^ 2 );
+end
+
+function GetDistance2(x1, y1, x2, y2)
+    return sqrt( (x1 or 0 - x2 or 0) ^ 2 + (y1 or 0 - y2 or 0) ^ 2 );
+end
+
+-- Проверка, имеется ли у персонажа указанный символ
+function HasGlyph(glyphid)
+    for i = 1, 6 do
+        if select(4, GetGlyphSocketInfo(i)) == glyphid then
+            return true;
+        end
+    end
+end
+
+-- Использование предмета в инвентаре
+-- Если предмет (перчатка, тринька, пояс и т.п) юзабелен и не имеет КД - имитируем клик правой кн. мыши.
+function UseItemBySlot(slotId)
+    local start, duration, enable = GetInventoryItemCooldown("player", slotId);
+    -- Проверку на пинг делать не будем, так как это не критично
+    if duration == 0 and enable == 1 then
+        UseInventoryItem(slotId);
+    end
+end
+
+function UseItemById(itemId)
+    local count = GetItemCount(itemId);
+    if (count or 0) > 0 then
+        local start,duration,enable = GetItemCooldown(itemId);
+        if start == 0 and duration == 0 and enable then
+            UseItemByName(itemId);
+        end
+    end
+end
+
+----------------------------------------------------------------------------------------------------------
+--            Хил
+----------------------------------------------------------------------------------------------------------
+DEBUFF_LIST  = { };
+
+DISPELL_LIST = {
+    --  (Хоридон ХМ)
+    { Id = 136587, Count = 0, Rem = 0, BossId = 0 }, -- Залп ядовитых стрел
+    { Id = 136719, Count = 0, Rem = 0, BossId = 0 }, -- Пылающий свет
+    { Id = 136710, Count = 6, Rem = 0, BossId = 0 }, -- Смертельная чума
+    { Id = 136512, Count = 0, Rem = 0, BossId = 0 }, -- Проклятие растерянности
+    -- Совет старейшин
+    { Id = 0, Count = 0, Rem = 0, BossId = 0 }, --
+};
+
+function CheckNotHeal(unit, standartSpellId)
+    if IsSpellInRange(standartSpellId) ~= 1 then
+        return true;
+    end
+    for i,v in ipairs(DEBUFF_LIST) do
+        if HasDebuff(unit, v) then
+            return true;
+        end
+    end
+end
+
+function CheckDispell(unit)
+    for _, debuff in ipairs(DISPELL_LIST) do
+        local name, count, rem = HasDebuff(unit, debuff.Id);
+        if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
+            return true;
+        end
+        if (debuff.Rem > 0 and (rem or 0) <= debuff.Rem) then
+            return true;
+        end
+        if name then
+            return true;
+        end
+    end
+end
+
+-- Получает информацию
+function UpdatePartyTables(standartSpellId)
+
+    LowHP = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0 };
+    local solo = not (IsInRaid() or IsInGroup() or IsInArenaTeam());
+
+    if solo then
+        members = { };
+        local hpcur  = UnitHealth(member.Unit) or 1;
+        local hpmax  = UnitHealthMax(member.Unit) or 1;
+
+        table.insert(members, {
+            Unit        = "player",
+            Name        = UnitName("player"),
+            Class       = UnitClass("player"),
+            Role        = "HEAL",
+            Agro        = UnitThreatSituation("player") or 0,
+            IsDead      = UnitIsDeadOrGhost("player"),
+            HP          = 100 * hpcur / hpmax,
+            HPMAX       = hpmax,
+            HPI         = hpcur,
+            IsInRange   = true,
+            NeedDispell = false
+            });
+        return;
+    end
+
+    -- Если поменялось количество, либо же не доступна одна из таблиц - пересоздадим
+    if (type(members) ~= "table" or GetNumGroupMembers() ~= #members) then
+
+        members = { }; -- { Unit Class Name Role X Y IsDead Agro IsOnline Range HP HPMAX HPI }
+
+        local prefix = "party";
+
+        if IsInRaid() then
+            prefix = "raid";
+        elseif IsInArenaTeam() then
+            prefix = "arena";
+        end
+
+        for i = 1, GetNumGroupMembers() do
+            local name,rank,subgroup,level,class,_,zone,online,isDead,role = GetRaidRosterInfo(i);
+            if UnitExists(prefix..i) then
+                table.insert(members, { Unit = unit, Name = name, Class = class, Role = role });
+            end
+        end
+    end
+
+    local px, py = GetPlayerMapPosition("player");
+    -- Обновляем статиы игроков из пати/рейда
+    for i, member in ipairs(members) do
+        if UnitExists(member.Unit) then
+
+            member.IsDead      = UnitIsDeadOrGhost(member.Unit);
+            member.Agro        = UnitThreatSituation(member.Unit) or 0;
+            member.IsOnline    = 0;
+
+            local X,Y          = GetPlayerMapPosition(member.Unit);
+            local hpcur        = UnitHealth(member.Unit) or 1;
+            local hpmax        = UnitHealthMax(member.Unit) or 1;
+
+            member.X, member.Y = X or 0, Y or 0;
+            member.Range       = GetDistance2(px, py, X, Y);
+            member.IsInRange   = IsSpellInRange(standartSpellId) ~= 1;
+
+            member.HP          = 100 * hpcur / hpmax;
+            member.HPMAX       = hpmax;
+            member.HPI         = hpcur;
+            member.DontHeal    = CheckNotHeal(member.Unit, standartSpellId);
+            member.NeedDispell = false
+
+            if not member.IsDead and member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
+            if not member.IsDead and member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
+            if not member.IsDead and member.HP < 70 then LowHP.H70 = LowHP.H70 + 1; end
+            if not member.IsDead and member.HP < 60 then LowHP.H60 = LowHP.H60 + 1; end
+            if not member.IsDead and member.HP < 50 then LowHP.H50 = LowHP.H50 + 1; end
+            if not member.IsDead and member.HP < 40 then LowHP.H40 = LowHP.H40 + 1; end
+            if not member.IsDead and member.HP < 30 then LowHP.H30 = LowHP.H30 + 1; end
+            if not member.IsDead and member.HP < 20 then LowHP.H20 = LowHP.H20 + 1; end
+        end
+    end
+
+    -- сортируем таблицы по наименьшему количеству ХР
+    if #members > 0 then
+        table.sort(members, function(x, y)
+            if (x.IsDead or not x.IsInRange) then
+                return false;
+            end
+            return x.HP < y.HP;
+        end);
+    end
+end]]></Func>
+  <Profile Class="Warrior">
+    <Lua><![CDATA[useCooldown     = true;
+setAoE          = nil;
+isAltMod        = nil;
+targetCount     = 3;]]></Lua>
+    <AbilityList>
+      <Ability Name="Прерывание заклинаний">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local spell1 = SpellCD(6552);-- зуботычина
+local spell2 = SpellCD(102060);-- Разрушительный крик
+
+local ch, chNotInterruptible  = select(7, UnitChannelInfo("target"));
+local name, subText, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo("target");
+
+if ch and not chNotInterruptible then
+    if spell1 = 0 then
+        CastSpellEx(6552, "target");
+    elseif spell2 = 0 then
+        CastSpellEx(102060, "target");
+    end
+end
+
+if name and not notInterruptible then
+    if spell1 = 0 then
+        CastSpellEx(6552, "target");
+    elseif spell2 = 0 then
+        CastSpellEx(102060, "target");
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Победный раж">
+        <SpellID>34428</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if HealthByPercent("player") <= 80 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Безразсудство">
+        <SpellID>1719</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Кровавая баня">
+        <SpellID>12292</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local bloodBCD = nil;           -- todo : implement
+local haveColossusDebuf = nil;  -- todo : implement
+
+if haveColossusDebuf then
+    if bloodBCD and useCooldowns then
+        RunMacroText("/use 13");   -- Аксесуар 1
+        RunMacroText("/use 14");   -- Аксесуар 2
+        RunMacroText("/use 10");   -- Перчатки
+    end
+    return true
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Знамя с черепом">
+        <SpellID>114207</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Боевой крик">
+        <SpellID>6673</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+if UnitPower("player") < 70 and not hasAPbuff then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Командирский крик">
+        <SpellID>469</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+if UnitPower("player") < 70 and hasAPbuff then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Одобряющий клич">
+        <SpellID>97462</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+local hp = HealthByPercent("player");
+
+if isInCombat and hp < 25  and useCooldown then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Рев дракона">
+        <SpellID>118000</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not koloss and IsSpellInRange(GetSpellInfo(78), "target") == 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Ярость берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasBuff("player", 12880) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Героический прыжок">
+        <SpellID>6544</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- 1 - LeftShif
+if IsModKeyDown(1) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="----- Защита ------">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Защита)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt)     then
+    if isAltMod then
+        isAltMod = false;
+        print("|cffff0000Используется блок щитом");
+    else
+        isAltMod = true;
+        print("|cff00ff00Используется непроницаемый щит");
+    end
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Перейти в стойку защиты
+if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
+    CastShapeshiftForm(2);
+end
+
+agroStatus = UnitThreatSituation("player");
+isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
+hasAPbuff  = HasBuff("player", 57330, 19506);
+isAttcked  = nil;--IsUnitCanAttack("target");
+playerHP   = HealthByPercent("player");]]></Lua>
+      </Ability>
+      <Ability Name="Удар героя/Разсекающий удар (Защита)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
+-- есть баф на использование бесплатного удара (Ультиматум - 122510)
+if HasBuff("player", 122510) or UnitPower("player") > 90 then
+    if setAoE then
+        CastSpellEx(845);    -- разсекающий удар
+    else
+        CastSpellEx(78);    -- удар героя
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Героический Бросок">
+        <SpellID>57755</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Сокрушительный Бросок">
+        <SpellID>64382</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- 5 - RightControl
+if IsModKeyDown(5) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Непроницаемый щит">
+        <SpellID>112048</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local rage          = UnitPower("player");
+local hasShieldBuff = HasBuff("player", 112048);
+
+if isAltMod and rage > 55 and not hasShieldBuff and agroStatus > 0 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Реванш">
+        <SpellID>6572</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Ни шагу назад">
+        <SpellID>12975</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 20 and useCooldown then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Удар грома">
+        <SpellID>6343</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local isRange = IsSpellInRange(GetSpellInfo(845), "target");
+if isRange == 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Глухая оборона">
+        <SpellID>871</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 20 and useCooldown then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Блок щитом">
+        <SpellID>2565</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isAltMod and UnitPower("player") >= 60 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Мощный удар щитом">
+        <SpellID>23922</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Сокрушение">
+        <SpellID>20243</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return isInMeele;]]></Lua>
+      </Ability>
+      <Ability Name="Деморализующий крик">
+        <SpellID>1160</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP <= 50 and isInMeele and useCooldown then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="----- Неистовство ------">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsSpellInRange(GetSpellInfo(78), "target") == 1 then
+    -- Удар колосса (86346)
+    -- Безрассудство (1719)
+    -- Исступление (12880)
+    -- Яростный выпад!(131116)
+
+    local colosus,_,_,_,_,_,colossEndTime = UnitDebuffId("target", 86346, "PLAYER");
+    local colossCD = SpellCD(86346);
+    local m_rage   = UnitPower("player");
+
+    --BloodBath Кровавая баня (12292)
+    if useCooldown and colosus and colossEndTime - GetTime() >= 5 and (UnitBuffId("player", 1719) or SpellCD(1719) > 60) then
+        RunMacroText("/use 10");
+        RunMacroText("/use 13");
+        RunMacroText("/use 14");
+        CastSpellEx(12292);
+    end
+
+    --BerserkRage Ярость берсерка (18499)
+    if not UnitBuffId("player", 12880) and not UnitBuffId("player", 131116) then
+        CastSpellEx(18499);
+    end
+
+    if setAOE then -- режим АОЕ
+        CastSpellEx(118000);-- Рев дракона
+        -- Кровожадность
+        if HealthByPercent("target") >= 20 and m_rage <= 80 then
+            CastSpellEx(23881);
+        end
+        CastSpellEx(86346);    -- Удар колосса
+        -- Кровавый фарш
+        local yvaoe,_,_,yvaoeCount = UnitBuffId("player", 85739);
+        -- Яростный выпад под стаками Кровавый фарш
+        -- количество стаков меняем клавишей (правый контрол)
+        if yvaoe and yvaoeCount == (targetCount or 3) then
+            CastSpellEx(85288);
+        end
+        CastSpellEx(1680);-- Вихрь
+    else    -- Режим одиночной цели
+        --HeroicStrike Удар героя (78)
+        if (HealthByPercent("target") >= 20 and (colosus and m_rage >= 40) or m_rage >= 30) or m_rage >= 110 then
+            CastSpellEx(78);
+        end
+
+        --BT Кровожадность (23881)
+        if not (HealthByPercent("target") < 20 and colosus and m_rage >= 30) then
+            CastSpellEx(23881);
+        end
+
+        --WS Зверский удар(100130)
+        if UnitBuffId("player", 46916) and HealthByPercent("target") >= 20 and (SpellCD(23881) > 0 and SpellCD(23881) <= 1) then
+            CastSpellEx(100130);
+        end
+
+        --Wait--
+        if not (HealthByPercent("target") < 20 and colosus and m_rage >= 30) and (SpellCD(23881) > 0 and SpellCD(23881) <= 1) then
+            return true;
+        end
+
+        --CS Удар колосса (86346)
+        CastSpellEx(86346);
+
+        --DrHighPrio Рев дракона(118000)
+        if not colosus and UnitBuffId("player", 12292) then
+            CastSpellEx(118000);
+        end
+
+        --Execute Казнь (5308)
+        CastSpellEx(5308);
+
+        --RB Яростный выпад (85288)
+        -- Яростный выпад!(131116)
+        local yv,_,_,yvCount,_,_,yvEndTime = UnitBuffId("player", 131116, "PLAYER");
+
+        if (yv and yvCount == 2) or (yv and (HealthByPercent("target") <= 20 or colosus or UnitBuffId("player", 12292)
+                or UnitBuffId("player", 1719) or colossCD >= 6 or (SpellCD(23881) >= 1 and yvEndTime - GetTime() <= 6 ))) then
+            CastSpellEx(85288);
+        end
+
+        --WS Зверский удар (100130)
+        if UnitBuffId("player", 46916) and HealthByPercent("target") >= 20 then
+            CastSpellEx(100130);
+        end
+
+        --DR Рев дракона(118000)
+        CastSpellEx(118000);
+
+        --BS Боевой крик (6673)
+        if m_rage < 70 then
+            if HasBuff("player", 57330, 19506) then
+                CastSpellEx(6673);
+            else
+                CastSpellEx(469);
+            end
+        end
+
+        --WS--
+        if colosus and HealthByPercent("target") >= 20 then
+            CastSpellEx(100130);
+        end
+
+        --IV--
+        if HealthByPercent("target") >= 20 then
+            CastSpellEx(103840);
+        end
+
+        --WS--
+        if colossCD >= 1 and m_rage >= 80 and HealthByPercent("target") >= 20 then
+            CastSpellEx(100130);
+        end
+    end -- setAOE
+    --BS--
+    if m_rage < 70 then
+        if HasBuff("player", 57330, 19506) then
+            CastSpellEx(6673);
+        else
+            CastSpellEx(469);
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Неистовство)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cff00ff00Кулдауны включены");
+    else
+        useCooldown = true;
+        print("|cffff0000Кулдауны выключены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+    if GetSpecialization() == 1 then -- оружие
+        if useSweepingStrikes then
+            useSweepingStrikes = false;
+            print("|cffff0000 >> Размашистые Удары: Выключены");
+        else
+            useSweepingStrikes = true;
+            print("|cff00ff00 >> Размашистые Удары: Включены");
+        end
+    end
+    if GetSpecialization() == 2 then -- Неистовство
+        targetCount = targetCount + 1;
+        if targetCount >= 4 then
+            targetCount = 1;
+        end
+        print("|cff00ff00 >> Кровавый фарш: "..targetCount);
+    end
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Перейти в боевую стойку
+if GetSpecialization() ~= 3 and GetShapeshiftForm() ~= 1 then
+    CastShapeshiftForm(1);
+end
+
+ -- Удар колосса
+koloss,_,_,_,_,_,kolossElaps = UnitDebuff("target", GetSpellInfo(86346), nil, "PLAYER");
+-- Яростный выпад!
+local ragingBlow,_,_,ragingBlowCount,_,_,ragingBloweElapsed = UnitBuff("player", 131116);
+
+--isInMeele  = inMelee();
+--hasAPbuff  = HasBuff("player", 57330, 19506);
+--isAttcked  = nil;--IsUnitCanAttack("target");]]></Lua>
+      </Ability>
+      <Ability Name="Удар колосса">
+        <SpellID>86346</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not koloss then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Удар героя (Неистовство)">
+        <SpellID>0</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if HealthByPercent("target") >= 20 and ((koloss or UnitPower("player") >= 40) or UnitPower("player") >= 60)then
+    CastSpellEx(78)
+end]]></Lua>
+      </Ability>
+      <Ability Name="Казнь">
+        <SpellID>5308</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Вихрь">
+        <SpellID>1680</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAOE then
+    local name, rank = GetSpellInfo(0);
+    local bloodf,_, count = UnitBuff("player", name, rank, "PLAYER");
+    if count < 3 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Яростный выпад">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[--if SpellCD(86346) <= 6
+
+if setAoE then
+    local name, rank = GetSpellInfo(0);
+    local bloodf,_, count = UnitBuff("player", name, rank, "PLAYER");
+
+    if count == 3 then
+        return true;
+    end
+else
+    return true;
+end
+
+--RB Яростный выпад (85288)
+if (UnitBuffID("player", 131116) and select(4, UnitBuffID("player", 131116)) == 2) or (UnitBuffID("player", 131116)
+     and ( getHp("target") <= 20 or UnitDebuffID("target", 86346, "player") or UnitBuffID("player", 12292)
+            or UnitBuffID("player", 1719) or cdRemains(86346) >= 6 or (cdRemains(23881) >= 1 and select(7,UnitBuffID("player", 131116)) - GetTime() <= 6 ))) then
+    _castSpell(85288)
+end]]></Lua>
+      </Ability>
+      <Ability Name="Кровожадность">
+        <SpellID>23881</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Когда на цели висит удар колосса, и доступна казнь, и ярости >= 30
+if not (HealthByPercent("target") < 20 and koloss and UnitPower("player") >= 30) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Зверский удар">
+        <SpellID>100130</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Прилив крови 46916
+if HasBuff("player", 46916) and HealthByPercent("target") >= 20 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Ярость берсерка (Неистовство)">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Исступление, Ярость Берсерка!
+if not HasBuff("player", 12880, 131116) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар героя (Неистовство)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if (HealthByPercent("target") >= 20
+        and (koloss and UnitPower("player") >= 40)
+        or UnitPower("player") >= 30)
+    or UnitPower("player") >= 100 then
+    CastSpellEx(78);
+end]]></Lua>
+      </Ability>
+      <Ability Name="Сохранение ярости (Неистовство)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local cd = SpellCD(23881); -- кровожадность
+
+if not (HealthByPercent("target") < 20 and koloss and UnitPower("player") >= 30) and (cd > 0 and cd <= 1) then
+    return true
+end]]></Lua>
+      </Ability>
+      <Ability Name="----- Оружие ------">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local cs,_,_,_,_,_,csExp = UnitDebuff("target", GetSpellInfo(86346), nil, "PLAYER"); -- дебафф удара колосса
+
+if IsSpellInRange(GetSpellInfo(78), "target") == 1 and UnitAffectingCombat("player") then
+
+    if not HasBuff("player", 12880) then -- исступление
+        CastSpellEx(18499); -- Ярость берсерка
+    end
+
+    if HealthByPercent("player") <= 80 and IsUsableSpell(34428) then
+        CastSpellEx(34428); -- Победный раж
+    end
+
+    if HealthByPercent("target") >= 20 and UnitDebuff("target", GetSpellInfo(86346), nil, "PLAYER") then
+        if IsUsableSpell(7384) or ((cs and csExp - GetTime() <= 2) and SpellCD(86346) > 0) then
+            CastSpellEx(78); -- удар героя
+        elseif HasBuff("player", 85730) or UnitPower("player") > 110 then
+             CastSpellEx(78); -- удар героя
+        end
+    end
+
+    CastSpellEx(12294); -- Смертельный удар
+
+    if not cs or ( csExp - GetTime() <= 1.5 ) then
+        CastSpellEx(86346); -- Удар колосса
+    end
+
+    if HealthByPercent("target") < 20 then
+        CastSpellEx(5308); -- Казнь
+    end
+
+    if IsUsableSpell(7384) then
+        CastSpellEx(7384); -- Превосходство
+    end
+
+    CastSpellEx(118000); -- Рев дракона
+
+    if HealthByPercent("target") >= 20 and (UnitPower("player") >= 70 or cs) then
+        CastSpellEx(1464) -- Мощный удар
+    end
+
+if UnitPower("player") < 70 and cs == nil then
+        if not HasBuff("player", 57330, 19506) then
+            CastSpellEx(6673)     -- Боевой крик
+        else
+            CastSpellEx(469)    -- Командирский крик
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Мощный удар">
+        <SpellID>1464</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAOE and HealthByPercent("target") >= 20 and (UnitPower("player") >= 70 or koloss) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Превосходство">
+        <SpellID>7384</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Смертельный удар">
+        <SpellID>12294</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Удар героя (Оружие)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- описание:
+--    Использовать, когда не доступна казнь, под дебафом колосса, или когда много ярости
+if not setAOE then
+    if IsSpellInRange(GetSpellInfo(78), "target") == 1 and UnitAffectingCombat("player") then
+        if HealthByPercent("target") >= 20 and UnitDebuff("target", GetSpellInfo(86346), nil, "PLAYER") then
+            if IsUsableSpell(7384) or ((cs and csExp - GetTime() <= 2) and SpellCD(86346) > 0) then
+                CastSpellEx(78);  -- удар героя
+            elseif HasBuff("player", 85730) or UnitPower("player") > 110 then
+                CastSpellEx(78); -- удар героя
+            end
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Удар грома (Оружие)">
+        <SpellID>6343</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAOE and IsSpellInRange(GetSpellInfo(78), "target") == 1 then
+    local gr,_,_,_,_,_,grExp = UnitDebuff("target", GetSpellInfo(115768), nil, "PLAYER");
+    if not gr or grExp - GetTime() <= 2 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Вихрь (Оружие)">
+        <SpellID>1680</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAOE and IsSpellInRange(GetSpellInfo(78), "target") == 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Размашистые удары">
+        <SpellID>12328</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useSweepingStrikes then
+    return true;
+end]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Неистовство (рейд)">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Кровожадность</string>
+          <string>Знамя с черепом</string>
+          <string>Безразсудство</string>
+          <string>Кровавая баня</string>
+          <string>Удар колосса</string>
+          <string>Казнь</string>
+          <string>Победный раж</string>
+          <string>Яростный выпад</string>
+          <string>Смертельный удар</string>
+          <string>Удар героя</string>
+          <string>Разсекающий удар</string>
+          <string>Выихрь</string>
+          <string>Боевой крик</string>
+          <string>Командирский крик</string>
+          <string>Боевая стойка</string>
+          <string>Ярость берсерка</string>
+          <string>Героический прыжок</string>
+          <string>Героический Бросок</string>
+          <string>Сокрушительный Бросок</string>
+        </AbilityQueue>
+        <Notes><![CDATA[
+]]></Notes>
+      </Rotation>
+      <Rotation Name="Неистовство (соло)">
+        <HotKey Key="B" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Героический прыжок</string>
+          <string>Победный раж</string>
+          <string>Сокрушительный Бросок</string>
+          <string>----- Неистовство ------</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Защита">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Защита)</string>
+          <string>Героический прыжок</string>
+          <string>Победный раж</string>
+          <string>Непроницаемый щит</string>
+          <string>Глухая оборона</string>
+          <string>Одобряющий клич</string>
+          <string>Ни шагу назад</string>
+          <string>Деморализующий крик</string>
+          <string>Блок щитом</string>
+          <string>Сокрушительный Бросок</string>
+          <string>Мощный удар щитом</string>
+          <string>Удар героя/Разсекающий удар (Защита)</string>
+          <string>Удар грома</string>
+          <string>Реванш</string>
+          <string>Боевой крик</string>
+          <string>Командирский крик</string>
+          <string>Сокрушение</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Оружие [PVP]">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Оружие [PVE]">
+        <HotKey Key="V" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Неистовство)</string>
+          <string>Героический прыжок</string>
+          <string>Победный раж</string>
+          <string>Размашистые удары</string>
+          <string>Удар грома (Оружие)</string>
+          <string>Удар колосса</string>
+          <string>Вихрь (Оружие)</string>
+          <string>Удар героя (Оружие)</string>
+          <string>Рев дракона</string>
+          <string>Смертельный удар</string>
+          <string>Казнь</string>
+          <string>Превосходство</string>
+          <string>Мощный удар</string>
+          <string>Боевой крик</string>
+          <string>Командирский крик</string>
+        </AbilityQueue>
+        <Notes><![CDATA[Левый шифт           - героический прыжек
+Левый контрол      - Включение/выключение АОЕ
+Левый Альт            - пауза
+Правый контрол    - включение/выключение размашистых ударов
+Правй шифт           - включение/выключение куллдаунов
+
+осталось доработать кулдауны
+а так же проверить работоспособность]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Paladin">
+    <Lua><![CDATA[agroStatus  = 0;
+useCooldown = true;
+setAoE      = nil;]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализация (Защита)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+agroStatus = UnitThreatSituation("player");
+isInMeele  = IsSpellInRange(GetSpellInfo(35395), "target") == 1;
+playerHP   = HealthByPercent("player");
+hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
+BZ         = HasBuff("player", 90174); -- Божественный замысел
+-- Танчим под Печатью прозрения (20165)]]></Lua>
+      </Ability>
+      <Ability Name="Щит небес">
+        <SpellID>20925</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasBuff("player", 20925) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Торжество">
+        <SpellID>130551</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 85 then
+    if BZ then
+        return true;
+    end
+    -- Бастион славы (114637)
+    local name,_,_,count = UnitBuffId("player", 114637, "PLAYER");
+    if name and count or 0 == 5 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Вечное пламя">
+        <SpellID>114163</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Щит праведника">
+        <SpellID>53600</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if hollyPower > 2 then
+    local name,_,_,count = UnitBuffId("player", 114637, "PLAYER");
+    if name and count or 0 < 5 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Ревностный защитник">
+        <SpellID>31850</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 20 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Защитник древних королей">
+        <SpellID>86659</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 40 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Божественная защита">
+        <SpellID>498</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 60 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Молот праведника">
+        <SpellID>53595</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Должен быть дебаф на Слабые Удары (115798)
+return setAoE or not HasBuff("target", 115798);]]></Lua>
+      </Ability>
+      <Ability Name="Удар воина света">
+        <SpellID>35395</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return not setAoE;]]></Lua>
+      </Ability>
+      <Ability Name="Правосудие">
+        <SpellID>20271</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Щит мстителя">
+        <SpellID>31935</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Великий воин Света
+if HasBuff("player", 85043) then
+    return true;
+end
+
+if not isInMeele then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Освящение">
+        <SpellID>26573</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isInMeele and not HasDebuff("target", 26573) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Гнев небес">
+        <SpellID>119072</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return isInMeele;]]></Lua>
+      </Ability>
+      <Ability Name="Божественная призма">
+        <SpellID>114165</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Длань свободы">
+        <SpellID>1044</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Освобождение">
+        <SpellID>121783</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Длань защиты">
+        <SpellID>1022</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Длань жертвенности">
+        <SpellID>6940</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Длань спасения">
+        <SpellID>1038</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Защита">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Защита)</string>
+          <string>Щит небес</string>
+          <string>Торжество</string>
+          <string>Щит праведника</string>
+          <string>Ревностный защитник</string>
+          <string>Защитник древних королей</string>
+          <string>Божественная защита</string>
+          <string>Молот праведника</string>
+          <string>Удар воина света</string>
+          <string>Правосудие</string>
+          <string>Щит мстителя</string>
+          <string>Освящение</string>
+          <string>Гнев небес</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Лекарь">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Воздаяние">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Hunter">
+    <Lua><![CDATA[useCooldown = true;
+setAoE      = nil;
+isAltMod    = nil;]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    StopAttack();
+    PetStopAttack();
+    -- перейдем в аспект ястребя
+    if GetShapeshiftForm() ~= 1 then
+        CastShapeshiftForm(1);
+    end
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если в комуфляже или притворились мертвыми
+if HasBuff("player", { 5384, 51755 }) then
+    return true;
+end
+
+unitFocus = UnitPower("player");]]></Lua>
+      </Ability>
+      <Ability Name="Триньки/перчатки">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+if useCooldown then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Метание ловушки">
+        <SpellID>77769</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasBuff("player", 777769) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дух ястреба">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+if UnitAffectingCombat("player") or IsMounted() then
+    if GetShapeshiftForm() ~= 1 then
+        CastShapeshiftForm(1);
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дух гепарда">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not UnitAffectingCombat("player") and not IsMounted() then
+    if GetShapeshiftForm() ~= 2 then
+        CastShapeshiftForm(2);
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Залп">
+        <SpellID>2643</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return setAoE;]]></Lua>
+      </Ability>
+      <Ability Name="Разрывной выстрел">
+        <SpellID>53301</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAoE and UnitPower("player") >= 25 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Черная стрела">
+        <SpellID>3674</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAoE and UnitPower("player") >= 35 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Бросок глеф">
+        <SpellID>117050</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- далее, оптимизировать
+if UnitPower("player") >= 15 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Звериный натиск">
+        <SpellID>121818</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return useCooldown;]]></Lua>
+      </Ability>
+      <Ability Name="Стая воронов">
+        <SpellID>131894</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return useCooldown;]]></Lua>
+      </Ability>
+      <Ability Name="Ужасный зверь">
+        <SpellID>120679</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return useCooldown;]]></Lua>
+      </Ability>
+      <Ability Name="Чародейский выстрел">
+        <SpellID>3044</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAoE and UnitPower("player") > 25 then
+    local cd1 = SpellCD(131894);
+    local cd2 = SpellCD(3674);
+    if cd1 > 1 and cd2 > 1 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Выстрел кобры">
+        <SpellID>77767</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Змеиная ловушка">
+        <SpellID>82948</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Взрывная ловушка">
+        <SpellID>82939</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяная ловушка">
+        <SpellID>82941</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkRightAlt) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Замораживающая ловушка">
+        <SpellID>60192</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkRightControl) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Быстрая стрельба">
+        <SpellID>3045</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return useCooldown;]]></Lua>
+      </Ability>
+      <Ability Name="Укус змеи">
+        <SpellID>1978</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAoE then
+    if not HasDebuff("target", 118253) then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Убийственный выстрел">
+        <SpellID>53351</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Лечение питомца">
+        <SpellID>136</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local pethp = HealthByPercent("pet");
+if pethp ~= 0 and pethp < 75 then
+    if not UnitBuff("pet", GetSpellInfo(136), nil, "PLAYER") then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Верный выстрел">
+        <SpellID>56641</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Цель фокуса">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Для фарма репы с пиратами кровавого паруса
+-- Если нету цели, берет в цель цель фокуса и стреляет в нее
+if not UnitExists("target") or UnitIsDead("target") then
+    if UnitAffectingCombat("focus") then
+        if UnitIsFriend("player", "focus") then
+            RunMacroText("/target focustarget");
+            RunMacroText("/startattack");
+            --RunMacroText("/startattack focustarget");
+        end
+    end
+end]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="PVE Выживание">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Дух ястреба</string>
+          <string>Дух гепарда</string>
+          <string>Взрывная ловушка</string>
+          <string>Ледяная ловушка</string>
+          <string>Замораживающая ловушка</string>
+          <string>Лечение питомца</string>
+          <string>Змеиная ловушка</string>
+          <string>Триньки/перчатки</string>
+          <string>Быстрая стрельба</string>
+          <string>Убийственный выстрел</string>
+          <string>Залп</string>
+          <string>Звериный натиск</string>
+          <string>Стая воронов</string>
+          <string>Ужасный зверь</string>
+          <string>Разрывной выстрел</string>
+          <string>Черная стрела</string>
+          <string>Бросок глеф</string>
+          <string>Укус змеи</string>
+          <string>Чародейский выстрел</string>
+          <string>Выстрел кобры</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Повелитель зверей">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Стрельба">
+        <HotKey Key="V" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="PVE Выживание (прокачка)">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Триньки/перчатки</string>
+          <string>Дух ястреба</string>
+          <string>Лечение питомца</string>
+          <string>Разрывной выстрел</string>
+          <string>Укус змеи</string>
+          <string>Чародейский выстрел</string>
+          <string>Верный выстрел</string>
+        </AbilityQueue>
+        <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Rogue">
+    <Lua><![CDATA[]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализаця">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Если мы в скрытности, то всегда, если возможно прыгаем в форму незаметности
+if GetSpecialization() == 3 then
+    if GetShapeshiftForm() ~= 1 then
+        local start, duration, enable = GetShapeshiftFormCooldown(1);
+        if enable == 1 and start == 0 then
+            CastShapeshiftForm(1);
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Смертоносный яд">
+        <SpellID>2823</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasBuff("player", 2823) and not IsMoving() then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Внезапный удар">
+        <SpellID>8676</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if HasBuff("target", 1784) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Мясорубка ">
+        <SpellID>5171</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local name, count, rem = HasBuff("player", 5171);
+
+if not name then
+    return true;
+end
+
+if UnitExists("target") and GetComboPoints("player", "target") > 4 then
+    if (rem or 0) < 4 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Отравление">
+        <SpellID>32645</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetComboPoints("player", "target") >= 4 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Рсправа">
+        <SpellID>1329</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Потрошение">
+        <SpellID>2098</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetComboPoints("player", "target") > 4 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Пробивающий удар">
+        <SpellID>84617</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasDebuff("target", 84617, "PLAYER") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Коварный удар">
+        <SpellID>1752</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Рваная рана">
+        <SpellID>1943</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetComboPoints("player", "target") > 4 then
+    if not HasDebuff("target", 1943, "PLAYER") then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Заживление ран">
+        <SpellID>73651</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetComboPoints("player") > 4 and HealthByPercent("player") < 50 then
+    if not HasBuff("target", 73651, "PLAYER") then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Бой">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализаця</string>
+          <string>Смертоносный яд</string>
+          <string>Заживление ран</string>
+          <string>Внезапный удар</string>
+          <string>Мясорубка </string>
+          <string>Пробивающий удар</string>
+          <string>Потрошение</string>
+          <string>Рваная рана</string>
+          <string>Коварный удар</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Ликвидация">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализаця</string>
+          <string>Смертоносный яд</string>
+          <string>Заживление ран</string>
+          <string>Внезапный удар</string>
+          <string>Мясорубка </string>
+          <string>Отравление</string>
+          <string>Рсправа</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Скрытность">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Priest">
+    <Lua><![CDATA[useCooldown = true;
+setAoE      = nil;
+isAltMod    = nil;
+
+VampTouchT      = nil;
+VampTouchM      = nil;
+VampTouchF      = nil;
+
+ShadowWordPainT = nil;
+ShadowWordPainM = nil;
+ShadowWordPainF = nil;
+
+-- список проков, на которые надо реагировать
+AURA_LIST = {
+};
+
+hooksecurefunc("AddonFrame_OnEvent", function (self, event, ...)
+
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        -- для начала приведу полный список параметров.
+        local timestamp, subEvent, hideCaster,
+                sourceGUID,srcName,  sourceFlags,sourceFlags2,
+                destGUID,  destName, destFlags,  destFlags2,
+                spellId,   spellName,spellSchool,amount,      overkill,school,
+                resisted,  blocked,  absorbed,   critical,    glancing,crushing = ...;
+
+        if subEvent == "SPELL_AURA_APPLIED" and destGUID == UnitGUID("player") then
+            for i,aura_id in ipairs(AURA_LIST) do
+                if aura_id == spellId then
+                    VampTouchT      = true;
+                    VampTouchM      = true;
+                    VampTouchF      = true;
+                    ShadowWordPainT = true;
+                    ShadowWordPainM = true;
+                    ShadowWordPainF = true;
+                    break;
+                end
+            end
+        end
+
+        if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
+            if spellId == 34914 then --Прикосновение вампира
+                if UnitGUID("target") == destGUID then
+                    VampTouchT = nil;
+                elseif UnitGUID("fucus") == destGUID then
+                    VampTouchF = nil;
+                elseif UnitGUID("mouseover") == destGUID then
+                    VampTouchM = nil;
+                end
+            elseif spellId == 589 then --Слово тьмы: Боль
+                if UnitGUID("target") == destGUID then
+                    ShadowWordPainT = nil;
+                elseif UnitGUID("fucus") == destGUID then
+                    ShadowWordPainF = nil;
+                elseif UnitGUID("mouseover") == destGUID then
+                    ShadowWordPainM = nil;
+                end
+            end
+        end
+    end
+end);]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализация (Тьма)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Перейти в стойку защиты
+--if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
+--    CastShapeshiftForm(2);
+--end
+
+isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
+isMoving  = IsMoving();
+--hasAPbuff  = HasBuff("player", 57330, 19506);
+--isAttcked  = nil;--IsUnitCanAttack("target");
+--playerHP   = HealthByPercent("player");]]></Lua>
+      </Ability>
+      <Ability Name="Слово тьмы: Боль">
+        <SpellID>589</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ShadowWordPainT then
+    return true;
+end
+local name, count, rem = HasDebuff("target", 589);
+if not name or rem < 2 or isMoving then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Слово тьмы: Боль (focus)">
+        <SpellID>589</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ShadowWordPainF then
+    return true;
+end
+local name, count, rem = HasDebuff("focus", 589);
+if not name or rem < 2 or isMoving then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Слово тьмы: Боль (mouseover)">
+        <SpellID>589</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ShadowWordPainM then
+    return true;
+end
+local name, count, rem = HasDebuff("mouseover", 589);
+if not name or rem < 2 or isMoving then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Прикосновение вампира (target)">
+        <SpellID>34914</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving then
+    if VampTouchT then
+        return true;
+    end
+    local name, count, rem = HasDebuff("target", 34914);
+    if not name or rem < 2 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Прикосновение вампира (Focus)">
+        <SpellID>34914</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving then
+    if VampTouchF then
+        return true;
+    end
+    local name, count, rem = HasDebuff("focus", 34914);
+    if not name or rem < 2 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Прикосновение вампира (Mouseover)">
+        <SpellID>34914</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving then
+    if VampTouchM then
+        return true;
+    end
+    local name, count, rem = HasDebuff("mouseover", 34914);
+    if not name or rem < 2 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Взрыв разума">
+        <SpellID>8092</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Пытка разума">
+        <SpellID>15407</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving then
+    return isInRange;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Всепожирающая чума">
+        <SpellID>2944</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitPower("player", SPELL_POWER_SHADOW_ORBS) >= 3 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Искушение разума">
+        <SpellID>48045</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAoE and not isMoving then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Слово Тьмы: Смерть (Target)">
+        <SpellID>32379</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Слово Тьмы: Смерть (Focus)">
+        <SpellID>32379</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Слово Тьмы: Смерть (Mouseover)">
+        <SpellID>32379</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Пронзание разума">
+        <SpellID>73510</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if HasBuff("player", 87160) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Сияние">
+        <SpellID>120517</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Исчадие тьмы">
+        <SpellID>34433</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return useCooldown;]]></Lua>
+      </Ability>
+      <Ability Name="Массовое разсеивание">
+        <SpellID>32375</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
+      </Ability>
+      <Ability Name="Разсеивание заклинаний">
+        <SpellID>528</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[for i = 1, 40 do
+    local name,_,_,_,dispelType,_, _, _, _, _, _,canApplyAura = UnitDebuff("mouseover", i);
+    --Curse
+    --Disease
+    --Magic
+    --Poison
+    if name and canApplyAura and (dispelType == "Magic" or dispelType == "Curse") then
+
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Придание сил">
+        <SpellID>10060</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return useCooldown;]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Послушание)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+    return true;
+elseif IsModKeyDown(mkLeftControl) then
+elseif IsModKeyDown(mkLeftAlt) then
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Перейти в стойку защиты
+--if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
+--    CastShapeshiftForm(2);
+--end
+
+isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
+isMoving  = IsMoving();
+myMana    = PowerByPercent("player", SPELL_POWER_MANA);
+--hasAPbuff  = HasBuff("player", 57330, 19506);
+--isAttcked  = nil;--IsUnitCanAttack("target");
+--playerHP   = HealthByPercent("player");
+
+if myMana < 75 then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+end]]></Lua>
+      </Ability>
+      <Ability Name="Исповедь">
+        <SpellID>47540</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Священный огонь">
+        <SpellID>14914</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Кара">
+        <SpellID>585</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Подавление боли">
+        <SpellID>33206</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Подчиняющий разум">
+        <SpellID>123040</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if myMana < 80 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Слово силы: Барьер">
+        <SpellID>62618</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Молитва восстановления">
+        <SpellID>33076</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+   if member.HP < 85 then
+       return true, member.Unit;
+   end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Молитва Исцеления">
+        <SpellID>596</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if CheckSpell(596) then
+    -- Если активен щит души, тогда настакиваем щит
+    if HasBuff("player", 114908) then
+        return true;
+    end
+
+    if PlayerHp70 > 3 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Обновление">
+        <SpellID>139</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+   if not HasBuff("player", 139) and member.HP < 70 then
+       return true, member.Unit;
+   end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Слово силы: Щит">
+        <SpellID>17</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Ослабленная душа (6788)
+-- 1) Должен постоянно висеть щит на активном танке
+-- 2) На остальных вешаем, если здоровье упало ниже 50% и если двигаемя то ниже 80%
+for _,member in ipairs(members) do
+   if not HasBuff(tank.Unit, 6788) and member.HP < 50 then
+       return true, member.Unit;
+   elseif not HasBuff(tank.Unit, 6788) and isMoving and member.HP < 60 then
+       return true, member.Unit;
+   end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Исцеление">
+        <SpellID>2050</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if tanks[1].HP < 70 then
+    return true, tanks[1].Unit;
+end
+
+if members[1].HP < 70 then
+    return true, members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Быстрое исцеление">
+        <SpellID>2061</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if tanks[1].HP < 40 then
+    return true, tanks[1].Unit;
+end
+
+if members[1].HP < 40 then
+    return true, members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Великое исцеление">
+        <SpellID>2060</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if tanks[1].HP < 60 then
+    return true, tanks[1].Unit;
+end
+
+if members[1].HP < 60 then
+    return true, members[1].Unit;
+end]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Послушание">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Послушание)</string>
+          <string>Массовое разсеивание</string>
+          <string>Слово силы: Барьер</string>
+          <string>Подчиняющий разум</string>
+          <string>Исповедь</string>
+          <string>Священный огонь</string>
+          <string>Слово Тьмы: Смерть (Target)</string>
+          <string>Слово тьмы: Боль</string>
+          <string>Кара</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Свет">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Тьма">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Тьма)</string>
+          <string>Массовое разсеивание</string>
+          <string>Искушение разума</string>
+          <string>Слово Тьмы: Смерть (Target)</string>
+          <string>Слово Тьмы: Смерть (Focus)</string>
+          <string>Слово Тьмы: Смерть (Mouseover)</string>
+          <string>Придание сил</string>
+          <string>Всепожирающая чума</string>
+          <string>Взрыв разума</string>
+          <string>Сияние</string>
+          <string>Исчадие тьмы</string>
+          <string>Пронзание разума</string>
+          <string>Слово тьмы: Боль</string>
+          <string>Слово тьмы: Боль (focus)</string>
+          <string>Слово тьмы: Боль (mouseover)</string>
+          <string>Прикосновение вампира (target)</string>
+          <string>Прикосновение вампира (Focus)</string>
+          <string>Прикосновение вампира (Mouseover)</string>
+          <string>Пытка разума</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="DeathKnight">
+    <Lua><![CDATA[useCooldown     = true;
+setAoE             = nil;
+isAltMod         = nil;
+]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализация (Кровь)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt)     then
+    if isAltMod then
+        isAltMod = false;
+        print("|cffff0000Используется блок щитом");
+    else
+        isAltMod = true;
+        print("|cff00ff00Используется непроницаемый щит");
+    end
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Перейти в стойку защиты
+if GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
+    CastShapeshiftForm(1);
+end
+
+isInMeele  = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
+hasAPbuff  = HasBuff("player", 57330, 19506);
+isAttcked  = nil;--IsUnitCanAttack("target");
+playerHP   = HealthByPercent("player");]]></Lua>
+      </Ability>
+      <Ability Name="Смерть и разложение">
+        <SpellID>43265</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
+      </Ability>
+      <Ability Name="Удар смерти">
+        <SpellID>49998</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Удар в сердце">
+        <SpellID>55050</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return isInMeele;]]></Lua>
+      </Ability>
+      <Ability Name="Рунический удар">
+        <SpellID>56815</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitPower("player") > 40 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Костяной щит">
+        <SpellID>49222</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Незыблемость льда">
+        <SpellID>48792</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP <= 40 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Зимний горн">
+        <SpellID>57330</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Кровь">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Кровь)</string>
+          <string>Смерть и разложение</string>
+          <string>Костяной щит</string>
+          <string>Незыблемость льда</string>
+          <string>Удар смерти</string>
+          <string>Удар в сердце</string>
+          <string>Зимний горн</string>
+          <string>Рунический удар</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Лед">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Нечестивость">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Shaman">
+    <Lua><![CDATA[]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализация Стихии">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    --SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt)     then
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Опаляющий тотем">
+        <SpellID>3599</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not GetTotemInfo(1) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Огненный шок">
+        <SpellID>8050</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasDebuff("target", 8050, "PLAYER") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Земной шок">
+        <SpellID>8042</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if (select(2, HasBuff("player", 324)) or 0) == 7 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="молния">
+        <SpellID>403</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Исцеляющий всплеск">
+        <SpellID>8004</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitIsFriend("player", "mouseover") then
+    if HealthByPercent("mouseover") < 50 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Цепная молния">
+        <SpellID>421</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return not IsMoving() and setAoE;]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Стихии">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация Стихии</string>
+          <string>Исцеляющий всплеск</string>
+          <string>Опаляющий тотем</string>
+          <string>Земной шок</string>
+          <string>Цепная молния</string>
+          <string>Огненный шок</string>
+          <string>молния</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Совершенствование">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Исцеление">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Mage">
+    <Lua><![CDATA[useCooldown  = true;
+setAoE       = nil;
+
+igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
+pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
+pyroCrit     = false;   -- Было ли заклинание Огненная глыба (11366) критическим
+
+hooksecurefunc("AddonFrame_OnEvent", function (self, event, ...)
+
+    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
+        -- для начала приведу полный список параметров.
+        local timestamp, subEvent, hideCaster,
+              sourceGUID,srcName,  sourceFlags,sourceFlags2,
+              destGUID,  destName, destFlags,  destFlags2,
+              spellId,   spellName,spellSchool,amount,      overkill,school,
+              resisted,  blocked,  absorbed,   critical,    glancing,crushing = ...;
+
+        if subEvent == "SPELL_PERIODIC_DAMAGE" then
+            if UnitName("player") == srcName and destName == UnitName("target") then
+                -- Воспламенение
+                if spellId == 12654 then
+                    IgniteDamage = amount;
+                    --print("Тик: Воспламенение (12654) - "..tostring(amount));
+                end
+            end
+        end
+
+        if subEvent == "SPELL_DAMAGE" then
+            if UnitName("player") == srcName and destName == UnitName("target") then
+                -- Огненная глыба
+                if spellId == 11366 then
+                    pyroDamage = amount;
+                    pyroCrit   = critical;
+                    --print("Урон: "..tostring(critical).." Огненная глыба (11366) - "..tostring(amount));
+                end
+            end
+        end
+    end
+end);]]></Lua>
+    <AbilityList>
+      <Ability Name="Инициализация(Огонь)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
+isMoving  = IsMoving();]]></Lua>
+      </Ability>
+      <Ability Name="Использование предметов">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() then
+    return true;
+end
+
+if useCooldown then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET1);
+end]]></Lua>
+      </Ability>
+      <Ability Name="Живая бомба (Target)">
+        <SpellID>44457</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isInRange and not HasDebuff("target", 44457) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Живая бомба (Focus)">
+        <SpellID>44457</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasDebuff("focus", 44457) then
+    if IsSpellInRange(GetSpellInfo(133), "focus") == 1 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Живая бомба (Mouseover)">
+        <SpellID>44457</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasDebuff("mouseover", 44457) then
+    if IsSpellInRange(GetSpellInfo(133), "mouseover") == 1 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Огненная глыба">
+        <SpellID>11366</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Огненная глыба! (48108)
+if HasBuff("player", 48108) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Пламенный взрыв">
+        <SpellID>108853</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- При крите огненного шара и получения баффа Разогрев (48107) делаем каст Пламенный взрыв (108853).
+-- Скорее всего вы увидите каст бафф разогрева после того как начнете следующий каст Огненного шара (133),
+-- поэтому важно сразу после окончания каста использовать Пламенный взрыв (108853),
+-- чтобы следующий Огненный шар (133) не успел и долететь до цели и сбить бафф, если вдруг не критонет.
+
+if isInRange or HasBuff("player", 48107) then
+    -- возможно надо остановить чтение заклинания
+    SpellStopCasting();
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Огненный шар">
+        <SpellID>133</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return not isMoving;]]></Lua>
+      </Ability>
+      <Ability Name="Ожoг">
+        <SpellID>2948</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return isMoving;]]></Lua>
+      </Ability>
+      <Ability Name="Возгорание">
+        <SpellID>11129</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
+-- Будем тестировать, позже.
+-- это пробная версия.
+
+-- Надо в ручную определить это значение.
+-- возможно попытаюсь выяснить сканированием лога,
+-- и вычислением пиковой/средней величины.
+local MAX_DOTE_IGNITE = 5000;
+
+if useCooldown and pyroCrit and igniteDamage > MAX_DOTE_IGNITE then
+    local duration, expires = select(7, UnitDebuffId("target", 12654, "PLAYER"));
+    if (duration or 0) > 3 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Огненный столб">
+        <SpellID>2120</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Лед)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Огонь">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация(Огонь)</string>
+          <string>Огненный столб</string>
+          <string>Использование предметов</string>
+          <string>Возгорание</string>
+          <string>Огненная глыба</string>
+          <string>Пламенный взрыв</string>
+          <string>Живая бомба (Target)</string>
+          <string>Живая бомба (Focus)</string>
+          <string>Живая бомба (Mouseover)</string>
+          <string>Огненный шар</string>
+          <string>Ожoг</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Лед">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Лед)</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Тайная магия">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Warlock">
+    <Lua><![CDATA[]]></Lua>
+    <AbilityList>
+      <Ability Name="Стрела тьмы">
+        <SpellID>686</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true]]></Lua>
+      </Ability>
+      <Ability Name="Порча">
+        <SpellID>172</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local dot,c,rem = HasDebuff("target", 172, "PLAYER");
+
+if not dot or (rem or 0) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Рука гундака">
+        <SpellID>105174</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasDebuff("target", 47960, "PLAYER") then
+    return true;
+end]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Демонология">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Порча</string>
+          <string>Рука гундака</string>
+          <string>Стрела тьмы</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Разрушение">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Колдовство">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Monk">
+    <Lua><![CDATA[]]></Lua>
+    <AbilityList />
+    <RotationList>
+      <Rotation Name="Ткач туманов">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Хмелевар">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Танцующий с ветром">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="Druid">
+    <Lua><![CDATA[useCooldown = true;
+setAoE      = nil;
+isAltMod    = nil;
+isCat       = nil;]]></Lua>
+    <AbilityList>
+      <Ability Name="Буйный рост">
+        <SpellID>48438</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if PlayerHp90 and PlayerHp90 > 4 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Быстрое восстановление">
+        <SpellID>18562</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Спокойствие">
+        <SpellID>740</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if mkRightShift then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Озарение">
+        <SpellID>29166</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if PowerByPercent("palyer") <= 80 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Железная кора">
+        <SpellID>102342</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Жизнецвет">
+        <SpellID>33763</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Омоложение">
+        <SpellID>774</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[for i,mem in ipairs(members) do
+    if mem.HP < 90 and not HasBuff(mem.Unit, 774) then
+        if ch then
+            CastSpellEx(774, mem.Unit);
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Целительное прикосновение">
+        <SpellID>5185</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Восстановление">
+        <SpellID>8936</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Покровительство природы">
+        <SpellID>50464</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+
+return true;]]></Lua>
+      </Ability>
+      <Ability Name="Дикий гриб: Лечение">
+        <SpellID>102791</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if mkLeftAlt then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дикий гриб">
+        <SpellID>88747</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if mkLeftShift then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дерево жизни">
+        <SpellID>33891</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if mkRightControl then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дубовая кора">
+        <SpellID>22812</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Природный целитель">
+        <SpellID>88423</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Искусность:Гармония">
+        <SpellID>77495</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isCat then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Знамение ясности">
+        <SpellID>113043</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Оживление">
+        <SpellID>50769</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Возрождение">
+        <SpellID>20484</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Знак дикой природы">
+        <SpellID>1126</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+--return true;]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Лекарь)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if type(members) ~= "table" or type(tanks) ~= "table"
+    or GetNumGroupMembers() ~= (#members + #tanks) then
+
+    members = { };
+    tanks   = { }; -- таблица танков
+
+    local prefix = "party";
+    if IsInRaid() then
+        prefix = "raid";
+    end
+
+    for i = 1, GetNumGroupMembers() do
+        local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
+        local unit = prefix..i;
+        if UnitExists(unit) then
+            local hpcur = UnitHealth(unit) or 1;
+            local hpmax = UnitHealthMax(unit) or 1;
+
+            if role == "TANK" then
+                table.insert(members, {
+                    Unit    = unit,
+                    Name    = name,
+                    Class   = class,
+                    IsActive= false,
+                    HP      = 100 * hpcur / hpmax,
+                    HPMAX   = hpmax,
+                    HPI     = hpcur,
+                    X,Y     = GetPlayerMapPosition(unit),
+                    IsDead  = isDead;
+                });
+            else
+                table.insert(members, {
+                    Unit    = unit,
+                    Name    = name,
+                    Class   = class,
+                    Role    = 0,
+                    HP      = 100 * hpcur / hpmax,
+                    HPMAX   = hpmax,
+                    HPI     = hpcur,
+                    X,Y     = GetPlayerMapPosition(unit),
+                    IsDead  = isDead;
+                });
+            end
+        end
+    end
+
+end
+
+PlayerHp90 = 0;
+PlayerHp70 = 0;
+PlayerHp50 = 0;
+PlayerHp30 = 0;
+
+-- Обновляем статиы играков из пати/рейда
+for i, member in ipairs(members) do
+    if UnitExists(member.Unit) then
+
+        member.IsDead  = UnitIsDeadOrGhost(unit);
+
+        local hpcur = UnitHealth(unit) or 1;
+        local hpmax = UnitHealthMax(unit) or 1;
+
+        if member.IsDead then
+            member.HP = 0xffff;
+            member.HPMAX   = 0;
+            member.HPI     = 0;
+        else
+            member.HP      = 100 * hpcur / hpmax;
+            member.HPMAX   = hpmax;
+            member.HPI     = hpcur;
+        end
+
+        member.X, member.Y = GetPlayerMapPosition();
+
+        if member.HP < 90 then PlayerHp90 = PlayerHp90 + 1; end
+        if member.HP < 70 then PlayerHp70 = PlayerHp70 + 1; end
+        if member.HP < 50 then PlayerHp50 = PlayerHp50 + 1; end
+        if member.HP < 30 then PlayerHp30 = PlayerHp30 + 1; end
+    end
+end
+
+-- в основном нам надо следить за позицией танков, их здоровьенм и тем кто сейчас активен.
+for i, member in ipairs(tanks) do
+    if UnitExists(member.Unit) then
+
+        member.IsDead  = UnitIsDeadOrGhost(unit);
+
+        local hpcur = UnitHealth(unit) or 1;
+        local hpmax = UnitHealthMax(unit) or 1;
+
+        if member.IsDead then
+            member.HP = 0xffff;
+            member.HPMAX   = 0;
+            member.HPI     = 0;
+        else
+            member.HP      = 100 * hpcur / hpmax;
+            member.HPMAX   = hpmax;
+            member.HPI     = hpcur;
+        end
+
+        member.IsActive = false;    -- Надо вычислять активного (получающего урон танка)
+        member.X, member.Y = GetPlayerMapPosition();
+    end
+end
+
+-- сортируем таблицы по наименьшему количеству ХР
+if #members > 0 then
+    table.sort(members, function(x, y)
+        return x.HP < y.HP;
+    end);
+end]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Страж)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(3) then
+    --SpellStopCasting();
+    StopAttack();
+    PetStopAttack();
+    return true;
+elseif IsModKeyDown(4) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(5) then
+elseif IsModKeyDown(6) then
+    if isAltMod then
+        isAltMod = false;
+        print("|cffff0000Используется \'Дикая защита\'");
+    else
+        isAltMod = true;
+        print("|cff00ff00Используется \'Неистовое восстановление\'");
+    end
+end
+
+-- если персонаж на маунте, тогда не выполняем протацию дальше
+if IsMounted() or HasBuff("player", 5215) then
+    return true;
+end
+
+agroStatus = UnitThreatSituation("player");
+playerHP   = HealthByPercent("player");
+isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
+isCat      = GetShapeshiftForm() == 3;]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (Баланс)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация (КотЭ)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[]]></Lua>
+      </Ability>
+      <Ability Name="Увечье">
+        <SpellID>33878</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isCat then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Взбучка">
+        <SpellID>77758</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isInMeele and not isCat then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Размах">
+        <SpellID>779</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAoE and isInMeele and not isCat then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Трепка">
+        <SpellID>6807</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- без ГКД
+if isCat then
+    return false;
+end
+
+if UnitPower("player") > 70 then
+    if HasBuff("player", 135288) then
+        return true;
+    end
+end
+if agroStatus == 0 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Растерзать">
+        <SpellID>33745</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isCat then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Волшебный огонь">
+        <SpellID>770</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Исступление">
+        <SpellID>5229</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitPower("player") < 70 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дикая защита">
+        <SpellID>62606</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 60 and agroStatus > 0 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Неистовое восстановление">
+        <SpellID>22842</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 80 and UnitPower("player") > 55 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Инстинкты выживания">
+        <SpellID>61336</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and playerHP < 35 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Дубовая кожа">
+        <SpellID>22812</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and playerHP < 50 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Мощь урсока">
+        <SpellID>106922</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and playerHP < 25 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Целительное прикосновение (страж)">
+        <SpellID>5185</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 40 then
+    if HasBuff("player", 132158) then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Боевой штандарт координации">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- 64399 Боевой штандарт координации
+local start, duration, enable = GetItemCooldown(64399);
+if duration == 0 and enable == 1 then
+    UseItemByName(64399);
+end]]></Lua>
+      </Ability>
+      <Ability Name="Увечье (Кот)">
+        <SpellID>33876</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isCat and not setAoE then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Взбучка (Кот)">
+        <SpellID>106830</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isCat and setAoE then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Размах (Кот)">
+        <SpellID>62078</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isCat and setAoE then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Глубокая рана">
+        <SpellID>1822</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local rep = HasDebuff("target", 1822);
+if isCat and not rep and not setAoE then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Разорвать">
+        <SpellID>1079</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isCat and not setAoE and not HasDebuff("target", 1079) then
+    if GetComboPoints("player", "target") == 5 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Свирепый укус">
+        <SpellID>22568</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isCat and not SetAoE and UnitPower("player") > 30 and GetComboPoints("player", "target") == 5 then
+    return true;
+end]]></Lua>
+      </Ability>
+    </AbilityList>
+    <RotationList>
+      <Rotation Name="Лекарь">
+        <HotKey Key="Z" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[LeftShift - Установка гриба
+LeftControl - Диспел (под мышкой)
+LeftAlt - Пауза
+RightShift - Спокойствие
+RightControl - Дерево жизни
+RightAlt -  Взрыв грибов]]></Notes>
+      </Rotation>
+      <Rotation Name="Страж">
+        <HotKey Key="X" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Страж)</string>
+          <string>Неистовое восстановление</string>
+          <string>Природная стремительность</string>
+          <string>Целительное прикосновение (страж)</string>
+          <string>Дикая защита</string>
+          <string>Дубовая кожа</string>
+          <string>Инстинкты выживания</string>
+          <string>Мощь урсока</string>
+          <string>Увечье</string>
+          <string>Взбучка</string>
+          <string>Размах</string>
+          <string>Исступление</string>
+          <string>Трепка</string>
+          <string>Волшебный огонь</string>
+          <string>Растерзать</string>
+          <string>Боевой штандарт координации</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Баланс">
+        <HotKey Key="V" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Сила зверя">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Страж (Кот)">
+        <HotKey Key="B" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Страж)</string>
+          <string>Глубокая рана</string>
+          <string>Разорвать</string>
+          <string>Свирепый укус</string>
+          <string>Увечье (Кот)</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Страж (прокачка)">
+        <HotKey Key="N" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Страж)</string>
+          <string>Дикая защита</string>
+          <string>Дубовая кожа</string>
+          <string>Инстинкты выживания</string>
+          <string>Увечье</string>
+          <string>Взбучка</string>
+          <string>Размах</string>
+          <string>Трепка</string>
+          <string>Волшебный огонь</string>
+          <string>Растерзать</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="тевт">
+        <HotKey Key="X" Modifier="Alt Shift" />
+        <AbilityQueue>
+          <string>Исступление</string>
+          <string>Увечье</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+    </RotationList>
+  </Profile>
+</ProfileDb>

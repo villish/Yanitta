@@ -1,0 +1,331 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1BF424EE-08BA-4A01-8A14-FD0FF0552639}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Yanitta</RootNamespace>
+    <AssemblyName>Yanitta</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>..\bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Google Black Alt.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Yanitta.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Misk\ConsoleWriter.cs" />
+    <Compile Include="Misk\Converters\EnumToLocalizedSrtConverter.cs" />
+    <Compile Include="Misk\Converters\StringToIntConverter.cs" />
+    <Compile Include="Misk\MemoryModule\MemoryModule.cs" />
+    <Compile Include="XML\Offsets.cs" />
+    <Compile Include="Plugins\IYanittaPlugin.cs" />
+    <Compile Include="XML\HotKey.cs" />
+    <Compile Include="Localization.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Localization.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Misk\Converters\EnumToImageConverter.cs" />
+    <Compile Include="Misk\Extensions.cs" />
+    <Compile Include="Misk\WowTypes.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\WinCodeExecute.xaml.cs">
+      <DependentUpon>WinCodeExecute.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\WinSettings.xaml.cs">
+      <DependentUpon>WinSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\WinProfileEditor.xaml.cs">
+      <DependentUpon>WinProfileEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\YanittaCommand.cs" />
+    <Compile Include="Misk\WowMemory.cs" />
+    <Compile Include="XML\ProfileDb.cs" />
+    <Compile Include="XML\Rotation.cs" />
+    <Compile Include="XML\XmlManager.cs" />
+    <Page Include="Misk.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\KamillaStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="XML\Ability.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Windows\WinCodeExecute.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WinSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\WinProfileEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="XML\Profile.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Localization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+    <Resource Include="Resources\MORPHEUS.TTF" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DeathKnight.png" />
+    <Resource Include="Resources\wow.png" />
+    <Resource Include="Resources\wow_frame_empty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Druid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Hunter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Mage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Monk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\None.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Paladin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Priest.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Rogue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Shaman.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Warlock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Warrior.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Profiles.Original.xml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\wow_fon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Add_Symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Button_Back.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Button_Down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Button_Next.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Button_Up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Clipboard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Denided.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Error_Symbol.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Add Record.png" />
+    <Resource Include="Resources\Redo.png" />
+    <Resource Include="Resources\Remove record.png" />
+    <Resource Include="Resources\Undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6c55b776-26d4-4db3-a6ab-87e783b2f3d1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FASM.DLL">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Background_Downloader.png" />
+    <Resource Include="Resources\BNUpdate.png" />
+    <Resource Include="Resources\MPQ.png" />
+    <Resource Include="Resources\PTR_client.png" />
+    <Resource Include="Resources\World_of_Warcraft.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Google Black Alt.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="WowApi.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="YanittaApi.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Export.png" />
+    <Resource Include="Resources\Import.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="offsets.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

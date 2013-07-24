@@ -1,0 +1,104 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Yanitta.Hantchk.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="HotKey" Type="System.Windows.Input.HotKey" Scope="User">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;HotKey xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Key="F9" Modifier="Alt" /&gt;</Value>
+    </Setting>
+    <Setting Name="LuaCode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FISHING_SPELL    = { };-- добавить ид заклинаний рыбной ловли
+MIN_QUALITY_ITEM = 0;
+-- 0. Poor (gray): Broken I.W.I.N. Button
+-- 1. Common (white): Archmage Vargoth's Staff
+-- 2. Uncommon (green): X-52 Rocket Helmet
+-- 3. Rare / Superior (blue): Onyxia Scale Cloak
+-- 4. Epic (purple): Talisman of Ephemeral Power
+-- 5. Legendary (orange): Fragment of Val'anyr
+-- 6. Artifact (golden yellow): The Twin Blades of Azzinoth
+-- 7. Heirloom (light yellow): Bloodied Arcanite Reaper
+
+function HantchukDoAction()
+    if     UnitIsDeadOrGhost("player") 
+        or UnitAffectingCombat("player") 
+        or IsMounted() 
+        or UnitCastingInfo("player") 
+        or UnitChannelInfo("player")
+        then
+        return;
+    end
+    
+    if IsFishingLoot() then
+        return;
+    end
+    
+    for i,spell_id in ipairs(FISHING_SPELL) do
+        if IsKnowSpell(spell_id) then
+            local start, duration, enable = GetSpellCooldown(ability.SpellId);
+            if enable == 1 and duration == 0 then
+                CastSpellByName(GetSpellInfo(spell_id));
+            end 
+            break;
+        end
+    end
+end
+
+function ExecHantchuck()
+    Hantchuk_AddonEnabled = not Hantchuk_AddonEnabled;
+    if Hantchuk_AddonEnabled then
+        HantchukFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+        HantchukFrame:RegisterEvent("PLAYER_LOGOUT");
+        HantchukFrame:RegisterEvent("LOOT_OPENED");
+    else
+        HantchukFrame:UnregisterEvent("PLAYER_ENTERING_WORLD");
+        HantchukFrame:UnregisterEvent("PLAYER_LOGOUT");
+        HantchukFrame:UnregisterEvent("LOOT_OPENED");
+        HantchukFrame = nil;
+    end
+end
+
+function HantchukFrame_OnUpdate(self, elapsed)
+    if GetTime() &gt;= Hantchuk_LastTime then
+        if Hantchuk_AddonEnabled then
+            HantchukDoAction();
+        end
+        Hantchuk_LastTime = GetTime() + (Hantchuk_Delay / 1000);
+    end
+end
+
+function HantchukFrame_OnEvent(self, event, ...)
+    if event == "PLAYER_ENTERING_WORLD" then
+        if HantchukFrame then
+            HantchukFrame:Show();
+        end
+    elseif event == "PLAYER_LOGOUT" then
+        StopHantchuck();
+    elseif event == "LOOT_OPENED" then
+        local autoLoot = ...;
+        if not autoLoot then
+            for slot = 1, GetNumLootItems() do
+                local texture, item, quantity, quality, locked = GetLootSlotInfo(slot);
+                if quality &gt;= MIN_QUALITY_ITEM then
+                    LootSlot(slot);
+                end
+            end
+        end
+    end
+end
+
+if not HantchukFrame then
+    Hantchuk_AddonEnabled    = false;    -- признак включенного аддона
+    Hantchuk_Delay           = 250;      -- интервал таймера (милисекунды)
+    Hantchuk_LastTime        = 0;        -- служебная переменная для таймера
+
+    HantchukFrame = CreateFrame("Frame");
+    --HantchukFrame:RegisterEvent(event);
+    HantchukFrame:SetScript("OnUpdate", HantchukFrame_OnUpdate);
+    HantchukFrame:SetScript("OnEvent",  HantchukFrame_OnEvent);
+    HantchukFrame:Show();
+end
+
+ExecHantchuck();</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

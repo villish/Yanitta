@@ -1,0 +1,73 @@
+﻿<Window x:Class="Yanitta.WindowSettings"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:settings="clr-namespace:Yanitta.Properties"
+        xmlns:yanitta="clr-namespace:Yanitta"
+        Title="WindowSettings"
+        Width="496.667"
+        Height="320.629"
+        FontFamily="../Resources/#MORPHEUS"
+        ShowInTaskbar="False"
+        Style="{DynamicResource KamillaStyle}" Icon="/Yanitta;component/Resources/Background_Downloader.png">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="48" />
+        </Grid.RowDefinitions>
+        <TabControl Grid.ColumnSpan="2">
+            <TabItem Header="Main">
+                <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
+                    <CheckBox Margin="10,0,0,0" Content="ShowChat"  IsChecked="{Binding ShowChat}" />
+                    <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="100" Content="Build:" />
+                        <TextBox Width="300" Text="{Binding Build}" TextAlignment="Right" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="100" Content="Profile file:" />
+                        <TextBox Width="280" Text="{Binding ProfilesFileName}" />
+                        <Button Width="20" Command="Open" Content="..." />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Update Url:" Width="100" />
+                        <TextBox Width="300" Text="{Binding UpdateOffsetURL}" />
+                    </StackPanel>
+                    <Button Command="Find" Content="UpdateOffset" />
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Offsets">
+                <StackPanel x:Name="spOffsets" DataContext="{Binding Source={x:Static yanitta:Offsets.Default}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="PlayerName" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding PlayerName, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="PlayerClass" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding PlayerClass, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="IsInGame" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding IsInGame, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="FrameScript_ExecuteBuffer" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding FrameScript_ExecuteBuffer, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="FrameScript_GetLocalizedText" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding FrameScript_GetLocalizedText, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="ClntObjMgrGetActivePlayer" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding ClntObjMgrGetActivePlayer, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <Separator />
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+
+        <Button Grid.Row="1" Grid.Column="1" Width="123" Height="40" Margin="329,0,0,3" HorizontalAlignment="Left" VerticalAlignment="Bottom" Command="Save" Content="Save" />
+    </Grid>
+</Window>

@@ -1,0 +1,273 @@
+﻿<?xml version="1.0"?>
+<ArrayOfWowApi xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <WowApi ImageType="Field" Name="player">
+    <Description><![CDATA[player - Текущий персонаж]]></Description>
+  </WowApi>
+  <WowApi ImageType="Field" Name="target">
+    <Description><![CDATA[target - Текущий выделенный юнит]]></Description>
+  </WowApi>
+  <WowApi ImageType="Field" Name="focus">
+    <Description><![CDATA[focus - Запомненый юнит]]></Description>
+  </WowApi>
+  <WowApi ImageType="Field" Name="mouseover">
+    <Description><![CDATA[mouseover - Юнит под указателем мыши]]></Description>
+  </WowApi>
+  <WowApi ImageType="Field" Name="pet">
+    <Description><![CDATA[player - Питомец персонажа]]></Description>
+  </WowApi>
+
+  <WowApi ImageType="ExtensionMethod" Name="HasBuff">
+    <Description>
+      <![CDATA[  HasBuff(...)
+Возвращает, есть ли один из перечисленных бафов на персонаже
+Параметры:
+  unit - Цель ("palyer", "target", "focus", "mouseover")
+  ... - перечень бафов]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="HasDebuff">
+    <Description>
+      <![CDATA[  HasDebuff(...)
+Возвращает, есть ли один из перечисленных дебафов на персонаже
+Параметры:
+  unit - Цель ("palyer", "target", "focus", "mouseover")
+  ... - перечень дебафов]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="UnitBuffId">
+    <Description>
+      <![CDATA[name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitBuffId("unit", spellId, "FILTER")
+Параметры:
+  unit - Юнит, с которого надо получить информацию ("player", "target", "focus", "mouseover", "pet", ...)
+  spellId - Ид заклинания
+  filter - Фильтр (CANCELABLE - Возможность отменить, NOT_CANCELABLE - Не возможно отменить, PLAYER - Наложенное персонажем, RAID - Належенное членом пати/рейда)
+Возвращает информацию о бафах на юните:
+  name - Имя бафа
+  rank - Ранг (не используется)
+  icon - Иконка заклинания
+  count - Количество стаков бафа (если бафф не стакается тогда 0)
+  dispelType - Тип диспела (Curse, Disease, Magic, Poison)
+  duration - Продолжительность действия в секундах (0 - если юнит далеко или в другой фазе)
+  expires - Время наложения (0 - если юнит далеко или в другой фазе)
+  caster - Тот, кто наложил Ауру
+  isStealable - 1 if the aura can be transferred to a player using the Spellsteal spell; otherwise nil
+  shouldConsolidate - 1 if the aura is eligible for the 'consolidated' aura display in the default UI.
+  spellID - Id Заклинания
+  canApplyAura - 1 if the player can apply the aura (not necessarily if the player did apply the aura, just if the player can apply the aura).
+  isBossDebuff - 1 if the aura was cast by a boss.
+  value1 - Value of variable effect 1 of the aura. (HoTs, resource-capturing trinkets, etc.)
+  value2 - Value of variable effect 2 of the aura. (HoTs, resource-capturing trinkets, etc.)
+  value3 - Value of variable effect 3 of the aura. (HoTs, resource-capturing trinkets, etc.)
+  ]]></Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="UnitDebuffId">
+    <Description>
+      <![CDATA[name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitBuffId("unit", spellId, "FILTER")
+Параметры:
+  unit - Юнит, с которого надо получить информацию ("player", "target", "focus", "mouseover", "pet", ...)
+  spellId - Ид заклинания
+  filter - Фильтр (CANCELABLE - Возможность отменить, NOT_CANCELABLE - Не возможно отменить, PLAYER - Наложенное персонажем, RAID - Належенное членом пати/рейда)
+Возвращает информацию о бафах на юните:
+  name - Имя дебафа
+  rank - Ранг (не используется)
+  icon - Иконка заклинания
+  count - Количество стаков дебафа (если дебафф не стакается тогда 0)
+  dispelType - Тип диспела (Curse, Disease, Magic, Poison)
+  duration - Продолжительность действия в секундах (0 - если юнит далеко или в другой фазе)
+  expires - Время наложения (0 - если юнит далеко или в другой фазе)
+  caster - Тот, кто наложил Ауру
+  isStealable - 1 if the aura can be transferred to a player using the Spellsteal spell; otherwise nil
+  shouldConsolidate - 1 if the aura is eligible for the 'consolidated' aura display in the default UI.
+  spellID - Id Заклинания
+  canApplyAura - 1 if the player can apply the aura (not necessarily if the player did apply the aura, just if the player can apply the aura).
+  isBossDebuff - 1 if the aura was cast by a boss.
+  value1 - Value of variable effect 1 of the aura. (HoTs, resource-capturing trinkets, etc.)
+  value2 - Value of variable effect 2 of the aura. (HoTs, resource-capturing trinkets, etc.)
+  value3 - Value of variable effect 3 of the aura. (HoTs, resource-capturing trinkets, etc.)
+    ]]></Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="SpellCD">
+    <Description><![CDATA[  SpellCD(spellId)
+Возвращает время до восстановления заклинания.]]></Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="CastSpellEx">
+    <Description>
+    <![CDATA[  CastSpellEx(spellId, ["unit"])
+Начинает чтение заклинания, если пройдена проверка]]></Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="IsMoving">
+    <Description>
+      <![CDATA[  IsMoving(sec)
+-- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
+-- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шаман)]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="HealthByPercent">
+    <Description>
+      <![CDATA[  HealthByPercent("unit")
+Возвращает текущее значение здоровья в процентах]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="PowerByPercent">
+    <Description>
+      <![CDATA[  PowerByPercent("unit", [m_powertype])
+Возвращает текущее значение ресурса (мана, энергия, фокус, ярость ...) в процентах]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="IsModKeyDown">
+    <Description>
+      <![CDATA[  IsModKeyDown(m_key)
+Проверка, была ли зажата клавиша модификатор mk*]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="GetDistance">
+    <Description>
+      <![CDATA[  GetDistance(unit1, unit2)
+Проверка дистанции между 2 игроками (рейд или группа)]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="HasGlyph">
+    <Description>
+      <![CDATA[  HasGlyph(glyphid)
+Проверка, имеется ли у персонажа указанный символ]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="UseItemBySlot">
+    <Description>
+      <![CDATA[  UseItemBySlot(slotId)
+INVSLOT_*
+Использование предмета в инвентаре
+Если предмет (перчатка, тринька, пояс и т.п) юзабелен и не имеет КД - имитируем клик правой кн. мыши.]]>
+    </Description>
+  </WowApi>
+
+  <WowApi RawData="0" ImageType="EnumValue" Name="INVSLOT_AMMO">
+    <Description><![CDATA[INVSLOT_AMMO = 0 (Амуниция)]]></Description>
+  </WowApi>
+  <WowApi RawData="1" ImageType="EnumValue" Name="INVSLOT_HEAD">
+    <Description><![CDATA[INVSLOT_HEAD = 1 (Голова)]]></Description>
+  </WowApi>
+  <WowApi RawData="2" ImageType="EnumValue" Name="INVSLOT_NECK">
+    <Description><![CDATA[INVSLOT_NECK = 2 (Шея)]]></Description>
+  </WowApi>
+  <WowApi RawData="3" ImageType="EnumValue" Name="INVSLOT_SHOULDER">
+    <Description><![CDATA[INVSLOT_SHOULDER = 3]]></Description>
+  </WowApi>
+  <WowApi RawData="4" ImageType="EnumValue" Name="INVSLOT_BODY">
+    <Description><![CDATA[INVSLOT_BODY = 4 (Грудь)]]></Description>
+  </WowApi>
+  <WowApi RawData="5" ImageType="EnumValue" Name="INVSLOT_CHEST">
+    <Description><![CDATA[INVSLOT_CHEST = 5 (Плащ)]]></Description>
+  </WowApi>
+  <WowApi RawData="6" ImageType="EnumValue" Name="INVSLOT_WAIST">
+    <Description><![CDATA[INVSLOT_WAIST = 6 (Пояс)]]></Description>
+  </WowApi>
+  <WowApi RawData="7" ImageType="EnumValue" Name="INVSLOT_LEGS">
+    <Description><![CDATA[INVSLOT_LEGS = 7 (Ноги)]]></Description>
+  </WowApi>
+  <WowApi RawData="8" ImageType="EnumValue" Name="INVSLOT_FEET">
+    <Description><![CDATA[INVSLOT_FEET = 8 (Рубашка)]]></Description>
+  </WowApi>
+  <WowApi RawData="9" ImageType="EnumValue" Name="INVSLOT_WRIST">
+    <Description><![CDATA[INVSLOT_WRIST = 9 (Запястия)]]></Description>
+  </WowApi>
+  <WowApi RawData="10" ImageType="EnumValue" Name="INVSLOT_HAND">
+    <Description><![CDATA[INVSLOT_HAND = 10 (Перчатки)]]></Description>
+  </WowApi>
+  <WowApi RawData="11" ImageType="EnumValue" Name="INVSLOT_FINGER1">
+    <Description><![CDATA[INVSLOT_FINGER1 = 11 (Кольцо 1)]]></Description>
+  </WowApi>
+  <WowApi RawData="12" ImageType="EnumValue" Name="INVSLOT_FINGER2">
+    <Description><![CDATA[INVSLOT_FINGER2 = 12 (Кольцо 2)]]></Description>
+  </WowApi>
+  <WowApi RawData="13" ImageType="EnumValue" Name="INVSLOT_TRINKET1">
+    <Description><![CDATA[INVSLOT_TRINKET1 = 13 (Аксесуар 1)]]></Description>
+  </WowApi>
+  <WowApi RawData="14" ImageType="EnumValue" Name="INVSLOT_TRINKET2">
+    <Description><![CDATA[INVSLOT_TRINKET2 = 14 (Аксесуар 2)]]></Description>
+  </WowApi>
+  <WowApi RawData="15" ImageType="EnumValue" Name="INVSLOT_BACK">
+    <Description><![CDATA[INVSLOT_BACK = 15 (Плащ)]]></Description>
+  </WowApi>
+  <WowApi RawData="16" ImageType="EnumValue" Name="INVSLOT_MAINHAND">
+    <Description><![CDATA[INVSLOT_MAINHAND = 16 (Правая рука)]]></Description>
+  </WowApi>
+  <WowApi RawData="17" ImageType="EnumValue" Name="INVSLOT_OFFHAND">
+    <Description><![CDATA[INVSLOT_OFFHAND = 17 (Левая рука)]]></Description>
+  </WowApi>
+  <WowApi RawData="18" ImageType="EnumValue" Name="INVSLOT_RANGED">
+    <Description><![CDATA[INVSLOT_RANGED = 18 (Оружие дальнего боя)]]></Description>
+  </WowApi>
+  <WowApi RawData="19" ImageType="EnumValue" Name="INVSLOT_TABARD">
+    <Description><![CDATA[INVSLOT_TABARD = 19 (Накидка)]]></Description>
+  </WowApi>
+
+  <WowApi RawData="0" ImageType="EnumValue" Name="SPELL_POWER_MANA">
+    <Description><![CDATA[0 = Mana (Мана)]]></Description>
+  </WowApi>
+  <WowApi RawData="1" ImageType="EnumValue" Name="SPELL_POWER_RAGE">
+    <Description><![CDATA[1 = Rage (Ярость)]]></Description>
+  </WowApi>
+  <WowApi RawData="2" ImageType="EnumValue" Name="SPELL_POWER_FOCUS">
+    <Description><![CDATA[2 = Focus (Концентрация)]]></Description>
+  </WowApi>
+  <WowApi RawData="3" ImageType="EnumValue" Name="SPELL_POWER_ENERGY">
+    <Description><![CDATA[3 = Energy (Энергия)]]></Description>
+  </WowApi>
+  <WowApi RawData="4" ImageType="EnumValue" Name="SPELL_POWER_HAPPINESS">
+    <Description><![CDATA[4 = Happiness (Счастье)]]></Description>
+  </WowApi>
+  <WowApi RawData="5" ImageType="EnumValue" Name="SPELL_POWER_RUNES">
+    <Description><![CDATA[5 = Runes (Руны)]]></Description>
+  </WowApi>
+  <WowApi RawData="6" ImageType="EnumValue" Name="SPELL_POWER_RUNIC_POWER">
+    <Description><![CDATA[6 = Runic Power (Сила рун)]]></Description>
+  </WowApi>
+  <WowApi RawData="7" ImageType="EnumValue" Name="SPELL_POWER_SOUL_SHARDS">
+    <Description><![CDATA[7 = Soul Shards (Осколок души)]]></Description>
+  </WowApi>
+  <WowApi RawData="8" ImageType="EnumValue" Name="SPELL_POWER_ECLIPSE">
+    <Description><![CDATA[8 = Eclipse (Затмение)]]></Description>
+  </WowApi>
+  <WowApi RawData="9" ImageType="EnumValue" Name="SPELL_POWER_HOLY_POWER">
+    <Description><![CDATA[9 = Holy Power (Сила света)]]></Description>
+  </WowApi>
+  <WowApi RawData="10" ImageType="EnumValue" Name="SPELL_POWER_ALTERNATE_POWER">
+    <Description><![CDATA[10 = Alternate Power (Альтернативная энергия)]]></Description>
+  </WowApi>
+  <WowApi RawData="11" ImageType="EnumValue" Name="SPELL_POWER_DARK_FORCE">
+    <Description><![CDATA[11 = Dark Force]]></Description>
+  </WowApi>
+  <WowApi RawData="12" ImageType="EnumValue" Name="SPELL_POWER_LIGHT_FORCE">
+    <Description><![CDATA[12 = Light Force]]></Description>
+  </WowApi>
+  <WowApi RawData="13" ImageType="EnumValue" Name="SPELL_POWER_SHADOW_ORBS">
+    <Description><![CDATA[13 = Shadow Orbs (Темная сфера)]]></Description>
+  </WowApi>
+  <WowApi RawData="14" ImageType="EnumValue" Name="SPELL_POWER_BURNING_EMBERS">
+    <Description><![CDATA[14 = Burning Embers]]></Description>
+  </WowApi>
+  <WowApi RawData="15" ImageType="EnumValue" Name="SPELL_POWER_DEMONIC_FURY">
+    <Description><![CDATA[15 = Demonic Fury (Демоническая ярость)]]></Description>
+  </WowApi>
+
+  <WowApi RawData="1" ImageType="EnumValue" Name="mkLeftShift">
+    <Description><![CDATA[1 = Left Shift]]></Description>
+  </WowApi>
+  <WowApi RawData="2" ImageType="EnumValue" Name="mkLeftControl">
+    <Description><![CDATA[2 = Left Control]]></Description>
+  </WowApi>
+  <WowApi RawData="3" ImageType="EnumValue" Name="mkLeftAlt">
+    <Description><![CDATA[3 = Left Alt]]></Description>
+  </WowApi>
+  <WowApi RawData="4" ImageType="EnumValue" Name="mkRightShift">
+    <Description><![CDATA[4 = Right Shift]]></Description>
+  </WowApi>
+  <WowApi RawData="5" ImageType="EnumValue" Name="mkRightControl">
+    <Description><![CDATA[5 = Right Control]]></Description>
+  </WowApi>
+  <WowApi RawData="6" ImageType="EnumValue" Name="mkRightAlt">
+    <Description><![CDATA[6 = Right Alt]]></Description>
+  </WowApi>
+</ArrayOfWowApi>
