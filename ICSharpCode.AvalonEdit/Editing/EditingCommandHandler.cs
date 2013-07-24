@@ -683,60 +683,43 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
+        private static void ProcessSegment(TextArea textArea, Action<SelectionSegment, DocumentLine> predicate)
+        {
+            if (textArea == null || textArea.Document == null)
+                return;
+            using (textArea.Document.RunUpdate())
+            {
+                foreach (var segment in textArea.Selection.Segments.Reverse())
+                {
+                    foreach (var line in textArea.Document.Lines.Reverse())
+                    {
+                        var start = segment.StartOffset;
+                        var end   = segment.EndOffset;
+
+                        if (line.Offset >= start && line.Offset <= end)
+                        {
+                            predicate(segment, line);
+                        }
+                    }
+                }
+            }
+        }
+
         private static void OnCommentSelection(object target, ExecutedRoutedEventArgs args)
         {
-            TextArea textArea = GetTextArea(target);
-            if (textArea != null && textArea.Document != null)
-            {
-                using (textArea.Document.RunUpdate())
-                {
-                    var text = textArea.Selection.GetText();
-                    var content = new StringBuilder();
-                    foreach (var line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
-                    {
-                        if (string.IsNullOrWhiteSpace(line))
-                        {
-                            content.AppendLine();
-                            continue;
-                        }
-                        if (line.TrimStart().StartsWith("--"))
-                            content.AppendLine(line);
-                        else
-                            content.AppendLine("--" + line);
-                    }
-                    textArea.Selection.ReplaceSelectionWithText(content.ToString().TrimEnd());
-                }
-                textArea.Caret.BringCaretToView();
-                args.Handled = true;
-            }
+            ProcessSegment(GetTextArea(target), (segment, line) => {
+                line.Text = "--" + line.Text;
+            });
+            args.Handled = true;
         }
 
         private static void OnUnCommentSelection(object target, ExecutedRoutedEventArgs args)
         {
-            TextArea textArea = GetTextArea(target);
-            if (textArea != null && textArea.Document != null)
-            {
-                using (textArea.Document.RunUpdate())
-                {
-                    var text = textArea.Selection.GetText();
-                    var content = new StringBuilder();
-                    foreach (var line in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
-                    {
-                        if (string.IsNullOrWhiteSpace(line))
-                        {
-                            content.AppendLine();
-                            continue;
-                        }
-                        if (line.TrimStart().StartsWith("--"))
-                            content.AppendLine(line.Replace("--", "").TrimEnd());
-                        else
-                            content.AppendLine(line.TrimEnd());
-                    }
-                    textArea.Selection.ReplaceSelectionWithText(content.ToString().TrimEnd());
-                }
-                textArea.Caret.BringCaretToView();
-                args.Handled = true;
-            }
+            ProcessSegment(GetTextArea(target), (segment, line) => {
+                if (line.Text.TrimStart().StartsWith("--"))
+                    line.Text = line.Text.Substring(line.Text.IndexOf("--") + 2);
+            });
+            args.Handled = true;
         }
     }
 }
