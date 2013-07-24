@@ -131,13 +131,10 @@ namespace Yanitta
 
         private void InitialiseEmptyProfiles()
         {
-            foreach (WowClass cls in Enum.GetValues(typeof(WowClass)))
+            foreach (WowClass wowClass in Enum.GetValues(typeof(WowClass)))
             {
-                if (!ProfileDb.Instance.ProfileList.Any(n => n.Class == cls) && cls != WowClass.None)
-                    ProfileDb.Instance.ProfileList.Add(new Profile()
-                    {
-                        Class = cls
-                    });
+                if (!ProfileDb.Instance.ProfileList.Any(n => n.Class == wowClass))
+                    ProfileDb.Instance.ProfileList.Add(new Profile() { Class = wowClass });
             }
         }
 
@@ -340,28 +337,35 @@ namespace Yanitta
 
         private void CommandBinding_Executed_Update(object sender, ExecutedRoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(ProfileDb.Instance.Url))
+            try
             {
-                throw new Exception("Url is empty!");
-            }
-
-            using (var response = (HttpWebResponse)WebRequest.Create(ProfileDb.Instance.Url).GetResponse())
-            {
-                using (var stream = new StreamReader(response.GetResponseStream()))
+                if (string.IsNullOrWhiteSpace(ProfileDb.Instance.Url))
                 {
-                    var profile = (ProfileDb)new XmlSerializer(typeof(ProfileDb)).Deserialize(stream);
-                    if (profile.Version != ProfileDb.Instance.Version)
+                    throw new Exception("Url is empty!");
+                }
+
+                using (var response = (HttpWebResponse)WebRequest.Create(ProfileDb.Instance.Url).GetResponse())
+                {
+                    using (var stream = new StreamReader(response.GetResponseStream()))
                     {
-                        var question = string.Format("Обнаружен профиль v{0}, текущий v{1}.\r\nОбновить профиль?",
-                            profile.Version, ProfileDb.Instance.Version);
-                        var res = MessageBox.Show(question, "Обновление", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                        if (res == MessageBoxResult.Yes)
+                        var profile = (ProfileDb)new XmlSerializer(typeof(ProfileDb)).Deserialize(stream);
+                        if (profile.Version != ProfileDb.Instance.Version)
                         {
-                            ProfileDb.Instance.Update(profile);
-                            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+                            var question = string.Format("Обнаружен профиль v{0}, текущий v{1}.\r\nОбновить профиль?",
+                                profile.Version, ProfileDb.Instance.Version);
+                            var res = MessageBox.Show(question, "Обновление", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                            if (res == MessageBoxResult.Yes)
+                            {
+                                ProfileDb.Instance.Update(profile);
+                                ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -372,11 +376,7 @@ namespace Yanitta
 
         private void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
         {
-            Cursor = Cursors.Wait;
             ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
-            SetAlavilableAbilityFilter();
-            System.Threading.Thread.Sleep(500);
-            Cursor = Cursors.Arrow;
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)

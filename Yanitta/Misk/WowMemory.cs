@@ -156,11 +156,6 @@ namespace Yanitta
                     this.Class = this.Memory.Read<WowClass>((uint)Offsets.Default.PlayerClass, true);
                     this.Name = this.Memory.ReadString((uint)Offsets.Default.PlayerName, true);
                 }
-                else
-                {
-                    this.Class = WowClass.None;
-                    this.Name = string.Empty;
-                }
 
                 if (this.GameStateChanged != null)
                     this.GameStateChanged(this);

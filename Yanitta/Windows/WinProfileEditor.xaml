@@ -203,7 +203,7 @@
                         <CollectionViewSource x:Key="AlavilableAbilityList" Source="{Binding ProfileList/AbilityList}" />
                     </Grid.Resources>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="500*" />
+                        <ColumnDefinition Width="400*" />
                         <ColumnDefinition Width="200*" />
                         <ColumnDefinition Width="200*" />
                         <ColumnDefinition Width="7*" />
@@ -251,6 +251,8 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+
+                    <!--<GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Width="4" HorizontalAlignment="Left" />-->
 
                     <ListBox x:Name="listBoxAlavilableAbilitys" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,3,0"
                              ItemsSource="{Binding Source={StaticResource AlavilableAbilityList}}"
@@ -346,7 +348,7 @@
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding Class, Converter={StaticResource EnumToStr}}" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Class, Converter={StaticResource EnumToStr}}" />
                 </GridView>
             </ListView.View>
         </ListView>
@@ -377,6 +379,21 @@
         </Menu>
 
         <StatusBar Grid.ColumnSpan="2" Grid.Row="2">
+            <TextBlock Text="Currect profile: "/>
+            <Image Source="{Binding ProfileList/Class, Converter={StaticResource enumToImage}}" />
+            <TextBlock Text="{Binding ProfileList/Class, Converter={StaticResource EnumToStr}}" Width="100"/>
+            <Separator />
+            <TextBlock Text="Ability count: "/>
+            <TextBlock Text="{Binding ProfileList/AbilityList, Converter={StaticResource CollectionToCount}}" Width="30"/>
+            <Separator />
+            <TextBlock Text="Rotation count: "/>
+            <TextBlock Text="{Binding ProfileList/RotationList, Converter={StaticResource CollectionToCount}}" Width="30"/>
+            <Separator />
+            <TextBlock Text="Author: "/>
+            <TextBlock Text="{Binding Author}"/>
+            <Separator />
+            <TextBlock Text="Version: "/>
+            <TextBlock Text="{Binding Version}"/>
         </StatusBar>
     </Grid>
 </Window>

@@ -4,7 +4,6 @@ using System.Windows.Data;
 
 namespace Yanitta
 {
-    //[ValueConversion(typeof(int), typeof(string))]
     public class StringToIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

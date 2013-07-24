@@ -92,6 +92,7 @@
     <Compile Include="Misk\ConsoleWriter.cs" />
     <Compile Include="Misk\Converters\EnumToLocalizedSrtConverter.cs" />
     <Compile Include="Misk\Converters\StringToIntConverter.cs" />
+    <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
     <Compile Include="Misk\MemoryModule\MemoryModule.cs" />
     <Compile Include="XML\Offsets.cs" />
     <Compile Include="Plugins\IYanittaPlugin.cs" />

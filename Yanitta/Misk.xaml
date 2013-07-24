@@ -27,6 +27,7 @@
     <yanitta:EnumToImageConverter        x:Key="enumToImage" />
     <yanitta:StringToIntConverter        x:Key="integerConverter" />
     <yanitta:EnumToLocalizedSrtConverter x:Key="EnumToStr" />
+    <yanitta:CollectionToCountConverter  x:Key="CollectionToCount" />
 
     <!--Collections-->
     <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:MainWindow.ProcessList}}" />

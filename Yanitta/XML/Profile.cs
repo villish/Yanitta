@@ -105,14 +105,6 @@ namespace Yanitta
         /// <summary>
         ///
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return this.Class == WowClass.None; }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
         /// <returns></returns>
         public object Clone()
         {

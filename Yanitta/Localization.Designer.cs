@@ -653,5 +653,104 @@ namespace Yanitta {
                 return ResourceManager.GetString("UpdateToolTip", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Рыцарь смерти.
+        /// </summary>
+        public static string WowClass_DeathKnight {
+            get {
+                return ResourceManager.GetString("WowClass_DeathKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Друид.
+        /// </summary>
+        public static string WowClass_Druid {
+            get {
+                return ResourceManager.GetString("WowClass_Druid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Охотник.
+        /// </summary>
+        public static string WowClass_Hunter {
+            get {
+                return ResourceManager.GetString("WowClass_Hunter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Маг.
+        /// </summary>
+        public static string WowClass_Mage {
+            get {
+                return ResourceManager.GetString("WowClass_Mage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Монах.
+        /// </summary>
+        public static string WowClass_Monk {
+            get {
+                return ResourceManager.GetString("WowClass_Monk", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Паладин.
+        /// </summary>
+        public static string WowClass_Paladin {
+            get {
+                return ResourceManager.GetString("WowClass_Paladin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Жрец.
+        /// </summary>
+        public static string WowClass_Priest {
+            get {
+                return ResourceManager.GetString("WowClass_Priest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Разбойник.
+        /// </summary>
+        public static string WowClass_Rogue {
+            get {
+                return ResourceManager.GetString("WowClass_Rogue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Шаман.
+        /// </summary>
+        public static string WowClass_Shaman {
+            get {
+                return ResourceManager.GetString("WowClass_Shaman", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Чернокнижник.
+        /// </summary>
+        public static string WowClass_Warlock {
+            get {
+                return ResourceManager.GetString("WowClass_Warlock", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Воин.
+        /// </summary>
+        public static string WowClass_Warrior {
+            get {
+                return ResourceManager.GetString("WowClass_Warrior", resourceCulture);
+            }
+        }
     }
 }

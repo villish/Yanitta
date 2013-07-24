@@ -315,4 +315,37 @@
   <data name="HotKey" xml:space="preserve">
     <value>Гарячая клавиша</value>
   </data>
+  <data name="WowClass_Warrior" xml:space="preserve">
+    <value>Воин</value>
+  </data>
+  <data name="WowClass_Paladin" xml:space="preserve">
+    <value>Паладин</value>
+  </data>
+  <data name="WowClass_Hunter" xml:space="preserve">
+    <value>Охотник</value>
+  </data>
+  <data name="WowClass_Rogue" xml:space="preserve">
+    <value>Разбойник</value>
+  </data>
+  <data name="WowClass_Priest" xml:space="preserve">
+    <value>Жрец</value>
+  </data>
+  <data name="WowClass_DeathKnight" xml:space="preserve">
+    <value>Рыцарь смерти</value>
+  </data>
+  <data name="WowClass_Shaman" xml:space="preserve">
+    <value>Шаман</value>
+  </data>
+  <data name="WowClass_Mage" xml:space="preserve">
+    <value>Маг</value>
+  </data>
+  <data name="WowClass_Warlock" xml:space="preserve">
+    <value>Чернокнижник</value>
+  </data>
+  <data name="WowClass_Monk" xml:space="preserve">
+    <value>Монах</value>
+  </data>
+  <data name="WowClass_Druid" xml:space="preserve">
+    <value>Друид</value>
+  </data>
 </root>
