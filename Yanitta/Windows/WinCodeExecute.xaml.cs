@@ -13,18 +13,6 @@ namespace Yanitta.Windows
             InitializeComponent();
         }
 
-        //public void Initialise(ObservableCollection<WowMemory> ProcessList, int processIndex)
-        //{
-        //    if (processIndex == -1)
-        //        processIndex = 0;
-
-        //    if (ProcessList.Count > 0)
-        //    {
-        //        this.DataContext = ProcessList;
-        //        cbProcess.SelectedIndex = processIndex;
-        //    }
-        //}
-
         private void Exec()
         {
             if (!string.IsNullOrWhiteSpace(this.teCode.Text))
