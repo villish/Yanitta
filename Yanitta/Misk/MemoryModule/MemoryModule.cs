@@ -324,6 +324,7 @@ namespace MemoryModule
         /// <param name="data">
         /// Data to be written in the address space of the specified process.
         /// </param>
+        [HandleProcessCorruptedStateExceptions]
         public unsafe void Write<T>(uint address, T data) where T : struct
         {
             if (address == 0)
@@ -335,17 +336,42 @@ namespace MemoryModule
             if (!this.IsOpened)
                 throw new Exception("Can't open process");
 
-            var writenBytes = 0;
-            var size = Marshal.SizeOf(typeof(T));
-            var buffer = Marshal.AllocHGlobal(size);
 
-            Marshal.StructureToPtr(data, buffer, true);
-            WriteProcessMemory(this.Handle, address, buffer, size, out writenBytes);
-            Marshal.DestroyStructure(buffer, typeof(T));
-            Marshal.FreeHGlobal(buffer);
+            var size = StructHelper<T>.Size;
+            int writenBytes = 0;
+            fixed (byte* pointer = new byte[size])
+            {
+                if (StructHelper<T>.TypeCode == TypeCode.Object)
+                {
+                    Marshal.StructureToPtr(data, new IntPtr(pointer), true);
+                    WriteProcessMemory(this.Handle, address, new IntPtr(pointer), size, out writenBytes);
+                    Marshal.DestroyStructure(new IntPtr(pointer), typeof(T));
 
-            if (writenBytes == 0)
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                    if (writenBytes == 0)
+                        throw new Win32Exception();
+                    return;
+                }
+                switch (StructHelper<T>.TypeCode)
+                {
+                    case TypeCode.Boolean: *(byte*)  pointer = (byte)((bool)(object)data ? 1 : 0); break;
+                    case TypeCode.Char:    *(char*)  pointer = (char)  (object)data; break;
+                    case TypeCode.SByte:   *(sbyte*) pointer = (sbyte) (object)data; break;
+                    case TypeCode.Byte:    *(byte*)  pointer = (byte)  (object)data; break;
+                    case TypeCode.Int16:   *(short*) pointer = (short) (object)data; break;
+                    case TypeCode.UInt16:  *(ushort*)pointer = (ushort)(object)data; break;
+                    case TypeCode.Int32:   *(int*)   pointer = (int)   (object)data; break;
+                    case TypeCode.UInt32:  *(uint*)  pointer = (uint)  (object)data; break;
+                    case TypeCode.Int64:   *(long*)  pointer = (long)  (object)data; break;
+                    case TypeCode.UInt64:  *(ulong*) pointer = (ulong) (object)data; break;
+                    case TypeCode.Single:  *(float*) pointer = (float) (object)data; break;
+                    case TypeCode.Double:  *(double*)pointer = (double)(object)data; break;
+                    default: throw new ArgumentOutOfRangeException();
+                }
+
+                WriteProcessMemory(this.Handle, address, new IntPtr(pointer), size, out writenBytes);
+                if (writenBytes == 0)
+                    throw new Win32Exception();
+            }
         }
 
         public unsafe uint WriteBytes(byte[] data)
