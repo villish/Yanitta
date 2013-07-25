@@ -80,6 +80,8 @@ namespace Yanitta
             ProcessId = pid;
             IsInGame = true;
             IsFocus = isfocus;
+            if (IsFocus)
+                GameFocusChanged();
         }
 
 #endif
@@ -154,7 +156,7 @@ namespace Yanitta
                 if (this.IsInGame)
                 {
                     this.Class = this.Memory.Read<WowClass>((uint)Offsets.Default.PlayerClass, true);
-                    this.Name = this.Memory.ReadString((uint)Offsets.Default.PlayerName, true);
+                    this.Name  = this.Memory.ReadString((uint)Offsets.Default.PlayerName, true);
                 }
 
                 if (this.GameStateChanged != null)
@@ -163,9 +165,7 @@ namespace Yanitta
 
             if (this.IsInGame)
             {
-                // обработка плагинов
-                (App.Current as App).PluginList.ForEach((plugin) =>
-                {
+                (App.Current as App).PluginList.ForEach((plugin) => {
                     if (plugin.IsRuning)
                         plugin.ReadMemory(this);
                 });
@@ -237,9 +237,6 @@ namespace Yanitta
 
         public void ExecuteProfile(Rotation rotation)
         {
-            if (!IsRuning)
-                throw new Exception("timer not runing");
-
             if (CurrentProfile == null)
                 throw new NullReferenceException("CurrentProfile is null");
 
