@@ -275,7 +275,10 @@ namespace ICSharpCode.AvalonEdit
             {
                 var editor = (d as TextEditor);
                 if (editor.Document.Text != (string)e.NewValue)
+                {
                     editor.Document.Text = (string)e.NewValue;
+                    editor.Document.UndoStack.ClearAll();
+                }
             }
         }
 
@@ -301,14 +304,7 @@ namespace ICSharpCode.AvalonEdit
         public string Text
         {
             get { return this.Document.Text;  }
-            set
-            {
-                if (this.Document.Text != value)
-                {
-                    this.Document.Text = value;
-                    this.Document.UndoStack.ClearAll();
-                }
-            }
+            set { SetValue(TextProperty, value); }
         }
 
         /// <summary>
