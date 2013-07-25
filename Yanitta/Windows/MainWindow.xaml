@@ -1,7 +1,8 @@
-﻿<Window x:Class="Yanitta.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:yanitta="clr-namespace:Yanitta"
+        xmlns:Controls="clr-namespace:Microsoft.Windows.Controls;assembly=ICSharpCode.AvalonEdit" x:Class="Yanitta.MainWindow"
         Title="{x:Static yanitta:Localization.Title}"
         AllowsTransparency="True"
         Background="#00000000"
@@ -25,7 +26,7 @@
         <CommandBinding Command="yanitta:YanittaCommand.OpenPluginSetting" Executed="CommandBinding_Executed_ShowPluginSettingWindow" />
     </Window.CommandBindings>
 
-    <Grid Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{DynamicResource KamillaStyle}">
+    <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{DynamicResource KamillaStyle}">
         <Image Width="730" MouseDown="Image_MouseDown" Source="../Resources/wow_fon.png" />
         <Image Width="750" MouseDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
 
@@ -36,7 +37,7 @@
         <Button Content="X" Width="22" Height="24" Margin="702,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Close" ToolTip="{x:Static yanitta:Localization.Close}" />
         <Button Content="_" Width="22" Height="24" Margin="680,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Redo"  ToolTip="{x:Static yanitta:Localization.Minimise}" />
 
-        <ListView Name="lbRotationList" Width="390" Height="246" Margin="325,136,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionMode="Single" ItemsSource="{Binding CurrentProfile.RotationList}">
+        <ListView x:Name="lbRotationList" Width="390" Height="246" Margin="325,136,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionMode="Single" ItemsSource="{Binding CurrentProfile.RotationList}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"   Header="Ротация" />
@@ -45,7 +46,7 @@
             </ListView.View>
         </ListView>
 
-        <ListView Name="lbProcessList" Width="288" Height="246" Margin="37,136,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding}" SelectionMode="Single">
+        <ListView x:Name="lbProcessList" Width="288" Height="246" Margin="37,136,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding}" SelectionMode="Single">
             <ListView.View>
                 <GridView>
                     <GridViewColumn>
@@ -61,7 +62,7 @@
             </ListView.View>
         </ListView>
 
-        <ListView Name="lvPluginList" HorizontalAlignment="Left" Height="141" Margin="37,382,0,0" VerticalAlignment="Top" Width="678" DataContext="{Binding Source={StaticResource pluginList}}" ItemsSource="{Binding}">
+        <ListView x:Name="lvPluginList" HorizontalAlignment="Left" Height="141" Margin="37,382,0,0" VerticalAlignment="Top" Width="678" DataContext="{Binding Source={StaticResource pluginList}}" ItemsSource="{Binding}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="150" Header="Name"        DisplayMemberBinding="{Binding Name}" />
@@ -77,5 +78,21 @@
                 </GridView>
             </ListView.View>
         </ListView>
+        <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico">
+            <Controls:TaskbarIcon.CommandBindings>
+                <CommandBinding Command="Close" Executed="CommandBinding_Executed_Close" />
+                <CommandBinding Command="Redo" Executed="CommandBinding_Executed_Minimize" />
+                <CommandBinding Command="yanitta:YanittaCommand.OpenCodeExec" Executed="CommandBinding_Executed_ShowExecuteWindow" />
+                <CommandBinding Command="yanitta:YanittaCommand.OpenProfiles" Executed="CommandBinding_Executed_ShowProfileWindow" />
+                <CommandBinding Command="yanitta:YanittaCommand.OpenSettings" Executed="CommandBinding_Executed_ShowSettingWindow" />
+            </Controls:TaskbarIcon.CommandBindings>
+            <Controls:TaskbarIcon.ContextMenu>
+                <ContextMenu Style="{DynamicResource KamillaStyle}">
+                    <MenuItem />
+                    <MenuItem Command="yanitta:YanittaCommand.OpenCodeExec"/>
+                    <MenuItem Command="ApplicationCommands.Close"/>
+                </ContextMenu>
+            </Controls:TaskbarIcon.ContextMenu>
+        </Controls:TaskbarIcon>
     </Grid>
 </Window>

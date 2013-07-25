@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Windows.Controls;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -23,6 +24,11 @@ namespace Yanitta
 
         public static ProcessList ProcessList { get; set; }
         public static ObservableCollection<IYanittaPlugin> PluginList { get; set; }
+
+        public TaskbarIcon TaskbarIcon
+        {
+            get { return notyfyIcon; }
+        }
 
         static MainWindow()
         {
@@ -73,7 +79,8 @@ namespace Yanitta
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
         {
-            Application.Current.Shutdown(0);
+            App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
+            App.Current.Shutdown();
         }
 
         private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)

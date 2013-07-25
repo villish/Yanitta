@@ -50,11 +50,13 @@
     <DocumentationFile>
     </DocumentationFile>
     <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
     <DocumentationFile>
     </DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -124,6 +126,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
+    <Compile Include="NotifyIcon\BalloonIcon.cs" />
+    <Compile Include="NotifyIcon\PopupActivationMode.cs" />
+    <Compile Include="NotifyIcon\RoutedEventHelper.cs" />
+    <Compile Include="NotifyIcon\TaskbarIcon.cs" />
+    <Compile Include="NotifyIcon\TaskbarIcon.Declarations.cs" />
+    <Compile Include="NotifyIcon\TrayInfo.cs" />
+    <Compile Include="NotifyIcon\Util.cs" />
+    <Compile Include="NotifyIcon\WinApi.cs" />
+    <Compile Include="NotifyIcon\WindowMessageSink.cs" />
     <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="AvalonEditCommands.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />

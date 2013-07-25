@@ -23,6 +23,11 @@ namespace Yanitta
             ConsoleWriter.Initialize(true);
         }
 
+        public static MainWindow MainWindow
+        {
+            get { return App.Current.Windows.OfType<MainWindow>().FirstOrDefault(); }
+        }
+
         protected override void OnStartup(StartupEventArgs e)
         {
             Console.WriteLine("Yanitta startup!...");

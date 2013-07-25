@@ -21,15 +21,8 @@ namespace Yanitta
             this.refreshTimer.IsEnabled = true;
             this.refreshTimer.Start();
 #else
-            new Thread(new ThreadStart(() => {
-                Thread.Sleep(5000);
-                foreach (WowClass wclass in Enum.GetValues(typeof(WowClass)))
-                {
-                    App.Current.Dispatcher.BeginInvoke(new Action(() => {
-                        this.Add(new WowMemory(wclass, wclass.ToString(), 0, ((byte)wclass == 1)));
-                    }));                    
-                }
-            })).Start();
+            foreach (WowClass wclass in Enum.GetValues(typeof(WowClass)))
+                this.Add(new WowMemory(wclass, wclass.ToString(), 0, ((byte)wclass == 1)));
 #endif
         }
 
