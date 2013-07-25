@@ -94,6 +94,7 @@
     <Compile Include="Misk\Converters\StringToIntConverter.cs" />
     <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
     <Compile Include="Misk\MemoryModule\MemoryModule.cs" />
+    <Compile Include="Misk\ProcessList.cs" />
     <Compile Include="XML\Offsets.cs" />
     <Compile Include="Plugins\IYanittaPlugin.cs" />
     <Compile Include="XML\HotKey.cs" />
