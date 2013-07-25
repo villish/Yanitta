@@ -977,7 +977,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             {
                 if (!double.IsInfinity(scrollViewport.Height))
                 {
-                    heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, scrollOffset.Y) + scrollViewport.Height);
+                    heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, ScrollOffset.Y) + scrollViewport.Height);
                 }
             }
 
@@ -985,7 +985,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
             SetScrollData(availableSize,
                           new Size(maxWidth, heightTreeHeight),
-                          scrollOffset);
+                          ScrollOffset);
             if (VisualLinesChanged != null)
                 VisualLinesChanged(this, EventArgs.Empty);
 
@@ -1001,11 +1001,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
             TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
             VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 
-            Debug.WriteLine("Measure availableSize=" + availableSize + ", scrollOffset=" + scrollOffset);
-            var firstLineInView = heightTree.GetLineByVisualPosition(scrollOffset.Y);
+            Debug.WriteLine("Measure availableSize=" + availableSize + ", scrollOffset=" + ScrollOffset);
+            var firstLineInView = heightTree.GetLineByVisualPosition(ScrollOffset.Y);
 
             // number of pixels clipped from the first visual line(s)
-            clippedPixelsOnTop = scrollOffset.Y - heightTree.GetVisualPosition(firstLineInView);
+            clippedPixelsOnTop = ScrollOffset.Y - heightTree.GetVisualPosition(firstLineInView);
             Debug.Assert(clippedPixelsOnTop >= 0);
 
             newVisualLines = new List<VisualLine>();
@@ -1029,7 +1029,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
                                                  availableSize);
                 }
 
-                visualLine.VisualTop = scrollOffset.Y + yPos;
+                visualLine.VisualTop = ScrollOffset.Y + yPos;
 
                 nextLine = visualLine.LastDocumentLine.NextLine;
 
@@ -1223,12 +1223,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
                 return finalSize;
 
             // validate scroll position
-            Vector newScrollOffset = scrollOffset;
-            if (scrollOffset.X + finalSize.Width > scrollExtent.Width)
+            Vector newScrollOffset = ScrollOffset;
+            if (ScrollOffset.X + finalSize.Width > scrollExtent.Width)
             {
                 newScrollOffset.X = Math.Max(0, scrollExtent.Width - finalSize.Width);
             }
-            if (scrollOffset.Y + finalSize.Height > scrollExtent.Height)
+            if (ScrollOffset.Y + finalSize.Height > scrollExtent.Height)
             {
                 newScrollOffset.Y = Math.Max(0, scrollExtent.Height - finalSize.Height);
             }
@@ -1241,7 +1241,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
             if (visibleVisualLines != null)
             {
-                Point pos = new Point(-scrollOffset.X, -clippedPixelsOnTop);
+                Point pos = new Point(-ScrollOffset.X, -clippedPixelsOnTop);
                 foreach (VisualLine visualLine in visibleVisualLines)
                 {
                     int offset = 0;
@@ -1312,7 +1312,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
         internal void ArrangeTextLayer(IList<VisualLineDrawingVisual> visuals)
         {
-            Point pos = new Point(-scrollOffset.X, -clippedPixelsOnTop);
+            Point pos = new Point(-ScrollOffset.X, -clippedPixelsOnTop);
             foreach (VisualLineDrawingVisual visual in visuals)
             {
                 TranslateTransform t = visual.Transform as TranslateTransform;
@@ -1337,7 +1337,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// <summary>
         /// Offset of the scroll position.
         /// </summary>
-        public Vector scrollOffset { get; private set; }
+        public Vector ScrollOffset { get; private set; }
 
         /// <summary>
         /// Size of the viewport.
@@ -1353,7 +1353,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         {
             if (!(viewport.IsClose(this.scrollViewport)
                   && extent.IsClose(this.scrollExtent)
-                  && offset.IsClose(this.scrollOffset)))
+                  && offset.IsClose(this.ScrollOffset)))
             {
                 this.scrollViewport = viewport;
                 this.scrollExtent = extent;
@@ -1429,7 +1429,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public double HorizontalOffset
         {
-            get { return scrollOffset.X; }
+            get { return ScrollOffset.X; }
         }
 
         /// <summary>
@@ -1437,15 +1437,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public double VerticalOffset
         {
-            get { return scrollOffset.Y; }
-        }
-
-        /// <summary>
-        /// Gets the scroll offset;
-        /// </summary>
-        public Vector ScrollOffset
-        {
-            get { return scrollOffset; }
+            get { return ScrollOffset.Y; }
         }
 
         /// <summary>
@@ -1460,9 +1452,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
             if (!canVerticallyScroll)
                 vector.Y = 0;
 
-            if (!scrollOffset.IsClose(vector))
+            if (!ScrollOffset.IsClose(vector))
             {
-                scrollOffset = vector;
+                ScrollOffset = vector;
                 if (ScrollOffsetChanged != null)
                     ScrollOffsetChanged(this, EventArgs.Empty);
             }
@@ -1472,69 +1464,69 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
         void IScrollInfo.LineUp()
         {
-            ((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - DefaultLineHeight);
+            ((IScrollInfo)this).SetVerticalOffset(ScrollOffset.Y - DefaultLineHeight);
         }
 
         void IScrollInfo.LineDown()
         {
-            ((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + DefaultLineHeight);
+            ((IScrollInfo)this).SetVerticalOffset(ScrollOffset.Y + DefaultLineHeight);
         }
 
         void IScrollInfo.LineLeft()
         {
-            ((IScrollInfo)this).SetHorizontalOffset(scrollOffset.X - WideSpaceWidth);
+            ((IScrollInfo)this).SetHorizontalOffset(ScrollOffset.X - WideSpaceWidth);
         }
 
         void IScrollInfo.LineRight()
         {
-            ((IScrollInfo)this).SetHorizontalOffset(scrollOffset.X + WideSpaceWidth);
+            ((IScrollInfo)this).SetHorizontalOffset(ScrollOffset.X + WideSpaceWidth);
         }
 
         void IScrollInfo.PageUp()
         {
-            ((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - scrollViewport.Height);
+            ((IScrollInfo)this).SetVerticalOffset(ScrollOffset.Y - scrollViewport.Height);
         }
 
         void IScrollInfo.PageDown()
         {
-            ((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + scrollViewport.Height);
+            ((IScrollInfo)this).SetVerticalOffset(ScrollOffset.Y + scrollViewport.Height);
         }
 
         void IScrollInfo.PageLeft()
         {
-            ((IScrollInfo)this).SetHorizontalOffset(scrollOffset.X - scrollViewport.Width);
+            ((IScrollInfo)this).SetHorizontalOffset(ScrollOffset.X - scrollViewport.Width);
         }
 
         void IScrollInfo.PageRight()
         {
-            ((IScrollInfo)this).SetHorizontalOffset(scrollOffset.X + scrollViewport.Width);
+            ((IScrollInfo)this).SetHorizontalOffset(ScrollOffset.X + scrollViewport.Width);
         }
 
         void IScrollInfo.MouseWheelUp()
         {
             ((IScrollInfo)this).SetVerticalOffset(
-                scrollOffset.Y - (SystemParameters.WheelScrollLines * DefaultLineHeight));
+                ScrollOffset.Y - (SystemParameters.WheelScrollLines * DefaultLineHeight));
             OnScrollChange();
         }
 
         void IScrollInfo.MouseWheelDown()
         {
             ((IScrollInfo)this).SetVerticalOffset(
-                scrollOffset.Y + (SystemParameters.WheelScrollLines * DefaultLineHeight));
+                ScrollOffset.Y + (SystemParameters.WheelScrollLines * DefaultLineHeight));
             OnScrollChange();
         }
 
         void IScrollInfo.MouseWheelLeft()
         {
             ((IScrollInfo)this).SetHorizontalOffset(
-                scrollOffset.X - (SystemParameters.WheelScrollLines * WideSpaceWidth));
+                ScrollOffset.X - (SystemParameters.WheelScrollLines * WideSpaceWidth));
             OnScrollChange();
         }
 
         void IScrollInfo.MouseWheelRight()
         {
             ((IScrollInfo)this).SetHorizontalOffset(
-                scrollOffset.X + (SystemParameters.WheelScrollLines * WideSpaceWidth));
+                ScrollOffset.X + (SystemParameters.WheelScrollLines * WideSpaceWidth));
             OnScrollChange();
         }
 
@@ -1642,9 +1634,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
         void IScrollInfo.SetHorizontalOffset(double offset)
         {
             offset = ValidateVisualOffset(offset);
-            if (!scrollOffset.X.IsClose(offset))
+            if (!ScrollOffset.X.IsClose(offset))
             {
-                SetScrollOffset(new Vector(offset, scrollOffset.Y));
+                SetScrollOffset(new Vector(offset, ScrollOffset.Y));
                 InvalidateVisual();
                 textLayer.InvalidateVisual();
             }
@@ -1653,9 +1645,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
         void IScrollInfo.SetVerticalOffset(double offset)
         {
             offset = ValidateVisualOffset(offset);
-            if (!scrollOffset.Y.IsClose(offset))
+            if (!ScrollOffset.Y.IsClose(offset))
             {
-                SetScrollOffset(new Vector(scrollOffset.X, offset));
+                SetScrollOffset(new Vector(ScrollOffset.X, offset));
                 InvalidateMeasure(DispatcherPriority.Normal);
             }
         }
@@ -1670,7 +1662,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             GeneralTransform childTransform = visual.TransformToAncestor(this);
             rectangle = childTransform.TransformBounds(rectangle);
 
-            MakeVisible(Rect.Offset(rectangle, scrollOffset));
+            MakeVisible(Rect.Offset(rectangle, ScrollOffset));
 
             return rectangle;
         }
@@ -1680,9 +1672,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public void MakeVisible(Rect rectangle)
         {
-            Rect visibleRectangle = new Rect(scrollOffset.X, scrollOffset.Y,
+            Rect visibleRectangle = new Rect(ScrollOffset.X, ScrollOffset.Y,
                                              scrollViewport.Width, scrollViewport.Height);
-            Vector newScrollOffset = scrollOffset;
+            Vector newScrollOffset = ScrollOffset;
             if (rectangle.Left < visibleRectangle.Left)
             {
                 if (rectangle.Right > visibleRectangle.Right)
@@ -1715,7 +1707,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
             newScrollOffset.X = ValidateVisualOffset(newScrollOffset.X);
             newScrollOffset.Y = ValidateVisualOffset(newScrollOffset.Y);
-            if (!scrollOffset.IsClose(newScrollOffset))
+            if (!ScrollOffset.IsClose(newScrollOffset))
             {
                 SetScrollOffset(newScrollOffset);
                 this.OnScrollChange();
@@ -1759,7 +1751,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// <inheritdoc/>
         protected override void OnQueryCursor(QueryCursorEventArgs e)
         {
-            var pos = e.GetPosition(this) + scrollOffset;
+            var pos = e.GetPosition(this) + ScrollOffset;
             VisualLineElement element = GetVisualLineElementFromPosition(pos);
             if (element != null)
             {
@@ -1774,7 +1766,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             if (!e.Handled)
             {
                 EnsureVisualLines();
-                VisualLineElement element = GetVisualLineElementFromPosition(e.GetPosition(this) + scrollOffset);
+                VisualLineElement element = GetVisualLineElementFromPosition(e.GetPosition(this) + ScrollOffset);
                 if (element != null)
                 {
                     element.OnMouseDown(e);
@@ -1789,7 +1781,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             if (!e.Handled)
             {
                 EnsureVisualLines();
-                VisualLineElement element = GetVisualLineElementFromPosition(e.GetPosition(this) + scrollOffset);
+                VisualLineElement element = GetVisualLineElementFromPosition(e.GetPosition(this) + ScrollOffset);
                 if (element != null)
                 {
                     element.OnMouseUp(e);
