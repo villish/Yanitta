@@ -79,7 +79,7 @@
             </ListView.View>
         </ListView>
         <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico">
-            <Controls:TaskbarIcon.CommandBindings>
+            <!--<Controls:TaskbarIcon.CommandBindings>
                 <CommandBinding Command="Close" Executed="CommandBinding_Executed_Close" />
                 <CommandBinding Command="Redo" Executed="CommandBinding_Executed_Minimize" />
                 <CommandBinding Command="yanitta:YanittaCommand.OpenCodeExec" Executed="CommandBinding_Executed_ShowExecuteWindow" />
@@ -92,7 +92,7 @@
                     <MenuItem Command="yanitta:YanittaCommand.OpenCodeExec"/>
                     <MenuItem Command="ApplicationCommands.Close"/>
                 </ContextMenu>
-            </Controls:TaskbarIcon.ContextMenu>
+            </Controls:TaskbarIcon.ContextMenu>-->
         </Controls:TaskbarIcon>
     </Grid>
 </Window>
