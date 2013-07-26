@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.54</Version>
+  <Version>0.0.2.55</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -986,7 +986,7 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- модификатор
@@ -1043,15 +1043,109 @@ if GetSpecialization() ~= 3 and GetShapeshiftForm() ~= 1 then
 end
 
  -- Удар колосса
-koloss,_,_,_,_,_,kolossElaps = UnitDebuff("target", GetSpellInfo(86346), nil, "PLAYER");
+koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER") or nil, 0, 0;
 -- Яростный выпад!
-local ragingBlow,_,_,ragingBlowCount,_,_,ragingBloweElapsed = UnitBuff("player", 131116);
+local ragingBlow,RB_Count,RB_Rem = HasBuff("player", 131116) or nil, 0, 0;
 
---isInMeele  = inMelee();
---hasAPbuff  = HasBuff("player", 57330, 19506);
---isAttcked  = nil;--IsUnitCanAttack("target");]]></Lua>
+playerRage = UnitPower("player");
+targetHP   = HealthByPercent("target");
+
+local start, duration = GetSpellCooldown(86346);
+koloss_remains = (start + duration) - GetTime();
+
+local start, duration = GetSpellCooldown(23881);
+bloodthirst_remains = (start + duration) - GetTime();
+]]></Lua>
       </Ability>
-      <Ability Name="Удар колосса">
+      <Ability Name="Furry: Удар героя">
+        <SpellID>78</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <Lua><![CDATA[-- if=((debuff.colossus_smash.up&rage>=40)&target.health.pct>=20)|rage>=110
+if (koloss and playerRage >= 40 and targetHP >= 20) or playerRage >= 110 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Яростный выпад (1)">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[--if=buff.raging_blow.stack=2&debuff.colossus_smash.up&target.health.pct>=20
+if RB_Count == 2 and koloss and targetHP >= 20 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Кровожадность">
+        <SpellID>23881</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)
+if not (targetHP < 20 and koloss and playerRage >= 30) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Зверский удар (1)">
+        <SpellID>100130</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- if=buff.bloodsurge.react&target.health.pct>=20&cooldown.bloodthirst.remains<=1
+if HasBuff("player", 46915) and targetHP >= 20 and bloodthirst_remains <= 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Пауза (Накопление/Сохранение)">
+        <SpellID>0</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- sec=cooldown.bloodthirst.remains,if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)&cooldown.bloodthirst.remains<=1&cooldown.bloodthirst.remains
+-- return true;]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Рев дракона">
+        <SpellID>118000</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- if=talent.dragon_roar.enabled&(!debuff.colossus_smash.up&buff.bloodbath.up)
+if IsSpellKnown(118000) and HasBuff("player", 12292) and not koloss then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Удар колосса">
         <SpellID>86346</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1065,11 +1159,105 @@ local ragingBlow,_,_,ragingBlowCount,_,_,ragingBloweElapsed = UnitBuff("player",
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Furry: Казнь">
+        <SpellID>5308</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- if=buff.enrage.up|debuff.colossus_smash.up|rage>90|buff.recklessness.up (1719)
+if koloss or HasBuff("player", { 1719, 13046 }) or rage > 90 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Яростный выпад (2)">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- if=buff.raging_blow.stack=2 |(buff.raging_blow.up&(debuff.colossus_smash.up|cooldown.colossus_smash.remains>=3
+-- |(cooldown.bloodthirst.remains>=1&buff.raging_blow.remains<=3)))
+if RB_Count == 2 or (ragingBlow and (koloss or koloss_remains >= 3 or (bloodthirst_remains >= 1 and RB_Rem <= 3))) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Зверский удар (2)">
+        <SpellID>100130</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- if=buff.bloodsurge.react
+-- if=debuff.colossus_smash.up&target.health.pct>=20
+-- if=cooldown.colossus_smash.remains>=2&rage>=80&target.health.pct>=20
+if HasBuff("player", 46915) or (koloss and targetHP >= 20)
+    or (koloss_remains >= 2 and playerRage >= 80 and targetHP >= 20) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Героический бросок">
+        <SpellID>57755</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not koloss then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Боевой крик">
+        <SpellID>6673</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerRage < 70 then
+    return true;
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Неистовство">
         <HotKey Key="Z" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Инициализация (Неистовство)</string>
+          <string>Героический прыжок</string>
+          <string>Победный раж</string>
+          <string>Ярость берсерка</string>
+          <string>Furry: Удар героя</string>
+          <string>Furry: Яростный выпад (1)</string>
+          <string>Furry: Кровожадность</string>
+          <string>Furry: Зверский удар (1)</string>
+          <string>Furry: Пауза (Накопление/Сохранение)</string>
+          <string>Furry: Рев дракона</string>
+          <string>Furry: Удар колосса</string>
+          <string>Furry: Казнь</string>
+          <string>Furry: Яростный выпад (2)</string>
+          <string>Furry: Зверский удар (2)</string>
+          <string>Furry: Героический бросок</string>
+          <string>Furry: Боевой крик</string>
+        </AbilityQueue>
         <Notes><![CDATA[
 ]]></Notes>
       </Rotation>
