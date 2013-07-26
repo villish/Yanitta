@@ -3720,7 +3720,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if isInMeele and runes.Blood.Count > 0 then
+        <Lua><![CDATA[if isInMeele and runes.Blood.Count > 0 or HasBuff("player", 81141) then
     return true;
 end]]></Lua>
       </Ability>
@@ -3735,7 +3735,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- if=(blood=1&blood.cooldown_remains<1)|blood=2
-if isInMeele and (runes.Blood.Count == 0 and runes.Blood.Rem < 1) or runes.Blood.Count == 2 then
+if isInMeele and (runes.Blood.Count == 1 and runes.Blood.Rem < 1) or runes.Blood.Count == 2 then
     return true;
 end]]></Lua>
       </Ability>
