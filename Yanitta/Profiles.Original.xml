@@ -2560,7 +2560,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not HasBuff("player", 2823) and not IsMoving() then
+        <Lua><![CDATA[if not UnitAffectingCombat("player") not HasBuff("player", 2823) and not IsMoving() then
     return true;
 end]]></Lua>
       </Ability>
@@ -2574,7 +2574,21 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if HasBuff("target", 1784) then
+        <Lua><![CDATA[if GetShapeshiftForm() == 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Нахождение в скрытности">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetShapeshiftForm() == 1 then
     return true;
 end]]></Lua>
       </Ability>
@@ -2705,8 +2719,9 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализаця</string>
           <string>Смертоносный яд</string>
-          <string>Заживление ран</string>
           <string>Внезапный удар</string>
+          <string>Заживление ран</string>
+          <string>Нахождение в скрытности</string>
           <string>Мясорубка </string>
           <string>Пробивающий удар</string>
           <string>Потрошение</string>
