@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.55</Version>
+  <Version>0.0.2.58</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -628,10 +628,39 @@ function UpdatePartyTables(standartSpellId)
     end
 end]]></Func>
   <Profile Class="Warrior">
-    <Lua><![CDATA[useCooldown     = true;
-setAoE          = nil;
-isAltMod        = nil;
-targetCount     = 3;]]></Lua>
+    <Lua><![CDATA[useCooldown = true;
+setAoE      = nil;
+isAltMod    = nil;
+targetCount = 3;
+
+kolossRem  = 0;
+RB_Count   = 0;
+RB_Rem     = 0;
+playerRage = 0;
+targetHP   = 0;
+
+koloss_remains      = 0;
+bloodthirst_remains = 0;
+
+function FillFurryData()
+     -- Удар колосса
+    koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER") or nil, 0, 0;
+    -- Яростный выпад!
+    ragingBlow,RB_Count,RB_Rem = HasBuff("player", 131116) or nil, 0, 0;
+    -- Кровавый фарш
+    meat_cleaver, meat_cleaver_couunt = HasBuff("player", 12950) or nil, 0;
+    
+    playerRage = UnitPower("player");
+    targetHP   = HealthByPercent("target");
+    
+    -- кулдаун колосса
+    local start, duration = GetSpellCooldown(86346);
+    koloss_remains = (start + duration) - GetTime();
+    
+    -- кулдаун кровожадности
+    local start, duration = GetSpellCooldown(23881);
+    bloodthirst_remains = (start + duration) - GetTime();
+end]]></Lua>
     <AbilityList>
       <Ability Name="Прерывание заклинаний">
         <SpellID>0</SpellID>
@@ -1000,7 +1029,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
     StopAttack();
     PetStopAttack();
     return true;
@@ -1021,11 +1049,10 @@ elseif IsModKeyDown(mkRightControl) then
             useSweepingStrikes = true;
             print("|cff00ff00 >> Размашистые Удары: Включены");
         end
-    end
-    if GetSpecialization() == 2 then -- Неистовство
+    elseif GetSpecialization() == 2 then -- Неистовство
         targetCount = targetCount + 1;
-        if targetCount >= 4 then
-            targetCount = 1;
+        if targetCount >= 4 or targetCount <= 1 then
+            targetCount = 2;
         end
         print("|cff00ff00 >> Кровавый фарш: "..targetCount);
     end
@@ -1042,20 +1069,25 @@ if GetSpecialization() ~= 3 and GetShapeshiftForm() ~= 1 then
     CastShapeshiftForm(1);
 end
 
- -- Удар колосса
-koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER") or nil, 0, 0;
--- Яростный выпад!
-local ragingBlow,RB_Count,RB_Rem = HasBuff("player", 131116) or nil, 0, 0;
-
-playerRage = UnitPower("player");
-targetHP   = HealthByPercent("target");
-
-local start, duration = GetSpellCooldown(86346);
-koloss_remains = (start + duration) - GetTime();
-
-local start, duration = GetSpellCooldown(23881);
-bloodthirst_remains = (start + duration) - GetTime();
+FillFurryData();
 ]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Кровавая баня">
+        <SpellID>12292</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and koloss_remains < 1 then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Furry: Удар героя">
         <SpellID>78</SpellID>
@@ -1113,8 +1145,28 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- if=buff.bloodsurge.react&target.health.pct>=20&cooldown.bloodthirst.remains<=1
-if HasBuff("player", 46915) and targetHP >= 20 and bloodthirst_remains <= 1 then
+if not setAoE and HasBuff("player", 46915) and targetHP >= 20 and bloodthirst_remains <= 1 then
     return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Вихрь">
+        <SpellID>1680</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAoE then
+    if targetCount == 2 and meat_cleaver then
+        return false;
+    elseif targetCount == 3 and meat_cleaver_couunt == 3 then
+        return false;
+    elseif targetCount == 4 then
+        return true;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Furry: Пауза (Накопление/Сохранение)">
@@ -1186,9 +1238,22 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- if=buff.raging_blow.stack=2 |(buff.raging_blow.up&(debuff.colossus_smash.up|cooldown.colossus_smash.remains>=3
 -- |(cooldown.bloodthirst.remains>=1&buff.raging_blow.remains<=3)))
+local enable_RB = false;
+
 if RB_Count == 2 or (ragingBlow and (koloss or koloss_remains >= 3 or (bloodthirst_remains >= 1 and RB_Rem <= 3))) then
-    return true;
-end]]></Lua>
+    enable_RB = true;
+end
+
+if setAoE then
+    if targetCount == 2 and meat_cleaver then
+        return true;
+    elseif targetCount >= 3 and meat_cleaver_couunt == 3 then
+        return true;
+    end
+else
+    return enable_RB;
+end
+]]></Lua>
       </Ability>
       <Ability Name="Furry: Зверский удар (2)">
         <SpellID>100130</SpellID>
@@ -1244,11 +1309,13 @@ end]]></Lua>
           <string>Инициализация (Неистовство)</string>
           <string>Героический прыжок</string>
           <string>Победный раж</string>
+          <string>Furry: Кровавая баня</string>
           <string>Ярость берсерка</string>
           <string>Furry: Удар героя</string>
           <string>Furry: Яростный выпад (1)</string>
           <string>Furry: Кровожадность</string>
           <string>Furry: Зверский удар (1)</string>
+          <string>Furry: Вихрь</string>
           <string>Furry: Пауза (Накопление/Сохранение)</string>
           <string>Furry: Рев дракона</string>
           <string>Furry: Удар колосса</string>
