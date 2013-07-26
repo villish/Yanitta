@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.28</Version>
+  <Version>0.0.2.35</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -169,7 +169,7 @@ function CheckAndCastAbility(ability)
 end
 
 -- Включение/выключение текущей ротации
-function ChangeRotation(rotation)
+function ChangeRotation(rotation, notes)
     -- Если ротация пустая, или новая ротация такая же как и текущая, тогда выключаем
     if (not rotation or rotation == CurentRotation) and CurentRotation then
         CurentRotation = nil;
@@ -196,6 +196,9 @@ function ChangeRotation(rotation)
         AddonEnabled   = true;
         -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
         print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.." |r|cff15bd05 - Включена.|r");
+        if notes then
+            print("|cff6f0a9a"..notes.."|r");
+        end
         PlaySound("PAPERDOLLOPEN", "Master");
     end
 end
@@ -5003,7 +5006,7 @@ RightAlt -  Взрыв грибов]]></Notes>
           <string>Растерзать</string>
           <string>Боевой штандарт координации</string>
         </AbilityQueue>
-        <Notes><![CDATA[]]></Notes>
+        <Notes><![CDATA[Тест]]></Notes>
       </Rotation>
       <Rotation Name="Баланс">
         <HotKey Key="V" Modifier="Alt" />
