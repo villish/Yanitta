@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.46</Version>
+  <Version>0.0.2.47</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -3483,22 +3483,9 @@ function FillRunesInfo()
     for i = 1, 6 do
         local runeType        = GetRuneType(i);
         local start, duration = GetRuneCooldown(i);
-        local count           = GetRuneCount(i);
-        local rem = (start + duration) - GetTime();
 
-        if     runeType == 1 then
-            runes.Blood.Rem    = rem;
-            runes.Blood.Count  = count;
-        elseif runeType == 2 then
-            runes.Unholy.Rem   = rem;
-            runes.Unholy.Count = count;
-        elseif runeType == 3 then
-            runes.Frost.Rem    = rem;
-            runes.Frost.Count  = count;
-        elseif runeType == 4 then
-            runes.Death.Rem    = rem;
-            runes.Death.Count  = count;
-        end
+        runes[runeType].Rem   = (start + duration) - GetTime();
+        runes[runeType].Count = GetRuneCount(i);
     end    
 end]]></Lua>
     <AbilityList>
