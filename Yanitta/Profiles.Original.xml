@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.48</Version>
+  <Version>0.0.2.50</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -197,7 +197,7 @@ function ChangeRotation(rotation, notes)
         -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
         print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.." |r|cff15bd05 - Включена.|r");
         if notes then
-            print("|cff6f0a9a"..notes.."|r");
+            print("|cff6f0a9a     "..notes.."|r");
         end
         PlaySound("PAPERDOLLOPEN", "Master");
     end
@@ -3471,6 +3471,7 @@ end]]></Lua>
 useCooldown     = true;
 setAoE          = nil;
 isAltMod        = nil;
+rune_names = { "Blood", "Unholy", "Frost", "Death" };
 
 function FillRunesInfo()
     runes = {
@@ -3483,9 +3484,10 @@ function FillRunesInfo()
     for slot = 1, 6 do
         local runeType        = GetRuneType(slot);
         local start, duration = GetRuneCooldown(slot);
-
-        runes[runeType].Rem   = (start + duration) - GetTime();
-        runes[runeType].Count = GetRuneCount(slot);
+        local rune_name = rune_names[runeType];
+ 
+        runes[rune_name].Rem   = (start + duration) - GetTime();
+        runes[rune_name].Count = GetRuneCount(slot);
     end    
 end]]></Lua>
     <AbilityList>
@@ -3691,7 +3693,9 @@ end]]></Lua>
 if (runes.Unholy.Count == 0 and runes.Frost.Count >= 1) 
 or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) 
 or runes.Death.Count == 1 then
-    return true;
+    if (select(2, HasBuff("player", 114851)) or 0) >= 5 then
+        return true;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Удар смерти">
@@ -3773,7 +3777,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if useCooldown and runes.Blood.Count = 0 and runes.Unholy.Count = 0 and runes.Frost.Count = 0 then
+        <Lua><![CDATA[if useCooldown and runes.Blood.Count == 0 and runes.Unholy.Count == 0 and runes.Frost.Count == 0 then
     return true;
 end]]></Lua>
       </Ability>
