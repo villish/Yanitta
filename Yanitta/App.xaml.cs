@@ -35,7 +35,7 @@ namespace Yanitta
             if (!File.Exists("FASM.DLL"))
             {
                 MessageBox.Show("FASM.DLL not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                throw new FileNotFoundException("FASM.DLL not found");
+                throw new FileNotFoundException("Not found", "FASM.DLL");
             }
 
             var fileName = Yanitta.Properties.Settings.Default.ProfilesFileName;
