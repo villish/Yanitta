@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.47</Version>
+  <Version>0.0.2.48</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -3480,12 +3480,12 @@ function FillRunesInfo()
         Death  = { Rem = 0, Count = 0 },
     };
     
-    for i = 1, 6 do
-        local runeType        = GetRuneType(i);
-        local start, duration = GetRuneCooldown(i);
+    for slot = 1, 6 do
+        local runeType        = GetRuneType(slot);
+        local start, duration = GetRuneCooldown(slot);
 
         runes[runeType].Rem   = (start + duration) - GetTime();
-        runes[runeType].Count = GetRuneCount(i);
+        runes[runeType].Count = GetRuneCount(slot);
     end    
 end]]></Lua>
     <AbilityList>
