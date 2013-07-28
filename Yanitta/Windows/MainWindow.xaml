@@ -37,16 +37,16 @@
         <Button Content="X" Width="22" Height="24" Margin="702,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Close" ToolTip="{x:Static yanitta:Localization.Close}" />
         <Button Content="_" Width="22" Height="24" Margin="680,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Redo"  ToolTip="{x:Static yanitta:Localization.Minimise}" />
 
-        <ListView x:Name="lvPluginList" HorizontalAlignment="Left" Height="141" Margin="37,382,0,0" VerticalAlignment="Top" Width="678" DataContext="{Binding Source={StaticResource pluginList}}" ItemsSource="{Binding}">
+        <ListView x:Name="lvPluginList" HorizontalAlignment="Left" Height="141" Margin="37,382,0,0" VerticalAlignment="Top" Width="678" DataContext="{Binding Source={StaticResource pluginList}}" ItemsSource="{Binding}" FontSize="16">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="150" Header="Name"        DisplayMemberBinding="{Binding Name}" />
                     <GridViewColumn Width="300" Header="Description" DisplayMemberBinding="{Binding Description}" />
                     <GridViewColumn Width="150" Header="HotKey"      DisplayMemberBinding="{Binding HotKey}" />
-                    <GridViewColumn Width="70"  Header="Options">
+                    <GridViewColumn             Header="Options">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="Options" Command="yanitta:YanittaCommand.OpenPluginSetting" Tag="{Binding}" />
+                                <Button Content="Options" Command="yanitta:YanittaCommand.OpenPluginSetting" Tag="{Binding}" Width="60" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
