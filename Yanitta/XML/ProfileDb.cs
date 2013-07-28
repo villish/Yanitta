@@ -182,13 +182,14 @@ namespace Yanitta
             }
         }
 
-        public void Save(string fileName)
+        public void Save(string fileName, bool incVersion = false)
         {
             try
             {
                 if (ProfileDb.Instance != null)
                 {
-                    IncVersion();
+                    if (incVersion)
+                        IncVersion();
                     new XmlManager(fileName).Save<ProfileDb>(ProfileDb.Instance);
                     Console.WriteLine("Profiles Saved!");
                 }

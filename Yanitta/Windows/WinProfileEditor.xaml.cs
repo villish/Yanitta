@@ -376,7 +376,7 @@ namespace Yanitta
 
         private void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
         {
-            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName, true);
             App.MainWindow.TaskbarIcon.ShowBalloonTip("Yanitta", "Profiles saved!", Microsoft.Windows.Controls.BalloonIcon.Info);
         }
 

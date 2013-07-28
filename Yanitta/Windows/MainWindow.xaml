@@ -37,31 +37,6 @@
         <Button Content="X" Width="22" Height="24" Margin="702,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Close" ToolTip="{x:Static yanitta:Localization.Close}" />
         <Button Content="_" Width="22" Height="24" Margin="680,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Redo"  ToolTip="{x:Static yanitta:Localization.Minimise}" />
 
-        <ListView x:Name="lbRotationList" Width="390" Height="246" Margin="325,136,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" SelectionMode="Single" ItemsSource="{Binding CurrentProfile.RotationList}">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"   Header="Ротация" />
-                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding HotKey}" Header="Комбинация клавиш" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <ListView x:Name="lbProcessList" Width="288" Height="246" Margin="37,136,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding}" SelectionMode="Single">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn>
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="40" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="50"  DisplayMemberBinding="{Binding ProcessId}"  Header="PID" />
-                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Name}" Header="Имя" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-
         <ListView x:Name="lvPluginList" HorizontalAlignment="Left" Height="141" Margin="37,382,0,0" VerticalAlignment="Top" Width="678" DataContext="{Binding Source={StaticResource pluginList}}" ItemsSource="{Binding}">
             <ListView.View>
                 <GridView>
@@ -78,21 +53,38 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico">
-            <!--<Controls:TaskbarIcon.CommandBindings>
-                <CommandBinding Command="Close" Executed="CommandBinding_Executed_Close" />
-                <CommandBinding Command="Redo" Executed="CommandBinding_Executed_Minimize" />
-                <CommandBinding Command="yanitta:YanittaCommand.OpenCodeExec" Executed="CommandBinding_Executed_ShowExecuteWindow" />
-                <CommandBinding Command="yanitta:YanittaCommand.OpenProfiles" Executed="CommandBinding_Executed_ShowProfileWindow" />
-                <CommandBinding Command="yanitta:YanittaCommand.OpenSettings" Executed="CommandBinding_Executed_ShowSettingWindow" />
-            </Controls:TaskbarIcon.CommandBindings>
-            <Controls:TaskbarIcon.ContextMenu>
-                <ContextMenu Style="{DynamicResource KamillaStyle}">
-                    <MenuItem />
-                    <MenuItem Command="yanitta:YanittaCommand.OpenCodeExec"/>
-                    <MenuItem Command="ApplicationCommands.Close"/>
-                </ContextMenu>
-            </Controls:TaskbarIcon.ContextMenu>-->
-        </Controls:TaskbarIcon>
+        <TreeView HorizontalAlignment="Left" Height="249" Margin="37,133,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}" Opacity="70">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="True"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding CurrentProfile.RotationList}">
+                    <Border BorderThickness="1" BorderBrush="#FF00AA00">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="40" />
+                            <TextBlock Text="{Binding ProcessId}" Width="50"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                            <TextBlock Text="{Binding Name}"      Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                        </StackPanel>
+                    </Border>
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderThickness="1" BorderBrush="#FF00AA00">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}"   Width="150" FontSize="15"/>
+                                    <TextBlock Text="{Binding HotKey}" Width="170" FontSize="15"/>
+                                    <CheckBox IsChecked="{Binding HotKey.Control}" VerticalAlignment="Center" Content="Control" Width="75" FontSize="15"/>
+                                    <CheckBox IsChecked="{Binding HotKey.Shift}"   VerticalAlignment="Center" Content="Shift"   Width="60" FontSize="15"/>
+                                    <CheckBox IsChecked="{Binding HotKey.Alt}"     VerticalAlignment="Center" Content="Alt"     Width="50" FontSize="15"/>
+                                    <ComboBox Width="100" SelectedValue="{Binding HotKey.Key}" ItemsSource="{Binding Source={StaticResource KeyValues}}"  VerticalAlignment="Center" FontSize="15"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+        <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico" />
     </Grid>
 </Window>

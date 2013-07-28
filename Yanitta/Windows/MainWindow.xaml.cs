@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Yanitta.Plugins;
+using Yanitta.Properties;
 using Yanitta.Windows;
 
 namespace Yanitta
@@ -39,11 +40,6 @@ namespace Yanitta
         public MainWindow()
         {
             InitializeComponent();
-
-            ProcessList.CollectionChanged += (o, e) => {
-                if (ProcessList.Count > 0 && lbProcessList.SelectedIndex == -1)
-                    lbProcessList.SelectedIndex = 0;
-            };
         }
 
         private void Image_MouseDown(object o, RoutedEventArgs e)
@@ -53,6 +49,8 @@ namespace Yanitta
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+
             foreach (var plugin in PluginList)
                 plugin.Dispose();
             PluginList.Clear();
