@@ -51,6 +51,8 @@ namespace Yanitta
 
         public bool IsInGame { get; private set; }
 
+        public bool IsDisposed { get; private set; }
+
         public bool IsRuning { get { return mTimer.IsEnabled; } }
 
         public ProcessMemory Memory { get; private set; }
@@ -102,11 +104,6 @@ namespace Yanitta
             this.Start();
         }
 
-        ~WowMemory()
-        {
-            this.Dispose();
-        }
-
         #endregion Constructors / Destructor
 
         public void Start()
@@ -143,7 +140,7 @@ namespace Yanitta
                     this.GameStateChanged(this);
 
                 Console.WriteLine("Wow process exited!");
-                this.Dispose();
+                this.Dispose(true);
                 return;
             }
 
@@ -440,8 +437,25 @@ namespace Yanitta
             return string.Format("[{0}] {1} ({2})", this.ProcessId, this.Name, this.Class);
         }
 
+        ~WowMemory()
+        {
+            Dispose(false);
+        }
+
+        /// <summary>
+        /// Closes an open wow memory.
+        /// </summary>
         public void Dispose()
         {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (this.IsDisposed || !disposing)
+                return;
+
             this.Stop();
 
             if (this.Memory != null)
@@ -457,6 +471,7 @@ namespace Yanitta
                 this.Memory.Dispose();
             }
             this.Memory = null;
+            this.IsDisposed = true;
         }
     }
 }
