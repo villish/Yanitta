@@ -23,6 +23,11 @@ namespace MemoryModule
         public bool IsOpened { get; private set; }
 
         /// <summary>
+        ///
+        /// </summary>
+        public bool IsDisposed { get; private set; }
+
+        /// <summary>
         /// Get the cutrrent process.
         /// </summary>
         public Process Process { get; private set; }
@@ -145,12 +150,13 @@ namespace MemoryModule
 
         private void Dispose(bool disposing)
         {
-            if (!disposing)
+            if (this.IsDisposed || !disposing)
                 return;
 
             this.Handle.Close();
             this.ThreadHandle.Close();
-            this.IsOpened = false;
+            this.IsOpened    = false;
+            this.IsDisposed  = true;
         }
     }
 }
