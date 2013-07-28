@@ -1,0 +1,34 @@
+inquisition                 = 
+avenging_wrath              = 
+guardian_of_ancient_kings   = 
+holy_avenger                = 
+execution_sentence          = 
+divine_storm                = 
+templars_verdict            = 
+hammer_of_wrath             = 
+exorcism                    = 
+judgment                    = 
+hammer_of_the_righteous     = 
+crusader_strike             = 
+judgment                    = 
+
+
+actions+=/inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10)
+actions+=/avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
+actions+=/guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10
+actions+=/holy_avenger,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<289)&holy_power<=2
+actions+=/execution_sentence,if=buff.inquisition.up&time>=15
+actions+=/divine_storm,if=active_enemies>=2&(holy_power=5|(buff.holy_avenger.up&holy_power>=3))
+actions+=/templars_verdict,if=holy_power=5|(buff.holy_avenger.up&holy_power>=3)
+actions+=/hammer_of_wrath
+actions+=/wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
+actions+=/exorcism
+actions+=/wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
+actions+=/judgment,if=!(set_bonus.tier15_4pc_melee)&(target.health.pct<=20|buff.avenging_wrath.up)&active_enemies<2
+actions+=/hammer_of_the_righteous,if=active_enemies>=4
+actions+=/crusader_strike
+actions+=/wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
+actions+=/judgment,target=2,if=active_enemies>=2&buff.glyph_double_jeopardy.up
+actions+=/judgment
+actions+=/divine_storm,if=active_enemies>=2&buff.inquisition.remains>4
+actions+=/templars_verdict,if=buff.inquisition.remains>4
