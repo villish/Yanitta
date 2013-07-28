@@ -32,6 +32,7 @@ namespace ICSharpCode.AvalonEdit
     [Localizability(LocalizationCategory.Text), ContentProperty("Text")]
     public class TextEditor : Control, ITextEditorComponent, IServiceProvider, IWeakEventListener, IDisposable
     {
+        private bool isUpdated;
         private CompletionWindow mIntelliSeinceWindow;
         private ToolTip mToolTip;
         private FoldingManager foldingManager;
@@ -61,7 +62,13 @@ namespace ICSharpCode.AvalonEdit
 
             DispatcherTimer foldingUpdateTimer = new DispatcherTimer();
             foldingUpdateTimer.Interval = TimeSpan.FromSeconds(1);
-            foldingUpdateTimer.Tick += (o, e) => { foldingStrategy.UpdateFoldings(foldingManager, this.Document); };
+            foldingUpdateTimer.Tick += (o, e) => {
+                if (this.isUpdated)
+                {
+                    foldingStrategy.UpdateFoldings(foldingManager, this.Document);
+                    isUpdated = false;
+                }
+            };
             foldingUpdateTimer.Start();
 
             this.TextArea.TextEntering += TextEditorTextAreaTextEntering;
@@ -278,6 +285,7 @@ namespace ICSharpCode.AvalonEdit
                 {
                     editor.Document.Text = (string)e.NewValue;
                     editor.Document.UndoStack.ClearAll();
+                    editor.isUpdated = true;
                 }
             }
         }
@@ -291,7 +299,7 @@ namespace ICSharpCode.AvalonEdit
             if (old != this.Document.Text)
             {
                 SetValue(TextProperty, this.Document.Text);
-
+                this.isUpdated = true;
                 if (TextChanged != null)
                     TextChanged(this, e);
             }
