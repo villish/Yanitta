@@ -217,7 +217,7 @@ namespace Yanitta
                         var lines = System.IO.File.ReadAllLines(dialog.FileName);
                         foreach (var line in lines)
                         {
-                            var raw_str = line.Split(new[] { ';', ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                            var raw_str = line.Split(new[] { ';', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                             if (raw_str.Count() > 1)
                             {
                                 uint spell_id = 0;
