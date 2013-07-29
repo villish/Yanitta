@@ -84,7 +84,7 @@ namespace Yanitta
             if (IsFocus)
             {
                 Class = wowClass;
-                Name = name;
+                Name  = name;
 
                 SetValue(CurrentProfileProperty, ProfileDb.Instance[this.Class]);
                 GameFocusChanged();
@@ -115,11 +115,12 @@ namespace Yanitta
 
         private void ReadPlayerData()
         {
-            if (this.IsInGame)
+            if (this.Memory.IsFocusWindow)
             {
                 this.Class = this.Memory.Read<WowClass>((uint)Offsets.Default.PlayerClass, true);
                 this.Name  = this.Memory.ReadString((uint)Offsets.Default.PlayerName, true);
                 this.CurrentProfile = ProfileDb.Instance[this.Class];
+                this.GameFocusChanged();
             }
             else
             {
@@ -170,7 +171,7 @@ namespace Yanitta
         {
             try
             {
-                var hotKey = sender as HotKey;
+                var hotKey   = sender as HotKey;
                 var ratation = hotKey.Tag as Rotation;
 
                 ExecuteProfile(ratation);
@@ -191,8 +192,7 @@ namespace Yanitta
                 ProfileDb.Instance.Exec((profile, rotation) => rotation.HotKey.Unregister());
 
                 // plugin
-                (App.Current as App).PluginList.ForEach((plugin) =>
-                {
+                (App.Current as App).PluginList.ForEach((plugin) => {
                     if (!plugin.HotKey.IsEmpty)
                         plugin.HotKey.Unregister();
                 });
@@ -200,15 +200,13 @@ namespace Yanitta
                 if (this.IsFocus)
                 {
                     // plugin
-                    (App.Current as App).PluginList.ForEach((plugin) =>
-                    {
+                    (App.Current as App).PluginList.ForEach((plugin) => {
                         if (!plugin.HotKey.IsEmpty)
                             plugin.HotKey.Register();
                     });
 
                     // main
-                    ProfileDb.Instance.Exec((profile, rotation) =>
-                    {
+                    ProfileDb.Instance.Exec((profile, rotation) => {
                         if (profile.Class == Class)
                         {
                             rotation.HotKey.SetHandler(rotation, HotKeyPressed);
