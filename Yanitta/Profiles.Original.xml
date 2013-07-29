@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.68</Version>
+  <Version>0.0.2.72</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -3188,7 +3188,10 @@ function FillRunesInfo()
         Unholy = { Rem = 0, Count = 0 },
         Frost  = { Rem = 0, Count = 0 },
         Death  = { Rem = 0, Count = 0 },
+        Power  = 0,
     };
+
+    runes.Power = UnitPower("player");--, SPELL_POWER_RUNIC_POWER);
     
     for slot = 1, 6 do
         local runeType        = GetRuneType(slot);
@@ -3200,7 +3203,7 @@ function FillRunesInfo()
     end    
 end]]></Lua>
     <AbilityList>
-      <Ability Name="Инициализация (Кровь)">
+      <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3243,8 +3246,12 @@ if IsMounted() then
 end
 
 -- Перейти в стойку защиты
-if GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
-    CastShapeshiftForm(1);
+if     GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
+    CastShapeshiftForm(1); -- blood
+elseif GetSpecialization() == 2 and GetShapeshiftForm() ~= 2 then
+    CastShapeshiftForm(2); -- frost
+elseif GetSpecialization() == 3 and GetShapeshiftForm() ~= 3 then
+    CastShapeshiftForm(3); -- unholly
 end
 
 FillRunesInfo();
@@ -3490,12 +3497,300 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Frost: Вытягивание чумы (1)">
+        <SpellID>123693</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Вспышка болезни (1)">
+        <SpellID>77575</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Нечестивая порча (1)">
+        <SpellID>115989</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Жнец душ">
+        <SpellID>130736</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Кровоотвод (1)">
+        <SpellID>45529</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Воющий ветер (1)">
+        <SpellID>49184</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Удар чумы">
+        <SpellID>45462</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Воющий ветер (2)">
+        <SpellID>49184</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Уничтожение (1)">
+        <SpellID>49020</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Кровоотвод (2)">
+        <SpellID>45529</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Ледяной удар (1)">
+        <SpellID>49143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Уничтожение (2)">
+        <SpellID>49020</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Вытягивание чумы (2)">
+        <SpellID>123693</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Вспышка болезни (2)">
+        <SpellID>77575</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Нечестивая порча (2)">
+        <SpellID>115989</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Ледяной удар (2)">
+        <SpellID>49143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Зимний горн">
+        <SpellID>57330</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Ледяной удар (3)">
+        <SpellID>49143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Уничтожение (3)">
+        <SpellID>49020</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Усиление рунического оружия">
+        <SpellID>47568</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Кровоотвод (3)">
+        <SpellID>45529</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Ледяной удар (4)">
+        <SpellID>49143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Вытягивание чумы (3)">
+        <SpellID>123693</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Усиление рунического оружия (2)">
+        <SpellID>47568</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Кровь">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
-          <string>Инициализация (Кровь)</string>
+          <string>Инициализация</string>
           <string>Смерть и разложение</string>
           <string>Кровь вампира</string>
           <string>Костяной щит</string>
@@ -3520,7 +3815,32 @@ Right Shift - Кулдауны]]></Notes>
       </Rotation>
       <Rotation Name="Лед">
         <HotKey Key="Z" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Frost: Вытягивание чумы (1)</string>
+          <string>Frost: Вспышка болезни (1)</string>
+          <string>Frost: Нечестивая порча (1)</string>
+          <string>Frost: Жнец душ</string>
+          <string>Frost: Кровоотвод (1)</string>
+          <string>Frost: Воющий ветер (1)</string>
+          <string>Frost: Удар чумы</string>
+          <string>Frost: Воющий ветер (2)</string>
+          <string>Frost: Уничтожение (1)</string>
+          <string>Frost: Кровоотвод (2)</string>
+          <string>Frost: Ледяной удар (1)</string>
+          <string>Frost: Уничтожение (2)</string>
+          <string>Frost: Вытягивание чумы (2)</string>
+          <string>Frost: Вспышка болезни (2)</string>
+          <string>Frost: Нечестивая порча (2)</string>
+          <string>Frost: Ледяной удар (2)</string>
+          <string>Frost: Зимний горн</string>
+          <string>Frost: Ледяной удар (3)</string>
+          <string>Frost: Уничтожение (3)</string>
+          <string>Frost: Усиление рунического оружия</string>
+          <string>Frost: Кровоотвод (3)</string>
+          <string>Frost: Ледяной удар (4)</string>
+          <string>Frost: Вытягивание чумы (3)</string>
+          <string>Frost: Усиление рунического оружия (2)</string>
+        </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
       <Rotation Name="Нечестивость">
