@@ -61,7 +61,7 @@ namespace Yanitta
             var index = rotationListAbilitys.SelectedIndex;
             if (CurrentRotation != null && index > -1
                 && !(shift == -1 && index == 0)
-                && !(shift == 1 && index == CurrentRotation.AbilityQueue.Count - 1))
+                && !(shift == 1  && index == CurrentRotation.AbilityQueue.Count - 1))
             {
                 CurrentRotation.AbilityQueue.Move(index, index + shift);
             }
@@ -72,7 +72,7 @@ namespace Yanitta
             var index = abilityList.SelectedIndex;
             if (CurrentProfile != null && index > -1
                 && !(shift == -1 && index == 0)
-                && !(shift == 1 && index == CurrentProfile.AbilityList.Count - 1))
+                && !(shift == 1  && index == CurrentProfile.AbilityList.Count - 1))
             {
                 CurrentProfile.AbilityList.Move(index, index + shift);
             }

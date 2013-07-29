@@ -135,7 +135,6 @@
     <Compile Include="NotifyIcon\Util.cs" />
     <Compile Include="NotifyIcon\WinApi.cs" />
     <Compile Include="NotifyIcon\WindowMessageSink.cs" />
-    <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="AvalonEditCommands.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
@@ -396,7 +395,6 @@
     <Compile Include="Utils\PixelSnapHelpers.cs" />
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
-    <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
     <EmbeddedResource Include="Localization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Localization.Designer.cs</LastGenOutput>

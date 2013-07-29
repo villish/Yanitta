@@ -11,7 +11,7 @@ namespace Yanitta
     ///
     /// </summary>
     [Serializable]
-    public class Profile : ICloneable, INotifyPropertyChanged
+    public class Profile : INotifyPropertyChanged
     {
         private WowClass m_class;
         private string m_lua;
@@ -93,22 +93,13 @@ namespace Yanitta
         /// </summary>
         public Profile()
         {
-            AbilityList = new ObservableCollection<Ability>();
+            AbilityList  = new ObservableCollection<Ability>();
             RotationList = new ObservableCollection<Rotation>();
         }
 
         public override string ToString()
         {
             return this.Class.ToString();
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        public object Clone()
-        {
-            return this.MemberwiseClone();
         }
 
         public IEnumerable<Ability> this[Rotation rotation_filter]

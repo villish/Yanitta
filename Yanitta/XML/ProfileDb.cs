@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -169,7 +170,12 @@ namespace Yanitta
         {
             try
             {
+                var sw = new Stopwatch();
+                sw.Start();
                 var temp = new XmlManager(fileName).Load<ProfileDb>();
+                sw.Stop();
+                Console.WriteLine("Profiles loading: {0}", sw.Elapsed);
+                sw.Reset();
                 ProfileDb.Instance.Update(temp);
             }
             catch (FileNotFoundException fex)
