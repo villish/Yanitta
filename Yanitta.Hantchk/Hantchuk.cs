@@ -33,9 +33,9 @@ namespace Yanitta.Hantchk
                 return;
 
             if (!this.IsRuning)
-                wowMemory.LuaExecute(Settings.Default.LuaCode);
+                wowMemory.LuaHook.LuaExecute(Settings.Default.LuaCode);
             else
-                wowMemory.LuaExecute("if type(StopHantchuk) == \"function\" then StopHantchuk(); end");
+                wowMemory.LuaHook.LuaExecute("if type(StopHantchuk) == \"function\" then StopHantchuk(); end");
         }
 
         #region Header
@@ -97,13 +97,12 @@ namespace Yanitta.Hantchk
                         if (gameobject.CreatedBy == ObjectManager.PlayerGuid
                             && gameobject.AnimationState == BOOBER_ANIM)
                         {
-                            new Thread(new ThreadStart(() =>
-                            {
+                            new Thread(new ThreadStart(() => {
                                 var boober_guid = gameobject.Guid;
                                 // рандомная задержка перед использованием
                                 Thread.Sleep(new Random().Next(300, 1500));
                                 ObjectManager.Memory.Write<ulong>(ObjectManager.MouseOverGUID, boober_guid);
-                                wowMemory.LuaExecute("InteractUnit(\"mouseover\");");
+                                wowMemory.LuaHook.LuaExecute("InteractUnit(\"mouseover\");");
                             })).Start();
                         }
                     }
@@ -114,7 +113,7 @@ namespace Yanitta.Hantchk
         public void Dispose()
         {
             Console.WriteLine("Hantchk disposing...");
-            if (wowMemory != null && wowMemory.IsRuning)
+            if (wowMemory != null && !wowMemory.IsDisposed)
                 wowMemory.Dispose();
 
             this.settingWindow = null;

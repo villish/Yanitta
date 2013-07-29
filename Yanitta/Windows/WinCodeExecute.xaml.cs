@@ -20,10 +20,7 @@ namespace Yanitta.Windows
                 var process = cbProcess.SelectedValue as WowMemory;
                 if (process != null)
                 {
-                    if (process.IsInGame)
-                        process.LuaExecute(this.teCode.Text);
-                    else
-                        MessageBox.Show("Не в игре!");
+                    process.LuaHook.LuaExecute(this.teCode.Text);
                 }
                 else
                 {

@@ -12,7 +12,8 @@ namespace Yanitta
             if (value == null || !(value is WowClass))
                 return Binding.DoNothing;
 
-            var path = string.Format(@"pack://application:,,,/Yanitta;component/Resources/{0}.png", value);
+            var name = (WowClass)value == (WowClass)(byte)0 ? "None" : value.ToString();
+            var path = string.Format(@"pack://application:,,,/Yanitta;component/Resources/{0}.png", name);
             return new BitmapImage(new Uri(path));
         }
 

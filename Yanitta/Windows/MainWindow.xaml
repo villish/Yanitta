@@ -53,12 +53,14 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TreeView HorizontalAlignment="Left" Height="249" Margin="37,133,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}" Opacity="70">
+
+        <TreeView HorizontalAlignment="Left" Height="249" Margin="37,133,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                     <Setter Property="IsExpanded" Value="True"/>
                 </Style>
             </TreeView.ItemContainerStyle>
+
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding CurrentProfile.RotationList}">
                     <Border BorderThickness="1" BorderBrush="#FF00AA00">
@@ -85,6 +87,7 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
+
         <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico" />
     </Grid>
 </Window>

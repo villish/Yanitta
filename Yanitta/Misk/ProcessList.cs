@@ -60,19 +60,10 @@ namespace Yanitta
                 {
                     var wowMemory = new WowMemory(wowProcess);
 
-                    if (!wowMemory.IsInGame)
-                    {
-                        wowMemory.Dispose();
-                        continue;
-                    }
-
-                    wowMemory.GameStateChanged += (memory) => {
-                        if (!memory.IsInGame)
-                        {
-                            if (this.Contains(memory))
-                                this.Remove(memory);
-                            memory.Dispose();
-                        }
+                    wowMemory.GameExited += (memory) => {
+                        if (this.Contains(memory))
+                            this.Remove(memory);
+                        memory.Dispose();
                     };
                     this.Add(wowMemory);
                 }

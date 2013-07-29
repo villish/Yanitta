@@ -93,6 +93,7 @@
     <Compile Include="Misk\Converters\EnumToLocalizedSrtConverter.cs" />
     <Compile Include="Misk\Converters\StringToIntConverter.cs" />
     <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
+    <Compile Include="Misk\LuaHook.cs" />
     <Compile Include="Misk\MemoryModule\FASM\FasmCondition.cs" />
     <Compile Include="Misk\MemoryModule\FASM\FasmError.cs" />
     <Compile Include="Misk\MemoryModule\FASM\FasmLineHeader.cs" />
