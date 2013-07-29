@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.58</Version>
+  <Version>0.0.2.63</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -1358,7 +1358,7 @@ end]]></Lua>
 useCooldown = true;
 setAoE      = nil;]]></Lua>
     <AbilityList>
-      <Ability Name="Инициализация (Защита)">
+      <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -1441,18 +1441,6 @@ end]]></Lua>
         return true;
     end
 end]]></Lua>
-      </Ability>
-      <Ability Name="Вечное пламя">
-        <SpellID>114163</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
       </Ability>
       <Ability Name="Щит праведника">
         <SpellID>53600</SpellID>
@@ -1607,72 +1595,126 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Длань свободы">
-        <SpellID>1044</SpellID>
-        <Target>None</Target>
+      <Ability Name="Retri: Дознание">
+        <SpellID>84963</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[if not HasDebuff("target", 84963) then
+    return true;
+end]]></Lua>
       </Ability>
-      <Ability Name="Освобождение">
-        <SpellID>121783</SpellID>
-        <Target>None</Target>
+      <Ability Name="Retri: Вердикт храмовника (1)">
+        <SpellID>85256</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[if not setAoE and hollyPower == 5 then
+    return true;
+end]]></Lua>
       </Ability>
-      <Ability Name="Длань защиты">
-        <SpellID>1022</SpellID>
-        <Target>None</Target>
+      <Ability Name="Retri: Божественная буря">
+        <SpellID>53385</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[return setAoE;]]></Lua>
       </Ability>
-      <Ability Name="Длань жертвенности">
-        <SpellID>6940</SpellID>
-        <Target>None</Target>
+      <Ability Name="Retri: Молот гнева">
+        <SpellID>24275</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Длань спасения">
-        <SpellID>1038</SpellID>
-        <Target>None</Target>
+      <Ability Name="Retri: Экзорцизм">
+        <SpellID>879</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Удар воина Света">
+        <SpellID>35395</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return not setAoE;]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Молот праведника">
+        <SpellID>53595</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return setAoE;]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Правосудие">
+        <SpellID>20271</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Вердикт храмовника (2)">
+        <SpellID>85256</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAoE and hollyPower == 3 then
+    return true;
+end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Защита">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
-          <string>Инициализация (Защита)</string>
+          <string>Инициализация</string>
           <string>Щит небес</string>
           <string>Торжество</string>
           <string>Щит праведника</string>
@@ -1695,7 +1737,18 @@ end]]></Lua>
       </Rotation>
       <Rotation Name="Воздаяние">
         <HotKey Key="C" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Retri: Дознание</string>
+          <string>Retri: Вердикт храмовника (1)</string>
+          <string>Retri: Божественная буря</string>
+          <string>Retri: Молот гнева</string>
+          <string>Retri: Экзорцизм</string>
+          <string>Retri: Удар воина Света</string>
+          <string>Retri: Молот праведника</string>
+          <string>Retri: Правосудие</string>
+          <string>Retri: Вердикт храмовника (2)</string>
+        </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
     </RotationList>
