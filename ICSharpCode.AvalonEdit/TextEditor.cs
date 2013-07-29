@@ -12,8 +12,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Automation;
-using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -37,6 +35,7 @@ namespace ICSharpCode.AvalonEdit
         private ToolTip mToolTip;
         private FoldingManager foldingManager;
         private AbstractFoldingStrategy foldingStrategy = new RegexFoldingStrategy();
+        private DispatcherTimer foldingUpdateTimer;
 
         #region Constructors
 
@@ -60,7 +59,7 @@ namespace ICSharpCode.AvalonEdit
             foldingManager = FoldingManager.Install(this.TextArea);
             foldingStrategy.UpdateFoldings(foldingManager, this.Document);
 
-            DispatcherTimer foldingUpdateTimer = new DispatcherTimer();
+            foldingUpdateTimer = new DispatcherTimer();
             foldingUpdateTimer.Interval = TimeSpan.FromSeconds(1);
             foldingUpdateTimer.Tick += (o, e) => {
                 if (this.isUpdated)
@@ -97,6 +96,12 @@ namespace ICSharpCode.AvalonEdit
 
         public void Dispose()
         {
+            if (foldingUpdateTimer != null)
+            {
+                foldingUpdateTimer.Stop();
+                foldingUpdateTimer.IsEnabled = false;
+                foldingUpdateTimer = null;
+            }
             if (mIntelliSeinceWindow != null)
             {
                 mIntelliSeinceWindow.Close();
