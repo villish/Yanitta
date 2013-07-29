@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.63</Version>
+  <Version>0.0.2.65</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -1619,7 +1619,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not setAoE and hollyPower == 5 then
+        <Lua><![CDATA[if not setAoE and (hollyPower == 5 or HasBuff("player", 90174)) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1705,7 +1705,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not setAoE and hollyPower == 3 then
+        <Lua><![CDATA[if not setAoE and hollyPower > 2 then
     return true;
 end]]></Lua>
       </Ability>
