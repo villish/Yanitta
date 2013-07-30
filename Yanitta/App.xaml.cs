@@ -23,7 +23,7 @@ namespace Yanitta
             ConsoleWriter.Initialize(true);
         }
 
-        public static MainWindow MainWindow
+        public static new MainWindow MainWindow
         {
             get { return App.Current.Windows.OfType<MainWindow>().FirstOrDefault(); }
         }
