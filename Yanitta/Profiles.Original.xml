@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.73</Version>
-  <Author>Konctantin</Author>
+  <Version>0.0.2.78</Version>
+  <Author>Konctanti</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
 ShowInChat   = true;    -- показывать сообщения в чате
@@ -1431,14 +1431,17 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if playerHP < 85 then
+        <Lua><![CDATA[if playerHP < 70 then
     if divine_purpose then
         return true;
     end
-    -- Бастион славы (114637)
-    local name,count = HasBuff("player", 114637) or nil, 0;
-    if name and count == 5 then
-        return true;
+
+    if hollyPower > 2 then
+        -- Бастион славы (114637)
+        local name,count = HasBuff("player", 114637) or nil, 0;
+        if name and count > 3 then
+            return true;
+        end
     end
 end]]></Lua>
       </Ability>
@@ -1452,13 +1455,8 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if divine_purpose then
+        <Lua><![CDATA[if divine_purpose or hollyPower > 2 then
     return true;
-elseif hollyPower > 2 then
-    local name,count = HasBuff("player", 114637) or nil, 0;
-    if name and count < 5 then
-        return true;
-    end
 end]]></Lua>
       </Ability>
       <Ability Name="Ревностный защитник">
@@ -1550,14 +1548,7 @@ return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[-- Великий воин Света
-if HasBuff("player", 85043) then
-    return true;
-end
-
-if not isInMeele then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Освящение">
         <SpellID>26573</SpellID>
