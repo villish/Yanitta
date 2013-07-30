@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.79</Version>
+  <Version>0.0.2.81</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -539,33 +539,11 @@ end
 function UpdatePartyTables(standartSpellId)
 
     LowHP = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0 };
-    local solo = not (IsInRaid() or IsInGroup() or IsInArenaTeam());
-
-    if solo then
-        members = { };
-        local hpcur  = UnitHealth(member.Unit) or 1;
-        local hpmax  = UnitHealthMax(member.Unit) or 1;
-
-        table.insert(members, {
-            Unit        = "player",
-            Name        = UnitName("player"),
-            Class       = UnitClass("player"),
-            Role        = "HEAL",
-            Agro        = UnitThreatSituation("player") or 0,
-            IsDead      = UnitIsDeadOrGhost("player"),
-            HP          = 100 * hpcur / hpmax,
-            HPMAX       = hpmax,
-            HPI         = hpcur,
-            IsInRange   = true,
-            NeedDispell = false
-            });
-        return;
-    end
 
     -- Если поменялось количество, либо же не доступна одна из таблиц - пересоздадим
     if (type(members) ~= "table" or GetNumGroupMembers() ~= #members) then
 
-        members = { }; -- { Unit Class Name Role X Y IsDead Agro IsOnline Range HP HPMAX HPI }
+        members = { { Unit = "player", Name = UnitName("player"), Class = UnitClass("player"), Role = "HEAL" } };
 
         local prefix = "party";
 
@@ -575,9 +553,11 @@ function UpdatePartyTables(standartSpellId)
             prefix = "arena";
         end
 
-        for i = 1, GetNumGroupMembers() do
-            local name,rank,subgroup,level,class,_,zone,online,isDead,role = GetRaidRosterInfo(i);
-            if UnitExists(prefix..i) then
+        for index = 1, GetNumGroupMembers() do
+            local name,rank,subgroup,level,class,_,zone,online,isDead,role = GetRaidRosterInfo(index);
+            local unit = string.format("%s%i", prefix, index);
+
+            if UnitExists(unit) and UnitGUID(unit) ~= UnitGUID("player") then
                 table.insert(members, { Unit = unit, Name = name, Class = class, Role = role });
             end
         end
