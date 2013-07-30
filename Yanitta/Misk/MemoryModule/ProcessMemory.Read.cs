@@ -10,9 +10,9 @@ namespace MemoryModule
     public partial class ProcessMemory
     {
         [HandleProcessCorruptedStateExceptions]
-        private unsafe T BaseRead<T>(uint address) where T : struct
+        private unsafe T BaseRead<T>(IntPtr address) where T : struct
         {
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new InvalidOperationException("Cannot retrieve a value at address 0");
 
             var size = StructHelper<T>.Size;
@@ -25,6 +25,9 @@ namespace MemoryModule
                         string.Format("Could not read from 0x{0:X8} [{1}]!",
                             address, Marshal.GetLastWin32Error())
                         );
+
+                if (StructHelper<T>.IsIntPtr)
+                    return (T)(object)*(IntPtr*)pointer;
 
                 switch (StructHelper<T>.TypeCode)
                 {
@@ -55,14 +58,8 @@ namespace MemoryModule
         /// <param name="address"></param>
         /// <param name="size"></param>
         /// <returns></returns>
-        public unsafe byte[] ReadBytes(uint address, int size, bool isRelative = false)
+        public unsafe byte[] ReadBytes(IntPtr address, int size, bool isRelative = false)
         {
-            if (address == 0)
-                throw new ArgumentNullException("address");
-
-            if (this.Process == null)
-                throw new Exception("Process exists");
-
             if (!this.IsOpened)
                 throw new Exception("Can't open process");
 
@@ -97,9 +94,9 @@ namespace MemoryModule
         /// If the function fails, the return value is 0 (zero). To get extended error information, call GetLastError.
         /// The function fails if the requested read operation crosses into an area of the process that is inaccessible.
         /// </returns>
-        public unsafe T Read<T>(uint address, bool isRelative = false) where T : struct
+        public unsafe T Read<T>(IntPtr address, bool isRelative = false) where T : struct
         {
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
 
             if (this.Process == null)
@@ -119,7 +116,7 @@ namespace MemoryModule
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
-        public string ReadString(uint address, bool isRelative = false)
+        public string ReadString(IntPtr address, bool isRelative = false)
         {
             return ReadString(address, Encoding.UTF8, isRelative);
         }
@@ -130,9 +127,9 @@ namespace MemoryModule
         /// <param name="address"></param>
         /// <param name="encoding"></param>
         /// <returns></returns>
-        public string ReadString(uint address, Encoding encoding, bool isRelative = false)
+        public string ReadString(IntPtr address, Encoding encoding, bool isRelative = false)
         {
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
 
             if (this.Process == null)
@@ -146,9 +143,10 @@ namespace MemoryModule
 
             byte b;
             var list = new List<byte>();
-            while ((b = this.BaseRead<byte>(address++)) != 0)
+            while ((b = this.BaseRead<byte>(address)) != 0)
             {
                 list.Add(b);
+                address = address + 1;
             }
 
             return encoding.GetString(list.ToArray());

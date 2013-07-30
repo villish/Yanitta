@@ -10,10 +10,10 @@ namespace Yanitta
     public class LuaHook : IDisposable
     {
         private bool IsApplied;
-        private uint mCodeCavePtr;
-        private uint mDetourPtr;
-        private uint mDetour;
-        private uint mClientObjectManager;
+        private IntPtr mCodeCavePtr;
+        private IntPtr mDetourPtr;
+        private IntPtr mDetour;
+        private IntPtr mClientObjectManager;
 
         private byte[] CltObjMrgSeach          = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00 };
         private byte[] OverwrittenBytes        = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00 };
@@ -31,15 +31,15 @@ namespace Yanitta
 
         public void Apply()
         {
-            if (this.mDetour == 0u || this.mClientObjectManager == 0u)
+            if (this.mDetour == IntPtr.Zero || this.mClientObjectManager == IntPtr.Zero)
             {
                 this.mDetour = this.Memory.Find(this.OverwrittenBytesPattern);
                 this.mClientObjectManager = this.Memory.Find(this.CltObjMrgSeach, "x???xx?x");
 
-                if (this.mDetour == 0u)
+                if (this.mDetour == IntPtr.Zero)
                     throw new NullReferenceException("mDetour not found");
 
-                if (this.mClientObjectManager == 0u)
+                if (this.mClientObjectManager == IntPtr.Zero)
                     throw new NullReferenceException("mClientObjectManager not found");
             }
 
@@ -74,7 +74,7 @@ namespace Yanitta
             this.Memory.Write<uint>(this.mCodeCavePtr, 0x00);
             this.Memory.WriteBytes(this.mDetourPtr, this.OverwrittenBytes);
 
-            var injAddr = (uint)(this.mDetourPtr + this.OverwrittenBytes.Length);
+            var injAddr = this.mDetourPtr + this.OverwrittenBytes.Length;
 
             this.Inject(ASM_Code, injAddr);
             this.Inject(new[] { "jmp " + this.mDetourPtr }, this.mDetour, false);
@@ -137,7 +137,7 @@ namespace Yanitta
 
             this.Inject(asmCode, injAddress);
 
-            this.Memory.Write<uint>(this.mCodeCavePtr, injAddress);
+            this.Memory.Write<IntPtr>(this.mCodeCavePtr, injAddress);
 
             int tickCount = Environment.TickCount;
             int res;
@@ -151,10 +151,10 @@ namespace Yanitta
                 Thread.Sleep(15);
             }
 
-            var result = this.Memory.Read<uint>(resultAdr);
+            var result = this.Memory.Read<IntPtr>(resultAdr);
 
             var resStr = "";
-            if (result != 0u)
+            if (result != IntPtr.Zero)
             {
                 this.Memory.ReadString(result);
             }
@@ -169,7 +169,7 @@ namespace Yanitta
             return resStr;
         }
 
-        private void Inject(IEnumerable<string> ASM_Code, uint address, bool randomize = true)
+        private void Inject(IEnumerable<string> ASM_Code, IntPtr address, bool randomize = true)
         {
             //if (randomize)
             //    ASM_Code = Extensions.RandomizeASM(ASM_Code);
@@ -205,10 +205,10 @@ namespace Yanitta
                 if (this.Memory.IsOpened)
                     this.Restore();
 
-                this.mClientObjectManager = 0u;
-                this.mCodeCavePtr = 0u;
-                this.mDetourPtr = 0u;
-                this.mDetour = 0u;
+                this.mClientObjectManager = IntPtr.Zero;
+                this.mCodeCavePtr = IntPtr.Zero;
+                this.mDetourPtr = IntPtr.Zero;
+                this.mDetour = IntPtr.Zero;
             }
         }
     }

@@ -1,8 +1,9 @@
-﻿namespace Yanitta.Hantchk
+﻿using System;
+namespace Yanitta.Hantchk
 {
     public class WoWGameObject : WoWObject
     {
-        public WoWGameObject(uint baseAddress)
+        public WoWGameObject(IntPtr baseAddress)
             : base(baseAddress)
         {
         }

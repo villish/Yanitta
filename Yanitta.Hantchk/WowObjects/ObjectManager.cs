@@ -6,19 +6,19 @@ namespace Yanitta.Hantchk
 {
     public static class ObjectManager
     {
-        internal static uint CurentObjectManagerAddr = 0u;//find
-        internal static uint MouseOverGUID = 0u;//find
+        internal static IntPtr CurentObjectManagerAddr  = IntPtr.Zero;//find
+        internal static IntPtr MouseOverGUID            = IntPtr.Zero;//find
 
-        internal const int Addr_Guid = 0x00;
-        internal const int Addr_Data = 0x08;
-        internal const int Addr_Type = 0x0C;
-        internal const int Addr_EntryID = 0x14;
-        internal const int Addr_CreatedBy = 0x20;
-        internal const int Addr_VisibleGuid = 0x28;
-        internal const int Addr_AnimationState = 0xC4;
-        internal const int Addr_LocalGuid = 0xE0;
-        internal const int Addr_FirstObject = 0xCC;
-        internal const int Addr_NextObject = 0x34;
+        internal const int Addr_Guid                    = 0x00;
+        internal const int Addr_Data                    = 0x08;
+        internal const int Addr_Type                    = 0x0C;
+        internal const int Addr_EntryID                 = 0x14;
+        internal const int Addr_CreatedBy               = 0x20;
+        internal const int Addr_VisibleGuid             = 0x28;
+        internal const int Addr_AnimationState          = 0xC4;
+        internal const int Addr_LocalGuid               = 0xE0;
+        internal const int Addr_FirstObject             = 0xCC;
+        internal const int Addr_NextObject              = 0x34;
 
         public static readonly object ObjPulse = new object();
         public static List<WoWObject> Objects = new List<WoWObject>();
@@ -30,7 +30,7 @@ namespace Yanitta.Hantchk
             get { return Memory != null && Memory.IsOpened; }
         }
 
-        public static uint CurrentManager { get; set; }
+        public static IntPtr CurrentManager { get; set; }
 
         public static ulong PlayerGuid { get; set; }
 
@@ -58,18 +58,18 @@ namespace Yanitta.Hantchk
             if (!Initialized)
                 return;
 
-            CurrentManager = Memory.Read<uint>(CurentObjectManagerAddr);
+            CurrentManager = Memory.Read<IntPtr>(CurentObjectManagerAddr);
             PlayerGuid = Memory.Read<ulong>(CurrentManager + Addr_LocalGuid);
 
             lock (ObjPulse)
             {
                 Objects.Clear();
 
-                var baseAddress = Memory.Read<uint>(CurrentManager + Addr_FirstObject);
+                var baseAddress = Memory.Read<IntPtr>(CurrentManager + Addr_FirstObject);
                 var currentObject = new WoWObject(baseAddress);
                 baseAddress = currentObject.BaseAddress;
 
-                while ((((int)baseAddress & 1) == 0) && baseAddress != 0u)
+                while ((((int)baseAddress & 1) == 0) && baseAddress != IntPtr.Zero)
                 {
                     // gameobject
                     if (currentObject.Type == 5)
@@ -81,7 +81,7 @@ namespace Yanitta.Hantchk
 #endif
                     }
 
-                    currentObject.BaseAddress = Memory.Read<uint>(baseAddress + Addr_NextObject);
+                    currentObject.BaseAddress = Memory.Read<IntPtr>(baseAddress + Addr_NextObject);
                 }
             }
         }

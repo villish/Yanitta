@@ -115,12 +115,11 @@ namespace Yanitta
 
         private void ReadPlayerData()
         {
-            if (this.Memory.IsFocusWindow)
+            if (this.IsInGame)
             {
-                this.Class = this.Memory.Read<WowClass>((uint)Offsets.Default.PlayerClass, true);
-                this.Name  = this.Memory.ReadString((uint)Offsets.Default.PlayerName, true);
+                this.Class = this.Memory.Read<WowClass>((IntPtr)Offsets.Default.PlayerClass, true);
+                this.Name  = this.Memory.ReadString((IntPtr)Offsets.Default.PlayerName, true);
                 this.CurrentProfile = ProfileDb.Instance[this.Class];
-                this.GameFocusChanged();
             }
             else
             {
@@ -150,7 +149,7 @@ namespace Yanitta
             if (!CheckProcess())
                 return;
 
-            this.IsInGame = this.Memory.Read<bool>((uint)Offsets.Default.IsInGame, true);
+            this.IsInGame = this.Memory.Read<bool>((IntPtr)Offsets.Default.IsInGame, true);
 
             if (this.IsInGame)
             {

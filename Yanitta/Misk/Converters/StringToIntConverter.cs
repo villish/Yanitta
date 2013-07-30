@@ -21,16 +21,16 @@ namespace Yanitta
             if (string.IsNullOrWhiteSpace(str))
                 return Binding.DoNothing;
 
-            uint n;
+            long n;
             if (IsHex(str))
             {
                 if (str.StartsWith("0x"))
-                    uint.TryParse(str.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out n);
+                    long.TryParse(str.Substring(2), NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out n);
                 else
-                    uint.TryParse(str, NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out n);
+                    long.TryParse(str, NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out n);
             }
             else
-                uint.TryParse(str, out n);
+                long.TryParse(str, out n);
 
             return n;
         }

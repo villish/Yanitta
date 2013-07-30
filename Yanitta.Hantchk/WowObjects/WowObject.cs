@@ -1,13 +1,14 @@
-﻿namespace Yanitta.Hantchk
+﻿using System;
+namespace Yanitta.Hantchk
 {
     public class WoWObject
     {
-        public WoWObject(uint baseAddress)
+        public WoWObject(IntPtr baseAddress)
         {
             BaseAddress = baseAddress;
         }
 
-        public uint BaseAddress { get; set; }
+        public IntPtr BaseAddress { get; set; }
 
         public virtual ulong Guid
         {
@@ -26,8 +27,8 @@
 
         protected T GetStorageField<T>(int field) where T : struct
         {
-            var m_pStorage = ObjectManager.Memory.Read<uint>(BaseAddress + 0x4);
-            return ObjectManager.Memory.Read<T>(m_pStorage + (uint)field);
+            var m_pStorage = ObjectManager.Memory.Read<IntPtr>(BaseAddress + 0x4);
+            return ObjectManager.Memory.Read<T>(m_pStorage + field);
         }
     }
 }

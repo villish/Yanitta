@@ -61,9 +61,9 @@ namespace MemoryModule
         /// <summary>
         /// Gets the memory address where the module was loaded.
         /// </summary>
-        public uint BaseAddress
+        public IntPtr BaseAddress
         {
-            get { return (uint)(int)Process.MainModule.BaseAddress; }
+            get { return Process.MainModule.BaseAddress; }
         }
 
         /// <summary>
@@ -129,9 +129,14 @@ namespace MemoryModule
                 Internals.ResumeThread(this.ThreadHandle);
         }
 
-        public uint Rebase(long address)
+        public IntPtr Rebase(long address)
         {
-            return (uint)(this.BaseAddress + address);
+            return new IntPtr(this.BaseAddress.ToInt64() + address);
+        }
+
+        public IntPtr Rebase(IntPtr address)
+        {
+            return new IntPtr(this.BaseAddress.ToInt64() + address.ToInt64());
         }
 
         ~ProcessMemory()

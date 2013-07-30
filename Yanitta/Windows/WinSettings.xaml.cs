@@ -107,14 +107,12 @@ namespace Yanitta
                         {
                             switch (reader.Name)
                             {
-                                case "CurrentWoWVersion": Offsets.Default.Build = read(reader); break;
-                                case "PlayerName": Offsets.Default.PlayerName = read(reader); break;
-                                case "PlayerClass": Offsets.Default.PlayerClass = read(reader); break;
-                                case "GameState": Offsets.Default.IsInGame = read(reader); break;
-                                case "Lua_DoStringAddress": Offsets.Default.FrameScript_ExecuteBuffer = read(reader); break;
-                                case "Lua_GetLocalizedTextAddress": Offsets.Default.FrameScript_GetLocalizedText = read(reader); break;
-                                //case "ObjMgr":                      Offsets.Default.ClntObjMgrGetActivePlayer      = read(reader); break;
-                                //case "CurMgr":                      Settings.Default.ClntObjMgrGetActivePlayer      = read(reader); break;
+                                case "CurrentWoWVersion":           Offsets.Default.Build                           = read(reader); break;
+                                case "PlayerName":                  Offsets.Default.PlayerName                      = read(reader); break;
+                                case "PlayerClass":                 Offsets.Default.PlayerClass                     = read(reader); break;
+                                case "GameState":                   Offsets.Default.IsInGame                        = read(reader); break;
+                                case "Lua_DoStringAddress":         Offsets.Default.FrameScript_ExecuteBuffer       = read(reader); break;
+                                case "Lua_GetLocalizedTextAddress": Offsets.Default.FrameScript_GetLocalizedText    = read(reader); break;
                                 default: reader.Read(); break;
                             }
                         }

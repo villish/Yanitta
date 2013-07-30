@@ -17,7 +17,7 @@ namespace MemoryModule
         /// <returns>
         /// Returns 0 on failure, or the address of the start of the pattern on success.
         /// </returns>
-        public unsafe uint Find(byte[] pattern, string mask = "")
+        public unsafe IntPtr Find(byte[] pattern, string mask = "")
         {
             if (!this.IsOpened)
                 throw new Exception("Can't open process");
@@ -48,7 +48,7 @@ namespace MemoryModule
                 if (bytesRead != size)
                     throw new Exception("ModuleMemorySize and BytesRead lengths must be the same.");
 
-                var offset = 0u;
+                var offset = 0;
 
                 for (; offset < (size - pattern.Length); offset++)
                 {
@@ -68,7 +68,7 @@ namespace MemoryModule
                         break;
                 }
 
-                return found ? offset + BaseAddress : 0u;
+                return found ? BaseAddress + offset : IntPtr.Zero;
             }
         }
     }

@@ -8,7 +8,7 @@ namespace MemoryModule
 {
     public partial class ProcessMemory
     {
-        public unsafe uint Write<T>(T data) where T : struct
+        public unsafe IntPtr Write<T>(T data) where T : struct
         {
             var size = Marshal.SizeOf(typeof(T));
             var addr = this.Alloc(size);
@@ -33,17 +33,13 @@ namespace MemoryModule
         /// Data to be written in the address space of the specified process.
         /// </param>
         [HandleProcessCorruptedStateExceptions]
-        public unsafe void Write<T>(uint address, T data) where T : struct
+        public unsafe void Write<T>(IntPtr address, T data) where T : struct
         {
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
-
-            if (this.Process == null)
-                throw new Exception("Process exists");
 
             if (!this.IsOpened)
                 throw new Exception("Can't open process");
-
 
             var size = StructHelper<T>.Size;
             int writenBytes = 0;
@@ -82,7 +78,7 @@ namespace MemoryModule
             }
         }
 
-        public unsafe uint WriteBytes(byte[] data)
+        public unsafe IntPtr WriteBytes(byte[] data)
         {
             var addr = this.Alloc(data.Length);
             this.WriteBytes(addr, data);
@@ -94,9 +90,9 @@ namespace MemoryModule
         /// </summary>
         /// <param name="address"></param>
         /// <param name="data"></param>
-        public unsafe void WriteBytes(uint address, byte[] data)
+        public unsafe void WriteBytes(IntPtr address, byte[] data)
         {
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
 
             if (this.Process == null)
@@ -118,7 +114,7 @@ namespace MemoryModule
         /// <param name="address"></param>
         /// <param name="format"></param>
         /// <param name="args"></param>
-        public void WriteString(uint address, string format, params object[] args)
+        public void WriteString(IntPtr address, string format, params object[] args)
         {
             WriteString(address, Encoding.UTF8, format, args);
         }
@@ -130,7 +126,7 @@ namespace MemoryModule
         /// <param name="encoding"></param>
         /// <param name="format"></param>
         /// <param name="args"></param>
-        public void WriteString(uint address, Encoding encoding, string format, params object[] args)
+        public void WriteString(IntPtr address, Encoding encoding, string format, params object[] args)
         {
             var str = string.Format(format, args);
             var bytes = encoding.GetBytes(str);
@@ -143,7 +139,7 @@ namespace MemoryModule
         /// <param name="address"></param>
         /// <param name="format"></param>
         /// <param name="args"></param>
-        public void WriteCString(uint address, string format, params object[] args)
+        public void WriteCString(IntPtr address, string format, params object[] args)
         {
             WriteString(address, Encoding.UTF8, format, args);
         }
@@ -155,7 +151,7 @@ namespace MemoryModule
         /// <param name="encoding"></param>
         /// <param name="format"></param>
         /// <param name="args"></param>
-        public void WriteCString(uint address, Encoding encoding, string format, params object[] args)
+        public void WriteCString(IntPtr address, Encoding encoding, string format, params object[] args)
         {
             var str = string.Format(format, args);
             var bytes = encoding.GetBytes(str + '\0');

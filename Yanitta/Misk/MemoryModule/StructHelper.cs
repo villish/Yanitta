@@ -20,6 +20,8 @@ namespace MemoryModule
         /// </summary>
         public static TypeCode TypeCode;
 
+        public static bool IsIntPtr;
+
         static StructHelper()
         {
             TypeCode = Type.GetTypeCode(typeof(T));
@@ -39,8 +41,9 @@ namespace MemoryModule
             }
             else
             {
-                Size = Marshal.SizeOf(typeof(T));
-                Type = typeof(T);
+                Size     = Marshal.SizeOf(typeof(T));
+                Type     = typeof(T);
+                IsIntPtr = Type == typeof(IntPtr);
             }
         }
     }

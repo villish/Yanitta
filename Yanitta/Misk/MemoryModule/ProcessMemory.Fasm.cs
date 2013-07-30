@@ -48,7 +48,7 @@ namespace MemoryModule
         /// </summary>
         /// <param name="source"></param>
         /// <param name="address"></param>
-        public void Inject(IEnumerable<string> source, uint address)
+        public void Inject(IEnumerable<string> source, IntPtr address)
         {
             this.Inject(string.Join("\n", source), address);
         }
@@ -58,7 +58,7 @@ namespace MemoryModule
         /// </summary>
         /// <param name="source"></param>
         /// <param name="address"></param>
-        public void Inject(string source, uint address)
+        public void Inject(string source, IntPtr address)
         {
             var sb = new StringBuilder("use32")
                 .AppendLine();

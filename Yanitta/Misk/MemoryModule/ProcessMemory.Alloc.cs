@@ -20,7 +20,7 @@ namespace MemoryModule
         /// If the function fails, the return value is NULL.
         /// To get extended error information, call GetLastError.
         /// </returns>
-        public uint Alloc(int size)
+        public IntPtr Alloc(int size)
         {
             if (size <= 0)
                 throw new ArgumentNullException("size");
@@ -31,9 +31,9 @@ namespace MemoryModule
             if (!this.IsOpened)
                 throw new Exception("Can't open process");
 
-            uint address = Internals.VirtualAllocEx(this.Handle, IntPtr.Zero, size, AllocationType.Commit, MemoryProtection.ExecuteReadWrite);
+            var address = Internals.VirtualAllocEx(this.Handle, IntPtr.Zero, size, AllocationType.Commit, MemoryProtection.ExecuteReadWrite);
 
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new Win32Exception();
 
             return address;
@@ -47,9 +47,9 @@ namespace MemoryModule
         /// If the dwFreeType parameter is MEM_RELEASE,
         /// lpAddress must be the base address returned by the VirtualAllocEx function when the region is reserved.
         /// </param>
-        public void Free(uint address)
+        public void Free(IntPtr address)
         {
-            if (address == 0)
+            if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
 
             if (this.Process == null)

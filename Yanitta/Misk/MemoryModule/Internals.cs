@@ -22,22 +22,22 @@ namespace MemoryModule
 
         [DllImport("kernel32", EntryPoint = "ReadProcessMemory")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public unsafe static extern bool ReadProcessMemory(SafeProcessHandle hProcess, uint dwAddress, void* lpBuffer, int nSize, out int lpBytesRead);
+        public unsafe static extern bool ReadProcessMemory(SafeProcessHandle hProcess, IntPtr dwAddress, void* lpBuffer, int nSize, out int lpBytesRead);
 
         [DllImport("kernel32", EntryPoint = "WriteProcessMemory")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public unsafe static extern bool WriteProcessMemory(SafeProcessHandle hProcess, uint dwAddress, void* lpBuffer, int nSize, out int iBytesWritten);
+        public unsafe static extern bool WriteProcessMemory(SafeProcessHandle hProcess, IntPtr dwAddress, void* lpBuffer, int nSize, out int iBytesWritten);
 
         [DllImport("kernel32", EntryPoint = "WriteProcessMemory")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool WriteProcessMemory(SafeProcessHandle hProcess, uint dwAddress, byte[] lpBuffer, int nSize, out int iBytesWritten);
+        public static extern bool WriteProcessMemory(SafeProcessHandle hProcess, IntPtr dwAddress, byte[] lpBuffer, int nSize, out int iBytesWritten);
 
         [DllImport("kernel32", EntryPoint = "VirtualAllocEx", SetLastError = true, ExactSpelling = true)]
-        public static extern uint VirtualAllocEx(SafeProcessHandle hProcess, IntPtr lpAddress, int dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
+        public static extern IntPtr VirtualAllocEx(SafeProcessHandle hProcess, IntPtr lpAddress, int dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
 
         [DllImport("kernel32", EntryPoint = "VirtualFreeEx", SetLastError = true, ExactSpelling = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool VirtualFreeEx(SafeProcessHandle hProcess, uint lpAddress, int dwSize, FreeType dwFreeType);
+        public static extern bool VirtualFreeEx(SafeProcessHandle hProcess, IntPtr lpAddress, int dwSize, FreeType dwFreeType);
 
         [DllImport("kernel32", EntryPoint = "CloseHandle", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
