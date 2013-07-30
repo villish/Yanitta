@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.72</Version>
+  <Version>0.0.2.73</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -1436,8 +1436,8 @@ end]]></Lua>
         return true;
     end
     -- Бастион славы (114637)
-    local name,_,_,count = UnitBuffId("player", 114637, "PLAYER");
-    if name and count or 0 == 5 then
+    local name,count = HasBuff("player", 114637) or nil, 0;
+    if name and count == 5 then
         return true;
     end
 end]]></Lua>
@@ -1455,8 +1455,8 @@ end]]></Lua>
         <Lua><![CDATA[if divine_purpose then
     return true;
 elseif hollyPower > 2 then
-    local name,_,_,count = UnitBuffId("player", 114637, "PLAYER");
-    if name and count or 0 < 5 then
+    local name,count = HasBuff("player", 114637) or nil, 0;
+    if name and count < 5 then
         return true;
     end
 end]]></Lua>
@@ -1514,7 +1514,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Должен быть дебаф на Слабые Удары (115798)
-return setAoE or not HasDebuff("target", 115798);]]></Lua>
+return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
       </Ability>
       <Ability Name="Удар воина света">
         <SpellID>35395</SpellID>
@@ -1725,6 +1725,7 @@ end]]></Lua>
           <string>Божественная защита</string>
           <string>Молот праведника</string>
           <string>Удар воина света</string>
+          <string>Retri: Молот гнева</string>
           <string>Правосудие</string>
           <string>Щит мстителя</string>
           <string>Освящение</string>
