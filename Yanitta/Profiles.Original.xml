@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.81</Version>
+  <Version>0.0.2.82</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -510,9 +510,6 @@ DISPELL_LIST = {
 };
 
 function CheckNotHeal(unit, standartSpellId)
-    if IsSpellInRange(standartSpellId) ~= 1 then
-        return true;
-    end
     for i,v in ipairs(DEBUFF_LIST) do
         if HasDebuff(unit, v) then
             return true;
@@ -583,8 +580,10 @@ function UpdatePartyTables(standartSpellId)
             member.HP          = 100 * hpcur / hpmax;
             member.HPMAX       = hpmax;
             member.HPI         = hpcur;
-            member.DontHeal    = CheckNotHeal(member.Unit, standartSpellId);
-            member.NeedDispell = false
+            if member.IsInRange then
+                member.DontHeal    = CheckNotHeal(member.Unit, standartSpellId);
+                member.NeedDispell = false
+            end
 
             if not member.IsDead and member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
             if not member.IsDead and member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
