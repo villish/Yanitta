@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.90</Version>
+  <Version>0.0.2.92</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2146,7 +2146,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not setAoE then
-    if not HasDebuff("target", 118253) then
+    if not HasDebuff("target", 118253, "PLAYER") then
         return true;
     end
 end]]></Lua>
@@ -2175,7 +2175,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[local pethp = HealthByPercent("pet");
 if pethp ~= 0 and pethp < 75 then
-    if not UnitBuff("pet", GetSpellInfo(136), nil, "PLAYER") then
+    if not HasBuff("pet", 136) then
         return true;
     end
 end
@@ -2229,16 +2229,16 @@ end]]></Lua>
           <string>Лечение питомца</string>
           <string>Змеиная ловушка</string>
           <string>Триньки/перчатки</string>
-          <string>Быстрая стрельба</string>
           <string>Убийственный выстрел</string>
           <string>Залп</string>
-          <string>Звериный натиск</string>
-          <string>Стая воронов</string>
-          <string>Ужасный зверь</string>
           <string>Разрывной выстрел</string>
           <string>Черная стрела</string>
-          <string>Бросок глеф</string>
           <string>Укус змеи</string>
+          <string>Бросок глеф</string>
+          <string>Ужасный зверь</string>
+          <string>Быстрая стрельба</string>
+          <string>Звериный натиск</string>
+          <string>Стая воронов</string>
           <string>Чародейский выстрел</string>
           <string>Выстрел кобры</string>
         </AbilityQueue>
