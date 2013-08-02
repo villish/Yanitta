@@ -45,7 +45,7 @@ namespace MemoryModule
                     case TypeCode.Double:  return (T)(object)*(double*)pointer;
 
                     case TypeCode.Object:
-                        return (T)Marshal.PtrToStructure(new IntPtr((int)address), typeof(T));
+                        return (T)Marshal.PtrToStructure(address, typeof(T));
 
                     default: throw new ArgumentOutOfRangeException();
                 }

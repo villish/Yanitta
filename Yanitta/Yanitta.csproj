@@ -101,6 +101,7 @@
     <Compile Include="Misk\MemoryModule\FASM\Internals.cs" />
     <Compile Include="Misk\MemoryModule\ProcessMemory.Alloc.cs" />
     <Compile Include="Misk\MemoryModule\ProcessMemory.Find.cs" />
+    <Compile Include="Misk\MemoryModule\ProcessMemory.Thread.cs" />
     <Compile Include="Misk\MemoryModule\ProcessMemory.Write.cs" />
     <Compile Include="Misk\MemoryModule\Internals.cs" />
     <Compile Include="Misk\MemoryModule\ProcessMemory.cs" />

@@ -34,7 +34,7 @@ namespace MemoryModule
                 if (fasm_result.condition != FASM.FasmCondition.OK && fasm_result.condition != FASM.FasmCondition.ERROR)
                     throw new Exception(string.Format("Fasm Error: {0}", fasm_result.condition));
 
-                byte[] buffer = new byte[fasm_result.output_lenght];
+                var buffer = new byte[fasm_result.output_lenght];
                 Marshal.Copy(new IntPtr(fasm_result.output_data), buffer, 0, fasm_result.output_lenght);
 #if DEBUG
                 Console.WriteLine("ByteCode:\n{0}", string.Join(" ", buffer.Select(n => n.ToString("X2"))));

@@ -127,9 +127,9 @@ namespace System.Windows.Input
             this.m_HandleSource = null;
 
             this.Modifier = ModifierKeys.None;
-            this.Key = Key.None;
-            this.Tag = null;
-            this.Pressed = null;
+            this.Key      = Key.None;
+            this.Tag      = null;
+            this.Pressed  = null;
         }
 
         ~HotKey()
@@ -312,8 +312,8 @@ namespace System.Windows.Input
                     switch (word)
                     {
                         case "Control": mod |= ModifierKeys.Control; break;
-                        case "Shift": mod |= ModifierKeys.Shift; break;
-                        case "Alt": mod |= ModifierKeys.Alt; break;
+                        case "Shift":   mod |= ModifierKeys.Shift;   break;
+                        case "Alt":     mod |= ModifierKeys.Alt;     break;
                         case "Windows": mod |= ModifierKeys.Windows; break;
                         default:
                             if (Enum.TryParse<Key>(word, out key))

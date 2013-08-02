@@ -14,7 +14,7 @@ namespace MemoryModule
         static ProcessMemory()
         {
             var raw_ver = MemoryModule.FASM.Internals.fasm_GetVersion();
-            FasmVersion = string.Format("{0}.{1}", raw_ver & 0xFFFF, raw_ver >> 16 & 0xFFFF);
+            FasmVersion = string.Format("Fasm v{0}.{1}", raw_ver & 0xFFFF, raw_ver >> 16 & 0xFFFF);
         }
 
         /// <summary>
@@ -110,25 +110,6 @@ namespace MemoryModule
             this.IsOpened = true;
         }
 
-        /// <summary>
-        /// Suspends the specified thread.
-        /// </summary>
-        public void Suspend()
-        {
-            if (!this.ThreadHandle.IsInvalid)
-                Internals.SuspendThread(this.ThreadHandle);
-        }
-
-        /// <summary>
-        /// Decrements a thread's suspend count.
-        /// When the suspend count is decremented to zero, the execution of the thread is resumed.
-        /// </summary>
-        public void Resume()
-        {
-            if (!this.ThreadHandle.IsInvalid)
-                Internals.ResumeThread(this.ThreadHandle);
-        }
-
         public IntPtr Rebase(long address)
         {
             return new IntPtr(this.BaseAddress.ToInt64() + address);
@@ -160,6 +141,7 @@ namespace MemoryModule
 
             this.Handle.Close();
             this.ThreadHandle.Close();
+            Process.LeaveDebugMode();
             this.IsOpened    = false;
             this.IsDisposed  = true;
         }

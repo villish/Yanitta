@@ -42,7 +42,7 @@ namespace Yanitta
             if (File.Exists(fileName))
                 File.Copy(fileName, fileName + ".bak", true);
 
-            Console.WriteLine("using Fasm v{0}", MemoryModule.ProcessMemory.FasmVersion);
+            Console.WriteLine(MemoryModule.ProcessMemory.FasmVersion);
             LoadPlugins();
             base.OnStartup(e);
         }
