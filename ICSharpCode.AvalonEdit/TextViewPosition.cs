@@ -16,13 +16,10 @@ namespace ICSharpCode.AvalonEdit
         /// </summary>
         public TextLocation Location
         {
-            get
-            {
-                return new TextLocation(line, column);
-            }
+            get { return new TextLocation(line, column); }
             set
             {
-                line = value.Line;
+                line   = value.Line;
                 column = value.Column;
             }
         }

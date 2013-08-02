@@ -130,6 +130,15 @@ namespace MemoryModule
             WriteBytes(address, bytes);
         }
 
+        public IntPtr WriteCString(string content)
+        {
+            var bytes = Encoding.UTF8.GetBytes(content + '\0');
+            var addr = Alloc(bytes.Length);
+
+            WriteBytes(addr, bytes);
+            return addr;
+        }
+
         /// <summary>
         /// 
         /// </summary>
