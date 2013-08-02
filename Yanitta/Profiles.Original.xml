@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.82</Version>
+  <Version>0.0.2.90</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -1358,9 +1358,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -1383,10 +1380,12 @@ agroStatus = UnitThreatSituation("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(35395), "target") == 1;
 playerHP   = HealthByPercent("player");
 hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
-divine_purpose = HasBuff("player", 90174); -- Божественный замысел
--- Танчим под Печатью прозрения (20165)]]></Lua>
+
+divine_purpose = HasBuff("player", 90174);  -- Божественный замысел
+holy_avenger   = HasBuff("player", 105809); -- Святая клятва
+inquisition,_,inquisition_rem = HasBuff("player", 84963) or nil, 0, 0; -- дознание]]></Lua>
       </Ability>
-      <Ability Name="Щит небес">
+      <Ability Name="Prot: Щит небес">
         <SpellID>20925</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -1400,7 +1399,7 @@ divine_purpose = HasBuff("player", 90174); -- Божественный замы�
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Торжество">
+      <Ability Name="Prot: Торжество">
         <SpellID>130551</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -1424,7 +1423,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Щит праведника">
+      <Ability Name="Prot: Щит праведника">
         <SpellID>53600</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1438,7 +1437,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Ревностный защитник">
+      <Ability Name="Prot: Ревностный защитник">
         <SpellID>31850</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -1448,11 +1447,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if playerHP < 20 then
+        <Lua><![CDATA[if playerHP < 15 then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Защитник древних королей">
+      <Ability Name="Prot: Защитник древних королей">
         <SpellID>86659</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -1466,7 +1465,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Божественная защита">
+      <Ability Name="Prot: Божественная защита">
         <SpellID>498</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -1480,7 +1479,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Молот праведника">
+      <Ability Name="Prot: Молот праведника">
         <SpellID>53595</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1493,7 +1492,7 @@ end]]></Lua>
         <Lua><![CDATA[-- Должен быть дебаф на Слабые Удары (115798)
 return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
       </Ability>
-      <Ability Name="Удар воина света">
+      <Ability Name="Prot: Удар воина света">
         <SpellID>35395</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1505,7 +1504,7 @@ return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return not setAoE;]]></Lua>
       </Ability>
-      <Ability Name="Правосудие">
+      <Ability Name="Prot: Правосудие">
         <SpellID>20271</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1517,7 +1516,7 @@ return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Щит мстителя">
+      <Ability Name="Prot: Щит мстителя">
         <SpellID>31935</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1529,7 +1528,7 @@ return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Освящение">
+      <Ability Name="Prot: Освящение">
         <SpellID>26573</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -1543,7 +1542,7 @@ return setAoE or not HasDebuff("target", 115798, "RAID|PLAYER");]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Гнев небес">
+      <Ability Name="Prot: Гнев небес">
         <SpellID>119072</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1555,7 +1554,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return isInMeele;]]></Lua>
       </Ability>
-      <Ability Name="Божественная призма">
+      <Ability Name="Prot: Божественная призма">
         <SpellID>114165</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1567,6 +1566,20 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
+      <Ability Name="Prot: Праведное неистовство">
+        <SpellID>25780</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasBuff("player", 25780) then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Retri: Дознание">
         <SpellID>84963</SpellID>
         <Target>Target</Target>
@@ -1577,7 +1590,74 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not HasDebuff("target", 84963) then
+        <Lua><![CDATA[if hollyPower > 2 then
+    if not inquisition or inquisition_rem <= 2 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Гнев карателя">
+        <SpellID>31884</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and  inquisition then
+    local start, duration = GetSpellCooldown(86698);
+    if ((duration + start) - GetTime()) < 291 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Защитник древних королей">
+        <SpellID>86698</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and  inquisition then
+    local start, duration = GetSpellCooldown(31884);
+    if ((duration + start) - GetTime()) < 10 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Святая клятва">
+        <SpellID>105809</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and  inquisition and hollyPower <= 2 then
+    local start, duration = GetSpellCooldown(86698);
+    if ((duration + start) - GetTime()) < 289 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Retri: Смертный приговор">
+        <SpellID>114157</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and inquisition then
     return true;
 end]]></Lua>
       </Ability>
@@ -1591,8 +1671,10 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not setAoE and (hollyPower == 5 or HasBuff("player", 90174)) then
-    return true;
+        <Lua><![CDATA[if not setAoE then
+    if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
+        return true;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Retri: Божественная буря">
@@ -1605,7 +1687,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return setAoE;]]></Lua>
+        <Lua><![CDATA[if setAoE then
+    if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
+        return true;
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Retri: Молот гнева">
         <SpellID>24275</SpellID>
@@ -1687,19 +1773,21 @@ end]]></Lua>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
-          <string>Щит небес</string>
-          <string>Торжество</string>
-          <string>Щит праведника</string>
-          <string>Ревностный защитник</string>
-          <string>Защитник древних королей</string>
-          <string>Божественная защита</string>
-          <string>Молот праведника</string>
-          <string>Удар воина света</string>
+          <string>Prot: Щит небес</string>
+          <string>Prot: Торжество</string>
+          <string>Prot: Щит праведника</string>
+          <string>Prot: Ревностный защитник</string>
+          <string>Prot: Защитник древних королей</string>
+          <string>Prot: Божественная защита</string>
+          <string>Prot: Молот праведника</string>
+          <string>Prot: Удар воина света</string>
           <string>Retri: Молот гнева</string>
-          <string>Правосудие</string>
-          <string>Щит мстителя</string>
-          <string>Освящение</string>
-          <string>Гнев небес</string>
+          <string>Prot: Божественная призма</string>
+          <string>Prot: Щит мстителя</string>
+          <string>Prot: Правосудие</string>
+          <string>Prot: Освящение</string>
+          <string>Prot: Гнев небес</string>
+          <string>Prot: Праведное неистовство</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -1713,6 +1801,10 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализация</string>
           <string>Retri: Дознание</string>
+          <string>Retri: Гнев карателя</string>
+          <string>Retri: Защитник древних королей</string>
+          <string>Retri: Святая клятва</string>
+          <string>Retri: Смертный приговор</string>
           <string>Retri: Вердикт храмовника (1)</string>
           <string>Retri: Божественная буря</string>
           <string>Retri: Молот гнева</string>
