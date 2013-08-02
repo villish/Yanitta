@@ -33,7 +33,7 @@ namespace Yanitta
         {
             if (this.mDetour == IntPtr.Zero || this.mClientObjectManager == IntPtr.Zero)
             {
-                this.mDetour = this.Memory.Find(this.OverwrittenBytesPattern);
+                this.mDetour              = this.Memory.Find(this.OverwrittenBytesPattern);
                 this.mClientObjectManager = this.Memory.Find(this.CltObjMrgSeach, "x???xx?x");
 
                 if (this.mDetour == IntPtr.Zero)
@@ -48,7 +48,7 @@ namespace Yanitta
             this.Restore();
 
             this.mDetourPtr   = this.Memory.Alloc(0x256);
-            this.mCodeCavePtr = this.Memory.Alloc(0x004);
+            this.mCodeCavePtr = this.Memory.Write<IntPtr>(IntPtr.Zero);
 
             #region ASM_x32
 
@@ -71,12 +71,8 @@ namespace Yanitta
 
             #endregion ASM_x32
 
-            this.Memory.Write<uint>(this.mCodeCavePtr, 0x00);
             this.Memory.WriteBytes(this.mDetourPtr, this.OverwrittenBytes);
-
-            var injAddr = this.mDetourPtr + this.OverwrittenBytes.Length;
-
-            this.Inject(ASM_Code, injAddr);
+            this.Inject(ASM_Code, this.mDetourPtr + this.OverwrittenBytes.Length);
             this.Inject(new[] { "jmp " + this.mDetourPtr }, this.mDetour, false);
 
             this.Memory.Resume();
@@ -98,16 +94,11 @@ namespace Yanitta
             if (!this.IsApplied)
                 this.Apply();
 
-            var bCommands  = Encoding.UTF8.GetBytes(sCommand);
-            var bArguments = Encoding.UTF8.GetBytes(value);
+            var commandAdr   = this.Memory.WriteCString(sCommand);
+            var argumentsAdr = this.Memory.WriteCString(value);
 
-            var commandAdr   = this.Memory.Alloc(bCommands.Length + 1);
-            var argumentsAdr = this.Memory.Alloc(bArguments.Length + 1);
             var resultAdr    = this.Memory.Alloc(0x0004);
             var injAddress   = this.Memory.Alloc(0x4096);
-
-            this.Memory.WriteBytes(commandAdr, bCommands);
-            this.Memory.WriteBytes(argumentsAdr, bArguments);
 
             #region ASM_x32
 

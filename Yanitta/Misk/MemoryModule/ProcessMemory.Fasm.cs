@@ -62,11 +62,11 @@ namespace MemoryModule
         {
             var sb = new StringBuilder("use32")
                 .AppendLine();
-            sb.AppendFormat("org 0x{0:X8}", address)
+            sb.AppendFormat("org {0}", address.ToInt64())
                 .AppendLine();
             sb.AppendLine(source);
 
-            var src = sb.ToString();
+            var src   = sb.ToString();
             var bytes = Assemble(src);
 
             WriteBytes(address, bytes);

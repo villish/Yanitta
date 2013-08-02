@@ -68,7 +68,7 @@ namespace MemoryModule
                         break;
                 }
 
-                return found ? BaseAddress + offset : IntPtr.Zero;
+                return found ? Rebase(offset) : IntPtr.Zero;
             }
         }
     }

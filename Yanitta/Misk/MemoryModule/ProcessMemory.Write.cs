@@ -95,9 +95,6 @@ namespace MemoryModule
             if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
 
-            if (this.Process == null)
-                throw new Exception("Process exists");
-
             if (!this.IsOpened)
                 throw new Exception("Can't open process");
 
@@ -131,6 +128,22 @@ namespace MemoryModule
             var str = string.Format(format, args);
             var bytes = encoding.GetBytes(str);
             WriteBytes(address, bytes);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public IntPtr WriteCString(string format, params object[] args)
+        {
+            var str   = string.Format(format, args);
+            var bytes = Encoding.UTF8.GetBytes(str + '\0');
+            var addr  = Alloc(bytes.Length);
+
+            WriteBytes(addr, bytes);
+            return addr;
         }
 
         /// <summary>

@@ -256,7 +256,7 @@ namespace Yanitta
             System.IO.File.WriteAllText("InjectedLuaCode.lua", code);
 
 #if !TRACE
-            this.LuaHook.LuaExecute(code, true);
+            this.LuaHook.LuaExecute(code);
 #endif
             //this.LuaExecute("print('Hello wow!');", true);
         }
