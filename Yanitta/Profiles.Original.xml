@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.98</Version>
+  <Version>0.0.2.101</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -254,6 +254,7 @@ function AddonFrame_OnEvent(self, event, ...)
                     end
                 end
             end
+        end
         if ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
             for i, ability in ipairs(AbilityTable) do
                 for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
@@ -668,40 +669,7 @@ function FillFurryData()
     bloodthirst_remains = SpellCD(23881);
 end]]></Lua>
     <AbilityList>
-      <Ability Name="Прерывание заклинаний">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[local spell1 = SpellCD(6552);-- зуботычина
-local spell2 = SpellCD(102060);-- Разрушительный крик
-
-local ch, chNotInterruptible  = select(7, UnitChannelInfo("target"));
-local name, subText, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo("target");
-
-if ch and not chNotInterruptible then
-    if spell1 = 0 then
-        CastSpellEx(6552, "target");
-    elseif spell2 = 0 then
-        CastSpellEx(102060, "target");
-    end
-end
-
-if name and not notInterruptible then
-    if spell1 = 0 then
-        CastSpellEx(6552, "target");
-    elseif spell2 = 0 then
-        CastSpellEx(102060, "target");
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Победный раж">
+      <Ability Name="Prot: Победный раж">
         <SpellID>34428</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -711,11 +679,11 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if HealthByPercent("player") <= 80 then
+        <Lua><![CDATA[if playerHP <= 80 then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Боевой крик">
+      <Ability Name="Prot: Боевой крик">
         <SpellID>6673</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -725,13 +693,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[
-if UnitPower("player") < 70 and not hasAPbuff then
+        <Lua><![CDATA[if UnitPower("player") < 70 and not hasAPbuff then
     return true;
-end
-]]></Lua>
+end]]></Lua>
       </Ability>
-      <Ability Name="Командирский крик">
+      <Ability Name="Prot: Командирский крик">
         <SpellID>469</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -741,13 +707,11 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[
-if UnitPower("player") < 70 and hasAPbuff then
+        <Lua><![CDATA[if UnitPower("player") < 70 and hasAPbuff then
     return true;
-end
-]]></Lua>
+end]]></Lua>
       </Ability>
-      <Ability Name="Одобряющий клич">
+      <Ability Name="Prot: Одобряющий клич">
         <SpellID>97462</SpellID>
         <Target>None</Target>
         <CancelChannel>true</CancelChannel>
@@ -757,14 +721,11 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[
-local hp = HealthByPercent("player");
-
-if isInCombat and hp < 25  and useCooldown then
+        <Lua><![CDATA[if isInCombat and playerHP < 25  and useCooldown then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Ярость берсерка">
+      <Ability Name="Prot: Ярость берсерка">
         <SpellID>18499</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -776,10 +737,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not HasBuff("player", 12880) then
     return true;
-end
-]]></Lua>
+end]]></Lua>
       </Ability>
-      <Ability Name="Героический прыжок">
+      <Ability Name="Prot: Героический прыжок">
         <SpellID>6544</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
@@ -789,11 +749,9 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[-- 1 - LeftShif
-if IsModKeyDown(1) then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
-end
-]]></Lua>
+end]]></Lua>
       </Ability>
       <Ability Name="Инициализация (Защита)">
         <SpellID>0</SpellID>
@@ -855,27 +813,39 @@ hasAPbuff  = HasBuff("player", 57330, 19506);
 isAttcked  = nil;--IsUnitCanAttack("target");
 playerHP   = HealthByPercent("player");]]></Lua>
       </Ability>
-      <Ability Name="Удар героя/Разсекающий удар (Защита)">
-        <SpellID>0</SpellID>
+      <Ability Name="Prot: Удар героя">
+        <SpellID>78</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if HasBuff("player", 122510) or UnitPower("player") > 90 then
-    if setAoE then
-        CastSpellEx(845);    -- разсекающий удар
-    else
-        CastSpellEx(78);    -- удар героя
-    end
+if not setAoE HasBuff("player", 122510) or UnitPower("player") > 90 then
+    return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Сокрушительный Бросок">
+      <Ability Name="Prot: Разсекающий удар">
+        <SpellID>845</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
+-- есть баф на использование бесплатного удара (Ультиматум - 122510)
+if setAoE HasBuff("player", 122510) or UnitPower("player") > 90 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Prot: Сокрушительный Бросок">
         <SpellID>64382</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -890,7 +860,7 @@ if IsModKeyDown(5) then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Непроницаемый щит">
+      <Ability Name="Prot: Непроницаемый щит">
         <SpellID>112048</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -907,7 +877,7 @@ if isAltMod and rage > 55 and not hasShieldBuff and agroStatus > 0 then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Реванш">
+      <Ability Name="Prot: Реванш">
         <SpellID>6572</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -919,7 +889,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Ни шагу назад">
+      <Ability Name="Prot: Ни шагу назад">
         <SpellID>12975</SpellID>
         <Target>None</Target>
         <CancelChannel>true</CancelChannel>
@@ -933,7 +903,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Удар грома">
+      <Ability Name="Prot: Удар грома">
         <SpellID>6343</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -943,12 +913,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[local isRange = IsSpellInRange(GetSpellInfo(845), "target");
-if isRange == 1 then
+        <Lua><![CDATA[if isInMeele then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Глухая оборона">
+      <Ability Name="Prot: Глухая оборона">
         <SpellID>871</SpellID>
         <Target>None</Target>
         <CancelChannel>true</CancelChannel>
@@ -962,7 +931,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Блок щитом">
+      <Ability Name="Prot: Блок щитом">
         <SpellID>2565</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -976,7 +945,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Мощный удар щитом">
+      <Ability Name="Prot: Мощный удар щитом">
         <SpellID>23922</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -988,7 +957,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Сокрушение">
+      <Ability Name="Prot: Сокрушение">
         <SpellID>20243</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1000,7 +969,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return isInMeele;]]></Lua>
       </Ability>
-      <Ability Name="Деморализующий крик">
+      <Ability Name="Prot: Деморализующий крик">
         <SpellID>1160</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -1076,7 +1045,7 @@ if GetSpecialization() ~= 3 and GetShapeshiftForm() ~= 1 then
 end
 
 FillFurryData();
-]]></Lua>
+playerHP   = HealthByPercent("player");]]></Lua>
       </Ability>
       <Ability Name="Furry: Кровавая баня">
         <SpellID>12292</SpellID>
@@ -1313,10 +1282,9 @@ end]]></Lua>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Неистовство)</string>
-          <string>Героический прыжок</string>
-          <string>Победный раж</string>
+          <string>Prot: Победный раж</string>
+          <string>Prot: Героический прыжок</string>
           <string>Furry: Кровавая баня</string>
-          <string>Ярость берсерка</string>
           <string>Furry: Удар героя</string>
           <string>Furry: Яростный выпад (1)</string>
           <string>Furry: Кровожадность</string>
@@ -1338,22 +1306,24 @@ end]]></Lua>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Защита)</string>
-          <string>Героический прыжок</string>
-          <string>Победный раж</string>
-          <string>Непроницаемый щит</string>
-          <string>Глухая оборона</string>
-          <string>Одобряющий клич</string>
-          <string>Ни шагу назад</string>
-          <string>Деморализующий крик</string>
-          <string>Блок щитом</string>
-          <string>Сокрушительный Бросок</string>
-          <string>Мощный удар щитом</string>
-          <string>Удар героя/Разсекающий удар (Защита)</string>
-          <string>Удар грома</string>
-          <string>Реванш</string>
-          <string>Боевой крик</string>
-          <string>Командирский крик</string>
-          <string>Сокрушение</string>
+          <string>Prot: Героический прыжок</string>
+          <string>Prot: Победный раж</string>
+          <string>Prot: Непроницаемый щит</string>
+          <string>Prot: Глухая оборона</string>
+          <string>Prot: Одобряющий клич</string>
+          <string>Prot: Ни шагу назад</string>
+          <string>Prot: Деморализующий крик</string>
+          <string>Prot: Блок щитом</string>
+          <string>Prot: Сокрушительный Бросок</string>
+          <string>Prot: Мощный удар щитом</string>
+          <string>Prot: Удар героя</string>
+          <string>Prot: Разсекающий удар</string>
+          <string>Prot: Удар грома</string>
+          <string>Prot: Реванш</string>
+          <string>Prot: Боевой крик</string>
+          <string>Prot: Командирский крик</string>
+          <string>Prot: Ярость берсерка</string>
+          <string>Prot: Сокрушение</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
