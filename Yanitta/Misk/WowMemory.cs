@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Yanitta.Properties;
+using Yanitta.Plugins;
 
 namespace Yanitta
 {
@@ -153,7 +154,7 @@ namespace Yanitta
 
             if (this.IsInGame)
             {
-                (App.Current as App).PluginList.ForEach((plugin) => {
+                PluginManager.ForEach((plugin) => {
                     if (plugin.IsRuning)
                         plugin.ReadMemory(this);
                 });
@@ -191,7 +192,7 @@ namespace Yanitta
                 ProfileDb.Instance.Exec((profile, rotation) => rotation.HotKey.Unregister());
 
                 // plugin
-                (App.Current as App).PluginList.ForEach((plugin) => {
+                PluginManager.ForEach((plugin) => {
                     if (!plugin.HotKey.IsEmpty)
                         plugin.HotKey.Unregister();
                 });
@@ -199,7 +200,7 @@ namespace Yanitta
                 if (this.IsFocus)
                 {
                     // plugin
-                    (App.Current as App).PluginList.ForEach((plugin) => {
+                    PluginManager.ForEach((plugin) => {
                         if (!plugin.HotKey.IsEmpty)
                             plugin.HotKey.Register();
                     });

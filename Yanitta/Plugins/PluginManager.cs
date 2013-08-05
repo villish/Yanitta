@@ -18,6 +18,15 @@ namespace Yanitta.Plugins
             Instance = new PluginManager();
         }
 
+        public static void ForEach(Action<IYanittaPlugin> predicate)
+        {
+            if (Instance != null)
+            {
+                foreach (IYanittaPlugin element in Instance.PluginList)
+                    predicate(element);
+            }
+        }
+
         public PluginManager()
         {
             var catalog = new AggregateCatalog();
