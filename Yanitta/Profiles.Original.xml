@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.95</Version>
+  <Version>0.0.2.96</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
 ShowInChat   = true;    -- показывать сообщения в чате
 DebugEnabled = true;    -- показывать отладочные сообщения в чате
+ProcNotifyer = false;
 ping         = 0;       -- текущий пинг
 -- Константы горячих клавиш
 mkLeftShift     = 1;
@@ -17,6 +18,7 @@ mkRightAlt      = 6;
 
 -- Структура таблицы способностей: SpellId Name Target DropChanel IsRangeCheck IsAttackedCheck IsCheckInCombat SetRecastDelay Func
 AbilityTable = { };
+AURA_PROC_LIST = { };
 
 -- Возвращает ограниченное сверху и снизу значение
 function asc(m_value, m_min, m_max)
@@ -55,7 +57,7 @@ function CheckAndCastAbility(ability)
     -- Если не указан ид заклинания,
     -- тогда выполняем только код проверки, и дальше не идем
     if ability.SpellId < 1 then
-        return ability.Func();
+        return ability.Func(ability);
     end
 
     -- проверка на возможность использовать заклинание
@@ -89,8 +91,19 @@ function CheckAndCastAbility(ability)
         return;
     end
 
+    -- Проверка, на присутствие бафа прока, если бафа нет - значит убираем прок
+    if ProcNotifyer then
+        for _,ab in ipairs(AbilityTable) do
+            if ab.HasProc then
+                if not HasBuff("player", AURA_PROC_LIST) then
+                    ab.HasProc = false;
+                end
+            end
+        end
+    end
+
     -- Выполняем функцию проверки
-    local mEnable, mTarget = ability.Func();
+    local mEnable, mTarget = ability.Func(ability);
     if not mEnable then
         return;
     end
@@ -217,9 +230,6 @@ function AddonFrame_OnEvent(self, event, ...)
         elseif errorMsg == SPELL_FAILED_LINE_OF_SIGHT then
             LastFailedLineOfSight = GetTime();
         end
-    --elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-    --    local unitID, spell, rank, lineID, spellID = ...;
-        --
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subEvent, hideCaster,
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
@@ -227,10 +237,30 @@ function AddonFrame_OnEvent(self, event, ...)
               spellId,   spellName,spellSchool = ...;
         if (subEvent == "SPELL_CAST_SUCCESS" and type(AbilityTable) == "table" and sourceGUID == UnitGUID("player")) then
             for i, ability in ipairs(AbilityTable) do
-                if (ability.SetRecastDelay and (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target))) then
+                if (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target)) then
+                    -- Если мы удачно прочитали заклинание под проком, убираем его из списка
+                    if ProcNotifyer then
+                        for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
+                            if proc_aura_id == spellId then
+                                ability.HasProc = false;
+                                break;
+                            end
+                        end
+                    end
                     -- Устанавливаем время последнего удачного каста
-                    ability.LastCastingTime = GetTime();
-                    break;
+                    if ability.SetRecastDelay then
+                        ability.LastCastingTime = GetTime();
+                        break;
+                    end
+                end
+            end
+        if ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
+            for i, ability in ipairs(AbilityTable) do
+                for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
+                    if proc_aura_id == spellId then
+                        ability.HasProc = true;
+                        break;
+                    end
                 end
             end
         end
@@ -633,12 +663,9 @@ function FillFurryData()
     targetHP   = HealthByPercent("target");
     
     -- кулдаун колосса
-    local start, duration = GetSpellCooldown(86346);
-    koloss_remains = (start + duration) - GetTime();
-    
+    koloss_remains = SpellCD(86346);    
     -- кулдаун кровожадности
-    local start, duration = GetSpellCooldown(23881);
-    bloodthirst_remains = (start + duration) - GetTime();
+    bloodthirst_remains = SpellCD(23881);
 end]]></Lua>
     <AbilityList>
       <Ability Name="Прерывание заклинаний">
@@ -1282,7 +1309,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Неистовство">
+      <Rotation Name="Неистовство" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Неистовство)</string>
@@ -1307,7 +1334,7 @@ end]]></Lua>
         <Notes><![CDATA[
 ]]></Notes>
       </Rotation>
-      <Rotation Name="Защита">
+      <Rotation Name="Защита" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Защита)</string>
@@ -1582,17 +1609,16 @@ end]]></Lua>
       </Ability>
       <Ability Name="Retri: Дознание">
         <SpellID>84963</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if hollyPower > 2 then
-    if not inquisition then --or inquisition_rem <= 2 then
-        --print(inquisition, inquisition_rem)
+    if not inquisition or inquisition_rem <= 2 then
         return true;
     end
 end]]></Lua>
@@ -1770,7 +1796,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Защита">
+      <Rotation Name="Защита" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -1792,12 +1818,12 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Лекарь">
+      <Rotation Name="Лекарь" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Воздаяние">
+      <Rotation Name="Воздаяние" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -2218,7 +2244,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="PVE Выживание">
+      <Rotation Name="PVE Выживание" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -2245,17 +2271,17 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Повелитель зверей">
+      <Rotation Name="Повелитель зверей" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Стрельба">
+      <Rotation Name="Стрельба" ProcNotifyer="false">
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="PVE Выживание (прокачка)">
+      <Rotation Name="PVE Выживание (прокачка)" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -2490,7 +2516,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Бой">
+      <Rotation Name="Бой" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализаця</string>
@@ -2506,7 +2532,7 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Ликвидация">
+      <Rotation Name="Ликвидация" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализаця</string>
@@ -2519,7 +2545,7 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Скрытность">
+      <Rotation Name="Скрытность" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -3188,7 +3214,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Послушание">
+      <Rotation Name="Послушание" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Послушание)</string>
@@ -3203,12 +3229,12 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Свет">
+      <Rotation Name="Свет" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Тьма">
+      <Rotation Name="Тьма" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Тьма)</string>
@@ -3851,7 +3877,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Кровь">
+      <Rotation Name="Кровь" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -3877,7 +3903,7 @@ end]]></Lua>
 Left Alt - Пауза
 Right Shift - Кулдауны]]></Notes>
       </Rotation>
-      <Rotation Name="Лед">
+      <Rotation Name="Лед" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Frost: Вытягивание чумы (1)</string>
@@ -3907,7 +3933,7 @@ Right Shift - Кулдауны]]></Notes>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Нечестивость">
+      <Rotation Name="Нечестивость" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -4044,7 +4070,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Стихии">
+      <Rotation Name="Стихии" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация Стихии</string>
@@ -4057,12 +4083,12 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Совершенствование">
+      <Rotation Name="Совершенствование" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Исцеление">
+      <Rotation Name="Исцеление" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -4332,7 +4358,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Огонь">
+      <Rotation Name="Огонь" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация(Огонь)</string>
@@ -4349,14 +4375,14 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Лед">
+      <Rotation Name="Лед" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Лед)</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Тайная магия">
+      <Rotation Name="Тайная магия" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -4411,7 +4437,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Демонология">
+      <Rotation Name="Демонология" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Порча</string>
@@ -4420,12 +4446,12 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Разрушение">
+      <Rotation Name="Разрушение" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Колдовство">
+      <Rotation Name="Колдовство" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -4436,17 +4462,17 @@ end]]></Lua>
     <Lua><![CDATA[]]></Lua>
     <AbilityList />
     <RotationList>
-      <Rotation Name="Ткач туманов">
+      <Rotation Name="Ткач туманов" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Хмелевар">
+      <Rotation Name="Хмелевар" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Танцующий с ветром">
+      <Rotation Name="Танцующий с ветром" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -5247,7 +5273,7 @@ end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
-      <Rotation Name="Лекарь">
+      <Rotation Name="Лекарь" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[LeftShift - Установка гриба
@@ -5257,7 +5283,7 @@ RightShift - Спокойствие
 RightControl - Дерево жизни
 RightAlt -  Взрыв грибов]]></Notes>
       </Rotation>
-      <Rotation Name="Страж">
+      <Rotation Name="Страж" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Страж)</string>
@@ -5279,17 +5305,17 @@ RightAlt -  Взрыв грибов]]></Notes>
         </AbilityQueue>
         <Notes><![CDATA[Тест]]></Notes>
       </Rotation>
-      <Rotation Name="Баланс">
+      <Rotation Name="Баланс" ProcNotifyer="false">
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Сила зверя">
+      <Rotation Name="Сила зверя" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Страж (Кот)">
+      <Rotation Name="Страж (Кот)" ProcNotifyer="false">
         <HotKey Key="B" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Страж)</string>
@@ -5300,7 +5326,7 @@ RightAlt -  Взрыв грибов]]></Notes>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Страж (прокачка)">
+      <Rotation Name="Страж (прокачка)" ProcNotifyer="false">
         <HotKey Key="N" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Страж)</string>
@@ -5316,7 +5342,7 @@ RightAlt -  Взрыв грибов]]></Notes>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="тевт">
+      <Rotation Name="тевт" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt Shift" />
         <AbilityQueue>
           <string>Исступление</string>

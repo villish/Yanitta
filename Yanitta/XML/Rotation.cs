@@ -17,6 +17,7 @@ namespace Yanitta
 
         private HotKey hotKey;
         private string name;
+        private bool procNotifyer;
 
         /// <summary>
         /// Наименование ротации
@@ -30,6 +31,21 @@ namespace Yanitta
                 name = value;
                 if (PropertyChanged != null)
                     PropertyChanged(this, new PropertyChangedEventArgs("Name"));
+            }
+        }
+
+        /// <summary>
+        /// Установка режима уведомления о проках
+        /// </summary>
+        [XmlAttribute]
+        public bool ProcNotifyer
+        {
+            get { return procNotifyer; }
+            set
+            {
+                procNotifyer = value;
+                if (PropertyChanged != null)
+                    PropertyChanged(this, new PropertyChangedEventArgs("ProcNotifyer"));
             }
         }
 
@@ -90,7 +106,7 @@ namespace Yanitta
                 Name   = this.Name + " (1)",
                 Notes  = this.Notes,
                 HotKey = new HotKey(),
-
+                ProcNotifyer = this.ProcNotifyer,
                 AbilityQueue = new ObservableCollection<string>(this.AbilityQueue)
             };
         }

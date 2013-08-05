@@ -297,8 +297,7 @@
                     </ToolBar>
 
                     <TextBox Grid.Row="2" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged}"
-                             TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" Margin="0,34,0,0" />
-                    <GridSplitter Grid.Row="2" Height="3" Margin="0,26,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" ResizeDirection="Rows" />
+                             TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" Margin="0,67,0,0" />
 
                     <TextBox
                         Grid.Row="2" x:Name="tbRotationName" Height="23" VerticalAlignment="Top"
@@ -308,6 +307,8 @@
                            Content="{x:Static yanitta:Localization.AlavilableAbilitys}" />
                     <Label Grid.Column="2" Width="168" Height="26" Margin="43,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center"
                            Content="{x:Static yanitta:Localization.CurrentRotation}" />
+                    <CheckBox Content="Уведомление о проках" HorizontalAlignment="Center" Margin="0,28,20,323" Grid.Row="2" VerticalAlignment="Center" Height="34" Width="528"
+                              IsChecked="{Binding ProfileList/RotationList/ProcNotifyer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.BeforeRotationCode}" ToolTip="{x:Static yanitta:Localization.BeforeRotationCodeToolTip}">
