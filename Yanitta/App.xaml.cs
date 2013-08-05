@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -43,14 +42,10 @@ namespace Yanitta
 
         protected override void OnExit(ExitEventArgs e)
         {
-            Console.WriteLine("Yanitta stoped!");
+            PluginManager.Close();
             ConsoleWriter.CloseWriter();
-            if (PluginManager.Instance != null)
-                PluginManager.Instance.Dispose();
-
+            Console.WriteLine("Yanitta stoped!");
             base.OnExit(e);
-            // hack
-            Process.GetCurrentProcess().Kill();
         }
     }
 }

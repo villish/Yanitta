@@ -27,6 +27,12 @@ namespace Yanitta.Plugins
             }
         }
 
+        public static void Close()
+        {
+            if (Instance != null)
+                Instance.Dispose();
+        }
+
         public PluginManager()
         {
             var catalog = new AggregateCatalog();
