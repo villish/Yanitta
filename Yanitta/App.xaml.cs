@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,12 +12,9 @@ namespace Yanitta
     /// </summary>
     public partial class App : Application
     {
-        [ImportMany(typeof(IYanittaPlugin))]
-        public ObservableCollection<IYanittaPlugin> PluginList;
-
         static App()
         {
-            ConsoleWriter.Initialize(true);
+            ConsoleWriter.Initialize("Yanitta.log", true);
         }
 
         public static new MainWindow MainWindow
@@ -50,7 +44,7 @@ namespace Yanitta
         protected override void OnExit(ExitEventArgs e)
         {
             Console.WriteLine("Yanitta stoped!");
-            ConsoleWriter.Close();
+            ConsoleWriter.CloseWriter();
             if (PluginManager.Instance != null)
                 PluginManager.Instance.Dispose();
 
