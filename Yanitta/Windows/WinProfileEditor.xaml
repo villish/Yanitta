@@ -217,7 +217,14 @@
                     <ListView Grid.Row="1" Margin="0,0,3,4" x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" SelectionChanged="rotationList_SelectionChanged_1">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"   Header="{x:Static yanitta:Localization.Name}" />
+                                <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
+                                <GridViewColumn Width="30" Header="Proc">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding ProcNotifyer}" ToolTip="{x:Static yanitta:Localization.ProcNotifyerToolTip}" />
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn Width="130" DisplayMemberBinding="{Binding HotKey}" Header="{x:Static yanitta:Localization.HotKey}" />
                                 <GridViewColumn Width="30" Header="Control">
                                     <GridViewColumn.CellTemplate>
@@ -297,7 +304,7 @@
                     </ToolBar>
 
                     <TextBox Grid.Row="2" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged}"
-                             TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" Margin="0,67,0,0" />
+                             TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" Margin="0,28,0,0" />
 
                     <TextBox
                         Grid.Row="2" x:Name="tbRotationName" Height="23" VerticalAlignment="Top"
@@ -307,8 +314,6 @@
                            Content="{x:Static yanitta:Localization.AlavilableAbilitys}" />
                     <Label Grid.Column="2" Width="168" Height="26" Margin="43,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center"
                            Content="{x:Static yanitta:Localization.CurrentRotation}" />
-                    <CheckBox Content="Уведомление о проках" HorizontalAlignment="Center" Margin="0,28,20,323" Grid.Row="2" VerticalAlignment="Center" Height="34" Width="528"
-                              IsChecked="{Binding ProfileList/RotationList/ProcNotifyer, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.BeforeRotationCode}" ToolTip="{x:Static yanitta:Localization.BeforeRotationCodeToolTip}">

@@ -61,7 +61,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Список способностей.
+        ///   Ищет локализованную строку, похожую на Ability list.
         /// </summary>
         public static string AbilityList {
             get {
@@ -70,7 +70,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на События.
+        ///   Ищет локализованную строку, похожую на Actions.
         /// </summary>
         public static string Actions {
             get {
@@ -79,7 +79,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Добавить новую способность.
+        ///   Ищет локализованную строку, похожую на Append new ability.
         /// </summary>
         public static string AddAbility {
             get {
@@ -88,7 +88,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Добавить новый профиль.
+        ///   Ищет локализованную строку, похожую на Append new profile.
         /// </summary>
         public static string AddProfile {
             get {
@@ -97,7 +97,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Добавить новую ротацию.
+        ///   Ищет локализованную строку, похожую на append new rotation.
         /// </summary>
         public static string AddRotation {
             get {
@@ -106,7 +106,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Доступные способности.
+        ///   Ищет локализованную строку, похожую на Alavilable abilities.
         /// </summary>
         public static string AlavilableAbilitys {
             get {
@@ -115,7 +115,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Код профиля.
+        ///   Ищет локализованную строку, похожую на Before rotation code.
         /// </summary>
         public static string BeforeRotationCode {
             get {
@@ -124,7 +124,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Этот код выполняется при старте ротации.
+        ///   Ищет локализованную строку, похожую на This code exequted before rotation started.
         /// </summary>
         public static string BeforeRotationCodeToolTip {
             get {
@@ -133,7 +133,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Прерывать заклинания.
+        ///   Ищет локализованную строку, похожую на Drop casting.
         /// </summary>
         public static string CancelCasting {
             get {
@@ -142,7 +142,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Прерывать чтение заклинаний.
+        ///   Ищет локализованную строку, похожую на Drop casting spell.
         /// </summary>
         public static string CancelCastingToolTip {
             get {
@@ -151,7 +151,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Прерывать потоковые.
+        ///   Ищет локализованную строку, похожую на Drop chanel.
         /// </summary>
         public static string CancelChanel {
             get {
@@ -160,7 +160,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Отмена.
+        ///   Ищет локализованную строку, похожую на Cencel.
         /// </summary>
         public static string Cencel {
             get {
@@ -169,7 +169,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Класс.
+        ///   Ищет локализованную строку, похожую на Class.
         /// </summary>
         public static string Class {
             get {
@@ -178,7 +178,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Закрыть.
+        ///   Ищет локализованную строку, похожую на Close.
         /// </summary>
         public static string Close {
             get {
@@ -187,7 +187,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Закрыть текущее окно.
+        ///   Ищет локализованную строку, похожую на Close window.
         /// </summary>
         public static string CloseToolTip {
             get {
@@ -196,7 +196,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Консоль кода.
+        ///   Ищет локализованную строку, похожую на Console.
         /// </summary>
         public static string CodeConsole {
             get {
@@ -205,7 +205,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Конструктор.
+        ///   Ищет локализованную строку, похожую на Constructor.
         /// </summary>
         public static string Constructor {
             get {
@@ -214,7 +214,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Скопировать текущую способность.
+        ///   Ищет локализованную строку, похожую на Copy current ability.
         /// </summary>
         public static string CopyAbility {
             get {
@@ -223,7 +223,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Скопировать текущий профиль.
+        ///   Ищет локализованную строку, похожую на Copy current profile.
         /// </summary>
         public static string CopyProfile {
             get {
@@ -232,7 +232,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Скопировать текущую ротацию.
+        ///   Ищет локализованную строку, похожую на Copy current rotation.
         /// </summary>
         public static string CopyRotation {
             get {
@@ -241,7 +241,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Код ядра.
+        ///   Ищет локализованную строку, похожую на Core.
         /// </summary>
         public static string CoreHeader {
             get {
@@ -250,7 +250,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Содержит код обработчика способностей.
+        ///   Ищет локализованную строку, похожую на Contains handler code abilities.
         /// </summary>
         public static string CoreHeaderToolTip {
             get {
@@ -259,7 +259,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Текущая ротация.
+        ///   Ищет локализованную строку, похожую на Current rotation.
         /// </summary>
         public static string CurrentRotation {
             get {
@@ -268,7 +268,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Задержка.
+        ///   Ищет локализованную строку, похожую на Delay.
         /// </summary>
         public static string Delay {
             get {
@@ -277,7 +277,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Удалить текущую способность.
+        ///   Ищет локализованную строку, похожую на Drop current ability.
         /// </summary>
         public static string DeleteAbility {
             get {
@@ -286,7 +286,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Удалить текущий профиль.
+        ///   Ищет локализованную строку, похожую на Drop current profile.
         /// </summary>
         public static string DeleteProfile {
             get {
@@ -295,7 +295,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Удалить текущию ротацию.
+        ///   Ищет локализованную строку, похожую на Drop current rotation.
         /// </summary>
         public static string DeleteRotation {
             get {
@@ -304,7 +304,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Прерывать канальные заклинания..
+        ///   Ищет локализованную строку, похожую на Drop channel spell.
         /// </summary>
         public static string DropChanelToolTip {
             get {
@@ -313,7 +313,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Редактор профилей.
+        ///   Ищет локализованную строку, похожую на Profile editor.
         /// </summary>
         public static string EditorTitle {
             get {
@@ -322,7 +322,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Сохранить текущий профиль в файл.
+        ///   Ищет локализованную строку, похожую на Save the file in the current profile.
         /// </summary>
         public static string Export {
             get {
@@ -331,7 +331,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Общие функции.
+        ///   Ищет локализованную строку, похожую на Common functions.
         /// </summary>
         public static string GlobalFunk {
             get {
@@ -340,7 +340,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Общие функции, которые можно использовать в написании ротации..
+        ///   Ищет локализованную строку, похожую на Common functions that can be used to write the rotation..
         /// </summary>
         public static string GlobalFunkToolTip {
             get {
@@ -349,7 +349,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Помощь.
+        ///   Ищет локализованную строку, похожую на Help.
         /// </summary>
         public static string Help {
             get {
@@ -358,7 +358,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Показать справку.
+        ///   Ищет локализованную строку, похожую на Show help.
         /// </summary>
         public static string HelpToolTip {
             get {
@@ -367,7 +367,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Гарячая клавиша.
+        ///   Ищет локализованную строку, похожую на Hot key.
         /// </summary>
         public static string HotKey {
             get {
@@ -376,7 +376,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Загрузить профиль из файла.
+        ///   Ищет локализованную строку, похожую на Upload a profile from a file.
         /// </summary>
         public static string Import {
             get {
@@ -385,7 +385,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Возможность атаковать.
+        ///   Ищет локализованную строку, похожую на Is attacked unit.
         /// </summary>
         public static string IsAttacedTarget {
             get {
@@ -394,7 +394,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Возможность атаковать цель.
+        ///   Ищет локализованную строку, похожую на Is attaced unit.
         /// </summary>
         public static string IsAttacedTargetToolTip {
             get {
@@ -403,7 +403,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Проверка на нахождение в бою.
+        ///   Ищет локализованную строку, похожую на Check in combat.
         /// </summary>
         public static string IsInCombatToolTip {
             get {
@@ -412,7 +412,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Без ГКД.
+        ///   Ищет локализованную строку, похожую на Without GCD.
         /// </summary>
         public static string IsNotHCD {
             get {
@@ -421,7 +421,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Указывает, что данная способность не имеет глобального кулдауна.
+        ///   Ищет локализованную строку, похожую на Indicates that the ability has no global cooldown.
         /// </summary>
         public static string IsNotHCDToolTip {
             get {
@@ -430,7 +430,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Проверка дистанции.
+        ///   Ищет локализованную строку, похожую на Range check.
         /// </summary>
         public static string IsRangeCheck {
             get {
@@ -439,7 +439,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Проверка досягаемости цели (не работает для некоторых заклинаний).
+        ///   Ищет локализованную строку, похожую на Checking reach the target (does not work for some spells).
         /// </summary>
         public static string IsRangeCheckToolTip {
             get {
@@ -448,7 +448,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Использовать в бою.
+        ///   Ищет локализованную строку, похожую на Use in combat.
         /// </summary>
         public static string IsUseIncombat {
             get {
@@ -457,7 +457,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Загрузить список способностей из файла.
+        ///   Ищет локализованную строку, похожую на Download the file from the list of abilities.
         /// </summary>
         public static string LoadAbilityList {
             get {
@@ -466,7 +466,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Свернуть.
+        ///   Ищет локализованную строку, похожую на Minimise.
         /// </summary>
         public static string Minimise {
             get {
@@ -475,7 +475,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Имя.
+        ///   Ищет локализованную строку, похожую на Name.
         /// </summary>
         public static string Name {
             get {
@@ -484,7 +484,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Да.
+        ///   Ищет локализованную строку, похожую на OK.
         /// </summary>
         public static string OK {
             get {
@@ -493,7 +493,16 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Профиль.
+        ///   Ищет локализованную строку, похожую на Use a notice of proс.
+        /// </summary>
+        public static string ProcNotifyerToolTip {
+            get {
+                return ResourceManager.GetString("ProcNotifyerToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile.
         /// </summary>
         public static string Profile {
             get {
@@ -502,7 +511,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на &quot;XML файлы (*.xml)|*.xml|Все файлы (*.*)|*.*&quot;.
+        ///   Ищет локализованную строку, похожую на &quot;XML files (*.xml)|*.xml|All files (*.*)|*.*&quot;.
         /// </summary>
         public static string ProfileFileMask {
             get {
@@ -511,7 +520,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Перезагрузить.
+        ///   Ищет локализованную строку, похожую на Reload.
         /// </summary>
         public static string Reload {
             get {
@@ -520,7 +529,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Перезагрузить профили из файла.
+        ///   Ищет локализованную строку, похожую на Reload profiles.
         /// </summary>
         public static string ReloadToolTip {
             get {
@@ -529,7 +538,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Ротация.
+        ///   Ищет локализованную строку, похожую на Rotation.
         /// </summary>
         public static string Rotation {
             get {
@@ -538,7 +547,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Список ротаций.
+        ///   Ищет локализованную строку, похожую на Rotation list.
         /// </summary>
         public static string RotationList {
             get {
@@ -547,7 +556,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Сохранить.
+        ///   Ищет локализованную строку, похожую на Save.
         /// </summary>
         public static string Save {
             get {
@@ -565,7 +574,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Задержка на произнесение следующего заклинания.
+        ///   Ищет локализованную строку, похожую на Delay on next spell.
         /// </summary>
         public static string SetRecastDelay {
             get {
@@ -574,7 +583,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Задержка на произнесение следующего этого заклинания.
+        ///   Ищет локализованную строку, похожую на The delay in the next utterance of this spell.
         /// </summary>
         public static string SetRecastDelayToolTip {
             get {
@@ -583,7 +592,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Настройки.
+        ///   Ищет локализованную строку, похожую на Setting.
         /// </summary>
         public static string Setting {
             get {
@@ -592,7 +601,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Звук.
+        ///   Ищет локализованную строку, похожую на Sound.
         /// </summary>
         public static string Sound {
             get {
@@ -601,7 +610,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Заклинание.
+        ///   Ищет локализованную строку, похожую на Spell.
         /// </summary>
         public static string Spell {
             get {
@@ -610,7 +619,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Цель.
+        ///   Ищет локализованную строку, похожую на Target.
         /// </summary>
         public static string Target {
             get {
@@ -619,7 +628,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Тип цели.
+        ///   Ищет локализованную строку, похожую на Target type.
         /// </summary>
         public static string TargetToolTip {
             get {
@@ -628,7 +637,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Долбилка.
+        ///   Ищет локализованную строку, похожую на Yanitta.
         /// </summary>
         public static string Title {
             get {
@@ -637,7 +646,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Обновить.
+        ///   Ищет локализованную строку, похожую на Check update.
         /// </summary>
         public static string Update {
             get {
@@ -646,7 +655,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Проверить обновление базы профилей.
+        ///   Ищет локализованную строку, похожую на Check updates.
         /// </summary>
         public static string UpdateToolTip {
             get {
@@ -655,7 +664,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Рыцарь смерти.
+        ///   Ищет локализованную строку, похожую на Death Knight.
         /// </summary>
         public static string WowClass_DeathKnight {
             get {
@@ -664,7 +673,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Друид.
+        ///   Ищет локализованную строку, похожую на Druid.
         /// </summary>
         public static string WowClass_Druid {
             get {
@@ -673,7 +682,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Охотник.
+        ///   Ищет локализованную строку, похожую на Hunter.
         /// </summary>
         public static string WowClass_Hunter {
             get {
@@ -682,7 +691,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Маг.
+        ///   Ищет локализованную строку, похожую на Mage.
         /// </summary>
         public static string WowClass_Mage {
             get {
@@ -691,7 +700,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Монах.
+        ///   Ищет локализованную строку, похожую на Monk.
         /// </summary>
         public static string WowClass_Monk {
             get {
@@ -700,7 +709,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Паладин.
+        ///   Ищет локализованную строку, похожую на Paladin.
         /// </summary>
         public static string WowClass_Paladin {
             get {
@@ -709,7 +718,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Жрец.
+        ///   Ищет локализованную строку, похожую на Priest.
         /// </summary>
         public static string WowClass_Priest {
             get {
@@ -718,7 +727,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Разбойник.
+        ///   Ищет локализованную строку, похожую на Rogue.
         /// </summary>
         public static string WowClass_Rogue {
             get {
@@ -727,7 +736,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Шаман.
+        ///   Ищет локализованную строку, похожую на Shaman.
         /// </summary>
         public static string WowClass_Shaman {
             get {
@@ -736,7 +745,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Чернокнижник.
+        ///   Ищет локализованную строку, похожую на Warlock.
         /// </summary>
         public static string WowClass_Warlock {
             get {
@@ -745,7 +754,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Воин.
+        ///   Ищет локализованную строку, похожую на Warrior.
         /// </summary>
         public static string WowClass_Warrior {
             get {

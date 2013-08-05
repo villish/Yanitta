@@ -348,4 +348,7 @@
   <data name="WowClass_Druid" xml:space="preserve">
     <value>Друид</value>
   </data>
+  <data name="ProcNotifyerToolTip" xml:space="preserve">
+    <value>Использовать уведомления о проках</value>
+  </data>
 </root>
