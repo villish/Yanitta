@@ -110,6 +110,7 @@
     <Compile Include="Misk\MemoryModule\SafeProcessHandle.cs" />
     <Compile Include="Misk\MemoryModule\StructHelper.cs" />
     <Compile Include="Misk\ProcessList.cs" />
+    <Compile Include="Plugins\PluginManager.cs" />
     <Compile Include="XML\Offsets.cs" />
     <Compile Include="Plugins\IYanittaPlugin.cs" />
     <Compile Include="XML\HotKey.cs" />

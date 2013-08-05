@@ -43,7 +43,7 @@ namespace Yanitta
                 File.Copy(fileName, fileName + ".bak", true);
 
             Console.WriteLine(MemoryModule.ProcessMemory.FasmVersion);
-            LoadPlugins();
+
             base.OnStartup(e);
         }
 
@@ -51,35 +51,12 @@ namespace Yanitta
         {
             Console.WriteLine("Yanitta stoped!");
             ConsoleWriter.Close();
+            if (PluginManager.Instance != null)
+                PluginManager.Instance.Dispose();
+
             base.OnExit(e);
             // hack
             Process.GetCurrentProcess().Kill();
-        }
-
-        private void LoadPlugins()
-        {
-            Console.WriteLine("Start loading plugins...");
-            try
-            {
-                var catalog = new AggregateCatalog();
-                catalog.Catalogs.Add(new AssemblyCatalog(typeof(App).Assembly));
-                catalog.Catalogs.Add(new DirectoryCatalog(Environment.CurrentDirectory));
-
-                if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "Plugins")))
-                    catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(Environment.CurrentDirectory, "Plugins")));
-
-                var container = new CompositionContainer(catalog);
-                container.ComposeParts(this);
-
-                foreach (var plugin in PluginList)
-                {
-                    Console.WriteLine("Loading plugin: {0} version: {1}", plugin.Name, plugin.Version);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: Load plugins: {0}", ex.Message);
-            }
         }
     }
 }

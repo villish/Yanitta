@@ -31,5 +31,4 @@
 
     <!--Collections-->
     <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:MainWindow.ProcessList}}" />
-    <CollectionViewSource x:Key="pluginList"  Source="{Binding Source={x:Static yanitta:MainWindow.PluginList}}" />
 </ResourceDictionary>

@@ -20,7 +20,6 @@ namespace Yanitta
         private WindowSettings   settingWindow = null;
 
         public static ProcessList ProcessList { get; set; }
-        public static ObservableCollection<IYanittaPlugin> PluginList { get; set; }
 
         public TaskbarIcon TaskbarIcon
         {
@@ -30,7 +29,6 @@ namespace Yanitta
         static MainWindow()
         {
             ProcessList = new ProcessList();
-            PluginList  = (App.Current as App).PluginList;
         }
 
         public MainWindow()
@@ -46,10 +44,6 @@ namespace Yanitta
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
-
-            foreach (var plugin in PluginList)
-                plugin.Dispose();
-            PluginList.Clear();
 
             if (ProcessList != null)
                 ProcessList.Dispose();
