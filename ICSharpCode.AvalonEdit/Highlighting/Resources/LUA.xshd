@@ -2999,6 +2999,9 @@
       <Word>mkRightShift</Word>
       <Word>mkRightControl</Word>
       <Word>mkRightAlt</Word>
+
+      <Word>setAoE</Word>
+      <Word>useCooldown</Word>
     </Keywords>
 
     <Rule color="Number">\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?</Rule>

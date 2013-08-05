@@ -270,4 +270,11 @@ INVSLOT_*
   <WowApi RawData="6" ImageType="EnumValue" Name="mkRightAlt">
     <Description><![CDATA[6 = Right Alt]]></Description>
   </WowApi>
+
+  <WowApi RawData="0" ImageType="EnumValue" Name="setAoE">
+    <Description><![CDATA[Установка режима AoE]]></Description>
+  </WowApi>
+  <WowApi RawData="0" ImageType="EnumValue" Name="useCooldown">
+    <Description><![CDATA[Использование кулдаунов]]></Description>
+  </WowApi>
 </ArrayOfWowApi>
