@@ -6,7 +6,7 @@ namespace MemoryModule.FASM
     internal unsafe struct FasmLineHeader
     {
         [FieldOffset(0)]
-        public byte* file_path;
+        public sbyte* file_path;
 
         [FieldOffset(4)]
         public int line_number;
@@ -19,5 +19,10 @@ namespace MemoryModule.FASM
 
         [FieldOffset(12)]
         public FasmLineHeader* macro_line;
+
+        public string FilePath
+        {
+            get { return new string(file_path); }
+        }
     };
 }

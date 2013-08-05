@@ -127,6 +127,7 @@ namespace Yanitta
                 this.Class = (WowClass)(byte)0;
                 this.Name  = "";
                 this.CurrentProfile = null;
+                this.IsFocus = false;
             }
         }
 
