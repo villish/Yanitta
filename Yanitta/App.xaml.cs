@@ -42,6 +42,7 @@ namespace Yanitta
 
         protected override void OnExit(ExitEventArgs e)
         {
+            Console.WriteLine("Yanitta stoped ... !");
             PluginManager.Close();
             ConsoleWriter.CloseWriter();
             Console.WriteLine("Yanitta stoped!");

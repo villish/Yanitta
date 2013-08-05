@@ -78,7 +78,7 @@ namespace Yanitta
         private void InternalWrite(string text)
         {
             if (m_writer != null)
-                m_writer.WriteLine(string.Format("[{0:HH:mm:ss.fff}] {1}", DateTime.Now, text));
+                m_writer.Write("[{0:HH:mm:ss.fff}] {1}", DateTime.Now, text);
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

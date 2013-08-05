@@ -1,4 +1,5 @@
 ﻿using Microsoft.Windows.Controls;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -45,8 +46,11 @@ namespace Yanitta
         {
             ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
 
+            Console.WriteLine("ProfileDb.Instance.Save");
+
             if (ProcessList != null)
                 ProcessList.Dispose();
+            Console.WriteLine("ProcessList.Dispose()");
 
             if (codeExecuteWindow != null)
             {
@@ -63,6 +67,7 @@ namespace Yanitta
                 settingWindow.Close();
                 settingWindow = null;
             }
+            Console.WriteLine("Window_Closing");
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
