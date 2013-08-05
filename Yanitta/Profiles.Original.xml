@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.96</Version>
+  <Version>0.0.2.98</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2555,65 +2555,7 @@ end]]></Lua>
   <Profile Class="Priest">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;
-isAltMod    = nil;
-
-VampTouchT      = nil;
-VampTouchM      = nil;
-VampTouchF      = nil;
-
-ShadowWordPainT = nil;
-ShadowWordPainM = nil;
-ShadowWordPainF = nil;
-
--- список проков, на которые надо реагировать
-AURA_LIST = {
-};
-
-hooksecurefunc("AddonFrame_OnEvent", function (self, event, ...)
-
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        -- для начала приведу полный список параметров.
-        local timestamp, subEvent, hideCaster,
-                sourceGUID,srcName,  sourceFlags,sourceFlags2,
-                destGUID,  destName, destFlags,  destFlags2,
-                spellId,   spellName,spellSchool,amount,      overkill,school,
-                resisted,  blocked,  absorbed,   critical,    glancing,crushing = ...;
-
-        if subEvent == "SPELL_AURA_APPLIED" and destGUID == UnitGUID("player") then
-            for i,aura_id in ipairs(AURA_LIST) do
-                if aura_id == spellId then
-                    VampTouchT      = true;
-                    VampTouchM      = true;
-                    VampTouchF      = true;
-                    ShadowWordPainT = true;
-                    ShadowWordPainM = true;
-                    ShadowWordPainF = true;
-                    break;
-                end
-            end
-        end
-
-        if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
-            if spellId == 34914 then --Прикосновение вампира
-                if UnitGUID("target") == destGUID then
-                    VampTouchT = nil;
-                elseif UnitGUID("fucus") == destGUID then
-                    VampTouchF = nil;
-                elseif UnitGUID("mouseover") == destGUID then
-                    VampTouchM = nil;
-                end
-            elseif spellId == 589 then --Слово тьмы: Боль
-                if UnitGUID("target") == destGUID then
-                    ShadowWordPainT = nil;
-                elseif UnitGUID("fucus") == destGUID then
-                    ShadowWordPainF = nil;
-                elseif UnitGUID("mouseover") == destGUID then
-                    ShadowWordPainM = nil;
-                end
-            end
-        end
-    end
-end);]]></Lua>
+isAltMod    = nil;]]></Lua>
     <AbilityList>
       <Ability Name="Инициализация (Тьма)">
         <SpellID>0</SpellID>
@@ -2679,7 +2621,7 @@ isMoving  = IsMoving();
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if ShadowWordPainT then
+        <Lua><![CDATA[if ability.HasProc then
     return true;
 end
 local name, count, rem = HasDebuff("target", 589);
@@ -2697,7 +2639,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if ShadowWordPainF then
+        <Lua><![CDATA[if ability.HasProc then
     return true;
 end
 local name, count, rem = HasDebuff("focus", 589);
@@ -2715,7 +2657,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if ShadowWordPainM then
+        <Lua><![CDATA[if ability.HasProc then
     return true;
 end
 local name, count, rem = HasDebuff("mouseover", 589);
@@ -2734,7 +2676,7 @@ end]]></Lua>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving then
-    if VampTouchT then
+    if ability.HasProc then
         return true;
     end
     local name, count, rem = HasDebuff("target", 34914);
@@ -2754,7 +2696,7 @@ end]]></Lua>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving then
-    if VampTouchF then
+    if ability.HasProc then
         return true;
     end
     local name, count, rem = HasDebuff("focus", 34914);
@@ -2774,7 +2716,7 @@ end]]></Lua>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving then
-    if VampTouchM then
+    if ability.HasProc then
         return true;
     end
     local name, count, rem = HasDebuff("mouseover", 34914);
@@ -3234,7 +3176,7 @@ end]]></Lua>
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
       </Rotation>
-      <Rotation Name="Тьма" ProcNotifyer="false">
+      <Rotation Name="Тьма" ProcNotifyer="true">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Тьма)</string>
