@@ -240,7 +240,6 @@ namespace Yanitta
             builder.AppendLine(ProfileDb.Instance.Core);
             builder.AppendLine(ProfileDb.Instance.Func);
             builder.AppendLine(CurrentProfile.Lua);
-            builder.AppendLine("AbilityTable = {");
 
             foreach (var ability in abilityQueue)
             {
@@ -248,7 +247,6 @@ namespace Yanitta
                 builder.Append(ability_code);
             }
 
-            builder.AppendLine("}");
             builder.AppendFormatLine(@"ShowInChat   = {0};", Settings.Default.ShowChat.ToString().ToLower());
             builder.AppendFormatLine(@"DebugEnabled = {0};", Settings.Default.DebugMode.ToString().ToLower());
             builder.AppendFormatLine(@"ProcNotifyer   = {0};", rotation.ProcNotifyer.ToString().ToLower());
