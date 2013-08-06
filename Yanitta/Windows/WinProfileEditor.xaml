@@ -264,11 +264,11 @@
                     <ListBox x:Name="listBoxAlavilableAbilitys" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,3,0"
                              ItemsSource="{Binding Source={StaticResource AlavilableAbilityList}}"
                              DisplayMemberPath="Name"
-                             Style="{DynamicResource KamillaStyle}" />
+                             Style="{DynamicResource KamillaStyle}" MouseDoubleClick="listBoxAlavilableAbilitys_MouseDoubleClick" />
 
                     <ListBox x:Name="rotationListAbilitys" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Margin="43,0,0,0"
                              ItemsSource="{Binding ProfileList/RotationList/AbilityQueue}"
-                             Style="{DynamicResource KamillaStyle}" />
+                             Style="{DynamicResource KamillaStyle}" MouseDoubleClick="rotationListAbilitys_MouseDoubleClick" />
 
                     <Button x:Name="bMoveTo" Grid.Row="1" Grid.Column="2" Width="34" Height="26" Margin="3,18,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent"
                             Click="bMoveTo_Click_1">

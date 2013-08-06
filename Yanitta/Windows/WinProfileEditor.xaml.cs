@@ -78,6 +78,16 @@ namespace Yanitta
             }
         }
 
+        private void listBoxAlavilableAbilitys_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            bMoveTo_Click_1(null, null);
+        }
+
+        private void rotationListAbilitys_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            bMoveFrom_Click_1(null, null);
+        }
+
         private void bMoveTo_Click_1(object sender, RoutedEventArgs e)
         {
             if (CurrentRotation != null && listBoxAlavilableAbilitys.SelectedValue != null)

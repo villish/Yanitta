@@ -17,8 +17,8 @@ namespace Yanitta
     public partial class MainWindow : Window
     {
         private WinCodeExecute   codeExecuteWindow = null;
-        private WinProfileEditor profileWindows = null;
-        private WindowSettings   settingWindow = null;
+        private WinProfileEditor profileWindows    = null;
+        private WindowSettings   settingWindow     = null;
 
         public static ProcessList ProcessList { get; set; }
 
