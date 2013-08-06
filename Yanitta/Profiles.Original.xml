@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.115</Version>
+  <Version>0.0.2.117</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -598,7 +598,7 @@ function UpdatePartyTables(standartSpellId)
             local X,Y          = GetPlayerMapPosition(member.Unit);
             member.X, member.Y = X or 0, Y or 0;
             member.Range       = GetDistance2(px, py, X, Y);
-            member.IsInRange   = IsSpellInRange(standartSpellId) ~= 1;
+            member.IsInRange   = IsSpellInRange(standartSpellId) == 1;
 
             member.HP          = 100 * hpcur / hpmax;
             member.HPMAX       = hpmax;
@@ -4405,7 +4405,7 @@ setAoE      = nil;
 isAltMod    = nil;
 isCat       = nil;]]></Lua>
     <AbilityList>
-      <Ability Name="Буйный рост">
+      <Ability Name="Restor: Буйный рост">
         <SpellID>48438</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -4419,7 +4419,7 @@ isCat       = nil;]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Быстрое восстановление">
+      <Ability Name="Restor: Быстрое восстановление">
         <SpellID>18562</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4429,7 +4429,21 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if LowHP.H80 <= 3 then
+    for _,member in ipairs(members) do
+        if member.HP < 90 and HasBuff(member.Unit, { 774 }, "PLAYER") then
+            local count = 0;
+            for _,unit in ipairs(members) do
+                if unit.HP < 90 and GetDistance2(unit.X, unit.Y, member.X, member.Y) <= 4 then
+                    count = count + 1;
+                end
+            end
+            if count > 2 then
+                return true, member.Unit;
+            end
+        end
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Спокойствие">
         <SpellID>740</SpellID>
@@ -4445,19 +4459,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Природная стремительность">
-        <SpellID>132158</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
-      </Ability>
-      <Ability Name="Озарение">
+      <Ability Name="Restor: Озарение">
         <SpellID>29166</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -4471,7 +4473,19 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Железная кора">
+      <Ability Name="Restor: Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Железная кора">
         <SpellID>102342</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4483,7 +4497,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Жизнецвет">
+      <Ability Name="Restor: Жизнецвет">
         <SpellID>33763</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4493,9 +4507,22 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if #members == 1 then
+    local name, count, rem = HasBuff("player", 33763, "PLAYER") or nil, 0, 0;
+    if count < 3 or rem < 2 then
+        return true, "player";
+    end
+end
+for _,member in ipairs(members) do
+    if member.IsInRange and member.Role == "TANK" and member.Agro == 3 then
+        local name, count, rem = HasBuff(member.Unit, 33763, "PLAYER") or nil, 0, 0;
+        if count < 3 or rem < 2 then
+            return true, member.Unit;
+        end
+    end
+end]]></Lua>
       </Ability>
-      <Ability Name="Омоложение">
+      <Ability Name="Restor: Омоложение">
         <SpellID>774</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4505,15 +4532,13 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[for i,mem in ipairs(members) do
-    if mem.HP < 90 and not HasBuff(mem.Unit, 774, "PLAYER") then
-        if ch then
-            CastSpellEx(774, mem.Unit);
-        end
+        <Lua><![CDATA[for _,member in ipairs(members) do
+    if member.HP < 90 and not HasBuff(member.Unit, 774, "PLAYER") then
+        return true, member.Unit;
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Целительное прикосновение">
+      <Ability Name="Restor: Целительное прикосновение">
         <SpellID>5185</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4523,9 +4548,11 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if not isMoving and members[1].HP < 60 then
+    return true, members[1].Unit;
+end]]></Lua>
       </Ability>
-      <Ability Name="Восстановление">
+      <Ability Name="Restor: Восстановление">
         <SpellID>8936</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4535,9 +4562,11 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if not isMoving and members[1].HP < 40 then
+    return true, members[1].Unit;
+end]]></Lua>
       </Ability>
-      <Ability Name="Покровительство природы">
+      <Ability Name="Restor: Покровительство природы">
         <SpellID>50464</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4547,11 +4576,11 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[
-
-return true;]]></Lua>
+        <Lua><![CDATA[if not isMoving and members[1].HP < 80 then
+    return true, members[1].Unit;
+end]]></Lua>
       </Ability>
-      <Ability Name="Дикий гриб: Лечение">
+      <Ability Name="Restor: Дикий гриб: Лечение">
         <SpellID>102791</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4565,7 +4594,7 @@ return true;]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Дикий гриб">
+      <Ability Name="Restor: Дикий гриб">
         <SpellID>88747</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
@@ -4579,7 +4608,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Дерево жизни">
+      <Ability Name="Restor: Дерево жизни">
         <SpellID>33891</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4593,7 +4622,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Дубовая кора">
+      <Ability Name="Restor: Дубовая кора">
         <SpellID>22812</SpellID>
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
@@ -4605,7 +4634,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Природный целитель">
+      <Ability Name="Restor: Природный целитель">
         <SpellID>88423</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4643,7 +4672,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Оживление">
+      <Ability Name="Restor: Оживление">
         <SpellID>50769</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
@@ -4911,6 +4940,18 @@ end]]></Lua>
         <Lua><![CDATA[if isInMeele and not isCat then
     return true;
 end]]></Lua>
+      </Ability>
+      <Ability Name="Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Размах">
         <SpellID>779</SpellID>
@@ -5195,7 +5236,21 @@ end]]></Lua>
     <RotationList>
       <Rotation Name="Лекарь" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Инициализация (Лекарь)</string>
+          <string>Restor: Дикий гриб</string>
+          <string>Restor: Дубовая кора</string>
+          <string>Restor: Дикий гриб: Лечение</string>
+          <string>Restor: Озарение</string>
+          <string>Restor: Быстрое восстановление</string>
+          <string>Restor: Буйный рост</string>
+          <string>Restor: Восстановление</string>
+          <string>Restor: Целительное прикосновение</string>
+          <string>Restor: Жизнецвет</string>
+          <string>Restor: Омоложение</string>
+          <string>Restor: Железная кора</string>
+          <string>Restor: Покровительство природы</string>
+        </AbilityQueue>
         <Notes><![CDATA[LeftShift - Установка гриба
 LeftControl - Диспел (под мышкой)
 LeftAlt - Пауза
