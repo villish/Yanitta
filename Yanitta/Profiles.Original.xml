@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.101</Version>
+  <Version>0.0.2.115</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -566,28 +566,22 @@ end
 -- Получает информацию
 function UpdatePartyTables(standartSpellId)
 
-    LowHP = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0 };
+    LowHP   = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0 };
+    members = { { Unit = "player", Name = UnitName("player"), Class = UnitClass("player"), IsOnline = 1, IsDead = false } };
 
-    -- Если поменялось количество, либо же не доступна одна из таблиц - пересоздадим
-    if (type(members) ~= "table" or GetNumGroupMembers() ~= #members) then
+    local prefix = "party";
+    if IsInRaid() then
+        prefix = "raid";
+    elseif IsInArenaTeam() then
+        prefix = "arena";
+    end
 
-        members = { { Unit = "player", Name = UnitName("player"), Class = UnitClass("player"), Role = "HEAL" } };
+    for index = 1, GetNumGroupMembers() do
+        local name,rank,subgroup,level,class,_,zone,online,isDead = GetRaidRosterInfo(index);
+        local unit = string.format("%s%i", prefix, index);
 
-        local prefix = "party";
-
-        if IsInRaid() then
-            prefix = "raid";
-        elseif IsInArenaTeam() then
-            prefix = "arena";
-        end
-
-        for index = 1, GetNumGroupMembers() do
-            local name,rank,subgroup,level,class,_,zone,online,isDead,role = GetRaidRosterInfo(index);
-            local unit = string.format("%s%i", prefix, index);
-
-            if UnitExists(unit) and UnitGUID(unit) ~= UnitGUID("player") then
-                table.insert(members, { Unit = unit, Name = name, Class = class, Role = role });
-            end
+        if UnitExists(unit) and UnitGUID(unit) ~= UnitGUID("player") then
+            table.insert(members, { Unit = unit, Name = name, Class = class, IsOnline = online, IsDead = isDead });
         end
     end
 
@@ -595,15 +589,13 @@ function UpdatePartyTables(standartSpellId)
     -- Обновляем статиы игроков из пати/рейда
     for i, member in ipairs(members) do
         if UnitExists(member.Unit) then
-
-            member.IsDead      = UnitIsDeadOrGhost(member.Unit);
+            member.Role        = UnitGroupRolesAssigned(member.Unit);
             member.Agro        = UnitThreatSituation(member.Unit) or 0;
-            member.IsOnline    = 0;
 
-            local X,Y          = GetPlayerMapPosition(member.Unit);
             local hpcur        = UnitHealth(member.Unit) or 1;
             local hpmax        = UnitHealthMax(member.Unit) or 1;
 
+            local X,Y          = GetPlayerMapPosition(member.Unit);
             member.X, member.Y = X or 0, Y or 0;
             member.Range       = GetDistance2(px, py, X, Y);
             member.IsInRange   = IsSpellInRange(standartSpellId) ~= 1;
@@ -628,14 +620,12 @@ function UpdatePartyTables(standartSpellId)
     end
 
     -- сортируем таблицы по наименьшему количеству ХР
-    if #members > 0 then
-        table.sort(members, function(x, y)
-            if (x.IsDead or not x.IsInRange) then
-                return false;
-            end
-            return x.HP < y.HP;
-        end);
-    end
+    table.sort(members, function(x, y)
+        if (x.IsDead or not x.IsInRange) then
+            return false;
+        end
+        return x.HP < y.HP;
+    end);
 end]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
@@ -2825,51 +2815,6 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
-      <Ability Name="Массовое разсеивание">
-        <SpellID>32375</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
-      </Ability>
-      <Ability Name="Разсеивание заклинаний">
-        <SpellID>528</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[for i = 1, 40 do
-    local name,_,_,_,dispelType,_, _, _, _, _, _,canApplyAura = UnitDebuff("mouseover", i);
-    --Curse
-    --Disease
-    --Magic
-    --Poison
-    if name and canApplyAura and (dispelType == "Magic" or dispelType == "Curse") then
-
-    end
-end]]></Lua>
-      </Ability>
-      <Ability Name="Придание сил">
-        <SpellID>10060</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return useCooldown;]]></Lua>
-      </Ability>
       <Ability Name="Инициализация (Послушание)">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -2920,7 +2865,50 @@ if myMana < 75 then
     UseItemBySlot(INVSLOT_TRINKET2);
 end]]></Lua>
       </Ability>
-      <Ability Name="Исповедь">
+      <Ability Name="Disc: Массовое разсеивание">
+        <SpellID>32375</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return IsModKeyDown(mkLeftAlt);]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Разсеивание заклинаний (Mouseover)">
+        <SpellID>528</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitIsFriend("player", "mouseover") then
+    for i = 1, 40 do
+        local name,_,_,_,dispelType = UnitDebuff("mouseover", i, 1);
+        if name and (dispelType == "Magic" or dispelType == "Curse") then
+            return true;
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Придание сил">
+        <SpellID>10060</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return LowHP.H50 > 3;]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Исповедь">
         <SpellID>47540</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2932,7 +2920,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Священный огонь">
+      <Ability Name="Disc: Священный огонь">
         <SpellID>14914</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2944,7 +2932,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Кара">
+      <Ability Name="Disc: Кара">
         <SpellID>585</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2954,21 +2942,23 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
-      <Ability Name="Подавление боли">
+      <Ability Name="Disc: Подавление боли">
         <SpellID>33206</SpellID>
         <Target>None</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>true</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
+        <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[if useCooldown and members[1].HP < 30 then
+    return true, members[1].Unit;
+end]]></Lua>
       </Ability>
-      <Ability Name="Подчиняющий разум">
+      <Ability Name="Disc: Подчиняющий разум">
         <SpellID>123040</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2982,7 +2972,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Слово силы: Барьер">
+      <Ability Name="Disc: Слово силы: Барьер">
         <SpellID>62618</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>true</CancelChannel>
@@ -2996,7 +2986,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Молитва восстановления">
+      <Ability Name="Disc: Молитва восстановления">
         <SpellID>33076</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3012,7 +3002,7 @@ end]]></Lua>
    end
 end]]></Lua>
       </Ability>
-      <Ability Name="Молитва Исцеления">
+      <Ability Name="Disc: Молитва Исцеления">
         <SpellID>596</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3022,18 +3012,17 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if CheckSpell(596) then
-    -- Если активен щит души, тогда настакиваем щит
-    if HasBuff("player", 114908) then
+        <Lua><![CDATA[-- Если активен щит души, тогда настакиваем щит
+if not isMoving then
+    if HasBuff("player", 114908, "PLAYER") then
         return true;
     end
-
-    if PlayerHp70 > 3 then
+    if LowHP.H70 > 3 then
         return true;
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Обновление">
+      <Ability Name="Disc: Обновление">
         <SpellID>139</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3049,7 +3038,7 @@ end]]></Lua>
    end
 end]]></Lua>
       </Ability>
-      <Ability Name="Слово силы: Щит">
+      <Ability Name="Disc: Слово силы: Щит">
         <SpellID>17</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3063,14 +3052,21 @@ end]]></Lua>
 -- 1) Должен постоянно висеть щит на активном танке
 -- 2) На остальных вешаем, если здоровье упало ниже 50% и если двигаемя то ниже 80%
 for _,member in ipairs(members) do
-   if not HasBuff(tank.Unit, 6788) and member.HP < 50 then
-       return true, member.Unit;
-   elseif not HasBuff(tank.Unit, 6788) and isMoving and member.HP < 60 then
-       return true, member.Unit;
-   end
+    -- На активного танка щит по КД
+    if member.Role == 'TANK' and member.Agro > 2 then
+        if not HasDebuff(member.Unit, 6788) then
+            return true, member.Unit;
+        end
+    else
+        if isMoving and member.HP < 80 and not HasDebuff(member.Unit, 6788) then
+            return true, member.Unit;
+        elseif member.HP < 50 and not HasDebuff(member.Unit, 6788) then
+            return true, member.Unit;
+        end
+    end
 end]]></Lua>
       </Ability>
-      <Ability Name="Исцеление">
+      <Ability Name="Disc: Исцеление">
         <SpellID>2050</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3080,15 +3076,13 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if tanks[1].HP < 70 then
-    return true, tanks[1].Unit;
-end
-
-if members[1].HP < 70 then
-    return true, members[1].Unit;
+        <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
+    if not isMoving and members[1].HP < 70 then
+        return true, members[1].Unit;
+    end
 end]]></Lua>
       </Ability>
-      <Ability Name="Быстрое исцеление">
+      <Ability Name="Disc: Быстрое исцеление">
         <SpellID>2061</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3098,15 +3092,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if tanks[1].HP < 40 then
-    return true, tanks[1].Unit;
-end
-
-if members[1].HP < 40 then
+        <Lua><![CDATA[if not isMoving and members[1].HP < 40 then
     return true, members[1].Unit;
 end]]></Lua>
       </Ability>
-      <Ability Name="Великое исцеление">
+      <Ability Name="Disc: Великое исцеление">
         <SpellID>2060</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -3116,12 +3106,23 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if tanks[1].HP < 60 then
-    return true, tanks[1].Unit;
-end
-
-if members[1].HP < 60 then
+        <Lua><![CDATA[if not isMoving and members[1].HP < 60 then
     return true, members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Слово тьмы: Боль">
+        <SpellID>589</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[local name,_,rem = HasDebuff("target", 589, "PLAYER");
+if not name or rem < 2 then
+    return true;
 end]]></Lua>
       </Ability>
     </AbilityList>
@@ -3130,14 +3131,21 @@ end]]></Lua>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Послушание)</string>
-          <string>Массовое разсеивание</string>
-          <string>Слово силы: Барьер</string>
-          <string>Подчиняющий разум</string>
-          <string>Исповедь</string>
-          <string>Священный огонь</string>
-          <string>Слово Тьмы: Смерть (Target)</string>
-          <string>Слово тьмы: Боль</string>
-          <string>Кара</string>
+          <string>Disc: Массовое разсеивание</string>
+          <string>Disc: Слово силы: Барьер</string>
+          <string>Disc: Разсеивание заклинаний (Mouseover)</string>
+          <string>Disc: Подавление боли</string>
+          <string>Disc: Подчиняющий разум</string>
+          <string>Disc: Придание сил</string>
+          <string>Disc: Слово силы: Щит</string>
+          <string>Disc: Быстрое исцеление</string>
+          <string>Disc: Молитва восстановления</string>
+          <string>Disc: Молитва Исцеления</string>
+          <string>Disc: Великое исцеление</string>
+          <string>Disc: Исповедь</string>
+          <string>Disc: Священный огонь</string>
+          <string>Disc: Кара</string>
+          <string>Disc: Слово тьмы: Боль</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
