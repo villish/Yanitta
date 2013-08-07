@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.117</Version>
+  <Version>0.0.2.122</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2848,10 +2848,8 @@ if IsMounted() then
     return true;
 end
 
--- Перейти в стойку защиты
---if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
---    CastShapeshiftForm(2);
---end
+--2061
+UpdatePartyTables(2061, "PRIEST");
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
 isMoving  = IsMoving();
@@ -2997,7 +2995,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
-   if member.HP < 85 then
+   if member.HP < 85  and members[1].IsInRange then
        return true, member.Unit;
    end
 end]]></Lua>
@@ -3033,7 +3031,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
-   if not HasBuff("player", 139, "PLAYER") and member.HP < 70 then
+   if not HasBuff("player", 139, "PLAYER")  and members[1].IsInRange and member.HP < 70 then
        return true, member.Unit;
    end
 end]]></Lua>
@@ -3053,14 +3051,14 @@ end]]></Lua>
 -- 2) На остальных вешаем, если здоровье упало ниже 50% и если двигаемя то ниже 80%
 for _,member in ipairs(members) do
     -- На активного танка щит по КД
-    if member.Role == 'TANK' and member.Agro > 2 then
+    if member.Role == 'TANK' and member.Agro > 2 and member.IsInRange then
         if not HasDebuff(member.Unit, 6788) then
             return true, member.Unit;
         end
     else
-        if isMoving and member.HP < 80 and not HasDebuff(member.Unit, 6788) then
+        if isMoving and member.HP < 80 and member.IsInRange and not HasDebuff(member.Unit, 6788) then
             return true, member.Unit;
-        elseif member.HP < 50 and not HasDebuff(member.Unit, 6788) then
+        elseif member.HP < 50 and member.IsInRange and not HasDebuff(member.Unit, 6788) then
             return true, member.Unit;
         end
     end
@@ -3077,7 +3075,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
-    if not isMoving and members[1].HP < 70 then
+    if not isMoving and members[1].IsInRange and members[1].HP < 70 then
         return true, members[1].Unit;
     end
 end]]></Lua>
@@ -3092,7 +3090,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not isMoving and members[1].HP < 40 then
+        <Lua><![CDATA[if not isMoving and members[1].IsInRange and members[1].HP < 40 then
     return true, members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -3106,7 +3104,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not isMoving and members[1].HP < 60 then
+        <Lua><![CDATA[if not isMoving and members[1].IsInRange and members[1].HP < 60 then
     return true, members[1].Unit;
 end]]></Lua>
       </Ability>
