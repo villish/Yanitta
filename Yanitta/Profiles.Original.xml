@@ -525,10 +525,12 @@ function UseItemById(itemId)
     end
 end
 
-----------------------------------------------------------------------------------------------------------
---            Хил
-----------------------------------------------------------------------------------------------------------
-DEBUFF_LIST  = { };
+-----------------------------------------------
+--                    HEAL                   --
+-----------------------------------------------
+DONT_HEAL_DEBUFF_LIST  = {
+    -- Наложницы блезнецы
+};
 
 DISPELL_LIST = {
     --  (Хоридон ХМ)
@@ -540,34 +542,46 @@ DISPELL_LIST = {
     { Id = 0, Count = 0, Rem = 0, BossId = 0 }, --
 };
 
-function CheckNotHeal(unit, standartSpellId)
-    for i,v in ipairs(DEBUFF_LIST) do
-        if HasDebuff(unit, v) then
-            return true;
-        end
+function ValidDispellForClass(dispelType)
+    -- Curse Disease Magic Poison
+    local HealClass = UnitClass("player");
+    if     HealClass = "Priest" then
+        return dispelType == "Magic" or dispelType == "Disease";
+    elseif HealClass = "Druid" then
+        return dispelType == "Magic" or dispelType == "Poison"  or dispelType == "Curse";
+    elseif HealClass = "Paladin" then
+        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
+    elseif HealClass = "Monk" then
+        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
+    elseif HealClass = "Shaman" then
+        return dispelType == "Magic" or dispelType == "Curse";
     end
 end
 
 function CheckDispell(unit)
     for _, debuff in ipairs(DISPELL_LIST) do
-        local name, count, rem = HasDebuff(unit, debuff.Id);
-        if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
-            return true;
-        end
-        if (debuff.Rem > 0 and (rem or 0) <= debuff.Rem) then
-            return true;
-        end
-        if name then
-            return true;
+        local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, GetSpellInfo(debuff.Id));
+        if name and ValidDispellForClass(dispelType) then
+            if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
+                return true;
+            end
+            if (debuff.Rem > 0) then
+                local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                if rem  <= debuff.Rem then
+                    return true;
+                end
+            end
+            if name then
+                return true;
+            end
         end
     end
 end
 
--- Получает информацию
 function UpdatePartyTables(standartSpellId)
 
     LowHP   = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0 };
-    members = { { Unit = "player", Name = UnitName("player"), Class = UnitClass("player"), IsOnline = 1, IsDead = false } };
+    members = {{ Unit = "player", Name = UnitName("player"), Class = UnitClass("player") }};
 
     local prefix = "party";
     if IsInRaid() then
@@ -603,9 +617,11 @@ function UpdatePartyTables(standartSpellId)
             member.HP          = 100 * hpcur / hpmax;
             member.HPMAX       = hpmax;
             member.HPI         = hpcur;
-            if member.IsInRange then
-                member.DontHeal    = CheckNotHeal(member.Unit, standartSpellId);
-                member.NeedDispell = false
+
+            member.DontHeal = false;
+            if member.IsInRange and member.IsOnline and not member.IsDead then
+                member.DontHeal    = HasDebuff(member.Unit, DONT_HEAL_DEBUFF_LIST);
+                member.NeedDispell = CheckDispell(member.Unit);
             end
 
             if not member.IsDead and member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
@@ -621,12 +637,13 @@ function UpdatePartyTables(standartSpellId)
 
     -- сортируем таблицы по наименьшему количеству ХР
     table.sort(members, function(x, y)
-        if (x.IsDead or not x.IsInRange) then
+        if x.DontHeal then
             return false;
         end
         return x.HP < y.HP;
     end);
-end]]></Func>
+end
+]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;
