@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.126</Version>
+  <Version>0.0.2.129</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -529,7 +529,7 @@ end
 --                    HEAL                   --
 -----------------------------------------------
 DONT_HEAL_DEBUFF_LIST  = {
-    137341,-- Наложницы блезнецы
+    { Id = 137341,  Count = 0   }, -- Наложницы блезнецы
 };
 
 DISPELL_LIST = {
@@ -548,13 +548,24 @@ function ValidDispellForClass(dispelType)
     if     HealClass == "Priest" then
         return dispelType == "Magic" or dispelType == "Disease";
     elseif HealClass == "Druid" then
-        return dispelType == "Magic" or dispelType == "Poison"  or dispelType == "Curse";
+        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
     elseif HealClass == "Paladin" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
     elseif HealClass == "Monk" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
     elseif HealClass == "Shaman" then
         return dispelType == "Magic" or dispelType == "Curse";
+    end
+end
+
+function CheckDontHeal(unit)
+    for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
+        local name,_,_,count = UnitDebuff(unit, GetSpellInfo(debuf_rec.Id));
+        if name and count > 0 then
+            return count >= debuf_rec.Count;
+        elseif name then
+            return true;
+        end
     end
 end
 
@@ -580,7 +591,7 @@ end
 
 function UpdatePartyTables(standartSpellId)
 
-    LowHP   = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0 };
+    LowHP   = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0    };
     members = {{ Unit = "player", Name = UnitName("player"), Class = UnitClass("player") }};
 
     local prefix = "party";
@@ -591,48 +602,36 @@ function UpdatePartyTables(standartSpellId)
     end
 
     for index = 1, GetNumGroupMembers() do
-        local name,rank,subgroup,level,class,_,zone,online,isDead = GetRaidRosterInfo(index);
-        local unit = string.format("%s%i", prefix, index);
+        local name,_,subgroup,_,class,_,_,online,_ = GetRaidRosterInfo(index);
 
-        if UnitExists(unit) and UnitGUID(unit) ~= UnitGUID("player") and not UnitIsDeadOrGhost(unit) then
-            table.insert(members, { Unit = unit, Name = name, Class = class, IsOnline = online, IsDead = isDead });
+        local unit    = string.format("%s%i", prefix, index);
+        local inRange = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
+        local isDead  = UnitIsDeadOrGhost(unit);
+        local isMe    = UnitGUID(unit) == UnitGUID("player");
+
+        if inRange and online and UnitExists(unit) and not isMe and not isDead then
+            table.insert(members, { Unit = unit, Name = name, Class = class });
         end
     end
 
     local px, py = GetPlayerMapPosition("player");
     -- Обновляем статиы игроков из пати/рейда
     for i, member in ipairs(members) do
-        if UnitExists(member.Unit) and not UnitIsDeadOrGhost(member.Unit) then
-            member.Role        = UnitGroupRolesAssigned(member.Unit);
-            member.Agro        = UnitThreatSituation(member.Unit) or 0;
+        member.Role        = UnitGroupRolesAssigned(member.Unit);
+        member.Agro        = UnitThreatSituation(member.Unit);
+        member.HP          = 100 * UnitHealth(member.Unit) / UnitHealthMax(member.Unit);
+        member.X, member.Y = GetPlayerMapPosition(member.Unit) or 0, 0;
+        member.DontHeal    = CheckDontHeal(member.Unit);
+        member.NeedDispell = CheckDispell(member.Unit);
 
-            local hpcur        = UnitHealth(member.Unit) or 1;
-            local hpmax        = UnitHealthMax(member.Unit) or 1;
-
-            local X,Y          = GetPlayerMapPosition(member.Unit);
-            member.X, member.Y = X or 0, Y or 0;
-            member.Range       = GetDistance2(px, py, X, Y);
-            member.IsInRange   = IsSpellInRange(standartSpellId) == 1;
-
-            member.HP          = 100 * hpcur / hpmax;
-            member.HPMAX       = hpmax;
-            member.HPI         = hpcur;
-
-            member.DontHeal = false;
-            if member.IsInRange and member.IsOnline then
-                member.DontHeal    = HasDebuff(member.Unit, DONT_HEAL_DEBUFF_LIST);
-                member.NeedDispell = CheckDispell(member.Unit);
-            end
-
-            if not member.IsDead and member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
-            if not member.IsDead and member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
-            if not member.IsDead and member.HP < 70 then LowHP.H70 = LowHP.H70 + 1; end
-            if not member.IsDead and member.HP < 60 then LowHP.H60 = LowHP.H60 + 1; end
-            if not member.IsDead and member.HP < 50 then LowHP.H50 = LowHP.H50 + 1; end
-            if not member.IsDead and member.HP < 40 then LowHP.H40 = LowHP.H40 + 1; end
-            if not member.IsDead and member.HP < 30 then LowHP.H30 = LowHP.H30 + 1; end
-            if not member.IsDead and member.HP < 20 then LowHP.H20 = LowHP.H20 + 1; end
-        end
+        if member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
+        if member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
+        if member.HP < 70 then LowHP.H70 = LowHP.H70 + 1; end
+        if member.HP < 60 then LowHP.H60 = LowHP.H60 + 1; end
+        if member.HP < 50 then LowHP.H50 = LowHP.H50 + 1; end
+        if member.HP < 40 then LowHP.H40 = LowHP.H40 + 1; end
+        if member.HP < 30 then LowHP.H30 = LowHP.H30 + 1; end
+        if member.HP < 20 then LowHP.H20 = LowHP.H20 + 1; end
     end
 
     -- сортируем таблицы по наименьшему количеству ХР
@@ -2532,7 +2531,8 @@ end]]></Lua>
   <Profile Class="Priest">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;
-isAltMod    = nil;]]></Lua>
+isAltMod    = nil;
+mouseover_dispel = false;]]></Lua>
     <AbilityList>
       <Ability Name="Инициализация (Тьма)">
         <SpellID>0</SpellID>
@@ -2902,7 +2902,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if UnitIsFriend("player", "mouseover") then
+        <Lua><![CDATA[if mouseover_dispel and UnitIsFriend("player", "mouseover") then
     for i = 1, 40 do
         local name,_,_,_,dispelType = UnitDebuff("mouseover", i, 1);
         if name and ValidDispellForClass(dispelType) then
@@ -2969,7 +2969,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if useCooldown and members[1].HP < 30 and members[1].IsInRange then
+        <Lua><![CDATA[if useCooldown and members[1].HP < 30 then
     return true, members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -3011,10 +3011,8 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[for _,member in ipairs(members) do
-   if member.HP < 85  and not member.DontHeal then
-       return true, member.Unit;
-   end
+        <Lua><![CDATA[if members[1].HP < 85 and not members[1].DontHeal then
+   return true, members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Молитва Исцеления">
@@ -3028,13 +3026,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Если активен щит души, тогда настакиваем щит
-if not isMoving then
-    if HasBuff("player", 114908, "PLAYER") then
-        return true;
-    end
-    if LowHP.H70 > 3 then
-        return true;
-    end
+if not isMoving and (LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER")) then
+    return true, members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Обновление">
@@ -3048,7 +3041,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
-   if not HasBuff("player", 139, "PLAYER") and not members[1].DontHeal and member.HP < 70 then
+   if  member.HP < 70 and not member.DontHeal and not HasBuff("player", 139, "PLAYER") then
        return true, member.Unit;
    end
 end]]></Lua>
@@ -3071,15 +3064,12 @@ for _,member in ipairs(members) do
     if not member.DontHeal then
         if member.Role == 'TANK' and member.Agro > 2 then
             if not HasDebuff(member.Unit, 6788) then
-                print(member.Name);
                 return true, member.Unit;
             end
         else
-            if isMoving and member.HP < 80 and not HasDebuff(member.Unit, 6788) then
-                print(member.Name);
+            if isMoving and member.HP < 70 and not HasDebuff(member.Unit, 6788) then
                 return true, member.Unit;
             elseif member.HP < 50 and not HasDebuff(member.Unit, 6788) then
-                print(member.Name);
                 return true, member.Unit;
             end
         end
@@ -3097,7 +3087,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
-    if not isMoving and not members[1].DontHeal and members[1].HP < 70 then
+    if not isMoving and not members[1].DontHeal and members[1].HP < 80 then
         return true, members[1].Unit;
     end
 end]]></Lua>
