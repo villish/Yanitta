@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.129</Version>
+  <Version>0.0.2.130</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -571,19 +571,22 @@ end
 
 function CheckDispell(unit)
     for _, debuff in ipairs(DISPELL_LIST) do
-        local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, GetSpellInfo(debuff.Id));
-        if name and ValidDispellForClass(dispelType) then
-            if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
-                return true;
-            end
-            if (debuff.Rem > 0) then
-                local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                if rem  <= debuff.Rem then
+        local spell_name, rank = GetSpellInfo(debuff.Id);
+        if spell_name then
+            local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, spell_name, rank, nil);
+            if name and ValidDispellForClass(dispelType) then
+                if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
                     return true;
                 end
-            end
-            if name then
-                return true;
+                if (debuff.Rem > 0) then
+                    local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                    if rem  <= debuff.Rem then
+                        return true;
+                    end
+                end
+                if name then
+                    return true;
+                end
             end
         end
     end
@@ -618,7 +621,7 @@ function UpdatePartyTables(standartSpellId)
     -- Обновляем статиы игроков из пати/рейда
     for i, member in ipairs(members) do
         member.Role        = UnitGroupRolesAssigned(member.Unit);
-        member.Agro        = UnitThreatSituation(member.Unit);
+        member.Agro        = UnitThreatSituation(member.Unit) or 0;
         member.HP          = 100 * UnitHealth(member.Unit) / UnitHealthMax(member.Unit);
         member.X, member.Y = GetPlayerMapPosition(member.Unit) or 0, 0;
         member.DontHeal    = CheckDontHeal(member.Unit);
