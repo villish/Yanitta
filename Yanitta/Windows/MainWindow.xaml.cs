@@ -76,7 +76,7 @@ namespace Yanitta
             App.Current.Shutdown();
         }
 
-        private void ShowWindow<T>(T window) where T : Window, new()
+        private void ShowWindow<T>(ref T window) where T : Window, new()
         {
             if (window == null || !window.IsLoaded)
                 window = new T();
@@ -89,17 +89,17 @@ namespace Yanitta
 
         private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            ShowWindow<WinCodeExecute>(codeExecuteWindow);
+            ShowWindow<WinCodeExecute>(ref codeExecuteWindow);
         }
 
         private void CommandBinding_Executed_ShowProfileWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            ShowWindow<WinProfileEditor>(profileWindows);
+            ShowWindow<WinProfileEditor>(ref profileWindows);
         }
 
         private void CommandBinding_Executed_ShowSettingWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            ShowWindow<WindowSettings>(settingWindow);
+            ShowWindow<WindowSettings>(ref settingWindow);
         }
 
         private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
