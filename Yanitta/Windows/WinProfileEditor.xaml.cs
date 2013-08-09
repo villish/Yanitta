@@ -349,29 +349,7 @@ namespace Yanitta
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(ProfileDb.Instance.Url))
-                {
-                    throw new Exception("Url is empty!");
-                }
-
-                using (var response = (HttpWebResponse)WebRequest.Create(ProfileDb.Instance.Url).GetResponse())
-                {
-                    using (var stream = new StreamReader(response.GetResponseStream()))
-                    {
-                        var profile = (ProfileDb)new XmlSerializer(typeof(ProfileDb)).Deserialize(stream);
-                        if (profile.Version != ProfileDb.Instance.Version)
-                        {
-                            var question = string.Format("Обнаружен профиль v{0}, текущий v{1}.\r\nОбновить профиль?",
-                                profile.Version, ProfileDb.Instance.Version);
-                            var res = MessageBox.Show(question, "Обновление", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                            if (res == MessageBoxResult.Yes)
-                            {
-                                ProfileDb.Instance.Update(profile);
-                                ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
-                            }
-                        }
-                    }
-                }
+                ProfileDb.UpdateProfiles();
             }
             catch (Exception ex)
             {

@@ -20,18 +20,7 @@ namespace Yanitta
         public readonly static DependencyProperty CurrentProfileProperty = DependencyProperty.Register("CurrentProfile",    typeof(Profile),    typeof(WowMemory));
         public readonly static DependencyProperty ClassProperty          = DependencyProperty.Register("Class",             typeof(WowClass),   typeof(WowMemory));
         public readonly static DependencyProperty NameProperty           = DependencyProperty.Register("Name",              typeof(string),     typeof(WowMemory));
-        public readonly static DependencyProperty IsInGameProperty       = DependencyProperty.Register("IsInGame",          typeof(bool),       typeof(WowMemory),
-            new PropertyMetadata(false, OnIsInGamePropertyChanged));
-
-        private static void OnIsInGamePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (e.NewValue != e.OldValue && d is WowMemory)
-            {
-#if !TRACE
-                (d as WowMemory).ReadPlayerData();
-#endif
-            }
-        }
+        public readonly static DependencyProperty IsInGameProperty       = DependencyProperty.Register("IsInGame",          typeof(bool),       typeof(WowMemory));
 
         public event WowMemoryHandler GameExited;
 
@@ -114,23 +103,6 @@ namespace Yanitta
             this.mTimer.Start();
         }
 
-        private void ReadPlayerData()
-        {
-            if (this.IsInGame)
-            {
-                this.Class = this.Memory.Read<WowClass>((IntPtr)Offsets.Default.PlayerClass, true);
-                this.Name  = this.Memory.ReadString((IntPtr)Offsets.Default.PlayerName, true);
-                this.CurrentProfile = ProfileDb.Instance[this.Class];
-            }
-            else
-            {
-                this.Class = (WowClass)(byte)0;
-                this.Name  = "";
-                this.CurrentProfile = null;
-                this.IsFocus = false;
-            }
-        }
-
         private bool CheckProcess()
         {
             if (this.Memory.Process.HasExited || Process.GetProcessById(this.ProcessId) == null)
@@ -151,7 +123,24 @@ namespace Yanitta
             if (!CheckProcess())
                 return;
 
-            this.IsInGame = this.Memory.Read<bool>((IntPtr)Offsets.Default.IsInGame, true);
+            var isInGame = this.Memory.Read<bool>((IntPtr)Offsets.Default.IsInGame, true);
+            if (isInGame != this.IsInGame)
+            {
+                this.IsInGame = isInGame;
+
+                if (this.IsInGame)
+                {
+                    this.Class = this.Memory.Read<WowClass>((IntPtr)Offsets.Default.PlayerClass, true);
+                    this.Name  = this.Memory.ReadString((IntPtr)Offsets.Default.PlayerName, true);
+                    this.CurrentProfile = ProfileDb.Instance[this.Class];
+                }
+                else
+                {
+                    this.Class = (WowClass)(byte)0;
+                    this.Name = "";
+                    this.CurrentProfile = null;
+                }
+            }
 
             if (this.IsInGame)
             {
@@ -249,7 +238,7 @@ namespace Yanitta
 
             builder.AppendFormatLine(@"ShowInChat   = {0};", Settings.Default.ShowChat.ToString().ToLower());
             builder.AppendFormatLine(@"DebugEnabled = {0};", Settings.Default.DebugMode.ToString().ToLower());
-            builder.AppendFormatLine(@"ProcNotifyer   = {0};", rotation.ProcNotifyer.ToString().ToLower());
+            builder.AppendFormatLine(@"ProcNotifyer = {0};", rotation.ProcNotifyer.ToString().ToLower());
             // Запуск ротации
             builder.AppendFormatLine(@"ChangeRotation(""{0}"", [[{1}]]);", rotation.Name, rotation.Notes);
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -16,6 +17,7 @@ namespace Yanitta
                 m_writer = new StreamWriter(fileName, false, this.Encoding);
                 m_writer.AutoFlush = true;
                 Console.SetOut(this);
+                Debug.Listeners.Add(new TextWriterTraceListener(this));
 
                 if (isRegisterUnhandledException)
                     AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
@@ -69,6 +71,7 @@ namespace Yanitta
             base.Close();
             if (m_writer != null)
             {
+                Debug.Listeners.Clear();
                 m_writer.Close();
                 m_writer = null;
             }

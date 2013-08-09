@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Yanitta.Plugins;
 
@@ -23,6 +24,13 @@ namespace Yanitta
 
         protected override void OnStartup(StartupEventArgs e)
         {
+#warning Hack
+            var pr = System.Diagnostics.Process.GetProcessesByName("yanitta")
+                .Where((n) => n.Id != System.Diagnostics.Process.GetCurrentProcess().Id);
+
+            foreach (var p in pr)
+                p.Kill();
+
             Console.WriteLine("Yanitta startup!...");
 
             if (!File.Exists("FASM.DLL"))
@@ -36,6 +44,8 @@ namespace Yanitta
                 File.Copy(fileName, fileName + ".bak", true);
 
             Console.WriteLine(MemoryModule.ProcessMemory.FasmVersion);
+
+
 
             base.OnStartup(e);
         }

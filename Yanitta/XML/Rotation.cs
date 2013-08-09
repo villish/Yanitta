@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
@@ -11,7 +12,7 @@ namespace Yanitta
     ///
     /// </summary>
     [Serializable]
-    public class Rotation : INotifyPropertyChanged, ICloneable
+    public class Rotation : INotifyPropertyChanged, ICloneable, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -64,6 +65,7 @@ namespace Yanitta
             set
             {
                 hotKey = value;
+                this.hotKey.PropertyChanged -= OnPropertyChanged;
                 this.hotKey.PropertyChanged += OnPropertyChanged;
                 if (PropertyChanged != null)
                     PropertyChanged(this, new PropertyChangedEventArgs("HotKey"));
@@ -115,6 +117,16 @@ namespace Yanitta
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs("HotKey"));
+        }
+
+        public void Dispose()
+        {
+            if (hotKey != null)
+            {
+                hotKey.PropertyChanged -= OnPropertyChanged;
+                Debug.WriteLine("Disposing HotKey: {0}", hotKey);
+                hotKey.Dispose();
+            }
         }
     }
 }

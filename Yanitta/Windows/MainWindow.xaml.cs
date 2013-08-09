@@ -35,6 +35,17 @@ namespace Yanitta
         public MainWindow()
         {
             InitializeComponent();
+            //System.Threading.Tasks.Task.Factory.StartNew(() =>
+            //{
+            //    try
+            //    {
+            //        ProfileDb.UpdateProfiles();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Console.WriteLine(ex.Message);
+            //    }
+            //});
         }
 
         private void Image_MouseDown(object o, RoutedEventArgs e)
@@ -68,6 +79,9 @@ namespace Yanitta
                 settingWindow = null;
             }
             Console.WriteLine("Window_Closing");
+
+            if (ProfileDb.Instance != null)
+                ProfileDb.Instance.Dispose();
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)

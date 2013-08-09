@@ -11,7 +11,7 @@ namespace Yanitta
     ///
     /// </summary>
     [Serializable]
-    public class Profile : INotifyPropertyChanged
+    public class Profile : INotifyPropertyChanged, IDisposable
     {
         private WowClass m_class;
         private string m_lua;
@@ -129,6 +129,15 @@ namespace Yanitta
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        }
+
+        public void Dispose()
+        {
+            if (RotationList != null)
+            {
+                Console.WriteLine("Disposing Profile: {0}", Class);
+                RotationList.ForEach((r) => r.Dispose());
+            }
         }
     }
 }

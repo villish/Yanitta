@@ -4,13 +4,16 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
+using Yanitta.Properties;
 
 namespace Yanitta
 {
     [Serializable]
-    public class ProfileDb : INotifyPropertyChanged
+    public class ProfileDb : INotifyPropertyChanged, IDisposable
     {
         private string m_core;
         private string m_func;
@@ -206,27 +209,70 @@ namespace Yanitta
             }
         }
 
+        [XmlIgnore]
+        public int RawVersion
+        {
+            get
+            {
+                int hVersion = 0;
+                var tiles = this.Version.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(n => {
+                        int t;
+                        int.TryParse(n, out t);
+                        return t;
+                    }).ToList();
+
+                for (int i = 3; i >= 0; --i)
+                    hVersion |= (tiles.Count > i ? (tiles[i] & 0xFF) : 0) << (24 - (i * 8));
+                return hVersion;
+            }
+            set
+            {
+                this.Version = string.Format("{0}.{1}.{2}.{3}",
+                    (value >> 24) & 0xFF,
+                    (value >> 16) & 0xFF,
+                    (value >> 08) & 0xFF,
+                    (value >> 00) & 0xFF
+                    );
+            }
+        }
+
         public void IncVersion()
         {
-            int hVersion = 0;
-            var tiles = this.Version.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(n => {
-                    int t;
-                    int.TryParse(n, out t);
-                    return t;
-                }).ToList();
+            ++RawVersion;
+        }
 
-            for (int i = 3; i >= 0; --i)
-                hVersion |= (tiles.Count > i ? (tiles[i] & 0xFF) : 0) << (24 - (i * 8));
+        public static void UpdateProfiles()
+        {
+            if (string.IsNullOrWhiteSpace(ProfileDb.Instance.Url))
+            {
+                throw new Exception("Url is empty!");
+            }
 
-            ++hVersion;
+            using (var response = (HttpWebResponse)WebRequest.Create(ProfileDb.Instance.Url).GetResponse())
+            {
+                using (var stream = new StreamReader(response.GetResponseStream()))
+                {
+                    var profile = (ProfileDb)new XmlSerializer(typeof(ProfileDb)).Deserialize(stream);
+                    if (profile.RawVersion > ProfileDb.Instance.RawVersion)
+                    {
+                        var question = string.Format("Обнаружен профиль v{0}, текущий v{1}.\r\nОбновить профиль?",
+                            profile.Version, ProfileDb.Instance.Version);
+                        var res = MessageBox.Show(question, "Обновление", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                        if (res == MessageBoxResult.Yes)
+                        {
+                            ProfileDb.Instance.Update(profile);
+                            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+                        }
+                    }
+                }
+            }
+        }
 
-            this.Version = string.Format("{0}.{1}.{2}.{3}",
-                (hVersion >> 24) & 0xFF,
-                (hVersion >> 16) & 0xFF,
-                (hVersion >> 08) & 0xFF,
-                (hVersion >> 00) & 0xFF
-                );
+        public void Dispose()
+        {
+            if (ProfileList != null)
+                ProfileList.ForEach((p) => p.Dispose());
         }
     }
 }
