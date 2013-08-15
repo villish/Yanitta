@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.135</Version>
+  <Version>0.0.2.140</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -335,10 +335,11 @@ function HasBuff(unit, spellId, filter)
             local name,_,_,count,_,_,expires = UnitBuff(unit, spellName, spellRank, filter);
             if name then
                 local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                return name, count or 1, rem;
+                return name, count, rem;
             end
         end
     end
+    return nil, 0, 0;
 end
 
 -- Возвращает, есть ли один из перечисленных дебафов на персонаже
@@ -360,10 +361,11 @@ function HasDebuff(unit, spellId, filter)
             local name,_,_,count,_,_,expires = UnitDebuff(unit, spellName, spellRank, filter);
             if name then
                 local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                return name, count or 1, rem;
+                return name, count, rem;
             end
         end
     end
+    return nil, 0, 0;
 end
 
 function UnitBuffId(target, spellId, filter)
@@ -1382,7 +1384,7 @@ hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
 
 divine_purpose = HasBuff("player", 90174);  -- Божественный замысел
 holy_avenger   = HasBuff("player", 105809); -- Святая клятва
-inquisition,_,inquisition_rem = HasBuff("player", 84963) or nil, 0, 0; -- дознание]]></Lua>
+inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание]]></Lua>
       </Ability>
       <Ability Name="Prot: Щит небес">
         <SpellID>20925</SpellID>
@@ -1409,14 +1411,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if playerHP < 70 then
-    if divine_purpose then
-        return true;
-    end
-
-    if hollyPower > 2 then
+    if divine_purpose or hollyPower > 2 then
         -- Бастион славы (114637)
-        local name,count = HasBuff("player", 114637);
-        if name and count > 4 then
+        if (select(2, HasBuff("player", 114637)) or 0) > 4 then
             return true;
         end
     end
@@ -1581,18 +1578,16 @@ end]]></Lua>
       </Ability>
       <Ability Name="Retri: Дознание">
         <SpellID>84963</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if hollyPower > 2 then
-    if not inquisition or inquisition_rem <= 2 then
-        return true;
-    end
+        <Lua><![CDATA[if hollyPower > 2 and inquisition_rem <= 2 then
+    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Retri: Гнев карателя">
@@ -1605,9 +1600,8 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if useCooldown and  inquisition then
-    local start, duration = GetSpellCooldown(86698);
-    if ((duration + start) - GetTime()) < 291 then
+        <Lua><![CDATA[if useCooldown and inquisition then
+    if SpellCD(86698) < 291 then
         return true;
     end
 end]]></Lua>
@@ -1622,9 +1616,8 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if useCooldown and  inquisition then
-    local start, duration = GetSpellCooldown(31884);
-    if ((duration + start) - GetTime()) < 10 then
+        <Lua><![CDATA[if useCooldown and inquisition then
+    if SpellCD(31884) < 10 then
         return true;
     end
 end]]></Lua>
@@ -1639,9 +1632,8 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if useCooldown and  inquisition and hollyPower <= 2 then
-    local start, duration = GetSpellCooldown(86698);
-    if ((duration + start) - GetTime()) < 289 then
+        <Lua><![CDATA[if useCooldown and inquisition and hollyPower <= 2 then
+    if SpellCD(86698) < 289 then
         return true;
     end
 end]]></Lua>
