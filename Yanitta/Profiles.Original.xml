@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.130</Version>
+  <Version>0.0.2.135</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -239,22 +239,15 @@ function AddonFrame_OnEvent(self, event, ...)
             for i, ability in ipairs(AbilityTable) do
                 if (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target)) then
                     -- Если мы удачно прочитали заклинание под проком, убираем его из списка
-                    if ProcNotifyer then
-                        for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
-                            if proc_aura_id == spellId then
-                                ability.HasProc = false;
-                                break;
-                            end
-                        end
-                    end
+                    ability.HasProc = false;
                     -- Устанавливаем время последнего удачного каста
                     if ability.SetRecastDelay then
                         ability.LastCastingTime = GetTime();
-                        break;
                     end
                 end
             end
         end
+        -- Надо переделать систему проков. Наверное будем учитывать не наличие аур, а повышение статов 
         if ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
             for i, ability in ipairs(AbilityTable) do
                 for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
@@ -1422,8 +1415,8 @@ end]]></Lua>
 
     if hollyPower > 2 then
         -- Бастион славы (114637)
-        local name,count = HasBuff("player", 114637) or nil, 0;
-        if name and count > 3 then
+        local name,count = HasBuff("player", 114637);
+        if name and count > 4 then
             return true;
         end
     end
