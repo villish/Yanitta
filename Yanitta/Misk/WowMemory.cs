@@ -140,6 +140,8 @@ namespace Yanitta
                     this.Name = "";
                     this.CurrentProfile = null;
                 }
+
+                GameFocusChanged();
             }
 
             if (this.IsInGame)
