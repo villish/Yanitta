@@ -34,7 +34,7 @@ namespace Yanitta
             {
                 foreach (var process in this)
                 {
-                    Console.WriteLine("Dispose dead process [" + process.ProcessId + "]");
+                    Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
                     process.Dispose();
                 }
                 this.Clear();
@@ -45,7 +45,7 @@ namespace Yanitta
             {
                 if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
                 {
-                    Console.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
+                    Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
                     this[i].Dispose();
                     this.RemoveAt(i);
                 }
@@ -69,7 +69,7 @@ namespace Yanitta
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error WowMemory: {0}", ex.Message);
+                    Debug.WriteLine("Error WowMemory: {0}", ex.Message);
                 }
             }
         }

@@ -21,10 +21,6 @@
                     <CheckBox Margin="10,0,0,0" Content="ShowChat"  IsChecked="{Binding ShowChat}" />
                     <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
                     <StackPanel Orientation="Horizontal">
-                        <Label Width="100" Content="Build:" />
-                        <TextBox Width="300" Text="{Binding Build}" TextAlignment="Right" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
                         <Label Width="100" Content="Profile file:" />
                         <TextBox Width="280" Text="{Binding ProfilesFileName}" />
                         <Button Width="20" Command="Open" Content="..." />
@@ -39,6 +35,10 @@
             </TabItem>
             <TabItem Header="Offsets">
                 <StackPanel x:Name="spOffsets" DataContext="{Binding Source={x:Static yanitta:Offsets.Default}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="Build:" />
+                        <TextBox Width="150" Text="{Binding Build}" TextAlignment="Right" />
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Width="200" Content="PlayerName" />
                         <TextBox Width="150" TextAlignment="Right" Text="{Binding PlayerName, Converter={StaticResource integerConverter}}" />

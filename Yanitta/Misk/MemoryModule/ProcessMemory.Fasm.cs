@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Diagnostics;
 
 namespace MemoryModule
 {
@@ -16,9 +17,7 @@ namespace MemoryModule
         public unsafe byte[] Assemble(string source)
         {
             var passesLimit = 0x100;
-#if DEBUG
-            Console.WriteLine("AsmSource:\n{0}", source);
-#endif
+            Debug.WriteLine("AsmSource:\n{0}", source);
 
             var tbuffer = new byte[source.Length * passesLimit];
             FASM.Internals.fasm_Assemble(source, tbuffer, tbuffer.Length, passesLimit, 0);
@@ -36,9 +35,7 @@ namespace MemoryModule
 
                 var buffer = new byte[fasm_result.output_lenght];
                 Marshal.Copy(new IntPtr(fasm_result.output_data), buffer, 0, fasm_result.output_lenght);
-#if DEBUG
-                Console.WriteLine("ByteCode:\n{0}", string.Join(" ", buffer.Select(n => n.ToString("X2"))));
-#endif
+                Debug.WriteLine("ByteCode:\n{0}", string.Join(" ", buffer.Select(n => n.ToString("X2"))));
                 return buffer;
             }
         }

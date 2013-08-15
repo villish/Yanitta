@@ -1,12 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Xml.Serialization;
 using Yanitta.Properties;
 
 namespace Yanitta

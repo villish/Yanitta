@@ -39,8 +39,9 @@ namespace Yanitta.Plugins
             catalog.Catalogs.Add(new AssemblyCatalog(typeof(App).Assembly));
             catalog.Catalogs.Add(new DirectoryCatalog(Environment.CurrentDirectory));
 
-            if (Directory.Exists(Path.Combine(Environment.CurrentDirectory, "Plugins")))
-                catalog.Catalogs.Add(new DirectoryCatalog(Path.Combine(Environment.CurrentDirectory, "Plugins")));
+            var pluginsPath = Path.Combine(Environment.CurrentDirectory, "Plugins");
+            if (Directory.Exists(pluginsPath))
+                catalog.Catalogs.Add(new DirectoryCatalog(pluginsPath));
 
             var container = new CompositionContainer(catalog);
             container.ComposeParts(this);

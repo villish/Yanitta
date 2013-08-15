@@ -3,6 +3,7 @@ using System;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using System.Diagnostics;
 
 namespace MemoryModule
 {
@@ -34,7 +35,7 @@ namespace MemoryModule
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            Console.WriteLine("Releasing handle on 0x{0:X}" + handle.ToInt64());
+            Debug.WriteLine("Releasing handle on 0x{0:X}" + handle.ToInt64());
             return CloseHandle(handle);
         }
     }

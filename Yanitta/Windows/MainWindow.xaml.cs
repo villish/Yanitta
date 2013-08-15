@@ -1,10 +1,8 @@
-﻿using Microsoft.Windows.Controls;
-using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Windows.Controls;
 using Yanitta.Plugins;
 using Yanitta.Properties;
 using Yanitta.Windows;
@@ -35,17 +33,6 @@ namespace Yanitta
         public MainWindow()
         {
             InitializeComponent();
-            //System.Threading.Tasks.Task.Factory.StartNew(() =>
-            //{
-            //    try
-            //    {
-            //        ProfileDb.UpdateProfiles();
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine(ex.Message);
-            //    }
-            //});
         }
 
         private void Image_MouseDown(object o, RoutedEventArgs e)
@@ -57,28 +44,15 @@ namespace Yanitta
         {
             ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
 
-            Console.WriteLine("ProfileDb.Instance.Save");
-
             if (ProcessList != null)
                 ProcessList.Dispose();
-            Console.WriteLine("ProcessList.Dispose()");
 
             if (codeExecuteWindow != null)
-            {
                 codeExecuteWindow.Close();
-                codeExecuteWindow = null;
-            }
             if (profileWindows != null)
-            {
                 profileWindows.Close();
-                profileWindows = null;
-            }
             if (settingWindow != null)
-            {
                 settingWindow.Close();
-                settingWindow = null;
-            }
-            Console.WriteLine("Window_Closing");
 
             if (ProfileDb.Instance != null)
                 ProfileDb.Instance.Dispose();
@@ -86,7 +60,6 @@ namespace Yanitta
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
         {
-            App.Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
             App.Current.Shutdown();
         }
 

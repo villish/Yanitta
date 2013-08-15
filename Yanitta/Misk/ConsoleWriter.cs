@@ -12,20 +12,13 @@ namespace Yanitta
 
         public ConsoleWriter(string fileName, bool isRegisterUnhandledException = false)
         {
-            try
-            {
-                m_writer = new StreamWriter(fileName, false, this.Encoding);
-                m_writer.AutoFlush = true;
-                Console.SetOut(this);
-                Debug.Listeners.Add(new TextWriterTraceListener(this));
+            m_writer = new StreamWriter(fileName, false, this.Encoding);
+            m_writer.AutoFlush = true;
+            Console.SetOut(this);
+            Debug.Listeners.Add(new TextWriterTraceListener(this));
 
-                if (isRegisterUnhandledException)
-                    AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            }
-            catch
-            {
-                m_writer = null;
-            }
+            if (isRegisterUnhandledException)
+                AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
         public static void Initialize(string fileName, bool isRegisterUnhandledException = false)
