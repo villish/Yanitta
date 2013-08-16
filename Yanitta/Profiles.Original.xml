@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.147</Version>
+  <Version>0.0.2.148</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -4049,7 +4049,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
-isMoving  = IsMoving();]]></Lua>
+isMoving  = IsMoving(0.3);]]></Lua>
       </Ability>
       <Ability Name="Использование предметов">
         <SpellID>0</SpellID>
@@ -4073,7 +4073,7 @@ if useCooldown then
     UseItemBySlot(INVSLOT_TRINKET1);
 end]]></Lua>
       </Ability>
-      <Ability Name="Живая бомба (Target)">
+      <Ability Name="Fire: Живая бомба (Target)">
         <SpellID>44457</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4087,7 +4087,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Живая бомба (Focus)">
+      <Ability Name="Fire: Живая бомба (Focus)">
         <SpellID>44457</SpellID>
         <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
@@ -4103,7 +4103,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Живая бомба (Mouseover)">
+      <Ability Name="Fire: Живая бомба (Mouseover)">
         <SpellID>44457</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
@@ -4119,7 +4119,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Огненная глыба">
+      <Ability Name="Fire: Огненная глыба">
         <SpellID>11366</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4134,7 +4134,7 @@ if HasBuff("player", 48108) then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Пламенный взрыв">
+      <Ability Name="Fire: Пламенный взрыв">
         <SpellID>108853</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4155,7 +4155,7 @@ if isInRange or HasBuff("player", 48107) then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Огненный шар">
+      <Ability Name="Fire: Огненный шар">
         <SpellID>133</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4167,7 +4167,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
-      <Ability Name="Ожoг">
+      <Ability Name="Fire: Ожoг">
         <SpellID>2948</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4179,7 +4179,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return isMoving;]]></Lua>
       </Ability>
-      <Ability Name="Возгорание">
+      <Ability Name="Fire: Возгорание">
         <SpellID>11129</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4194,18 +4194,16 @@ end]]></Lua>
 -- это пробная версия.
 
 -- Надо в ручную определить это значение.
--- возможно попытаюсь выяснить сканированием лога,
--- и вычислением пиковой/средней величины.
+-- вычислением пиковой/средней величины.
 local MAX_DOTE_IGNITE = 5000;
 
 if useCooldown and pyroCrit and igniteDamage > MAX_DOTE_IGNITE then
-    local duration, expires = select(7, UnitDebuffId("target", 12654, "PLAYER"));
-    if (duration or 0) > 3 then
+    if select(3, HasDebuff("target", 12654, "PLAYER")) > 3 then
         return true;
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Огненный столб">
+      <Ability Name="Fire: Огненный столб">
         <SpellID>2120</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
@@ -4237,16 +4235,16 @@ end]]></Lua>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация(Огонь)</string>
-          <string>Огненный столб</string>
           <string>Использование предметов</string>
-          <string>Возгорание</string>
-          <string>Огненная глыба</string>
-          <string>Пламенный взрыв</string>
-          <string>Живая бомба (Target)</string>
-          <string>Живая бомба (Focus)</string>
-          <string>Живая бомба (Mouseover)</string>
-          <string>Огненный шар</string>
-          <string>Ожoг</string>
+          <string>Fire: Огненный столб</string>
+          <string>Fire: Возгорание</string>
+          <string>Fire: Живая бомба (Target)</string>
+          <string>Fire: Живая бомба (Focus)</string>
+          <string>Fire: Живая бомба (Mouseover)</string>
+          <string>Fire: Огненная глыба</string>
+          <string>Fire: Пламенный взрыв</string>
+          <string>Fire: Ожoг</string>
+          <string>Fire: Огненный шар</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
