@@ -1,15 +1,13 @@
-﻿using MemoryModule;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using Yanitta.Properties;
+using MemoryModule;
 using Yanitta.Plugins;
+using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -63,6 +61,7 @@ namespace Yanitta
 
         private DispatcherTimer mTimer;
         private bool IsFocus;
+        private DateTime LastAction = DateTime.Now;
 
 #if TRACE
 
@@ -156,6 +155,15 @@ namespace Yanitta
             {
                 this.IsFocus = this.Memory.IsFocusWindow;
                 this.GameFocusChanged();
+            }
+
+            // anti afk bot
+            if (Settings.Default.AniAFK && this.IsInGame && LastAction < DateTime.Now)
+            {
+                this.Memory.SendMessage(0x0100, 19, 0); // {pause} down
+                this.Memory.SendMessage(0x0101, 19, 0); // {pause} up
+
+                LastAction = DateTime.Now.AddSeconds(new Random().Next(300, 700));
             }
         }
 

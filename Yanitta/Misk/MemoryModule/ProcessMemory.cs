@@ -81,6 +81,17 @@ namespace MemoryModule
         }
 
         /// <summary>
+        /// Sends the specified message to a main window.
+        /// </summary>
+        /// <param name="msg">The message to be sent.</param>
+        /// <param name="wParam">Additional message-specific information.</param>
+        /// <param name="lParam">Additional message-specific information.</param>
+        public void SendMessage(uint msg, int wParam, int lParam)
+        {
+            Internals.SendMessage(this.Process.MainWindowHandle, msg, wParam, lParam);
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="process"></param>

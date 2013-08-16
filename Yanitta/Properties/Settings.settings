@@ -14,5 +14,8 @@
     <Setting Name="UpdateOffsetURL" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://dl.dropbox.com/u/39925787/PQR_Offsets</Value>
     </Setting>
+    <Setting Name="AniAFK" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
