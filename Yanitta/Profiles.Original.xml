@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.140</Version>
+  <Version>0.0.2.147</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -103,12 +103,12 @@ function CheckAndCastAbility(ability)
     end
 
     -- Выполняем функцию проверки
-    local mEnable, mTarget = ability.Func(ability);
-    if not mEnable then
+    local mResult = ability.Func(ability);
+    if not mResult then
         return;
     end
     --и если она нам возвращает новую цель, тогда делаем ее присваивание.
-    if type(mTarget) == "string" then
+    if type(mResult) == "string" and UnitExists(mResult) then
         ability.Target = mTarget;
     end
 
@@ -246,13 +246,11 @@ function AddonFrame_OnEvent(self, event, ...)
                     end
                 end
             end
-        end
-        -- Надо переделать систему проков. Наверное будем учитывать не наличие аур, а повышение статов 
-        if ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
+        elseif ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
             for i, ability in ipairs(AbilityTable) do
                 for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
                     if proc_aura_id == spellId then
-                        ability.HasProc = true;
+                        ability.HasProc = spellId;
                         break;
                     end
                 end
@@ -393,23 +391,6 @@ function SpellCD(m_spell)
     end
 end
 
--- Начинает чтение заклинания, если пройдена проверка:
-function CastSpellEx(m_spell, m_target)
-    local start, duration, enable = GetSpellCooldown(m_spell);
-    local isCasting = (UnitCastingInfo("player") or UnitChannelInfo("player"));
-    local isUsable  = IsUsableSpell(m_spell);
-
-    if not isCasting and duration == 0 and enable == 1 and isUsable then
-        if m_target ~= "player" then
-            CastSpellByName(GetSpellInfo(m_spell), m_target or "target");
-            return true;
-        else
-            CastSpellByName(GetSpellInfo(m_spell), "player");
-            return true;
-        end
-    end
-end
-
 -- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
 -- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шанам)
 -- Параметры:
@@ -487,8 +468,8 @@ function GetDistance(unit1, unit2)
     return sqrt( (x1 or 0 - x2 or 0) ^ 2 + (y1 or 0 - y2 or 0) ^ 2 );
 end
 
-function GetDistance2(x1, y1, x2, y2)
-    return sqrt( (x1 or 0 - x2 or 0) ^ 2 + (y1 or 0 - y2 or 0) ^ 2 );
+function CheckDistance(x1, y1, x2, y2, distance)
+    return sqrt( (x1 or 0 - x2 or 0) ^ 2 + (y1 or 0 - y2 or 0) ^ 2 ) <= distance;
 end
 
 -- Проверка, имеется ли у персонажа указанный символ
@@ -587,7 +568,7 @@ function CheckDispell(unit)
     end
 end
 
-function UpdatePartyTables(standartSpellId)
+function FillPartyTables(standartSpellId)
 
     LowHP   = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0    };
     members = {{ Unit = "player", Name = UnitName("player"), Class = UnitClass("player") }};
@@ -778,9 +759,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -801,7 +779,7 @@ elseif IsModKeyDown(mkRightAlt)     then
     end
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -1008,8 +986,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -1038,7 +1014,7 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -1372,7 +1348,7 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -1872,7 +1848,7 @@ unitFocus = UnitPower("player");]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -2285,9 +2261,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -2301,7 +2274,7 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -2543,9 +2516,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -2560,7 +2530,7 @@ elseif IsModKeyDown(mkRightAlt) then
 
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -2576,7 +2546,7 @@ isMoving  = IsMoving();
 --isAttcked  = nil;--IsUnitCanAttack("target");
 --playerHP   = HealthByPercent("player");]]></Lua>
       </Ability>
-      <Ability Name="Слово тьмы: Боль">
+      <Ability Name="Shadow: Слово тьмы: Боль">
         <SpellID>589</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2594,7 +2564,7 @@ if not name or rem < 2 or isMoving then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Слово тьмы: Боль (focus)">
+      <Ability Name="Shadow: Слово тьмы: Боль (focus)">
         <SpellID>589</SpellID>
         <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
@@ -2612,7 +2582,7 @@ if not name or rem < 2 or isMoving then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Слово тьмы: Боль (mouseover)">
+      <Ability Name="Shadow: Слово тьмы: Боль (mouseover)">
         <SpellID>589</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
@@ -2630,7 +2600,7 @@ if not name or rem < 2 or isMoving then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Прикосновение вампира (target)">
+      <Ability Name="Shadow: Прикосновение вампира (target)">
         <SpellID>34914</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2650,7 +2620,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Прикосновение вампира (Focus)">
+      <Ability Name="Shadow: Прикосновение вампира (Focus)">
         <SpellID>34914</SpellID>
         <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
@@ -2670,7 +2640,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Прикосновение вампира (Mouseover)">
+      <Ability Name="Shadow: Прикосновение вампира (Mouseover)">
         <SpellID>34914</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
@@ -2690,7 +2660,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Взрыв разума">
+      <Ability Name="Shadow: Взрыв разума">
         <SpellID>8092</SpellID>
         <Target>Target</Target>
         <CancelChannel>true</CancelChannel>
@@ -2704,7 +2674,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Пытка разума">
+      <Ability Name="Shadow: Пытка разума">
         <SpellID>15407</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2718,7 +2688,7 @@ end]]></Lua>
     return isInRange;
 end]]></Lua>
       </Ability>
-      <Ability Name="Всепожирающая чума">
+      <Ability Name="Shadow: Всепожирающая чума">
         <SpellID>2944</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2732,7 +2702,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Искушение разума">
+      <Ability Name="Shadow: Искушение разума">
         <SpellID>48045</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2746,7 +2716,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Target)">
+      <Ability Name="Shadow: Слово Тьмы: Смерть (Target)">
         <SpellID>32379</SpellID>
         <Target>Target</Target>
         <CancelChannel>true</CancelChannel>
@@ -2758,7 +2728,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Focus)">
+      <Ability Name="Shadow: Слово Тьмы: Смерть (Focus)">
         <SpellID>32379</SpellID>
         <Target>Focus</Target>
         <CancelChannel>true</CancelChannel>
@@ -2770,7 +2740,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Mouseover)">
+      <Ability Name="Shadow: Слово Тьмы: Смерть (Mouseover)">
         <SpellID>32379</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>true</CancelChannel>
@@ -2782,7 +2752,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Пронзание разума">
+      <Ability Name="Shadow: Пронзание разума">
         <SpellID>73510</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2796,7 +2766,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Сияние">
+      <Ability Name="Shadow: Сияние">
         <SpellID>120517</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2808,7 +2778,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
-      <Ability Name="Исчадие тьмы">
+      <Ability Name="Shadow: Исчадие тьмы">
         <SpellID>34433</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2848,20 +2818,16 @@ elseif IsModKeyDown(mkRightAlt) then
 
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
 
---2061
-UpdatePartyTables(2061, "PRIEST");
+FillPartyTables(2061);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
 isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
---hasAPbuff  = HasBuff("player", 57330, 19506);
---isAttcked  = nil;--IsUnitCanAttack("target");
---playerHP   = HealthByPercent("player");
 
 if myMana < 75 then
     UseItemBySlot(INVSLOT_TRINKET1);
@@ -2958,7 +2924,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if useCooldown and members[1].HP < 30 then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Подчиняющий разум">
@@ -3000,7 +2966,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if members[1].HP < 85 and not members[1].DontHeal then
-   return true, members[1].Unit;
+   return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Молитва Исцеления">
@@ -3015,7 +2981,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Если активен щит души, тогда настакиваем щит
 if not isMoving and (LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER")) then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Обновление">
@@ -3030,7 +2996,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
    if  member.HP < 70 and not member.DontHeal and not HasBuff("player", 139, "PLAYER") then
-       return true, member.Unit;
+       return member.Unit;
    end
 end]]></Lua>
       </Ability>
@@ -3050,15 +3016,15 @@ end]]></Lua>
 for _,member in ipairs(members) do
     -- На активного танка щит по КД
     if not member.DontHeal then
-        if member.Role == 'TANK' and member.Agro > 2 then
+        if member.Agro > 2 then
             if not HasDebuff(member.Unit, 6788) then
-                return true, member.Unit;
+                return member.Unit;
             end
         else
             if isMoving and member.HP < 70 and not HasDebuff(member.Unit, 6788) then
-                return true, member.Unit;
+                return member.Unit;
             elseif member.HP < 50 and not HasDebuff(member.Unit, 6788) then
-                return true, member.Unit;
+                return member.Unit;
             end
         end
     end
@@ -3076,7 +3042,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
     if not isMoving and not members[1].DontHeal and members[1].HP < 80 then
-        return true, members[1].Unit;
+        return members[1].Unit;
     end
 end]]></Lua>
       </Ability>
@@ -3091,7 +3057,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving and not members[1].DontHeal and members[1].HP < 40 then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Великое исцеление">
@@ -3105,7 +3071,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving and not members[1].DontHeal and members[1].HP < 60 then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Слово тьмы: Боль">
@@ -3142,6 +3108,7 @@ end]]></Lua>
           <string>Disc: Великое исцеление</string>
           <string>Disc: Исповедь</string>
           <string>Disc: Священный огонь</string>
+          <string>Shadow: Слово Тьмы: Смерть (Target)</string>
           <string>Disc: Слово тьмы: Боль</string>
           <string>Disc: Кара</string>
         </AbilityQueue>
@@ -3156,24 +3123,23 @@ end]]></Lua>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Тьма)</string>
-          <string>Массовое разсеивание</string>
-          <string>Искушение разума</string>
-          <string>Слово Тьмы: Смерть (Target)</string>
-          <string>Слово Тьмы: Смерть (Focus)</string>
-          <string>Слово Тьмы: Смерть (Mouseover)</string>
-          <string>Придание сил</string>
-          <string>Всепожирающая чума</string>
-          <string>Взрыв разума</string>
-          <string>Сияние</string>
-          <string>Исчадие тьмы</string>
-          <string>Пронзание разума</string>
-          <string>Слово тьмы: Боль</string>
-          <string>Слово тьмы: Боль (focus)</string>
-          <string>Слово тьмы: Боль (mouseover)</string>
-          <string>Прикосновение вампира (target)</string>
-          <string>Прикосновение вампира (Focus)</string>
-          <string>Прикосновение вампира (Mouseover)</string>
-          <string>Пытка разума</string>
+          <string>Disc: Массовое разсеивание</string>
+          <string>Shadow: Искушение разума</string>
+          <string>Shadow: Слово Тьмы: Смерть (Target)</string>
+          <string>Shadow: Слово Тьмы: Смерть (Focus)</string>
+          <string>Shadow: Слово Тьмы: Смерть (Mouseover)</string>
+          <string>Shadow: Всепожирающая чума</string>
+          <string>Shadow: Взрыв разума</string>
+          <string>Shadow: Сияние</string>
+          <string>Shadow: Исчадие тьмы</string>
+          <string>Shadow: Пронзание разума</string>
+          <string>Shadow: Слово тьмы: Боль</string>
+          <string>Shadow: Слово тьмы: Боль (focus)</string>
+          <string>Shadow: Слово тьмы: Боль (mouseover)</string>
+          <string>Shadow: Прикосновение вампира (target)</string>
+          <string>Shadow: Прикосновение вампира (Focus)</string>
+          <string>Shadow: Прикосновение вампира (Mouseover)</string>
+          <string>Shadow: Пытка разума</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -3232,9 +3198,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -3882,9 +3845,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    --SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -3898,7 +3858,7 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt)     then
 end
 
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -4075,9 +4035,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(mkLeftAlt) then
-    SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
@@ -4105,7 +4062,7 @@ isMoving  = IsMoving();]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем протацию дальше
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -4432,12 +4389,12 @@ end]]></Lua>
         if member.HP < 90 and HasBuff(member.Unit, { 774 }, "PLAYER") then
             local count = 0;
             for _,unit in ipairs(members) do
-                if unit.HP < 90 and GetDistance2(unit.X, unit.Y, member.X, member.Y) <= 4 then
+                if unit.HP < 90 and CheckDistance(unit.X, unit.Y, member.X, member.Y, 4) then
                     count = count + 1;
                 end
             end
             if count > 2 then
-                return true, member.Unit;
+                return member.Unit;
             end
         end
     end
@@ -4505,17 +4462,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if #members == 1 then
-    local name, count, rem = HasBuff("player", 33763, "PLAYER") or nil, 0, 0;
-    if count < 3 or rem < 2 then
-        return true, "player";
-    end
-end
-for _,member in ipairs(members) do
-    if member.IsInRange and member.Role == "TANK" and member.Agro == 3 then
-        local name, count, rem = HasBuff(member.Unit, 33763, "PLAYER") or nil, 0, 0;
+        <Lua><![CDATA[for _,member in ipairs(members) do
+    if member.Agro > 2 then
+        local name, count, rem = HasBuff(member.Unit, 33763, "PLAYER");
         if count < 3 or rem < 2 then
-            return true, member.Unit;
+            return member.Unit;
         end
     end
 end]]></Lua>
@@ -4532,7 +4483,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
     if member.HP < 90 and not HasBuff(member.Unit, 774, "PLAYER") then
-        return true, member.Unit;
+        return member.Unit;
     end
 end]]></Lua>
       </Ability>
@@ -4547,7 +4498,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving and members[1].HP < 60 then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Восстановление">
@@ -4561,7 +4512,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving and members[1].HP < 40 then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Покровительство природы">
@@ -4575,7 +4526,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not isMoving and members[1].HP < 80 then
-    return true, members[1].Unit;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Дикий гриб: Лечение">
@@ -4721,116 +4672,38 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if type(members) ~= "table" or type(tanks) ~= "table"
-    or GetNumGroupMembers() ~= (#members + #tanks) then
-
-    members = { };
-    tanks   = { }; -- таблица танков
-
-    local prefix = "party";
-    if IsInRaid() then
-        prefix = "raid";
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+    return true;
+elseif IsModKeyDown(mkLeftControl) then
+elseif IsModKeyDown(mkLeftAlt) then
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
     end
-
-    for i = 1, GetNumGroupMembers() do
-        local name, rank, subgroup, level, class, fileName, zone, online, isDead, role, isML = GetRaidRosterInfo(i);
-        local unit = prefix..i;
-        if UnitExists(unit) then
-            local hpcur = UnitHealth(unit) or 1;
-            local hpmax = UnitHealthMax(unit) or 1;
-
-            if role == "TANK" then
-                table.insert(members, {
-                    Unit    = unit,
-                    Name    = name,
-                    Class   = class,
-                    IsActive= false,
-                    HP      = 100 * hpcur / hpmax,
-                    HPMAX   = hpmax,
-                    HPI     = hpcur,
-                    X,Y     = GetPlayerMapPosition(unit),
-                    IsDead  = isDead;
-                });
-            else
-                table.insert(members, {
-                    Unit    = unit,
-                    Name    = name,
-                    Class   = class,
-                    Role    = 0,
-                    HP      = 100 * hpcur / hpmax,
-                    HPMAX   = hpmax,
-                    HPI     = hpcur,
-                    X,Y     = GetPlayerMapPosition(unit),
-                    IsDead  = isDead;
-                });
-            end
-        end
-    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
 
 end
 
-PlayerHp90 = 0;
-PlayerHp70 = 0;
-PlayerHp50 = 0;
-PlayerHp30 = 0;
-
--- Обновляем статиы играков из пати/рейда
-for i, member in ipairs(members) do
-    if UnitExists(member.Unit) then
-
-        member.IsDead  = UnitIsDeadOrGhost(unit);
-
-        local hpcur = UnitHealth(unit) or 1;
-        local hpmax = UnitHealthMax(unit) or 1;
-
-        if member.IsDead then
-            member.HP = 0xffff;
-            member.HPMAX   = 0;
-            member.HPI     = 0;
-        else
-            member.HP      = 100 * hpcur / hpmax;
-            member.HPMAX   = hpmax;
-            member.HPI     = hpcur;
-        end
-
-        member.X, member.Y = GetPlayerMapPosition();
-
-        if member.HP < 90 then PlayerHp90 = PlayerHp90 + 1; end
-        if member.HP < 70 then PlayerHp70 = PlayerHp70 + 1; end
-        if member.HP < 50 then PlayerHp50 = PlayerHp50 + 1; end
-        if member.HP < 30 then PlayerHp30 = PlayerHp30 + 1; end
-    end
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() then
+    return true;
 end
 
--- в основном нам надо следить за позицией танков, их здоровьенм и тем кто сейчас активен.
-for i, member in ipairs(tanks) do
-    if UnitExists(member.Unit) then
+FillPartyTables(774);
 
-        member.IsDead  = UnitIsDeadOrGhost(unit);
+isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
+isMoving  = IsMoving();
+myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
-        local hpcur = UnitHealth(unit) or 1;
-        local hpmax = UnitHealthMax(unit) or 1;
-
-        if member.IsDead then
-            member.HP = 0xffff;
-            member.HPMAX   = 0;
-            member.HPI     = 0;
-        else
-            member.HP      = 100 * hpcur / hpmax;
-            member.HPMAX   = hpmax;
-            member.HPI     = hpcur;
-        end
-
-        member.IsActive = false;    -- Надо вычислять активного (получающего урон танка)
-        member.X, member.Y = GetPlayerMapPosition();
-    end
-end
-
--- сортируем таблицы по наименьшему количеству ХР
-if #members > 0 then
-    table.sort(members, function(x, y)
-        return x.HP < y.HP;
-    end);
+if myMana < 75 then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
 end]]></Lua>
       </Ability>
       <Ability Name="Инициализация (Страж)">
@@ -4854,9 +4727,6 @@ elseif IsModKeyDown(mkLeftControl) then
         print("|cffff0000 >> AOE");
     end
 elseif IsModKeyDown(3) then
-    --SpellStopCasting();
-    StopAttack();
-    PetStopAttack();
     return true;
 elseif IsModKeyDown(4) then
     if useCooldown then
@@ -5312,14 +5182,6 @@ RightAlt -  Взрыв грибов]]></Notes>
           <string>Трепка</string>
           <string>Волшебный огонь</string>
           <string>Растерзать</string>
-        </AbilityQueue>
-        <Notes><![CDATA[]]></Notes>
-      </Rotation>
-      <Rotation Name="тевт" ProcNotifyer="false">
-        <HotKey Key="X" Modifier="Alt Shift" />
-        <AbilityQueue>
-          <string>Исступление</string>
-          <string>Увечье</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
