@@ -91,6 +91,7 @@
     </ApplicationDefinition>
     <Compile Include="Misk\ConsoleWriter.cs" />
     <Compile Include="Misk\Converters\EnumToLocalizedSrtConverter.cs" />
+    <Compile Include="Misk\Converters\ResizeConverter.cs" />
     <Compile Include="Misk\Converters\StringToIntConverter.cs" />
     <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
     <Compile Include="Misk\LuaHook.cs" />

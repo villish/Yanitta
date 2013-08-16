@@ -76,10 +76,13 @@
                                     <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
                                     <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
 
-                                    <GridViewColumn Header="{x:Static yanitta:Localization.Target}">
+                                    <GridViewColumn Header="{x:Static yanitta:Localization.Target}" Width="100" x:Name="hTarget">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <ComboBox Width="100" ItemsSource="{Binding Source={StaticResource TargetValues}}" SelectedValue="{Binding Target}" ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
+                                                <ComboBox Width="{Binding ElementName=hTarget, Path=Width, Converter={StaticResource ResizeConverter}, ConverterParameter=-10}"
+                                                          ItemsSource="{Binding Source={StaticResource TargetValues}}"
+                                                          SelectedValue="{Binding Target}"
+                                                          ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>

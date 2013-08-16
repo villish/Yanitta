@@ -28,6 +28,7 @@
     <yanitta:StringToIntConverter        x:Key="integerConverter" />
     <yanitta:EnumToLocalizedSrtConverter x:Key="EnumToStr" />
     <yanitta:CollectionToCountConverter  x:Key="CollectionToCount" />
+    <yanitta:ResizeConverter             x:Key="ResizeConverter" />
 
     <!--Collections-->
     <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:MainWindow.ProcessList}}" />
