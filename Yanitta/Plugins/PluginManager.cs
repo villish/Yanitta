@@ -49,9 +49,9 @@ namespace Yanitta.Plugins
 
         public void Dispose()
         {
-            if (PluginList != null)
-                foreach (var p in PluginList)
-                    p.Dispose();
+            if (PluginList == null)
+                return;
+            PluginList.ForEach(n => n.Dispose());
         }
     }
 }
