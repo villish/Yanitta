@@ -119,8 +119,6 @@ namespace Yanitta
                     }
                 }
             }
-
-            //spOffsets.InvalidateProperty(DataContextProperty);
         }
     }
 }

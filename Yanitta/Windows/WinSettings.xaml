@@ -60,11 +60,6 @@
                         <Label Width="200" Content="FrameScript_GetLocalizedText" />
                         <TextBox Width="150" TextAlignment="Right" Text="{Binding FrameScript_GetLocalizedText, Converter={StaticResource integerConverter}}" />
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="ClntObjMgrGetActivePlayer" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding ClntObjMgrGetActivePlayer, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                    <Separator />
                 </StackPanel>
             </TabItem>
         </TabControl>
