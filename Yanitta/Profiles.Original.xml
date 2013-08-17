@@ -109,7 +109,7 @@ function CheckAndCastAbility(ability)
     end
     --и если она нам возвращает новую цель, тогда делаем ее присваивание.
     if type(mResult) == "string" and UnitExists(mResult) then
-        ability.Target = mTarget;
+        ability.Target = mResult;
     end
 
     -- Поскольку многие функции требуют имени заклинания, получим его.
