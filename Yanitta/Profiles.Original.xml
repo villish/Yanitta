@@ -4265,6 +4265,43 @@ end]]></Lua>
   <Profile Class="Warlock">
     <Lua><![CDATA[]]></Lua>
     <AbilityList>
+      <Ability Name="Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+isInRange = IsSpellInRange(GetSpellInfo(686), "target") == 1;
+isMoving  = IsMoving(0.3);]]></Lua>
+      </Ability>
       <Ability Name="Стрела тьмы">
         <SpellID>686</SpellID>
         <Target>Target</Target>
@@ -4289,7 +4326,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[local dot,c,rem = HasDebuff("target", 172, "PLAYER");
 
-if not dot or (rem or 0) < 2 then
+if not dot or rem < 2 then
     return true;
 end
 ]]></Lua>
