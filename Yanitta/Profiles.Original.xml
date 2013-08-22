@@ -45,8 +45,8 @@ function CheckAndCastAbility(ability)
     local recastDelay = 0;
     if ability.SetRecastDelay then
         -- установка задержки, для текущего заклинания
-        recastDelay = 300;
-        if ((GetTime() - ability.LastCastingTime) < 1) then
+        recastDelay = 1000;
+        if (GetTime() - ability.LastCastingTime) < 1 then
             return;
         end
     end
