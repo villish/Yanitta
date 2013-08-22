@@ -46,9 +46,6 @@ namespace MemoryModule
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32", SetLastError = true)]
-        public static extern int GetWindowThreadProcessId([In]IntPtr hwnd, [Out]out int lProcessId);
-
         [DllImport("user32.dll")]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam);
     }

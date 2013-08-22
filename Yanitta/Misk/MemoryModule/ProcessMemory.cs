@@ -71,13 +71,7 @@ namespace MemoryModule
         /// </summary>
         public bool IsFocusWindow
         {
-            get
-            {
-                int lProcessId;
-                var foregroundWindow = Internals.GetForegroundWindow();
-                Internals.GetWindowThreadProcessId(foregroundWindow, out lProcessId);
-                return this.Process.Id == lProcessId;
-            }
+            get { return this.Process.MainWindowHandle == Internals.GetForegroundWindow(); }
         }
 
         /// <summary>
