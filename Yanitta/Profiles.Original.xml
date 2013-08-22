@@ -17,7 +17,7 @@ mkRightControl  = 5;
 mkRightAlt      = 6;
 
 -- Структура таблицы способностей: SpellId Name Target DropChanel IsRangeCheck IsAttackedCheck IsCheckInCombat SetRecastDelay Func
-AbilityTable = { };
+ABILITY_TABLE  = { };
 AURA_PROC_LIST = { };
 LOSS_TABLE     = { };
 
@@ -96,7 +96,7 @@ function CheckAndCastAbility(ability)
 
     -- Проверка, на присутствие бафа прока, если бафа нет - значит убираем прок
     if ProcNotifyer then
-        for _,ab in ipairs(AbilityTable) do
+        for _,ab in ipairs(ABILITY_TABLE) do
             if ab.HasProc then
                 if not HasBuff("player", AURA_PROC_LIST) then
                     ab.HasProc = false;
@@ -233,16 +233,16 @@ function AddonFrame_OnEvent(self, event, ...)
         local errorMsg = ...;
         if errorMsg == SPELL_FAILED_NOT_BEHIND then
             LastNotBehindTime     = GetTime();
-        elseif errorMsg == SPELL_FAILED_LINE_OF_SIGHT then
+        elseif errorMsg == ERR_ALREADY_PICKPOCKETED then
             LastFailedLineOfSight = GetTime();
         end
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subEvent, hideCaster,
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
               destGUID,  destName, destFlags,  destFlags2,
-              spellId,   spellName,spellSchool = ...;
-        if (subEvent == "SPELL_CAST_SUCCESS" and type(AbilityTable) == "table" and sourceGUID == UnitGUID("player")) then
-            for i, ability in ipairs(AbilityTable) do
+              spellId,   spellName,spellSchool, param15 = ...;
+        if (subEvent == "SPELL_CAST_SUCCESS" and type(ABILITY_TABLE) == "table" and sourceGUID == UnitGUID("player")) then
+            for i, ability in ipairs(ABILITY_TABLE) do
                 if (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target)) then
                     -- Если мы удачно прочитали заклинание под проком, убираем его из списка
                     ability.HasProc = false;
@@ -253,7 +253,7 @@ function AddonFrame_OnEvent(self, event, ...)
                 end
             end
         elseif ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
-            for i, ability in ipairs(AbilityTable) do
+            for i, ability in ipairs(ABILITY_TABLE) do
                 for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
                     if proc_aura_id == spellId then
                         ability.HasProc = spellId;
@@ -274,8 +274,8 @@ end
 
 function AddonFrame_OnUpdate(self, elapsed)
     -- таймер
-    if type(AbilityTable) == "table" then
-        if GetTime() >= LastTime and #AbilityTable > 0 then
+    if type(ABILITY_TABLE) == "table" then
+        if GetTime() >= LastTime and #ABILITY_TABLE > 0 then
             if AddonEnabled and not UnitIsDeadOrGhost("player") then
                 -- Для того, чтобы определить, сколько времени двигается персонаж
                 -- Запишем время начала движения.
@@ -287,7 +287,7 @@ function AddonFrame_OnUpdate(self, elapsed)
                 end
 
                 -- Передираем способности, и останавляваемся, если условия выполнены
-                for _,ability in ipairs(AbilityTable) do
+                for _,ability in ipairs(ABILITY_TABLE) do
                     if CheckAndCastAbility(ability) then
                         break;
                     end
