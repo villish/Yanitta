@@ -109,7 +109,7 @@ namespace Yanitta
             var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
 
             var builder = new StringBuilder();
-            builder.AppendFormatLine("table.insert(AbilityTable, {");
+            builder.AppendFormatLine("table.insert(ABILITY_TABLE, {");
             builder.AppendFormatLine("    SpellId           = {0},",     this.SpellID);
             builder.AppendFormatLine("    Name              = \"{0}\",", this.Name);
             builder.AppendFormatLine("    Target            = \"{0}\",", target);
