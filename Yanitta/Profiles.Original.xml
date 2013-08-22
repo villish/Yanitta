@@ -19,6 +19,9 @@ mkRightAlt      = 6;
 -- Структура таблицы способностей: SpellId Name Target DropChanel IsRangeCheck IsAttackedCheck IsCheckInCombat SetRecastDelay Func
 AbilityTable = { };
 AURA_PROC_LIST = { };
+LOSS_TABLE     = { };
+
+LAST_TARGET = 0;
 
 -- Возвращает ограниченное сверху и снизу значение
 function asc(m_value, m_min, m_max)
@@ -165,6 +168,7 @@ function CheckAndCastAbility(ability)
 
     -- чтение заклинания по области
     if ability.Target == "mouselocation" then
+        LAST_TARGET = 0;
         CastSpellByName(spellInfo, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
@@ -172,9 +176,11 @@ function CheckAndCastAbility(ability)
         CastSpellByName(spellInfo, nil);
     -- чтения заклинания без цели
     elseif ability.Target == "none" then
+        LAST_TARGET = 0;
         CastSpellByName(spellInfo, nil);
     -- чтение заклинания по конкретной цели
     else
+        LAST_TARGET = UnitGUID(ability.Target);
         CastSpellByName(spellInfo, ability.Target);
     end
 
@@ -255,6 +261,13 @@ function AddonFrame_OnEvent(self, event, ...)
                     end
                 end
             end
+        elseif subEvent == "SPELL_CAST_FAILED" then
+            if failedType == SPELL_FAILED_LINE_OF_SIGHT and LAST_TARGET ~= 0 then
+                LOSS_TABLE[LAST_TARGET] = {
+                    ctime  = GetTime(),
+                    cspell = spellId
+                };
+            end
         end
     end
 end
@@ -282,6 +295,10 @@ function AddonFrame_OnUpdate(self, elapsed)
             end
             LastTime = GetTime() + (Delay / 1000);
         end
+        if GetTime() >= LastTimeClearLossTable then
+            LOSS_TABLE = { };
+            LastTimeClearLossTable = GetTime() + 60;
+        end
     end
 end
 
@@ -290,10 +307,9 @@ if not AddonFrame then
     AddonEnabled    = false;    -- признак включенного аддона
     Delay           = 250;      -- интервал таймера (милисекунды)
     LastTime        = 0;        -- служебная переменная для таймера
-
-    LastStartMovingTime   = 0;
-    LastNotBehindTime     = 0;
-    LastFailedLineOfSight = 0;
+    LastTimeClearLossTable = 0;
+    LastStartMovingTime    = 0;
+    LastNotBehindTime      = 0;
 
     EventList = {
         "COMBAT_LOG_EVENT_UNFILTERED",
@@ -425,10 +441,14 @@ function IsNotBehind(sec)
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
-function IsNotLineOfSight(sec)
+function IsNotLineOfSight(unit,sec)
     local sec = sec or 1;
-    if (GetTime() - LastFailedLineOfSight <= sec) then
-        return true;
+    local guid = UnitGUID(unit);
+    if type(LOSS_TABLE) == "table" then
+        local rec = LOSS_TABLE[guid];
+        if rec and GetTime() - rec.ctime <= sec then
+            return true;
+        end
     end
 end
 
