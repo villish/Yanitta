@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.168</Version>
+  <Version>0.0.2.171</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -601,15 +601,18 @@ function FillPartyTables(standartSpellId)
     end
 
     for index = 1, GetNumGroupMembers() do
-        local name,_,subgroup,_,class,_,_,online,_ = GetRaidRosterInfo(index);
+        local name,_,subgroup,_,class,_,_,online = GetRaidRosterInfo(index);
+        local unit = string.format("%s%i", prefix, index);
 
-        local unit    = string.format("%s%i", prefix, index);
-        local inRange = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
-        local isDead  = UnitIsDeadOrGhost(unit);
-        local isMe    = UnitGUID(unit) == UnitGUID("player");
+        if UnitExists(unit) then
+            local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
+            local isDead    = UnitIsDeadOrGhost(unit);
+            local isMe      = UnitGUID(unit) == UnitGUID("player");
+            local isVisible = not IsNotLineOfSight(unit); -- need testing
 
-        if inRange and online and UnitExists(unit) and not isMe and not isDead then
-            table.insert(members, { Unit = unit, Name = name, Class = class });
+            if inRange and online and not isMe and not isDead and isVisible then
+                table.insert(members, { Unit = unit, Name = name, Class = class });
+            end
         end
     end
 
