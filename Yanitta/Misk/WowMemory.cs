@@ -163,7 +163,7 @@ namespace Yanitta
                 this.Memory.SendMessage(0x0100, 19, 0); // {pause} down
                 this.Memory.SendMessage(0x0101, 19, 0); // {pause} up
 
-                LastAction = DateTime.Now.AddSeconds(new Random().Next(300, 700));
+                LastAction = DateTime.Now.AddSeconds(new Random().Next(100, 250));
                 Debug.WriteLine("SendMessage: key(down/up) {pause}");
             }
         }
