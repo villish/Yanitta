@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.148</Version>
+  <Version>0.0.2.168</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2258,7 +2258,9 @@ end]]></Lua>
     </RotationList>
   </Profile>
   <Profile Class="Rogue">
-    <Lua><![CDATA[]]></Lua>
+    <Lua><![CDATA[invisible     = false;
+setAoE        = false;
+useCooldown   = true;]]></Lua>
     <AbilityList>
       <Ability Name="Инициализаця">
         <SpellID>0</SpellID>
@@ -2291,6 +2293,13 @@ elseif IsModKeyDown(mkRightShift) then
         print("|cff00ff00Кулдауны включены");
     end
 elseif IsModKeyDown(mkRightControl) then
+    if invisible then
+        invisible = false;
+        print("|cffff0000Незаметность выключена");
+    else
+        invisible = true;
+        print("|cff00ff00Незаметность включена");
+    end
 elseif IsModKeyDown(mkRightAlt) then
 end
 
@@ -2317,9 +2326,9 @@ end]]></Lua>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not UnitAffectingCombat("player") not HasBuff("player", 2823) and not IsMoving() then
+        <Lua><![CDATA[if not (UnitAffectingCombat("player") or HasBuff("player", 2823) or IsMoving()) then
     return true;
 end]]></Lua>
       </Ability>
@@ -2471,6 +2480,87 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
+      <Ability Name="Обшаривание карманов">
+        <SpellID>921</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not RFrame then
+
+    ALREADY_PICKPOCKETED_TABLE = { };
+
+    RFrame = CreateFrame("Frame");
+    RFrame:RegisterEvent("UI_ERROR_MESSAGE");
+    RFrame:RegisterEvent("WORLD_MAP_UPDATE");
+    RFrame:SetScript("OnEvent",  function(self, event, ...)
+        if event == "UI_ERROR_MESSAGE" then
+            local msg = ...;
+            if  msg == SPELL_FAILED_TARGET_NO_POCKETS or
+                msg == ERR_ALREADY_PICKPOCKETED then
+                ALREADY_PICKPOCKETED_TABLE[LastTarget] = GetTime();
+            end
+        elseif event == "WORLD_MAP_UPDATE" then
+            ALREADY_PICKPOCKETED_TABLE = { };
+        end
+    end);
+    RFrame:Show();
+
+    function IsPickPocketed(unit)
+        local guid = UnitGUID(unit);
+
+        if ALREADY_PICKPOCKETED_TABLE then
+            if ALREADY_PICKPOCKETED_TABLE[guid] then
+                return true;
+            end
+        end
+    end
+end
+
+
+ClearTarget();
+TargetNearestEnemy();
+
+if UnitExists("target") and not IsPickPocketed("target") and not UnitIsDeadOrGhost("target") then
+    if IsSpellInRange(GetSpellInfo(921), "target") == 1 then
+        return true;
+    end
+end
+
+ClearTarget();]]></Lua>
+      </Ability>
+      <Ability Name="Незаметность">
+        <SpellID>1784</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if invisible and not UnitAffectingCombat("player") and GetShapeshiftForm() ~= 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Веер клинков">
+        <SpellID>51723</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Бой" ProcNotifyer="false">
@@ -2478,6 +2568,7 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализаця</string>
           <string>Смертоносный яд</string>
+          <string>Веер клинков</string>
           <string>Внезапный удар</string>
           <string>Заживление ран</string>
           <string>Нахождение в скрытности</string>
@@ -2486,6 +2577,7 @@ end]]></Lua>
           <string>Потрошение</string>
           <string>Рваная рана</string>
           <string>Коварный удар</string>
+          <string>Незаметность</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -2505,6 +2597,13 @@ end]]></Lua>
       <Rotation Name="Скрытность" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Фарм ларей" ProcNotifyer="false">
+        <HotKey Key="V" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Обшаривание карманов</string>
+        </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
     </RotationList>
@@ -5155,6 +5254,29 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Лунный огонь">
+        <SpellID>8921</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+ClearTarget();
+TargetNearestEnemy();
+
+local name = UnitName("target");
+if UnitExists("target") and string.match(name, "^(.+).жных морей$") and not UnitIsDeadOrGhost("target") then
+    if IsSpellInRange(GetSpellInfo(8921), "target") == 1 then
+        return true;
+    end
+end
+
+ClearTarget();]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Лекарь" ProcNotifyer="false">
@@ -5237,6 +5359,13 @@ RightAlt -  Взрыв грибов]]></Notes>
           <string>Трепка</string>
           <string>Волшебный огонь</string>
           <string>Растерзать</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
+        <HotKey Key="A" Modifier="Alt Shift" />
+        <AbilityQueue>
+          <string>Лунный огонь</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
