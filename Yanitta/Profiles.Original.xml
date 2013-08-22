@@ -541,15 +541,15 @@ DISPELL_LIST = {
 function ValidDispellForClass(dispelType)
     -- Curse Disease Magic Poison
     local HealClass = UnitClass("player");
-    if     HealClass == "Priest" then
+    if     HealClass == "PRIEST" then
         return dispelType == "Magic" or dispelType == "Disease";
-    elseif HealClass == "Druid" then
+    elseif HealClass == "DRUID" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
-    elseif HealClass == "Paladin" then
+    elseif HealClass == "PALADIN" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "Monk" then
+    elseif HealClass == "MONK" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "Shaman" then
+    elseif HealClass == "SHAMAN" then
         return dispelType == "Magic" or dispelType == "Curse";
     end
 end
