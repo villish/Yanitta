@@ -281,7 +281,10 @@ namespace Yanitta
         private void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
         {
             if (this.CurrentRotation != null)
+            {
+                this.CurrentRotation.Dispose();
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
+            }
             SetAlavilableAbilityFilter();
         }
 
