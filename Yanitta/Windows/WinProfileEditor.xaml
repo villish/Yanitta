@@ -37,11 +37,11 @@
             <RowDefinition Height="23" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="161" />
+            <ColumnDefinition Width="50" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <TabControl Grid.Column="1" Margin="3,0,0,0" Grid.Row="1">
+        <TabControl Grid.Column="1" Grid.Row="1">
             <TabItem Header="{x:Static yanitta:Localization.AbilityList}">
                 <TabItem.InputBindings>
                     <KeyBinding Command="yanitta:YanittaCommand.AddAbility" Key="Insert" />
@@ -262,8 +262,6 @@
                         </ListView.View>
                     </ListView>
 
-                    <!--<GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Width="4" HorizontalAlignment="Left" />-->
-
                     <ListBox x:Name="listBoxAlavilableAbilitys" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,3,0"
                              ItemsSource="{Binding Source={StaticResource AlavilableAbilityList}}"
                              DisplayMemberPath="Name"
@@ -346,23 +344,14 @@
             </TabItem>
         </TabControl>
 
-        <ListView x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" SelectionChanged="rotationList_SelectionChanged_1" Grid.Row="1">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn>
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="40" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-
-                    <GridViewColumn DisplayMemberBinding="{Binding Class, Converter={StaticResource EnumToStr}}" />
-                </GridView>
-            </ListView.View>
-        </ListView>
-
-        <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Left" Grid.Row="1" />
+        <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" SelectionChanged="rotationList_SelectionChanged_1" Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="40"
+                           ToolTip="{Binding Class, Converter={StaticResource EnumToStr}}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="File">
