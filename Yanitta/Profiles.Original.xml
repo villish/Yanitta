@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.171</Version>
+  <Version>0.0.2.181</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -54,7 +54,7 @@ function CheckAndCastAbility(ability)
     -- вычисление задержки от пинга
     local pingin, pingout = select(3, GetNetStats());
     ping = ((pingin + pingout) / 1000);
-    ping = asc(ping, 0.05, 0.40);
+    ping = asc(ping, 0.05, 0.80);
     local castPing = (ping * 1000) - recastDelay;
 
     -- Если не указан ид заклинания,
@@ -2477,7 +2477,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if GetComboPoints("player") > 4 and HealthByPercent("player") < 50 then
+        <Lua><![CDATA[if GetComboPoints("player") > 4 and HealthByPercent("player") < 80 then
     if not HasBuff("target", 73651, "PLAYER") then
         return true;
     end
@@ -2657,16 +2657,13 @@ if IsMounted() then
     return true;
 end
 
--- Перейти в стойку защиты
---if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
---    CastShapeshiftForm(2);
---end
+-- Перейти в форму тьмы
+if GetSpecialization() == 3 and GetShapeshiftForm() ~= 1 then
+    CastShapeshiftForm(1);
+end
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving();
---hasAPbuff  = HasBuff("player", 57330, 19506);
---isAttcked  = nil;--IsUnitCanAttack("target");
---playerHP   = HealthByPercent("player");]]></Lua>
+isMoving  = IsMoving(0.3);]]></Lua>
       </Ability>
       <Ability Name="Shadow: Слово тьмы: Боль">
         <SpellID>589</SpellID>
@@ -4422,21 +4419,38 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(686), "target") == 1;
-isMoving  = IsMoving(0.3);]]></Lua>
+isMoving  = IsMoving(0.3);
+
+if IsMounted() then
+    return true;
+end
+
+power2 = 0;
+if GetSpecialization() == 1 then     -- aflyction
+    power2 = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
+elseif GetSpecialization() == 2 then -- demonology
+    power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
+elseif GetSpecialization() == 3 then -- dectruction
+    power2 = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
+end]]></Lua>
       </Ability>
-      <Ability Name="Стрела тьмы">
-        <SpellID>686</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Demo: Метаморфоза">
+        <SpellID>103958</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true]]></Lua>
+        <Lua><![CDATA[if GetShapeshiftForm() == 1 and (power2 < 150 or select(3, HasDebuff("target", 172, "PLAYER")) < 2) then
+    CancelShapeshiftForm();
+elseif GetShapeshiftForm() ~= 1 and (power2 > 990 or select(3, HasDebuff("target", 603, "PLAYER")) < 2) then
+    return true;
+end]]></Lua>
       </Ability>
-      <Ability Name="Порча">
+      <Ability Name="Demo: Порча">
         <SpellID>172</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4446,14 +4460,46 @@ isMoving  = IsMoving(0.3);]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[local dot,c,rem = HasDebuff("target", 172, "PLAYER");
-
-if not dot or rem < 2 then
-    return true;
+        <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
+    if select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Рука гундака">
+      <Ability Name="Demo: Рок">
+        <SpellID>603</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if isInRange then
+    if GetShapeshiftForm() == 1 then
+        if select(3, HasDebuff("target", 603, "PLAYER")) < 2 then
+            return true;
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Demo: Узы тьмы">
+        <SpellID>109773</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitLevel("player") > 81 and not HasBuff("player", 109773) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Demo: Рука Гул'дана">
         <SpellID>105174</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4463,18 +4509,49 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not HasDebuff("target", 47960, "PLAYER") then
+        <Lua><![CDATA[if not HasBuff("target", 47960) then
     return true;
 end]]></Lua>
+      </Ability>
+      <Ability Name="Demo: Ожег души">
+        <SpellID>6353</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving and HasBuff("target", 122351) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Demo: Стрела тьмы">
+        <SpellID>686</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Демонология" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
-          <string>Порча</string>
-          <string>Рука гундака</string>
-          <string>Стрела тьмы</string>
+          <string>Инициализация</string>
+          <string>Demo: Метаморфоза</string>
+          <string>Demo: Порча</string>
+          <string>Demo: Рок</string>
+          <string>Demo: Рука Гул'дана</string>
+          <string>Demo: Ожег души</string>
+          <string>Demo: Стрела тьмы</string>
+          <string>Demo: Узы тьмы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
