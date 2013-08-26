@@ -289,7 +289,6 @@
     <Resource Include="Resources\Error_Symbol.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Add Record.png" />
     <Resource Include="Resources\Redo.png" />
     <Resource Include="Resources\Remove record.png" />
     <Resource Include="Resources\Undo.png" />

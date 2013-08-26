@@ -20,7 +20,6 @@ namespace Yanitta
         public static RoutedUICommand CopyAbility       { get; private set; }
         public static RoutedUICommand DeleteAbility     { get; private set; }
         public static RoutedUICommand SaveAbilityLua    { get; private set; }
-        public static RoutedUICommand LoadAbilityList   { get; private set; }
 
         public static RoutedUICommand AddRotation       { get; private set; }
         public static RoutedUICommand CopyRotation      { get; private set; }
@@ -52,7 +51,6 @@ namespace Yanitta
             CopyRotation        = NewCommand("CopyRotation");
             DeleteRotation      = NewCommand("DeleteRotation");
             RefreshRotation     = NewCommand("RefreshRotation");
-            LoadAbilityList     = NewCommand("LoadAbilityList");
 
             Import              = NewCommand("Import");
             Export              = NewCommand("Export");

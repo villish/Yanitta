@@ -50,7 +50,6 @@
                     <CommandBinding Command="yanitta:YanittaCommand.AddAbility"      Executed="CommandBinding_Executed_AddAbility" />
                     <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"     Executed="CommandBinding_Executed_CopyAbility" />
                     <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility"   Executed="CommandBinding_Executed_DeleteAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.LoadAbilityList" Executed="CommandBinding_Executed_LoadAbilityList" />
                 </TabItem.CommandBindings>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -170,9 +169,7 @@
                         <Button x:Name="bDeleteAbility" Command="yanitta:YanittaCommand.DeleteAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
                             <Image Source="/Resources/Denided.png" />
                         </Button>
-                        <Button x:Name="bLoadAbilityList" Command="yanitta:YanittaCommand.LoadAbilityList" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
-                            <Image Source="/Resources/Add Record.png" />
-                        </Button>
+                        <Separator />
                         <Button x:Name="bAbMoveUp" Foreground="Transparent" Click="bAbMoveUp_Click_1">
                             <Image Source="/Resources/Button_Up.png" />
                         </Button>

@@ -211,45 +211,6 @@ namespace Yanitta
             SetAlavilableAbilityFilter();
         }
 
-        private void CommandBinding_Executed_LoadAbilityList(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (this.CurrentProfile != null)
-            {
-                var dialog = new Microsoft.Win32.OpenFileDialog();
-                dialog.Filter = "Text File (*.txt)|*.txt|All Files (*.*)|*.*";
-                if (dialog.ShowDialog() == true)
-                {
-                    try
-                    {
-                        var lines = System.IO.File.ReadAllLines(dialog.FileName);
-                        foreach (var line in lines)
-                        {
-                            var raw_str = line.Split(new[] { ';', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (raw_str.Count() > 1)
-                            {
-                                uint spell_id = 0;
-                                if (!uint.TryParse(raw_str[0], out spell_id))
-                                    continue;
-                                var name = raw_str[1];
-
-                                this.CurrentProfile.AbilityList.Add(new Ability()
-                                {
-                                    SpellID  = spell_id,
-                                    Name     = name,
-                                    Target   = TargetType.Target,
-                                    Lua      = "return true;"
-                                });
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-            }
-        }
-
         // rotations
         private void CommandBinding_Executed_AddRotation(object sender, ExecutedRoutedEventArgs e)
         {
