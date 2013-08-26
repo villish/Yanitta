@@ -345,7 +345,7 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="64"
-                           ToolTip="{Binding Class, Converter={StaticResource EnumToStr}}" />
+                           ToolTip="{Binding Class, Converter={StaticResource EnumToStr}}" Cursor="Hand" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
