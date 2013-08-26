@@ -8,7 +8,7 @@
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="{x:Static yanitta:Localization.EditorTitle}"
         Width="1280"
-        Height="750"
+        Height="800"
         FontFamily="../Resources/#MORPHEUS"
         Style="{DynamicResource KamillaStyle}"
         Closing="Window_Closing_1"
@@ -37,7 +37,7 @@
             <RowDefinition Height="23" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="80" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -344,7 +344,7 @@
         <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" SelectionChanged="rotationList_SelectionChanged_1" Grid.Row="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="40"
+                    <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="64"
                            ToolTip="{Binding Class, Converter={StaticResource EnumToStr}}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
@@ -361,7 +361,6 @@
                 <MenuItem Header="{x:Static yanitta:Localization.AddAbility}"        ToolTip="{x:Static yanitta:Localization.AddAbility}"      Command="yanitta:YanittaCommand.AddAbility" />
                 <MenuItem Header="{x:Static yanitta:Localization.CopyAbility}"       ToolTip="{x:Static yanitta:Localization.CopyAbility}"     Command="yanitta:YanittaCommand.CopyAbility" />
                 <MenuItem Header="{x:Static yanitta:Localization.DeleteAbility}"     ToolTip="{x:Static yanitta:Localization.DeleteAbility}"   Command="yanitta:YanittaCommand.DeleteAbility" />
-                <MenuItem Header="{x:Static yanitta:Localization.LoadAbilityList}"   ToolTip="{x:Static yanitta:Localization.LoadAbilityList}" Command="yanitta:YanittaCommand.LoadAbilityList" />
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.RotationList}">
                 <MenuItem Header="{x:Static yanitta:Localization.AddRotation}"       ToolTip="{x:Static yanitta:Localization.AddRotation}"     Command="yanitta:YanittaCommand.AddRotation" />
