@@ -127,6 +127,8 @@ namespace Yanitta
             {
                 this.IsInGame = isInGame;
 
+                Debug.WriteLine("IsInGame: {0}", this.IsInGame);
+
                 if (this.IsInGame)
                 {
                     this.Class = this.Memory.Read<WowClass>((IntPtr)Offsets.Default.PlayerClass, true);
@@ -187,6 +189,7 @@ namespace Yanitta
 
         private void GameFocusChanged()
         {
+            Debug.WriteLine("IsFocus: {0}", this.IsFocus);
             try
             {
                 // main
@@ -203,7 +206,10 @@ namespace Yanitta
                     // plugin
                     PluginManager.ForEach((plugin) => {
                         if (!plugin.HotKey.IsEmpty)
+                        {
                             plugin.HotKey.Register();
+                            Debug.WriteLine("Registered HotKey: " + plugin.HotKey);
+                        }
                     });
 
                     // main
@@ -212,6 +218,7 @@ namespace Yanitta
                         {
                             rotation.HotKey.SetHandler(rotation, HotKeyPressed);
                             rotation.HotKey.Register();
+                            Debug.WriteLine("Registered HotKey: " + rotation.HotKey);
                         }
                     });
                 }
