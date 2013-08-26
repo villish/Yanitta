@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.184</Version>
+  <Version>0.0.2.188</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
-  <Core>
-    <![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
+  <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
 ShowInChat   = true;    -- показывать сообщения в чате
 DebugEnabled = true;    -- показывать отладочные сообщения в чате
 ProcNotifyer = false;
@@ -4433,7 +4432,7 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
-isInRange = IsSpellInRange(GetSpellInfo(686), "target") == 1;
+isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
 isMoving  = IsMoving(0.3);
 
 if IsMounted() then
@@ -4554,6 +4553,118 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
+      <Ability Name="Afli: Блуждающий дух">
+        <SpellID>48181</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasDebuff("target", 48181, "PLAYER") then
+    if power2 > 1 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Агония">
+        <SpellID>131737</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 131737, "PLAYER")) < 2 then
+    return true;
+elseif ability.HasProc or select(3, HasDebuff("focus", 131737, "PLAYER")) < 2 then
+    return "focus";
+elseif ability.HasProc or select(3, HasDebuff("mouseover", 131737, "PLAYER")) < 2 then
+    return "mouseover";
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Порча">
+        <SpellID>172</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+    return true;
+elseif ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
+    return "focus";
+elseif ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
+    return "mouseover";
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Нестабильное колдовство">
+        <SpellID>131736</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving then
+    if ability.HasProc or select(3, HasDebuff("target", 131736, "PLAYER")) < 2 then
+        return true;
+    elseif ability.HasProc or select(3, HasDebuff("focus", 131736, "PLAYER")) < 2 then
+        return "focus";
+    elseif ability.HasProc or select(3, HasDebuff("mouseover", 131736, "PLAYER")) < 2 then
+        return "mouseover";
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Похищение души">
+        <SpellID>1120</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Гибельная хватка">
+        <SpellID>103103</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if HealthByPercent("target") > 20 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Пламя Скверны">
+        <SpellID>77799</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return isMoving;]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Демонология" ProcNotifyer="false">
@@ -4577,7 +4688,16 @@ end]]></Lua>
       </Rotation>
       <Rotation Name="Колдовство" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Afli: Блуждающий дух</string>
+          <string>Afli: Агония</string>
+          <string>Afli: Порча</string>
+          <string>Afli: Нестабильное колдовство</string>
+          <string>Afli: Похищение души</string>
+          <string>Afli: Гибельная хватка</string>
+          <string>Afli: Пламя Скверны</string>
+        </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
     </RotationList>
