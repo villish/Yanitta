@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.188</Version>
+  <Version>0.0.2.191</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2389,41 +2389,15 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[local name, count, rem = HasBuff("player", 5171);
 
-if not name then
+if rem == 0 then
     return true;
 end
 
 if UnitExists("target") and GetComboPoints("player", "target") > 4 then
-    if (rem or 0) < 4 then
+    if rem < 4 then
         return true;
     end
 end]]></Lua>
-      </Ability>
-      <Ability Name="Отравление">
-        <SpellID>32645</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if GetComboPoints("player", "target") >= 4 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Рсправа">
-        <SpellID>1329</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Потрошение">
         <SpellID>2098</SpellID>
@@ -2578,6 +2552,102 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Muti: Отравление">
+        <SpellID>32645</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetComboPoints("player", "target") >= 4 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Muti: Рсправа">
+        <SpellID>1329</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitLevel("player") >= 10 then
+    if HealthByPercent("target") > 35 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Muti: Рваная рана">
+        <SpellID>1943</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetComboPoints("player", "target") > 2 then
+    if not HasDebuff("target", 1943, "PLAYER") then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Muti: Вендетта">
+        <SpellID>79140</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and HasDebuff("target", 1943, "PLAYER") then 
+    if select(3, HasBuff("player", 5171)) > 5 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Muti: Устранение">
+        <SpellID>111240</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if UnitLevel("player") >= 40 then
+    if HasBuff("player", 121152) then -- Слепая зона
+        return true;
+    elseif HealthByPercent("target") <= 35 then
+        return true;
+    end 
+end]]></Lua>
+      </Ability>
+      <Ability Name="Muti: Теневые клинки">
+        <SpellID>121471</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and HasDebuff("target", 1943, "PLAYER") then 
+    if select(3, HasBuff("player", 5171)) > 5 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Бой" ProcNotifyer="false">
@@ -2606,8 +2676,6 @@ end]]></Lua>
           <string>Заживление ран</string>
           <string>Внезапный удар</string>
           <string>Мясорубка </string>
-          <string>Отравление</string>
-          <string>Рсправа</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -4665,6 +4733,18 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[return isMoving;]]></Lua>
       </Ability>
+      <Ability Name="Afli: Семя порчи">
+        <SpellID>27243</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return setAoE and not isMoving;]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Демонология" ProcNotifyer="false">
@@ -4697,6 +4777,7 @@ end]]></Lua>
           <string>Afli: Похищение души</string>
           <string>Afli: Гибельная хватка</string>
           <string>Afli: Пламя Скверны</string>
+          <string>Demo: Узы тьмы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
