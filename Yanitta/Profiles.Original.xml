@@ -3,7 +3,8 @@
   <Version>0.0.2.184</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
-  <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
+  <Core>
+    <![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
 ShowInChat   = true;    -- показывать сообщения в чате
 DebugEnabled = true;    -- показывать отладочные сообщения в чате
 ProcNotifyer = false;
@@ -16,7 +17,6 @@ mkRightShift    = 4;
 mkRightControl  = 5;
 mkRightAlt      = 6;
 
--- Структура таблицы способностей: SpellId Name Target DropChanel IsRangeCheck IsAttackedCheck IsCheckInCombat SetRecastDelay Func
 ABILITY_TABLE  = { };
 AURA_PROC_LIST = { };
 LOSS_TABLE     = { };
@@ -199,15 +199,13 @@ function ChangeRotation(rotation, notes)
 
         -- При выключении ротации, снимаем регистрацию с событий
         if AddonFrame then
-            for _,event in ipairs(EventList) do
-                AddonFrame:UnregisterEvent(event);
-            end
+            AddonFrame:UnregisterAllEvents();
         end
     else
         if AddonFrame then
-            for _,event in ipairs(EventList) do
-                AddonFrame:RegisterEvent(event);
-            end
+            AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+            AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+            AddonFrame:RegisterEvent("PLAYER_LOGOUT");
         end
 
         -- Иначе запускаем ротацию
@@ -229,13 +227,6 @@ function AddonFrame_OnEvent(self, event, ...)
         end
     elseif event == "PLAYER_LOGOUT" then
         ChangeRotation();
-    elseif event == "UI_ERROR_MESSAGE" then
-        local errorMsg = ...;
-        if errorMsg == SPELL_FAILED_NOT_BEHIND then
-            LastNotBehindTime     = GetTime();
-        elseif errorMsg == ERR_ALREADY_PICKPOCKETED then
-            LastFailedLineOfSight = GetTime();
-        end
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subEvent, hideCaster,
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
@@ -267,13 +258,14 @@ function AddonFrame_OnEvent(self, event, ...)
                     ctime  = GetTime(),
                     cspell = spellId
                 };
+            elseif failedType == SPELL_FAILED_NOT_BEHIND then
+                LastNotBehindTime = GetTime();
             end
         end
     end
 end
 
 function AddonFrame_OnUpdate(self, elapsed)
-    -- таймер
     if type(ABILITY_TABLE) == "table" then
         if GetTime() >= LastTime and #ABILITY_TABLE > 0 then
             if AddonEnabled and not UnitIsDeadOrGhost("player") then
@@ -310,14 +302,6 @@ if not AddonFrame then
     LastTimeClearLossTable = 0;
     LastStartMovingTime    = 0;
     LastNotBehindTime      = 0;
-
-    EventList = {
-        "COMBAT_LOG_EVENT_UNFILTERED",
-        "PLAYER_ENTERING_WORLD",
-        "PLAYER_LOGOUT",
-        "UI_ERROR_MESSAGE",
-        --"UNIT_SPELLCAST_SUCCEEDED"
-    };
 
     AddonFrame = CreateFrame("Frame");
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
