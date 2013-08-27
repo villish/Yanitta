@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.191</Version>
+  <Version>0.0.2.197</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -508,17 +508,23 @@ end
 --                    HEAL                   --
 -----------------------------------------------
 DONT_HEAL_DEBUFF_LIST  = {
-    { Id = 137341,  Count = 0   }, -- Наложницы блезнецы
+    { Id = 137341,  Count = 0   }, -- Наложницы блезнецы (Чудовище из кошмаров)
+    { Id = 137360,  Count = 0   }, -- Наложницы блезнецы (Искаженное лечение)
 };
 
 DISPELL_LIST = {
-    --  (Хоридон ХМ)
-    { Id = 136587, Count = 0, Rem = 0, BossId = 0 }, -- Залп ядовитых стрел
-    { Id = 136719, Count = 0, Rem = 0, BossId = 0 }, -- Пылающий свет
-    { Id = 136710, Count = 6, Rem = 0, BossId = 0 }, -- Смертельная чума
-    { Id = 136512, Count = 0, Rem = 0, BossId = 0 }, -- Проклятие растерянности
+    --  6622 Престол гроз
+    --  Хоридон
+    { Id = 136587, Count = 0, Rem = 0, Map = 6622 }, -- Залп ядовитых стрел
+    { Id = 136719, Count = 0, Rem = 0, Map = 6622 }, -- Пылающий свет
+    { Id = 136710, Count = 6, Rem = 0, Map = 6622 }, -- Смертельная чума
+    { Id = 136512, Count = 0, Rem = 0, Map = 6622 }, -- Проклятие растерянности
     -- Совет старейшин
-    { Id = 0, Count = 0, Rem = 0, BossId = 0 }, --
+    { Id = 136857, Count = 0, Rem = 0, Map = 6622 }, -- В ловушке
+    -- Кон железный
+    { Id = 136615, Count = 0, Rem = 0, Map = 6622 }, -- Электрический заряд
+    -- Темный анимус
+    { Id = 139919, Count = 0, Rem = 0, Map = 6622 }, -- Обмен материей
 };
 
 function ValidDispellForClass(dispelType)
@@ -539,8 +545,8 @@ end
 
 function CheckDontHeal(unit)
     for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
-        local name,_,_,count = UnitDebuff(unit, GetSpellInfo(debuf_rec.Id));
-        if name and count > 0 then
+        local name, count = HasDebuff(unit, debuf_rec.Id);
+        if count > 0 and debuf_rec.Count > 0 then
             return count >= debuf_rec.Count;
         elseif name then
             return true;
@@ -549,22 +555,25 @@ function CheckDontHeal(unit)
 end
 
 function CheckDispell(unit)
-    for _, debuff in ipairs(DISPELL_LIST) do
-        local spell_name, rank = GetSpellInfo(debuff.Id);
-        if spell_name then
-            local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, spell_name, rank, nil);
-            if name and ValidDispellForClass(dispelType) then
-                if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
-                    return true;
-                end
-                if (debuff.Rem > 0) then
-                    local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                    if rem  <= debuff.Rem then
+    local areaId = GetCurrentMapAreaID();
+    for _,debuff in ipairs(DISPELL_LIST) do
+        if debuff.Map == 0 or debuff.Map == areaId then
+            local spell_name, rank = GetSpellInfo(debuff.Id);
+            if spell_name then
+                local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, spell_name, rank, nil);
+                if name and ValidDispellForClass(dispelType) then
+                    if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
                         return true;
                     end
-                end
-                if name then
-                    return true;
+                    if (debuff.Rem > 0) then
+                        local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                        if rem  <= debuff.Rem then
+                            return true;
+                        end
+                    end
+                    if name then
+                        return true;
+                    end
                 end
             end
         end
@@ -2696,7 +2705,6 @@ end]]></Lua>
   <Profile Class="Priest">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;
-isAltMod    = nil;
 mouseover_dispel = false;]]></Lua>
     <AbilityList>
       <Ability Name="Инициализация (Тьма)">
@@ -3016,7 +3024,13 @@ elseif IsModKeyDown(mkRightShift) then
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
-
+    if mouseover_dispel then
+        mouseover_dispel = false;
+        print("|cffff0000Диспел по mouseover: Выключен");
+    else
+        mouseover_dispel = true;
+        print("|cff00ff00Диспел по mouseover: Включен");
+    end
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
@@ -3027,7 +3041,7 @@ end
 FillPartyTables(2061);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving();
+isMoving  = IsMoving(0.3);
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
@@ -3060,10 +3074,28 @@ end]]></Lua>
         <Lua><![CDATA[if mouseover_dispel and UnitIsFriend("player", "mouseover") then
     for i = 1, 40 do
         local name,_,_,_,dispelType = UnitDebuff("mouseover", i, 1);
-        if name and ValidDispellForClass(dispelType) then
+        if not name then
+            return false;
+        elseif name and ValidDispellForClass(dispelType) then
             return true;
         end
     end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Разсеивание заклинаний (Авто)">
+        <SpellID>528</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+   if member.NeedDispell then
+       return member.Unit;
+   end
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Придание сил">
@@ -3117,13 +3149,13 @@ end]]></Lua>
       <Ability Name="Disc: Подавление боли">
         <SpellID>33206</SpellID>
         <Target>None</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>true</CancelCasting>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
+        <IsNotHCD>true</IsNotHCD>
         <Lua><![CDATA[if useCooldown and members[1].HP < 30 then
     return members[1].Unit;
 end]]></Lua>
@@ -3166,7 +3198,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if members[1].HP < 85 and not members[1].DontHeal then
+        <Lua><![CDATA[if LowHP.H90 > 2 and members[1].HP < 85 and not members[1].DontHeal then
    return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -3196,8 +3228,10 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
-   if  member.HP < 70 and not member.DontHeal and not HasBuff("player", 139, "PLAYER") then
-       return member.Unit;
+   if not member.DontHeal and ((member.Role == "TANK" and member.HP < 90) or member.HP < 70) then
+       if not HasBuff(member.Unit, 139, "PLAYER") then
+           return member.Unit;
+       end
    end
 end]]></Lua>
       </Ability>
@@ -3212,21 +3246,10 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Ослабленная душа (6788)
--- 1) Должен постоянно висеть щит на активном танке
--- 2) На остальных вешаем, если здоровье упало ниже 50% и если двигаемя то ниже 80%
 for _,member in ipairs(members) do
-    -- На активного танка щит по КД
-    if not member.DontHeal then
-        if member.Agro > 2 then
-            if not HasDebuff(member.Unit, 6788) then
-                return member.Unit;
-            end
-        else
-            if isMoving and member.HP < 70 and not HasDebuff(member.Unit, 6788) then
-                return member.Unit;
-            elseif member.HP < 50 and not HasDebuff(member.Unit, 6788) then
-                return member.Unit;
-            end
+    if not (member.DontHeal or HasDebuff(member.Unit, 6788)) then
+        if member.Agro > 2 or (isMoving and member.HP < 70) or member.HP < 50 then
+            return member.Unit;
         end
     end
 end]]></Lua>
@@ -3242,7 +3265,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
-    if not isMoving and not members[1].DontHeal and members[1].HP < 80 then
+    if not isMoving and not members[1].DontHeal and members[1].HP < 90 then
         return members[1].Unit;
     end
 end]]></Lua>
@@ -3285,9 +3308,48 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[local name,_,rem = HasDebuff("target", 589, "PLAYER");
-if not name or rem < 2 then
+        <Lua><![CDATA[if select(3, HasDebuff("target", 589, "PLAYER")) < 2 then
     return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Вхождение в бездну">
+        <SpellID>108968</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <Lua><![CDATA[if useCooldown and members[1].HP < 20 and HealthByPercent("player") > 95 then
+    return members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Архангел">
+        <SpellID>81700</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <Lua><![CDATA[return LowHP.H70 > 3;]]></Lua>
+      </Ability>
+      <Ability Name="Disc: Каскад">
+        <SpellID>120785</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if LowHP.H70 > 3 then
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
     </AbilityList>
@@ -3299,21 +3361,31 @@ end]]></Lua>
           <string>Disc: Массовое разсеивание</string>
           <string>Disc: Слово силы: Барьер</string>
           <string>Disc: Разсеивание заклинаний (Mouseover)</string>
+          <string>Disc: Разсеивание заклинаний (Авто)</string>
+          <string>Disc: Вхождение в бездну</string>
           <string>Disc: Подавление боли</string>
           <string>Disc: Подчиняющий разум</string>
           <string>Disc: Придание сил</string>
+          <string>Disc: Архангел</string>
+          <string>Disc: Каскад</string>
           <string>Disc: Слово силы: Щит</string>
           <string>Disc: Быстрое исцеление</string>
           <string>Disc: Молитва восстановления</string>
           <string>Disc: Молитва Исцеления</string>
           <string>Disc: Великое исцеление</string>
+          <string>Disc: Обновление</string>
+          <string>Disc: Исцеление</string>
           <string>Disc: Исповедь</string>
           <string>Disc: Священный огонь</string>
           <string>Shadow: Слово Тьмы: Смерть (Target)</string>
           <string>Disc: Слово тьмы: Боль</string>
           <string>Disc: Кара</string>
         </AbilityQueue>
-        <Notes><![CDATA[]]></Notes>
+        <Notes><![CDATA[LeftShift - Пауза
+RightAlt - Диспел по mouseover
+RightShift - Кулдауны
+LeftControl - Слово силы: Барьер
+LeftAlt - Массовое разсеивание]]></Notes>
       </Rotation>
       <Rotation Name="Свет" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
