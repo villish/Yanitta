@@ -56,11 +56,13 @@ namespace Yanitta
 
             if (ProfileDb.Instance != null)
                 ProfileDb.Instance.Dispose();
+
+            App.Current.Shutdown();
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
         {
-            App.Current.Shutdown();
+            this.Close();
         }
 
         private void ShowWindow<T>(ref T window) where T : Window, new()
