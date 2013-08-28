@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.197</Version>
+  <Version>0.0.2.198</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -4892,7 +4892,7 @@ isCat       = nil;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if PlayerHp90 and PlayerHp90 > 4 then
+        <Lua><![CDATA[if LowHP.H90 > 4 then
     return true;
 end]]></Lua>
       </Ability>
@@ -4946,7 +4946,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if PowerByPercent("palyer") <= 80 then
+        <Lua><![CDATA[if myMana <= 80 then
     return true;
 end]]></Lua>
       </Ability>
@@ -4986,7 +4986,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
     if member.Agro > 2 then
-        local name, count, rem = HasBuff(member.Unit, 33763, "PLAYER");
+        local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
         if count < 3 or rem < 2 then
             return member.Unit;
         end
@@ -5004,7 +5004,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.HP < 90 and not HasBuff(member.Unit, 774, "PLAYER") then
+    if member.HP < 90 and not member.DontHeal and not HasBuff(member.Unit, 774, "PLAYER") then
         return member.Unit;
     end
 end]]></Lua>
@@ -5019,7 +5019,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not isMoving and members[1].HP < 60 then
+        <Lua><![CDATA[if not isMoving and members[1].HP < 60 and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -5033,7 +5033,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not isMoving and members[1].HP < 40 then
+        <Lua><![CDATA[if not isMoving and (members[1].HP < 40 or HasBuff("player", 113043)) and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -5047,8 +5047,10 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not isMoving and members[1].HP < 80 then
-    return members[1].Unit;
+        <Lua><![CDATA[if not isMoving then
+    if (members[1].HP < 80 or select(3, HasBuff("player", 77495) < 2) and not members[1].DontHeal then
+        return members[1].Unit;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Дикий гриб: Лечение">
@@ -5220,7 +5222,7 @@ end
 FillPartyTables(774);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving();
+isMoving  = IsMoving(0.3);
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
