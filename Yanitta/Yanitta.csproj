@@ -213,7 +213,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\DeathKnight.png" />
-    <Resource Include="Resources\wow.png" />
     <Resource Include="Resources\wow_frame_empty.png" />
   </ItemGroup>
   <ItemGroup>

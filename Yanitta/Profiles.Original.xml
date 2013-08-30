@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.199</Version>
+  <Version>0.0.2.200</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -806,11 +806,11 @@ if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
     CastShapeshiftForm(2);
 end
 
-agroStatus = UnitThreatSituation("player");
+agroStatus = UnitThreatSituation("player") or 0;
 isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
 hasAPbuff  = HasBuff("player", { 57330, 19506});
-isAttcked  = nil;--IsUnitCanAttack("target");
-playerHP   = HealthByPercent("player");]]></Lua>
+playerHP   = HealthByPercent("player");
+rage       = UnitPower("player");]]></Lua>
       </Ability>
       <Ability Name="Prot: Удар героя">
         <SpellID>78</SpellID>
@@ -1058,7 +1058,6 @@ playerHP   = HealthByPercent("player");]]></Lua>
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
-    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Furry: Удар героя">
@@ -1140,19 +1139,6 @@ end]]></Lua>
         return true;
     end
 end]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Пауза (Накопление/Сохранение)">
-        <SpellID>0</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[-- sec=cooldown.bloodthirst.remains,if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)&cooldown.bloodthirst.remains<=1&cooldown.bloodthirst.remains
--- return true;]]></Lua>
       </Ability>
       <Ability Name="Furry: Рев дракона">
         <SpellID>118000</SpellID>
