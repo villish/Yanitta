@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.198</Version>
+  <Version>0.0.2.199</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
-  <Core><![CDATA[  -- первоначальные настройки, используются, когда аддон работает в режиме отладки
+  <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
 ShowInChat   = true;    -- показывать сообщения в чате
 DebugEnabled = true;    -- показывать отладочные сообщения в чате
 ProcNotifyer = false;
@@ -648,7 +648,7 @@ targetCount = 3;
 kolossRem  = 0;
 RB_Count   = 0;
 RB_Rem     = 0;
-playerRage = 0;
+rage       = 0;
 targetHP   = 0;
 
 koloss_remains      = 0;
@@ -656,13 +656,13 @@ bloodthirst_remains = 0;
 
 function FillFurryData()
      -- Удар колосса
-    koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER") or nil, 0, 0;
+    koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER");
     -- Яростный выпад!
-    ragingBlow,RB_Count,RB_Rem = HasBuff("player", 131116) or nil, 0, 0;
+    ragingBlow,RB_Count,RB_Rem = HasBuff("player", 131116);
     -- Кровавый фарш
-    meat_cleaver, meat_cleaver_couunt = HasBuff("player", 12950) or nil, 0;
+    meat_cleaver, meat_cleaver_couunt = HasBuff("player", 12950);
     
-    playerRage = UnitPower("player");
+    rage = UnitPower("player");
     targetHP   = HealthByPercent("target");
     
     -- кулдаун колосса
@@ -695,7 +695,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if UnitPower("player") < 70 and not hasAPbuff then
+        <Lua><![CDATA[if rage < 70 and not hasAPbuff then
     return true;
 end]]></Lua>
       </Ability>
@@ -709,7 +709,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if UnitPower("player") < 70 and hasAPbuff then
+        <Lua><![CDATA[if rage < 70 and hasAPbuff then
     return true;
 end]]></Lua>
       </Ability>
@@ -824,7 +824,7 @@ playerHP   = HealthByPercent("player");]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if not setAoE HasBuff("player", 122510) or UnitPower("player") > 90 then
+if not setAoE HasBuff("player", 122510) or rage > 90 then
     return true;
 end]]></Lua>
       </Ability>
@@ -840,7 +840,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if setAoE HasBuff("player", 122510) or UnitPower("player") > 90 then
+if setAoE HasBuff("player", 122510) or rage > 90 then
     return true;
 end]]></Lua>
       </Ability>
@@ -1072,7 +1072,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
         <Lua><![CDATA[-- if=((debuff.colossus_smash.up&rage>=40)&target.health.pct>=20)|rage>=110
-if (koloss and playerRage >= 40 and targetHP >= 20) or playerRage >= 110 then
+if (koloss and rage >= 40 and targetHP >= 20) or rage >= 110 then
     return true;
 end]]></Lua>
       </Ability>
@@ -1102,7 +1102,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[-- if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)
-if not (targetHP < 20 and koloss and playerRage >= 30) then
+if not (targetHP < 20 and koloss and rage >= 30) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1241,7 +1241,7 @@ end
 -- if=debuff.colossus_smash.up&target.health.pct>=20
 -- if=cooldown.colossus_smash.remains>=2&rage>=80&target.health.pct>=20
 if HasBuff("player", 46915) or (koloss and targetHP >= 20)
-    or (koloss_remains >= 2 and playerRage >= 80 and targetHP >= 20) then
+    or (koloss_remains >= 2 and rage >= 80 and targetHP >= 20) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1269,7 +1269,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if playerRage < 70 then
+        <Lua><![CDATA[if rage < 70 then
     return true;
 end]]></Lua>
       </Ability>
@@ -2753,7 +2753,7 @@ if GetSpecialization() == 3 and GetShapeshiftForm() ~= 1 then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving(0.3);]]></Lua>
+isMoving  = IsMoving();]]></Lua>
       </Ability>
       <Ability Name="Shadow: Слово тьмы: Боль">
         <SpellID>589</SpellID>
@@ -3041,7 +3041,7 @@ end
 FillPartyTables(2061);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving(0.3);
+isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
@@ -3348,7 +3348,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if LowHP.H70 > 3 then
+        <Lua><![CDATA[if (isMoving and LowHP.H80 > 3) or LowHP.H70 > 3 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -4322,7 +4322,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
-isMoving  = IsMoving(0.3);]]></Lua>
+isMoving  = IsMoving();]]></Lua>
       </Ability>
       <Ability Name="Использование предметов">
         <SpellID>0</SpellID>
@@ -4573,7 +4573,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-isMoving  = IsMoving(0.3);
+isMoving  = IsMoving();
 
 if IsMounted() then
     return true;
@@ -5222,7 +5222,7 @@ end
 FillPartyTables(774);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving(0.3);
+isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
