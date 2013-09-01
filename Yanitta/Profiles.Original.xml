@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.200</Version>
+  <Version>0.0.2.215</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2186,7 +2186,7 @@ if not UnitExists("target") or UnitIsDead("target") then
 end]]></Lua>
       </Ability>
       <Ability Name="Чародейский выстрел : FARM">
-        <SpellID>3044</SpellID>
+        <SpellID>0</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2199,8 +2199,9 @@ end]]></Lua>
 TargetNearestEnemy();
 
 local name = UnitName("target");
-if UnitExists("target") and string.match(name, "^(.+).жных морей$") and not UnitIsDeadOrGhost("target") then
+if UnitExists("target") and not UnitIsDeadOrGhost("target") then
     if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
+        StartAttack("target");
         return true;
     end
 end
@@ -4570,6 +4571,9 @@ if GetSpecialization() == 1 then     -- aflyction
     power2 = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
 elseif GetSpecialization() == 2 then -- demonology
     power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
+    if power2 < 100 or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+        CancelShapeshiftForm();
+    end
 elseif GetSpecialization() == 3 then -- dectruction
     power2 = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
 end]]></Lua>
@@ -4581,16 +4585,16 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if GetShapeshiftForm() == 1 and (power2 < 150 or select(3, HasDebuff("target", 172, "PLAYER")) < 2) then
-    CancelShapeshiftForm();
-elseif GetShapeshiftForm() ~= 1 and (power2 > 990 or select(3, HasDebuff("target", 603, "PLAYER")) < 2) then
-    return true;
+        <Lua><![CDATA[if GetShapeshiftForm() ~= 1 and power2 > 150 then
+    if power2 > 990 or select(3, HasDebuff("target", 603, "PLAYER")) < 2 then
+        return true;
+    end
 end]]></Lua>
       </Ability>
-      <Ability Name="Demo: Порча">
+      <Ability Name="Demo: Порча (Target)">
         <SpellID>172</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4601,7 +4605,41 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
-    if select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+    if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Demo: Порча (Focus)">
+        <SpellID>172</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
+    if ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Demo: Порча (Mouseover)">
+        <SpellID>172</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
+    if ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
         return true;
     end
 end
@@ -4682,42 +4720,66 @@ end]]></Lua>
       <Ability Name="Afli: Блуждающий дух">
         <SpellID>48181</SpellID>
         <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not HasDebuff("target", 48181, "PLAYER") then
-    if power2 > 1 then
-        return true;
-    end
+        <Lua><![CDATA[if power2 > 0 and UnitLevel("player") > 61 and not HasDebuff("target", 48181, "PLAYER") then
+    return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Afli: Агония">
-        <SpellID>131737</SpellID>
+      <Ability Name="Afli: Агония (Target)">
+        <SpellID>980</SpellID>
         <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 131737, "PLAYER")) < 2 then
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 980, "PLAYER")) < 2 then
     return true;
-elseif ability.HasProc or select(3, HasDebuff("focus", 131737, "PLAYER")) < 2 then
-    return "focus";
-elseif ability.HasProc or select(3, HasDebuff("mouseover", 131737, "PLAYER")) < 2 then
-    return "mouseover";
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Afli: Порча">
+      <Ability Name="Afli: Агония (Focus)">
+        <SpellID>980</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 980, "PLAYER")) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Агония (Mouseover)">
+        <SpellID>980</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 980, "PLAYER")) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Порча (Target)">
         <SpellID>172</SpellID>
         <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
@@ -4726,31 +4788,79 @@ end
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
     return true;
-elseif ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
-    return "focus";
-elseif ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
-    return "mouseover";
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Afli: Нестабильное колдовство">
-        <SpellID>131736</SpellID>
+      <Ability Name="Afli: Порча (Focus)">
+        <SpellID>172</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Порча (Mouseover)">
+        <SpellID>172</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Нестабильное колдовство (Target)">
+        <SpellID>30108</SpellID>
         <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not isMoving then
-    if ability.HasProc or select(3, HasDebuff("target", 131736, "PLAYER")) < 2 then
-        return true;
-    elseif ability.HasProc or select(3, HasDebuff("focus", 131736, "PLAYER")) < 2 then
-        return "focus";
-    elseif ability.HasProc or select(3, HasDebuff("mouseover", 131736, "PLAYER")) < 2 then
-        return "mouseover";
-    end
+        <Lua><![CDATA[if not isMoving and ability.HasProc or select(3, HasDebuff("target", 30108, "PLAYER")) < 2 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Нестабильное колдовство (Focus)">
+        <SpellID>30108</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving and ability.HasProc or select(3, HasDebuff("focus", 30108, "PLAYER")) < 2 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Afli: Нестабильное колдовство (Mouseover)">
+        <SpellID>30108</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not isMoving and ability.HasProc or select(3, HasDebuff("mouseover", 30108, "PLAYER")) < 2 then
+    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Afli: Похищение души">
@@ -4763,14 +4873,16 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HealthByPercent("target") <= 20 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Afli: Гибельная хватка">
         <SpellID>103103</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
+        <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
@@ -4794,7 +4906,7 @@ end]]></Lua>
       <Ability Name="Afli: Семя порчи">
         <SpellID>27243</SpellID>
         <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
@@ -4810,8 +4922,10 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализация</string>
           <string>Demo: Метаморфоза</string>
-          <string>Demo: Порча</string>
           <string>Demo: Рок</string>
+          <string>Demo: Порча (Target)</string>
+          <string>Demo: Порча (Focus)</string>
+          <string>Demo: Порча (Mouseover)</string>
           <string>Demo: Рука Гул'дана</string>
           <string>Demo: Ожег души</string>
           <string>Demo: Стрела тьмы</string>
@@ -4828,10 +4942,17 @@ end]]></Lua>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
+          <string>Afli: Семя порчи</string>
           <string>Afli: Блуждающий дух</string>
-          <string>Afli: Агония</string>
-          <string>Afli: Порча</string>
-          <string>Afli: Нестабильное колдовство</string>
+          <string>Afli: Агония (Target)</string>
+          <string>Afli: Агония (Focus)</string>
+          <string>Afli: Агония (Mouseover)</string>
+          <string>Afli: Порча (Target)</string>
+          <string>Afli: Порча (Focus)</string>
+          <string>Afli: Порча (Mouseover)</string>
+          <string>Afli: Нестабильное колдовство (Target)</string>
+          <string>Afli: Нестабильное колдовство (Focus)</string>
+          <string>Afli: Нестабильное колдовство (Mouseover)</string>
           <string>Afli: Похищение души</string>
           <string>Afli: Гибельная хватка</string>
           <string>Afli: Пламя Скверны</string>
