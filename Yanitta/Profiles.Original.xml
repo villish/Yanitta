@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.215</Version>
+  <Version>0.0.2.220</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -4991,7 +4991,249 @@ end]]></Lua>
   </Profile>
   <Profile Class="Monk">
     <Lua><![CDATA[]]></Lua>
-    <AbilityList />
+    <AbilityList>
+      <Ability Name="Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(3) then
+    return true;
+elseif IsModKeyDown(4) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(5) then
+elseif IsModKeyDown(6) then
+end
+
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() then
+    return true;
+end
+
+isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
+agroStatus = UnitThreatSituation("player") or 0;
+playerHP   = HealthByPercent("player");
+power1 = UnitPower("player");     -- energi
+power2 = UnitPower("player", 12); -- chi]]></Lua>
+      </Ability>
+      <Ability Name="Наследие императора">
+        <SpellID>117666</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not HasBuff("player", 117666) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Удар кружкой">
+        <SpellID>121253</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Дзуки">
+        <SpellID>100780</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Устранение вреда">
+        <SpellID>155072</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Лапа тигра">
+        <SpellID>100787</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Нокаутирующий удар">
+        <SpellID>100784</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Смертельное касание">
+        <SpellID>115080</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Хмельная дымка">
+        <SpellID>115180</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Пламенное дыхание">
+        <SpellID>115181</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Танцующий журавль">
+        <SpellID>101546</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Очищающий отвар">
+        <SpellID>119582</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Отвар неуловимости">
+        <SpellID>115308</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Целительная сфера">
+        <SpellID>115460</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Защита">
+        <SpellID>123402</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Скрытые резервы">
+        <SpellID>115307</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Рука-копье">
+        <SpellID>116705</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+    </AbilityList>
     <RotationList>
       <Rotation Name="Ткач туманов" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
@@ -5000,7 +5242,9 @@ end]]></Lua>
       </Rotation>
       <Rotation Name="Хмелевар" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Инициализация</string>
+        </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
       <Rotation Name="Танцующий с ветром" ProcNotifyer="false">
