@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.223</Version>
+  <Version>0.0.2.226</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2262,7 +2262,10 @@ ClearTarget();]]></Lua>
           <string>Чародейский выстрел</string>
           <string>Выстрел кобры</string>
         </AbilityQueue>
-        <Notes><![CDATA[]]></Notes>
+        <Notes><![CDATA[LeftShift - Метание огненной ловушки
+LeftControl - включение/выключение AOE
+RightControl - Метание замораживающей ловушки
+LeftAlt - Пауза]]></Notes>
       </Rotation>
       <Rotation Name="Повелитель зверей" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -2278,15 +2281,22 @@ ClearTarget();]]></Lua>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
+          <string>Замораживающая ловушка</string>
           <string>Триньки/перчатки</string>
           <string>Дух ястреба</string>
+          <string>Дух гепарда</string>
           <string>Лечение питомца</string>
           <string>Разрывной выстрел</string>
+          <string>Залп</string>
           <string>Укус змеи</string>
           <string>Чародейский выстрел</string>
           <string>Верный выстрел</string>
         </AbilityQueue>
-        <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень]]></Notes>
+        <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень
+
+LeftControl - включение/выключение AOE
+RightControl - Метание замораживающей ловушки
+LeftAlt - Пауза]]></Notes>
       </Rotation>
       <Rotation Name="Farm" ProcNotifyer="false">
         <HotKey Key="B" Modifier="Alt" />
