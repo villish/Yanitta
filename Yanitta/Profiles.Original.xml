@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.221</Version>
+  <Version>0.0.2.223</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -5034,8 +5034,18 @@ end
 isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
 agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
-power1 = UnitPower("player");     -- energi
-power2 = UnitPower("player", 12); -- chi]]></Lua>
+power1     = UnitPower("player");     -- energi
+power2     = UnitPower("player", 12); -- chi
+
+additionalChi = 0;
+if IsSpellKnown(115396) then
+    additionalChi = 1;
+end
+
+TP  = HasBuff("player",   125359);            -- Сила тигра
+BoF = HasDebuff("target", 123725, "PLAYER");  -- Пламенное дыхание
+DH  = HasDebuff("target", 123727, "PLAYER");  -- Хмельная дымка
+SR  = select(3, HasBuff("player",   115307)); -- Скрытые резервы]]></Lua>
       </Ability>
       <Ability Name="Наследие императора">
         <SpellID>117666</SpellID>
@@ -5097,7 +5107,9 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if (power2 < 3 and power1 < 40) or not HasBuff("player", 125359) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Brew: Нокаутирующий удар">
         <SpellID>100784</SpellID>
@@ -5121,7 +5133,9 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if power2 > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Brew: Хмельная дымка">
         <SpellID>115180</SpellID>
