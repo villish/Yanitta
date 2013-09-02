@@ -638,6 +638,33 @@ function FillPartyTables(standartSpellId)
         return x.HP < y.HP;
     end);
 end
+
+-- NotifyMessage
+
+function ShowMessage(msg, duration)
+    if NotifyFrame then
+        NotifyFrame.text:SetText(msg);
+        NotifyFrame:Show();
+        NotifyFrameTime = (GetTime() + (duration or 5));
+    end
+end
+
+if not NotifyFrame then
+    durationMessage = 0;
+    NotifyFrame = CreateFrame('Frame');
+    NotifyFrame:ClearAllPoints();
+    NotifyFrame:SetHeight(300);
+    NotifyFrame:SetWidth(600);
+    NotifyFrame:SetScript('OnUpdate', function()
+        if durationMessage < GetTime() then
+            NotifyFrame:Hide();
+        end
+    end);
+    NotifyFrame:Hide();
+    NotifyFrame.text = NotifyFrame:CreateFontString(nil, 'BACKGROUND', 'PVPInfoTextFont');
+    NotifyFrame.text:SetAllPoints();
+    NotifyFrame:SetPoint('CENTER', 0, 100);
+end
 ]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
