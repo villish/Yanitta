@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.226</Version>
+  <Version>0.0.2.227</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2235,6 +2235,20 @@ end
 
 ClearTarget();]]></Lua>
       </Ability>
+      <Ability Name="Чародейский выстрел (прокачка)">
+        <SpellID>3044</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if not setAoE and UnitPower("player") > 25 then
+    return true;
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="PVE Выживание" ProcNotifyer="false">
@@ -2289,7 +2303,7 @@ LeftAlt - Пауза]]></Notes>
           <string>Разрывной выстрел</string>
           <string>Залп</string>
           <string>Укус змеи</string>
-          <string>Чародейский выстрел</string>
+          <string>Чародейский выстрел (прокачка)</string>
           <string>Верный выстрел</string>
         </AbilityQueue>
         <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень
