@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.223</Version>
+  <Version>0.0.2.229</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2262,7 +2262,10 @@ ClearTarget();]]></Lua>
           <string>Чародейский выстрел</string>
           <string>Выстрел кобры</string>
         </AbilityQueue>
-        <Notes><![CDATA[]]></Notes>
+        <Notes><![CDATA[LeftShift - Метание огненной ловушки
+LeftControl - включение/выключение AOE
+RightControl - Метание замораживающей ловушки
+LeftAlt - Пауза]]></Notes>
       </Rotation>
       <Rotation Name="Повелитель зверей" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -2278,15 +2281,22 @@ ClearTarget();]]></Lua>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
+          <string>Замораживающая ловушка</string>
           <string>Триньки/перчатки</string>
           <string>Дух ястреба</string>
+          <string>Дух гепарда</string>
           <string>Лечение питомца</string>
           <string>Разрывной выстрел</string>
+          <string>Залп</string>
           <string>Укус змеи</string>
           <string>Чародейский выстрел</string>
           <string>Верный выстрел</string>
         </AbilityQueue>
-        <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень]]></Notes>
+        <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень
+
+LeftControl - включение/выключение AOE
+RightControl - Метание замораживающей ловушки
+LeftAlt - Пауза]]></Notes>
       </Rotation>
       <Rotation Name="Farm" ProcNotifyer="false">
         <HotKey Key="B" Modifier="Alt" />
@@ -5061,8 +5071,8 @@ SR  = select(3, HasBuff("player",   115307)); -- Скрытые резервы]]
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Brew: Удар кружкой">
-        <SpellID>121253</SpellID>
+      <Ability Name="Brew: Смертельное касание">
+        <SpellID>115080</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5071,31 +5081,9 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
-      </Ability>
-      <Ability Name="Brew: Дзуки">
-        <SpellID>100780</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
-      </Ability>
-      <Ability Name="Brew: Устранение вреда">
-        <SpellID>155072</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if power2 > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Brew: Лапа тигра">
         <SpellID>100787</SpellID>
@@ -5111,6 +5099,24 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Brew: Пламенное дыхание">
+        <SpellID>115181</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[--                                             Пламенное дыхание
+if setAoE and power2 >= 3 and not HasDebuff("target", 123725, "PLAYER") then
+    --                       Скрытые резервы                        Хмельная дымка
+    if select(3, HasBuff("player", 115307)) > 20 and HasDebuff("target", 123727, "PLAYER")
+        return true;
+    end
+end]]></Lua>
+      </Ability>
       <Ability Name="Brew: Нокаутирующий удар">
         <SpellID>100784</SpellID>
         <Target>Target</Target>
@@ -5121,10 +5127,12 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if power2 >= 3 then
+    return true;
+end]]></Lua>
       </Ability>
-      <Ability Name="Brew: Смертельное касание">
-        <SpellID>115080</SpellID>
+      <Ability Name="Brew: Удар кружкой">
+        <SpellID>121253</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5133,7 +5141,63 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if power2 > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
+        <Lua><![CDATA[if power2 < (2 + additionalChi) and power1 > 39 or power1 > 85 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Порыв нефритового ветра">
+        <SpellID>116847</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAoE and and power2 >= 2 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Танцующий журавль">
+        <SpellID>101546</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if setAoE and power1 >= 40 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Дзуки">
+        <SpellID>100780</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if (power2 < 3 or power1 > 85) and SpellCD(121253) > 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Устранение вреда">
+        <SpellID>115072</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if playerHP < 90 and power1 >= 40 then
     return true;
 end]]></Lua>
       </Ability>
@@ -5151,30 +5215,6 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Brew: Пламенное дыхание">
-        <SpellID>115181</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
-      </Ability>
-      <Ability Name="Brew: Танцующий журавль">
-        <SpellID>101546</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
-      </Ability>
       <Ability Name="Brew: Очищающий отвар">
         <SpellID>119582</SpellID>
         <Target>Player</Target>
@@ -5185,7 +5225,8 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HasDebuff ("player",124273) and MyChi >= 1
+return true;]]></Lua>
       </Ability>
       <Ability Name="Brew: Отвар неуловимости">
         <SpellID>115308</SpellID>
