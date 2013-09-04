@@ -2041,10 +2041,14 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if not setAoE and UnitPower("player") > 25 then
-    local cd1 = SpellCD(131894);
-    local cd2 = SpellCD(3674);
-    if cd1 > 1 and cd2 > 1 then
+    if UnitLevel("player") < 90 then
         return true;
+    else
+        local cd1 = SpellCD(131894);
+        local cd2 = SpellCD(3674);
+        if cd1 > 1 and cd2 > 1 then
+            return true;
+        end
     end
 end]]></Lua>
       </Ability>
@@ -2158,7 +2162,9 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if UnitLevel("player") >= 35 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Лечение питомца">
         <SpellID>136</SpellID>
@@ -2235,20 +2241,6 @@ end
 
 ClearTarget();]]></Lua>
       </Ability>
-      <Ability Name="Чародейский выстрел (прокачка)">
-        <SpellID>3044</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if not setAoE and UnitPower("player") > 25 then
-    return true;
-end]]></Lua>
-      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="PVE Выживание" ProcNotifyer="false">
@@ -2301,9 +2293,10 @@ LeftAlt - Пауза]]></Notes>
           <string>Дух гепарда</string>
           <string>Лечение питомца</string>
           <string>Разрывной выстрел</string>
+          <string>Убийственный выстрел</string>
           <string>Залп</string>
           <string>Укус змеи</string>
-          <string>Чародейский выстрел (прокачка)</string>
+          <string>Чародейский выстрел</string>
           <string>Верный выстрел</string>
         </AbilityQueue>
         <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень
