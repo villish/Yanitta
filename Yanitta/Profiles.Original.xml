@@ -5180,20 +5180,6 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Brew: Дзуки">
-        <SpellID>100780</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <Lua><![CDATA[if (power2 < 3 or power1 > 85) and SpellCD(121253) > 1 then
-    return true;
-end]]></Lua>
-      </Ability>
       <Ability Name="Brew: Устранение вреда">
         <SpellID>115072</SpellID>
         <Target>Target</Target>
@@ -5205,6 +5191,20 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <Lua><![CDATA[if playerHP < 90 and power1 >= 40 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Дзуки">
+        <SpellID>100780</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <Lua><![CDATA[if (power2 < 3 or power1 > 85) and SpellCD(121253) > 1 then
     return true;
 end]]></Lua>
       </Ability>
