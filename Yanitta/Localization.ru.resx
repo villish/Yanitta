@@ -351,4 +351,11 @@
   <data name="ProcNotifyerToolTip" xml:space="preserve">
     <value>Использовать уведомления о проках</value>
   </data>
+  <data name="IsSpellKnownCheck" xml:space="preserve">
+    <value>Доступность заклинания</value>
+  </data>
+  <data name="IsSpellKnownCheckToolTip" xml:space="preserve">
+    <value>Делает проверку на то, что данное заклинание уже доступно для персонажа.
+Не работает для некоторых заклинаний (например: Увечье (друид))</value>
+  </data>
 </root>

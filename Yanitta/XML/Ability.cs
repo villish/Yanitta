@@ -65,6 +65,12 @@ namespace Yanitta
         public bool IsNotHCD { get; set; }
 
         /// <summary>
+        /// Делает проверку на то, что данное заклинание доступно для персонажа.
+        /// Не работает для некоторых заклинаний (например: Увечье (друид))
+        /// </summary>
+        public bool IsSpellKnownCheck { get; set; }
+
+        /// <summary>
         /// Луа код для проверки использования способности
         /// </summary>
         [XmlIgnore]
@@ -96,14 +102,15 @@ namespace Yanitta
         public override string ToString()
         {
             // переменные
-            var target          = this.Target.ToString().ToLower();
-            var cancelChannel   = this.CancelChannel.ToString().ToLower();
-            var cancelCasting   = this.CancelCasting.ToString().ToLower();
-            var isRangeCheck    = this.IsRangeCheck.ToString().ToLower();
-            var isAttacedTarget = this.IsAttacedTarget.ToString().ToLower();
-            var isUseIncombat   = this.IsUseIncombat.ToString().ToLower();
-            var setRecastDelay  = this.SetRecastDelay.ToString().ToLower();
-            var isNotHCD        = this.IsNotHCD.ToString().ToLower();
+            var target            = this.Target.ToString().ToLower();
+            var cancelChannel     = this.CancelChannel.ToString().ToLower();
+            var cancelCasting     = this.CancelCasting.ToString().ToLower();
+            var isRangeCheck      = this.IsRangeCheck.ToString().ToLower();
+            var isAttacedTarget   = this.IsAttacedTarget.ToString().ToLower();
+            var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
+            var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
+            var isNotHCD          = this.IsNotHCD.ToString().ToLower();
+            var isSpellKnownCheck = this.IsSpellKnownCheck.ToString().ToLower();
 
             // код
             var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
@@ -119,6 +126,7 @@ namespace Yanitta
             builder.AppendFormatLine("    IsAttackedCheck   = {0},",     isAttacedTarget);
             builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
             builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
+            builder.AppendFormatLine("    IsSpellKnownCheck = {0},",     isSpellKnownCheck);
             builder.AppendFormatLine("    IsNotHCD          = {0},",     isNotHCD);
             builder.AppendFormatLine("    LastCastingTime   = 0,");
             builder.AppendFormatLine("    HasProc           = false,");

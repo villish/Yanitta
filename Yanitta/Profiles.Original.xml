@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.235</Version>
+  <Version>0.0.2.236</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -118,6 +118,14 @@ function CheckAndCastAbility(ability)
     local spellInfo = GetSpellInfo(ability.SpellId);
     if not spellInfo then
         return;
+    end
+
+    -- Делает проверку на то, что данное заклинание доступно для персонажа.
+    -- Не работает для некоторых заклинаний (например: Увечье (друид))
+    if ability.IsSpellKnownCheck then
+        if not IsSpellKnown(ability.SpellId) then
+            return;
+        end
     end
 
     -- проверку на доступность цели делаем только для определенных видов целей
@@ -720,6 +728,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP <= 80 then
     return true;
 end]]></Lua>
@@ -734,6 +743,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if rage < 70 and not hasAPbuff then
     return true;
 end]]></Lua>
@@ -748,6 +758,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if rage < 70 and hasAPbuff then
     return true;
 end]]></Lua>
@@ -762,6 +773,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInCombat and playerHP < 25  and useCooldown then
     return true;
 end]]></Lua>
@@ -776,6 +788,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("player", 12880) then
     return true;
 end]]></Lua>
@@ -790,6 +803,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end]]></Lua>
@@ -804,6 +818,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -861,6 +876,7 @@ rage       = UnitPower("player");]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
 if not setAoE HasBuff("player", 122510) or rage > 90 then
@@ -877,6 +893,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
 if setAoE HasBuff("player", 122510) or rage > 90 then
@@ -893,6 +910,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- 5 - RightControl
 if IsModKeyDown(5) then
     return true;
@@ -908,6 +926,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[local rage          = UnitPower("player");
 local hasShieldBuff = HasBuff("player", 112048);
 
@@ -925,6 +944,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Prot: Ни шагу назад">
@@ -937,6 +957,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 20 and useCooldown then
     return true;
 end]]></Lua>
@@ -951,6 +972,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInMeele then
     return true;
 end]]></Lua>
@@ -965,6 +987,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 20 and useCooldown then
     return true;
 end]]></Lua>
@@ -979,6 +1002,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isAltMod and UnitPower("player") >= 60 then
     return true;
 end]]></Lua>
@@ -993,6 +1017,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Prot: Сокрушение">
@@ -1005,6 +1030,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return isInMeele;]]></Lua>
       </Ability>
       <Ability Name="Prot: Деморализующий крик">
@@ -1017,6 +1043,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP <= 50 and isInMeele and useCooldown then
     return true;
 end]]></Lua>
@@ -1031,6 +1058,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -1093,6 +1121,7 @@ playerHP   = HealthByPercent("player");]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and koloss_remains < 1 then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
@@ -1109,6 +1138,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=((debuff.colossus_smash.up&rage>=40)&target.health.pct>=20)|rage>=110
 if (koloss and rage >= 40 and targetHP >= 20) or rage >= 110 then
     return true;
@@ -1124,6 +1154,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[--if=buff.raging_blow.stack=2&debuff.colossus_smash.up&target.health.pct>=20
 if RB_Count == 2 and koloss and targetHP >= 20 then
     return true;
@@ -1139,6 +1170,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)
 if not (targetHP < 20 and koloss and rage >= 30) then
     return true;
@@ -1154,6 +1186,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=buff.bloodsurge.react&target.health.pct>=20&cooldown.bloodthirst.remains<=1
 if not setAoE and HasBuff("player", 46915) and targetHP >= 20 and bloodthirst_remains <= 1 then
     return true;
@@ -1169,6 +1202,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE then
     if targetCount == 2 and meat_cleaver then
         return false;
@@ -1189,6 +1223,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=talent.dragon_roar.enabled&(!debuff.colossus_smash.up&buff.bloodbath.up)
 if IsSpellKnown(118000) and HasBuff("player", 12292) and not koloss then
     return true;
@@ -1204,6 +1239,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not koloss then
     return true;
 end]]></Lua>
@@ -1218,6 +1254,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=buff.enrage.up|debuff.colossus_smash.up|rage>90|buff.recklessness.up (1719)
 if koloss or HasBuff("player", { 1719, 13046 }) or rage > 90 then
     return true;
@@ -1233,6 +1270,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=buff.raging_blow.stack=2 |(buff.raging_blow.up&(debuff.colossus_smash.up|cooldown.colossus_smash.remains>=3
 -- |(cooldown.bloodthirst.remains>=1&buff.raging_blow.remains<=3)))
 local enable_RB = false;
@@ -1262,6 +1300,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=buff.bloodsurge.react
 -- if=debuff.colossus_smash.up&target.health.pct>=20
 -- if=cooldown.colossus_smash.remains>=2&rage>=80&target.health.pct>=20
@@ -1280,6 +1319,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not koloss then
     return true;
 end]]></Lua>
@@ -1294,6 +1334,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if rage < 70 then
     return true;
 end]]></Lua>
@@ -1366,6 +1407,7 @@ setAoE      = nil;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -1414,6 +1456,7 @@ inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание]]>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("player", 20925, "PLAYER") then
     return true;
 end]]></Lua>
@@ -1428,6 +1471,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 70 then
     if divine_purpose or hollyPower > 2 then
         -- Бастион славы (114637)
@@ -1447,6 +1491,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if divine_purpose or hollyPower > 2 then
     return true;
 end]]></Lua>
@@ -1461,6 +1506,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 15 then
     return true;
 end]]></Lua>
@@ -1475,6 +1521,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 40 then
     return true;
 end]]></Lua>
@@ -1489,6 +1536,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 60 then
     return true;
 end]]></Lua>
@@ -1503,6 +1551,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Должен быть дебаф на Слабые Удары (115798)
 return setAoE or not HasDebuff("target", 115798);]]></Lua>
       </Ability>
@@ -1516,6 +1565,7 @@ return setAoE or not HasDebuff("target", 115798);]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return not setAoE;]]></Lua>
       </Ability>
       <Ability Name="Prot: Правосудие">
@@ -1528,6 +1578,7 @@ return setAoE or not HasDebuff("target", 115798);]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Prot: Щит мстителя">
@@ -1540,6 +1591,7 @@ return setAoE or not HasDebuff("target", 115798);]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Prot: Освящение">
@@ -1552,6 +1604,7 @@ return setAoE or not HasDebuff("target", 115798);]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInMeele and not HasDebuff("target", 26573, "PLAYER") then
     return true;
 end]]></Lua>
@@ -1566,6 +1619,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return isInMeele;]]></Lua>
       </Ability>
       <Ability Name="Prot: Божественная призма">
@@ -1578,6 +1632,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Prot: Праведное неистовство">
@@ -1590,6 +1645,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("player", 25780) then
     return true;
 end]]></Lua>
@@ -1604,6 +1660,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if hollyPower > 2 and inquisition_rem <= 2 then
     return true;
 end]]></Lua>
@@ -1618,6 +1675,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and inquisition then
     if SpellCD(86698) < 291 then
         return true;
@@ -1634,6 +1692,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and inquisition then
     if SpellCD(31884) < 10 then
         return true;
@@ -1650,6 +1709,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and inquisition and hollyPower <= 2 then
     if SpellCD(86698) < 289 then
         return true;
@@ -1666,6 +1726,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and inquisition then
     return true;
 end]]></Lua>
@@ -1680,6 +1741,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not setAoE then
     if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
         return true;
@@ -1696,6 +1758,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE then
     if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
         return true;
@@ -1712,6 +1775,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Retri: Экзорцизм">
@@ -1724,6 +1788,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Retri: Удар воина Света">
@@ -1736,6 +1801,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return not setAoE;]]></Lua>
       </Ability>
       <Ability Name="Retri: Молот праведника">
@@ -1748,6 +1814,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return setAoE;]]></Lua>
       </Ability>
       <Ability Name="Retri: Правосудие">
@@ -1760,6 +1827,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Retri: Вердикт храмовника (2)">
@@ -1772,6 +1840,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not setAoE and hollyPower > 2 then
     return true;
 end]]></Lua>
@@ -1842,6 +1911,7 @@ isAltMod    = nil;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -1889,6 +1959,7 @@ unitFocus = UnitPower("player");]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
@@ -1912,6 +1983,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("player", 777769) then
     return true;
 end]]></Lua>
@@ -1926,6 +1998,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 if UnitAffectingCombat("player") or IsMounted() then
     if GetShapeshiftForm() ~= 1 then
@@ -1944,6 +2017,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not UnitAffectingCombat("player") and not IsMounted() then
     if GetShapeshiftForm() ~= 2 then
         CastShapeshiftForm(2);
@@ -1961,6 +2035,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return setAoE;]]></Lua>
       </Ability>
       <Ability Name="Разрывной выстрел">
@@ -1973,6 +2048,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not setAoE and UnitPower("player") >= 25 then
     return true;
 end]]></Lua>
@@ -1987,6 +2063,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not setAoE and UnitPower("player") >= 35 then
     return true;
 end]]></Lua>
@@ -2001,6 +2078,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- далее, оптимизировать
 if UnitPower("player") >= 15 then
     return true;
@@ -2016,6 +2094,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
       <Ability Name="Стая воронов">
@@ -2028,6 +2107,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
       <Ability Name="Ужасный зверь">
@@ -2040,6 +2120,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
       <Ability Name="Чародейский выстрел">
@@ -2052,6 +2133,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not setAoE and UnitPower("player") > 25 then
     if UnitLevel("player") < 90 then
         return true;
@@ -2074,6 +2156,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
     return true;
 end]]></Lua>
@@ -2088,6 +2171,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end
@@ -2103,6 +2187,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end
@@ -2118,6 +2203,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkRightAlt) then
     return true;
 end]]></Lua>
@@ -2132,6 +2218,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkRightControl) then
     return true;
 end]]></Lua>
@@ -2146,6 +2233,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
       <Ability Name="Укус змеи">
@@ -2158,6 +2246,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not setAoE then
     if not HasDebuff("target", 118253, "PLAYER") then
         return true;
@@ -2174,6 +2263,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitLevel("player") >= 35 then
     return true;
 end]]></Lua>
@@ -2188,6 +2278,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[local pethp = HealthByPercent("pet");
 if pethp ~= 0 and pethp < 75 then
     if not HasBuff("pet", 136) then
@@ -2206,6 +2297,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Цель фокуса">
@@ -2218,6 +2310,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Для фарма репы с пиратами кровавого паруса
 -- Если нету цели, берет в цель цель фокуса и стреляет в нее
 if not UnitExists("target") or UnitIsDead("target") then
@@ -2240,6 +2333,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[ClearTarget();
 TargetNearestEnemy();
 
@@ -2341,6 +2435,7 @@ useCooldown   = true;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -2397,6 +2492,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not (UnitAffectingCombat("player") or HasBuff("player", 2823) or IsMoving()) then
     return true;
 end]]></Lua>
@@ -2411,6 +2507,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetShapeshiftForm() == 1 then
     return true;
 end]]></Lua>
@@ -2425,6 +2522,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetShapeshiftForm() == 1 then
     return true;
 end]]></Lua>
@@ -2439,6 +2537,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[local name, count, rem = HasBuff("player", 5171);
 
 if rem == 0 then
@@ -2461,6 +2560,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetComboPoints("player", "target") > 4 then
     return true;
 end]]></Lua>
@@ -2475,6 +2575,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasDebuff("target", 84617, "PLAYER") then
     return true;
 end]]></Lua>
@@ -2489,6 +2590,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Рваная рана">
@@ -2501,6 +2603,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetComboPoints("player", "target") > 4 then
     if not HasDebuff("target", 1943, "PLAYER") then
         return true;
@@ -2517,6 +2620,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetComboPoints("player") > 4 and HealthByPercent("player") < 80 then
     if not HasBuff("target", 73651, "PLAYER") then
         return true;
@@ -2533,6 +2637,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not RFrame then
 
     ALREADY_PICKPOCKETED_TABLE = { };
@@ -2586,6 +2691,7 @@ ClearTarget();]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if invisible and not UnitAffectingCombat("player") and GetShapeshiftForm() ~= 1 then
     return true;
 end]]></Lua>
@@ -2600,6 +2706,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end]]></Lua>
@@ -2614,6 +2721,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetComboPoints("player", "target") >= 4 then
     return true;
 end]]></Lua>
@@ -2628,6 +2736,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitLevel("player") >= 10 then
     if HealthByPercent("target") > 35 then
         return true;
@@ -2644,6 +2753,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetComboPoints("player", "target") > 2 then
     if not HasDebuff("target", 1943, "PLAYER") then
         return true;
@@ -2660,6 +2770,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and HasDebuff("target", 1943, "PLAYER") then 
     if select(3, HasBuff("player", 5171)) > 5 then
         return true;
@@ -2676,6 +2787,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitLevel("player") >= 40 then
     if HasBuff("player", 121152) then -- Слепая зона
         return true;
@@ -2694,6 +2806,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and HasDebuff("target", 1943, "PLAYER") then 
     if select(3, HasBuff("player", 5171)) > 5 then
         return true;
@@ -2760,6 +2873,7 @@ mouseover_dispel = false;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -2808,6 +2922,7 @@ isMoving  = IsMoving();]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc then
     return true;
 end
@@ -2826,6 +2941,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc then
     return true;
 end
@@ -2844,6 +2960,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc then
     return true;
 end
@@ -2862,6 +2979,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
     if ability.HasProc then
         return true;
@@ -2882,6 +3000,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
     if ability.HasProc then
         return true;
@@ -2902,6 +3021,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
     if ability.HasProc then
         return true;
@@ -2922,6 +3042,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
     return true;
 end]]></Lua>
@@ -2936,6 +3057,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
     return isInRange;
 end]]></Lua>
@@ -2950,6 +3072,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitPower("player", SPELL_POWER_SHADOW_ORBS) >= 3 then
     return true;
 end]]></Lua>
@@ -2964,6 +3087,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE and not isMoving then
     return true;
 end]]></Lua>
@@ -2978,6 +3102,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Shadow: Слово Тьмы: Смерть (Focus)">
@@ -2990,6 +3115,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Shadow: Слово Тьмы: Смерть (Mouseover)">
@@ -3002,6 +3128,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Shadow: Пронзание разума">
@@ -3014,6 +3141,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if HasBuff("player", 87160) then
     return true;
 end]]></Lua>
@@ -3028,6 +3156,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Shadow: Исчадие тьмы">
@@ -3040,6 +3169,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
       <Ability Name="Инициализация (Послушание)">
@@ -3052,6 +3182,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
     return true;
@@ -3102,6 +3233,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return IsModKeyDown(mkLeftAlt);]]></Lua>
       </Ability>
       <Ability Name="Disc: Разсеивание заклинаний (Mouseover)">
@@ -3114,6 +3246,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if mouseover_dispel and UnitIsFriend("player", "mouseover") then
     for i = 1, 40 do
         local name,_,_,_,dispelType = UnitDebuff("mouseover", i, 1);
@@ -3135,6 +3268,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
    if member.NeedDispell then
        return member.Unit;
@@ -3151,6 +3285,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return LowHP.H50 > 3;]]></Lua>
       </Ability>
       <Ability Name="Disc: Исповедь">
@@ -3163,6 +3298,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Disc: Священный огонь">
@@ -3175,6 +3311,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Disc: Кара">
@@ -3187,6 +3324,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
       <Ability Name="Disc: Подавление боли">
@@ -3199,6 +3337,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and members[1].HP < 30 then
     return members[1].Unit;
 end]]></Lua>
@@ -3213,6 +3352,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if myMana < 80 then
     return true;
 end]]></Lua>
@@ -3227,6 +3367,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftControl) then
     return true;
 end]]></Lua>
@@ -3241,6 +3382,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if LowHP.H90 > 2 and members[1].HP < 85 and not members[1].DontHeal then
    return members[1].Unit;
 end]]></Lua>
@@ -3255,6 +3397,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Если активен щит души, тогда настакиваем щит
 if not isMoving and (LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER")) then
     return members[1].Unit;
@@ -3270,6 +3413,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
    if not member.DontHeal and ((member.Role == "TANK" and member.HP < 90) or member.HP < 70) then
        if not HasBuff(member.Unit, 139, "PLAYER") then
@@ -3288,6 +3432,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Ослабленная душа (6788)
 for _,member in ipairs(members) do
     if not (member.DontHeal or HasDebuff(member.Unit, 6788)) then
@@ -3307,6 +3452,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
     if not isMoving and not members[1].DontHeal and members[1].HP < 90 then
         return members[1].Unit;
@@ -3323,6 +3469,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and not members[1].DontHeal and members[1].HP < 40 then
     return members[1].Unit;
 end]]></Lua>
@@ -3337,6 +3484,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and not members[1].DontHeal and members[1].HP < 60 then
     return members[1].Unit;
 end]]></Lua>
@@ -3351,6 +3499,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if select(3, HasDebuff("target", 589, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
@@ -3365,6 +3514,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and members[1].HP < 20 and HealthByPercent("player") > 95 then
     return members[1].Unit;
 end]]></Lua>
@@ -3379,6 +3529,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return LowHP.H70 > 3;]]></Lua>
       </Ability>
       <Ability Name="Disc: Каскад">
@@ -3391,6 +3542,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if (isMoving and LowHP.H80 > 3) or LowHP.H70 > 3 then
     return members[1].Unit;
 end]]></Lua>
@@ -3503,6 +3655,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -3558,6 +3711,7 @@ playerHP   = HealthByPercent("player");
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
       </Ability>
       <Ability Name="Кровь вампира">
@@ -3570,6 +3724,7 @@ playerHP   = HealthByPercent("player");
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 30 then
     return true;
 end]]></Lua>
@@ -3584,6 +3739,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("player", 49222) then
     return true;
 end]]></Lua>
@@ -3598,6 +3754,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and playerHP <= 40 then
     return true;
 end]]></Lua>
@@ -3612,6 +3769,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if agroStatus == 3 and playerHP < 90 then
     return true;
 end]]></Lua>
@@ -3626,6 +3784,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return useCooldown;]]></Lua>
       </Ability>
       <Ability Name="Вспышка болезни">
@@ -3638,6 +3797,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("target", 59879, "PLAYER") and not HasBuff("target", 59921, "PLAYER") then
     return true;
 end]]></Lua>
@@ -3652,6 +3812,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not UnitDebuff("target", 59879) then
     return true;
 end]]></Lua>
@@ -3666,6 +3827,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not UnitDebuff("target", 59921) then
     return true;
 end]]></Lua>
@@ -3680,6 +3842,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Кровоотвод">
@@ -3692,6 +3855,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=(unholy=0&frost>=1)|(unholy>=1&frost=0)|(death=1)
 if (runes.Unholy.Count == 0 and runes.Frost.Count >= 1) 
 or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) 
@@ -3711,6 +3875,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Вскипание крови">
@@ -3723,6 +3888,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInMeele and runes.Blood.Count > 0 or HasBuff("player", 81141) then
     return true;
 end]]></Lua>
@@ -3737,6 +3903,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- if=(blood=1&blood.cooldown_remains<1)|blood=2
 if isInMeele and (runes.Blood.Count == 1 and runes.Blood.Rem < 1) or runes.Blood.Count == 2 then
     return true;
@@ -3752,6 +3919,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitPower("player") > 40 then
     return true;
 end]]></Lua>
@@ -3766,6 +3934,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitPower("player") < 70 then
     return true;
 end]]></Lua>
@@ -3780,6 +3949,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and runes.Blood.Count == 0 and runes.Unholy.Count == 0 and runes.Frost.Count == 0 then
     return true;
 end]]></Lua>
@@ -3794,6 +3964,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Вспышка болезни (1)">
@@ -3806,6 +3977,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Нечестивая порча (1)">
@@ -3818,6 +3990,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Жнец душ">
@@ -3830,6 +4003,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Кровоотвод (1)">
@@ -3842,6 +4016,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Воющий ветер (1)">
@@ -3854,6 +4029,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Удар чумы">
@@ -3866,6 +4042,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Воющий ветер (2)">
@@ -3878,6 +4055,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Уничтожение (1)">
@@ -3890,6 +4068,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Кровоотвод (2)">
@@ -3902,6 +4081,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Ледяной удар (1)">
@@ -3914,6 +4094,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Уничтожение (2)">
@@ -3926,6 +4107,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Вытягивание чумы (2)">
@@ -3938,6 +4120,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Вспышка болезни (2)">
@@ -3950,6 +4133,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Нечестивая порча (2)">
@@ -3962,6 +4146,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Ледяной удар (2)">
@@ -3974,6 +4159,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Зимний горн">
@@ -3986,6 +4172,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Ледяной удар (3)">
@@ -3998,6 +4185,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Уничтожение (3)">
@@ -4010,6 +4198,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Усиление рунического оружия">
@@ -4022,6 +4211,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Кровоотвод (3)">
@@ -4034,6 +4224,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Ледяной удар (4)">
@@ -4046,6 +4237,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Вытягивание чумы (3)">
@@ -4058,6 +4250,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Frost: Усиление рунического оружия (2)">
@@ -4070,6 +4263,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
     </AbilityList>
@@ -4150,6 +4344,7 @@ Right Shift - Кулдауны]]></Notes>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -4190,6 +4385,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not GetTotemInfo(1) then
     return true;
 end]]></Lua>
@@ -4204,6 +4400,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasDebuff("target", 8050, "PLAYER") then
     return true;
 end]]></Lua>
@@ -4218,6 +4415,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if (select(2, HasBuff("player", 324)) or 0) == 7 then
     return true;
 end]]></Lua>
@@ -4232,6 +4430,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Исцеляющий всплеск">
@@ -4244,6 +4443,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitIsFriend("player", "mouseover") then
     if HealthByPercent("mouseover") < 50 then
         return true;
@@ -4260,6 +4460,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return not IsMoving() and setAoE;]]></Lua>
       </Ability>
     </AbilityList>
@@ -4340,6 +4541,7 @@ end);]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -4377,6 +4579,7 @@ isMoving  = IsMoving();]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
@@ -4399,6 +4602,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInRange and not HasDebuff("target", 44457, "PLAYER") then
     return true;
 end]]></Lua>
@@ -4413,6 +4617,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasDebuff("focus", 44457, "PLAYER") then
     if IsSpellInRange(GetSpellInfo(133), "focus") == 1 then
         return true;
@@ -4429,6 +4634,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasDebuff("mouseover", 44457, "PLAYER") then
     if IsSpellInRange(GetSpellInfo(133), "mouseover") == 1 then
         return true;
@@ -4445,6 +4651,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Огненная глыба! (48108)
 if HasBuff("player", 48108) then
     return true;
@@ -4460,6 +4667,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- При крите огненного шара и получения баффа Разогрев (48107) делаем каст Пламенный взрыв (108853).
 -- Скорее всего вы увидите каст бафф разогрева после того как начнете следующий каст Огненного шара (133),
 -- поэтому важно сразу после окончания каста использовать Пламенный взрыв (108853),
@@ -4481,6 +4689,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
       <Ability Name="Fire: Ожoг">
@@ -4493,6 +4702,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return isMoving;]]></Lua>
       </Ability>
       <Ability Name="Fire: Возгорание">
@@ -4505,6 +4715,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Будем тестировать, позже.
 -- это пробная версия.
@@ -4529,6 +4740,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end]]></Lua>
@@ -4543,6 +4755,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[]]></Lua>
       </Ability>
     </AbilityList>
@@ -4591,6 +4804,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -4644,6 +4858,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetShapeshiftForm() ~= 1 and power2 > 150 then
     if power2 > 990 or select(3, HasDebuff("target", 603, "PLAYER")) < 2 then
         return true;
@@ -4660,6 +4875,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
     if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
         return true;
@@ -4677,6 +4893,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
     if ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
         return true;
@@ -4694,6 +4911,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
     if ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
         return true;
@@ -4711,6 +4929,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInRange then
     if GetShapeshiftForm() == 1 then
         if select(3, HasDebuff("target", 603, "PLAYER")) < 2 then
@@ -4729,6 +4948,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitLevel("player") > 81 and not HasBuff("player", 109773) then
     return true;
 end]]></Lua>
@@ -4743,6 +4963,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("target", 47960) then
     return true;
 end]]></Lua>
@@ -4757,6 +4978,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and HasBuff("target", 122351) then
     return true;
 end]]></Lua>
@@ -4771,6 +4993,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return not isMoving;]]></Lua>
       </Ability>
       <Ability Name="Afli: Блуждающий дух">
@@ -4783,6 +5006,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if power2 > 0 and UnitLevel("player") > 61 and not HasDebuff("target", 48181, "PLAYER") then
     return true;
 end]]></Lua>
@@ -4797,6 +5021,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 980, "PLAYER")) < 2 then
     return true;
 end
@@ -4812,6 +5037,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 980, "PLAYER")) < 2 then
     return true;
 end
@@ -4827,6 +5053,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 980, "PLAYER")) < 2 then
     return true;
 end
@@ -4842,6 +5069,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
     return true;
 end
@@ -4857,6 +5085,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
     return true;
 end
@@ -4872,6 +5101,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
     return true;
 end
@@ -4887,6 +5117,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and ability.HasProc or select(3, HasDebuff("target", 30108, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
@@ -4901,6 +5132,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and ability.HasProc or select(3, HasDebuff("focus", 30108, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
@@ -4915,6 +5147,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and ability.HasProc or select(3, HasDebuff("mouseover", 30108, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
@@ -4929,6 +5162,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if HealthByPercent("target") <= 20 then
     return true;
 end]]></Lua>
@@ -4943,6 +5177,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if HealthByPercent("target") > 20 then
     return true;
 end]]></Lua>
@@ -4957,6 +5192,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return isMoving;]]></Lua>
       </Ability>
       <Ability Name="Afli: Семя порчи">
@@ -4969,6 +5205,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return setAoE and not isMoving;]]></Lua>
       </Ability>
     </AbilityList>
@@ -5031,6 +5268,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -5086,6 +5324,7 @@ SR  = select(3, HasBuff("player",   115307)); -- Скрытые резервы]]
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not HasBuff("player", 117666) then
     return true;
 end]]></Lua>
@@ -5100,6 +5339,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if power2 > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
     return true;
 end]]></Lua>
@@ -5114,6 +5354,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if (power2 < 3 and power1 < 40) or not HasBuff("player", 125359) then
     return true;
 end]]></Lua>
@@ -5128,6 +5369,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[--                                             Пламенное дыхание
 if setAoE and power2 >= 3 and not HasDebuff("target", 123725, "PLAYER") then
     --                       Скрытые резервы                        Хмельная дымка
@@ -5146,6 +5388,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if power2 >= 3 then
     return true;
 end]]></Lua>
@@ -5160,6 +5403,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if power2 < (2 + additionalChi) and power1 > 39 or power1 > 85 then
     return true;
 end]]></Lua>
@@ -5174,6 +5418,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE and and power2 >= 2 then
     return true;
 end]]></Lua>
@@ -5188,6 +5433,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE and power1 >= 40 then
     return true;
 end]]></Lua>
@@ -5202,6 +5448,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 90 and power1 >= 40 then
     return true;
 end]]></Lua>
@@ -5216,6 +5463,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if (power2 < 3 or power1 > 85) and SpellCD(121253) > 1 then
     return true;
 end]]></Lua>
@@ -5230,6 +5478,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end]]></Lua>
@@ -5244,6 +5493,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if HasDebuff ("player",124273) and MyChi >= 1
 return true;]]></Lua>
       </Ability>
@@ -5257,6 +5507,7 @@ return true;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Brew: Целительная сфера">
@@ -5269,6 +5520,7 @@ return true;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Brew: Защита">
@@ -5281,6 +5533,7 @@ return true;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Brew: Скрытые резервы">
@@ -5293,6 +5546,7 @@ return true;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Brew: Рука-копье">
@@ -5305,6 +5559,7 @@ return true;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
     </AbilityList>
@@ -5344,6 +5599,7 @@ isCat       = nil;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if LowHP.H90 > 4 then
     return true;
 end]]></Lua>
@@ -5358,6 +5614,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if LowHP.H80 <= 3 then
     for _,member in ipairs(members) do
         if member.HP < 90 and HasBuff(member.Unit, { 774 }, "PLAYER") then
@@ -5374,7 +5631,7 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Спокойствие">
+      <Ability Name="Restor: Спокойствие">
         <SpellID>740</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -5384,6 +5641,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if mkRightShift then
     return true;
 end]]></Lua>
@@ -5398,6 +5656,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if myMana <= 80 then
     return true;
 end]]></Lua>
@@ -5412,6 +5671,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Restor: Железная кора">
@@ -5424,6 +5684,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Restor: Жизнецвет">
@@ -5436,6 +5697,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
     if member.Agro > 2 then
         local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
@@ -5455,6 +5717,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
     if member.HP < 90 and not member.DontHeal and not HasBuff(member.Unit, 774, "PLAYER") then
         return member.Unit;
@@ -5471,6 +5734,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and members[1].HP < 60 and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
@@ -5485,6 +5749,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and (members[1].HP < 40 or HasBuff("player", 113043)) and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
@@ -5499,6 +5764,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
     if (members[1].HP < 80 or select(3, HasBuff("player", 77495) < 2) and not members[1].DontHeal then
         return members[1].Unit;
@@ -5515,6 +5781,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if mkLeftAlt then
     return true;
 end]]></Lua>
@@ -5529,6 +5796,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if mkLeftShift then
     return true;
 end]]></Lua>
@@ -5543,6 +5811,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if mkRightControl then
     return true;
 end]]></Lua>
@@ -5557,6 +5826,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Restor: Природный целитель">
@@ -5569,6 +5839,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Искусность:Гармония">
@@ -5581,6 +5852,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isCat then
     return true;
 end]]></Lua>
@@ -5595,6 +5867,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Restor: Оживление">
@@ -5607,11 +5880,12 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Возрождение">
+      <Ability Name="Restor: Возрождение">
         <SpellID>20484</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
@@ -5621,6 +5895,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
     return true;
 end]]></Lua>
@@ -5635,6 +5910,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 --return true;]]></Lua>
       </Ability>
@@ -5648,6 +5924,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
     return true;
@@ -5692,6 +5969,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -5743,6 +6021,7 @@ isCat      = GetShapeshiftForm() == 3;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[]]></Lua>
       </Ability>
       <Ability Name="Увечье">
@@ -5755,6 +6034,7 @@ isCat      = GetShapeshiftForm() == 3;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isCat then
     return true;
 end]]></Lua>
@@ -5769,6 +6049,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInMeele and not isCat then
     return true;
 end]]></Lua>
@@ -5783,6 +6064,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Размах">
@@ -5795,6 +6077,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE and isInMeele and not isCat then
     return true;
 end]]></Lua>
@@ -5809,6 +6092,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- без ГКД
 if isCat then
     return false;
@@ -5833,6 +6117,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isCat then
     return true;
 end]]></Lua>
@@ -5847,6 +6132,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Исступление">
@@ -5859,6 +6145,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if UnitPower("player") < 70 then
     return true;
 end]]></Lua>
@@ -5873,6 +6160,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 60 and agroStatus > 0 then
     return true;
 end]]></Lua>
@@ -5887,6 +6175,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 80 and UnitPower("player") > 55 then
     return true;
 end]]></Lua>
@@ -5901,6 +6190,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and playerHP < 35 then
     return true;
 end]]></Lua>
@@ -5915,6 +6205,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and playerHP < 50 then
     return true;
 end]]></Lua>
@@ -5929,6 +6220,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and playerHP < 25 then
     return true;
 end]]></Lua>
@@ -5943,6 +6235,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Целительное прикосновение (страж)">
@@ -5955,6 +6248,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if playerHP < 40 then
     if HasBuff("player", 132158) then
         return true;
@@ -5971,6 +6265,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[-- 64399 Боевой штандарт координации
 local start, duration, enable = GetItemCooldown(64399);
 if duration == 0 and enable == 1 then
@@ -5987,6 +6282,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isCat and not setAoE then
     return true;
 end]]></Lua>
@@ -6001,6 +6297,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isCat and setAoE then
     return true;
 end]]></Lua>
@@ -6015,6 +6312,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isCat and setAoE then
     return true;
 end]]></Lua>
@@ -6029,6 +6327,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[local rep = HasDebuff("target", 1822, "PLAYER");
 if isCat and not rep and not setAoE then
     return true;
@@ -6044,6 +6343,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isCat and not setAoE and not HasDebuff("target", 1079, "PLAYER") then
     if GetComboPoints("player", "target") == 5 then
         return true;
@@ -6060,6 +6360,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isCat and not SetAoE and UnitPower("player") > 30 and GetComboPoints("player", "target") == 5 then
     return true;
 end]]></Lua>
@@ -6074,6 +6375,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 ClearTarget();
 TargetNearestEnemy();
@@ -6097,6 +6399,7 @@ ClearTarget();]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
@@ -6143,6 +6446,7 @@ combopoint = GetComboPoints("player");]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[local sr = select(3, HasBuff("player", 52610));
 if (combopoint > 4 and sr < 4) or (sr < 2 and combopoint > 0) then
     return true;
@@ -6158,6 +6462,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if power1 < 35 then
     return true;
 end]]></Lua>
@@ -6172,6 +6477,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if useCooldown and power1 < 35 and not HasBuff("player", 106952) then
     return true;
 end]]></Lua>
@@ -6186,6 +6492,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if isInMeele and (setAoE or HasBuff("player", 16864)) and not HasDebuff("target", 106832, "PLAYER") then
     return true;
 end]]></Lua>
@@ -6200,6 +6507,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if setAoE and isInMeele then
     return true;
 end]]></Lua>
@@ -6214,6 +6522,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if IsSpellKnown(124974) then
     return true;
 end]]></Lua>
@@ -6228,6 +6537,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if HasBuff("player", 16974) then
      return true;
 end]]></Lua>
@@ -6242,6 +6552,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[local rip = select(3, HasDebuff("target", 1079, "PLAYER"));
 if HealthByPercent("target") < 25 then
     if (rip < 2 and combopoint > 1) or combopoint > 4 then
@@ -6259,6 +6570,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 2 then
     return true;
 end]]></Lua>
@@ -6273,6 +6585,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if select(3, HasDebuff("target", 1822)) < 3 then
     return true;
 end]]></Lua>
@@ -6287,6 +6600,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not IsNotBehind(0.5) then
     return true;
 end]]></Lua>
@@ -6301,6 +6615,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if energy >= 40 then
     return true;
 end]]></Lua>

@@ -351,4 +351,10 @@
   <data name="ProcNotifyerToolTip" xml:space="preserve">
     <value>Use a notice of proс</value>
   </data>
+  <data name="IsSpellKnownCheck" xml:space="preserve">
+    <value>Is spell known</value>
+  </data>
+  <data name="IsSpellKnownCheckToolTip" xml:space="preserve">
+    <value>Check whether the player (or pet) knows a spell.</value>
+  </data>
 </root>

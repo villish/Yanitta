@@ -126,6 +126,14 @@
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
 
+                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsSpellKnownCheck}">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}" />
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+
                                     <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.SetRecastDelay}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
