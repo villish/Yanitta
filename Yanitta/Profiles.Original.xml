@@ -110,7 +110,7 @@ function CheckAndCastAbility(ability)
         return;
     end
     --и если она нам возвращает новую цель, тогда делаем ее присваивание.
-    if type(mResult) == "string" and UnitExists(mResult) then
+    if type(mResult) == "string" then
         ability.Target = mResult;
     end
 
