@@ -237,7 +237,7 @@
   <data name="BeforeRotationCodeToolTip" xml:space="preserve">
     <value>This code exequted before rotation started</value>
   </data>
-  <data name="DropChanelToolTip" xml:space="preserve">
+  <data name="CancelChanelToolTip" xml:space="preserve">
     <value>Drop channel spell</value>
   </data>
   <data name="CancelCastingToolTip" xml:space="preserve">
@@ -356,5 +356,11 @@
   </data>
   <data name="IsSpellKnownCheckToolTip" xml:space="preserve">
     <value>Check whether the player (or pet) knows a spell.</value>
+  </data>
+  <data name="SpellIdToolTip" xml:space="preserve">
+    <value>Spell Id</value>
+  </data>
+  <data name="NameToolTip" xml:space="preserve">
+    <value>Ability name</value>
   </data>
 </root>

@@ -237,7 +237,7 @@
   <data name="BeforeRotationCodeToolTip" xml:space="preserve">
     <value>Этот код выполняется при старте ротации</value>
   </data>
-  <data name="DropChanelToolTip" xml:space="preserve">
+  <data name="CancelChanelToolTip" xml:space="preserve">
     <value>Прерывать канальные заклинания.</value>
   </data>
   <data name="CancelCastingToolTip" xml:space="preserve">
@@ -357,5 +357,11 @@
   <data name="IsSpellKnownCheckToolTip" xml:space="preserve">
     <value>Делает проверку на то, что данное заклинание уже доступно для персонажа.
 Не работает для некоторых заклинаний (например: Увечье (друид))</value>
+  </data>
+  <data name="SpellIdToolTip" xml:space="preserve">
+    <value>Идентификатор заклинания, межет быть 0 если требуется специальная обработка.</value>
+  </data>
+  <data name="NameToolTip" xml:space="preserve">
+    <value>Наименование способности, это ключевое поле при построении ротации. Всегда должно быть заполнено, не допускает дубликатов.</value>
   </data>
 </root>

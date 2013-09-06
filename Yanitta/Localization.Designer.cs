@@ -160,6 +160,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Drop channel spell.
+        /// </summary>
+        public static string CancelChanelToolTip {
+            get {
+                return ResourceManager.GetString("CancelChanelToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Cencel.
         /// </summary>
         public static string Cencel {
@@ -300,15 +309,6 @@ namespace Yanitta {
         public static string DeleteRotation {
             get {
                 return ResourceManager.GetString("DeleteRotation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Drop channel spell.
-        /// </summary>
-        public static string DropChanelToolTip {
-            get {
-                return ResourceManager.GetString("DropChanelToolTip", resourceCulture);
             }
         }
         
@@ -502,6 +502,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Ability name.
+        /// </summary>
+        public static string NameToolTip {
+            get {
+                return ResourceManager.GetString("NameToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на OK.
         /// </summary>
         public static string OK {
@@ -633,6 +642,15 @@ namespace Yanitta {
         public static string Spell {
             get {
                 return ResourceManager.GetString("Spell", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Spell Id.
+        /// </summary>
+        public static string SpellIdToolTip {
+            get {
+                return ResourceManager.GetString("SpellIdToolTip", resourceCulture);
             }
         }
         

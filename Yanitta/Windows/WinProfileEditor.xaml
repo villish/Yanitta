@@ -69,7 +69,7 @@
                             <RowDefinition />
                             <RowDefinition Height="63" />
                         </Grid.RowDefinitions>
-                        <ListView x:Name="abilityList" Margin="0,0,0,8" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}">
+                        <ListView x:Name="abilityList" Margin="0,0,0,8" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}" Grid.RowSpan="2">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
@@ -89,7 +89,7 @@
                                     <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelChanel}">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <CheckBox IsChecked="{Binding CancelChannel}" ToolTip="{x:Static yanitta:Localization.DropChanelToolTip}" />
+                                                <CheckBox IsChecked="{Binding CancelChannel}" ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}" />
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -152,19 +152,6 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
-                        <Border BorderThickness="1" Grid.Row="1" BorderBrush="#FF17AD1A">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Width="100" Height="26" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="{x:Static yanitta:Localization.Name}" Grid.ColumnSpan="2" />
-                                    <TextBox Name="tbAbilityName" Height="23" Width="350" VerticalAlignment="Bottom" Text="{Binding ProfileList/AbilityList/Name, UpdateSourceTrigger=PropertyChanged}" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Width="100" Height="26" HorizontalAlignment="Left" VerticalAlignment="Bottom" Content="{x:Static yanitta:Localization.Spell}" Grid.ColumnSpan="2" />
-                                    <TextBox Height="23" Width="350" VerticalAlignment="Bottom" Text="{Binding ProfileList/AbilityList/SpellID, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" />
-                            </StackPanel>
-                        </Border>
                     </Grid>
 
                     <ToolBar Height="40" VerticalAlignment="Top" Grid.RowSpan="2">
@@ -192,8 +179,56 @@
                             <Image Source="/Resources/Import.png" />
                         </Button>
                     </ToolBar>
+                    <Grid Grid.RowSpan="3" Grid.Column="1" Margin="4,0" DataContext="{Binding ProfileList/AbilityList}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="200"/>
+                            <RowDefinition Height="250*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100*"/>
+                                <ColumnDefinition Width="100*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <avalonedit:TextEditor Grid.RowSpan="3" Grid.Column="1" Margin="4,0" FontFamily="Consolas" Text="{Binding ProfileList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="25"/>
+                                    <RowDefinition Height="96*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="132*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,0" Text="{x:Static yanitta:Localization.Spell}" VerticalAlignment="Center"/>
+                                <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0" Text="{Binding SpellID}" ToolTip="{x:Static yanitta:Localization.SpellIdToolTip}" TextAlignment="Right" />
+
+                                <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,0" Text="{x:Static yanitta:Localization.Name}" VerticalAlignment="Center"/>
+                                <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name}" Name="tbAbilityName" ToolTip="{x:Static yanitta:Localization.NameToolTip}"/>
+
+                                <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,0" Text="{x:Static yanitta:Localization.Target}" ToolTip="" VerticalAlignment="Center"/>
+                                <ComboBox  Grid.Column="1" Grid.Row="2" Margin="5,0" ItemsSource="{Binding Source={StaticResource TargetValues}}"
+                                                          SelectedValue="{Binding Target}" ToolTip="{x:Static yanitta:Localization.TargetToolTip}"/>
+                            </Grid>
+
+                            <StackPanel Grid.Column="2">
+                                <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"     Content="{x:Static yanitta:Localization.IsUseIncombat}"     ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding IsAttacedTarget}"   Content="{x:Static yanitta:Localization.IsAttacedTarget}"   ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding IsRangeCheck}"      Content="{x:Static yanitta:Localization.IsRangeCheck}"      ToolTip="{x:Static yanitta:Localization.IsRangeCheckToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding IsSpellKnownCheck}" Content="{x:Static yanitta:Localization.IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}"    Content="{x:Static yanitta:Localization.SetRecastDelay}"    ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding IsNotHCD}"          Content="{x:Static yanitta:Localization.IsNotHCD}"          ToolTip="{x:Static yanitta:Localization.IsNotHCDToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"     Content="{x:Static yanitta:Localization.CancelCasting}"     ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding CancelChanel}"      Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
+                            </StackPanel>
+                        </Grid>
+                        <Border BorderThickness="1" BorderBrush="Green" Grid.Row="1">
+                            <avalonedit:TextEditor FontFamily="Consolas"
+                                                   Text="{Binding ProfileList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        </Border>
+                    </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.RotationList}">
