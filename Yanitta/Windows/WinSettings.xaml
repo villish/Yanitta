@@ -18,7 +18,6 @@
         <TabControl Grid.ColumnSpan="2">
             <TabItem Header="Main">
                 <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
-                    <CheckBox Margin="10,0,0,0" Content="ShowChat"  IsChecked="{Binding ShowChat}" />
                     <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
                     <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
                     <StackPanel Orientation="Horizontal">
