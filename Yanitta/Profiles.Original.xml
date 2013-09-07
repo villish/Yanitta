@@ -742,66 +742,6 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Prot: Боевой крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if rage < 70 and not hasAPbuff then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Prot: Командирский крик">
-        <SpellID>469</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if rage < 70 and hasAPbuff then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Prot: Одобряющий клич">
-        <SpellID>97462</SpellID>
-        <Target>None</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if isInCombat and playerHP < 25  and useCooldown then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Prot: Ярость берсерка">
-        <SpellID>18499</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if not HasBuff("player", 12880) then
-    return true;
-end]]></Lua>
-      </Ability>
       <Ability Name="Prot: Героический прыжок">
         <SpellID>6544</SpellID>
         <Target>MouseLocation</Target>
@@ -874,6 +814,66 @@ isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
 hasAPbuff  = HasBuff("player", { 57330, 19506});
 playerHP   = HealthByPercent("player");
 rage       = UnitPower("player");]]></Lua>
+      </Ability>
+      <Ability Name="Prot: Боевой крик">
+        <SpellID>6673</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if rage < 70 and not hasAPbuff then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Prot: Командирский крик">
+        <SpellID>469</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if rage < 70 and hasAPbuff then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Prot: Одобряющий клич">
+        <SpellID>97462</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if isInCombat and playerHP < 25  and useCooldown then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Prot: Ярость берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if not HasBuff("player", 12880) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Prot: Удар героя">
         <SpellID>78</SpellID>
