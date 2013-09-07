@@ -65,11 +65,7 @@
                     <GridSplitter Grid.RowSpan="3" Grid.Column="1" Width="4" HorizontalAlignment="Left" />
                     <GridSplitter Grid.RowSpan="3" Grid.Column="1" Width="4" HorizontalAlignment="Left" />
                     <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="63" />
-                        </Grid.RowDefinitions>
-                        <ListView x:Name="abilityList" Margin="0,0,0,8" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}" Grid.RowSpan="2">
+                        <ListView x:Name="abilityList" Margin="0,0,0,8" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
@@ -203,10 +199,10 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,0" Text="{x:Static yanitta:Localization.Spell}" VerticalAlignment="Center"/>
-                                <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0" Text="{Binding SpellID}" ToolTip="{x:Static yanitta:Localization.SpellIdToolTip}" TextAlignment="Right" />
+                                <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static yanitta:Localization.SpellIdToolTip}" TextAlignment="Right" />
 
                                 <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,0" Text="{x:Static yanitta:Localization.Name}" VerticalAlignment="Center"/>
-                                <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name}" Name="tbAbilityName" ToolTip="{x:Static yanitta:Localization.NameToolTip}"/>
+                                <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Name="tbAbilityName" ToolTip="{x:Static yanitta:Localization.NameToolTip}"/>
 
                                 <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,0" Text="{x:Static yanitta:Localization.Target}" ToolTip="" VerticalAlignment="Center"/>
                                 <ComboBox  Grid.Column="1" Grid.Row="2" Margin="5,0" ItemsSource="{Binding Source={StaticResource TargetValues}}"
@@ -224,9 +220,8 @@
                                 <CheckBox Margin="3" IsChecked="{Binding CancelChanel}"      Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                             </StackPanel>
                         </Grid>
-                        <Border BorderThickness="1" BorderBrush="Green" Grid.Row="1">
-                            <avalonedit:TextEditor FontFamily="Consolas"
-                                                   Text="{Binding ProfileList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Row="1">
+                            <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                         </Border>
                     </Grid>
                 </Grid>
@@ -293,8 +288,7 @@
                                 <GridViewColumn Header="Key">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ComboBox Width="150" SelectedValue="{Binding HotKey.Key}"
-                                                       ItemsSource="{Binding Source={StaticResource KeyValues}}" />
+                                            <ComboBox Width="150" SelectedValue="{Binding HotKey.Key}" ItemsSource="{Binding Source={StaticResource KeyValues}}" />
                                         </DataTemplate>
                                     </GridViewColumn.CellTemplate>
                                 </GridViewColumn>
