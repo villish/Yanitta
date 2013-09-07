@@ -528,6 +528,26 @@ function UseItemById(itemId)
     end
 end
 
+function CheckInterrupt(unit)
+    if UnitExists(unit) then
+        return;
+    end
+
+    -- чтение заклинания прерываем только перед окончанием каста.
+    local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
+    if name and not notInterruptible and not isTrade then
+        if (endTime - GetTime() - ping) <= 1 then
+            return true;
+        end
+    end
+
+    -- канальное заклинание прерываем сразу.
+    local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
+    if name and not notInterruptible and not isTrade then
+        return true;
+    end
+end
+
 -----------------------------------------------
 --                    HEAL                   --
 -----------------------------------------------
