@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.246</Version>
+  <Version>0.0.2.247</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -421,13 +421,8 @@ end
 function IsMoving(sec)
     local sec = sec or 0;
 
-    for _,spell in ipairs(moving_spell_table) do
-        local spellInfo = GetSpellInfo(spell);
-        if spellInfo then
-            if UnitBuff("player", spellInfo, nil, nil) then
-                return;
-            end
-        end
+    if HasBuff("player", moving_spell_table) then
+        return;
     end
 
     -- Для определения значениря, двигается ли персонаж, необходимо
