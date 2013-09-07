@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.247</Version>
+  <Version>0.0.2.248</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -531,7 +531,7 @@ function CheckInterrupt(unit)
     -- чтение заклинания прерываем только перед окончанием каста.
     local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
     if name and not notInterruptible and not isTrade then
-        if (endTime - GetTime() - ping) <= 1 then
+        if (endTime - (GetTime() * 1000) - ping) <= 1 then
             return true;
         end
     end
