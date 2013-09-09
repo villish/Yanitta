@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.8</Version>
+  <Version>0.0.3.11</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -5270,7 +5270,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HasBuff("player", 17962) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Destro: Ожег тьмы">
         <SpellID>17877</SpellID>
@@ -5283,12 +5285,14 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HealthByPercent("target") < 20 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Destro: Стрела хаоса">
         <SpellID>116858</SpellID>
         <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
+        <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
@@ -5296,7 +5300,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if not isMoving and not HasBuff("player", 117896) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Destro: Огненный ливень">
         <SpellID>5740</SpellID>
@@ -5338,6 +5344,21 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Destro: Черная душа: Изменчивость">
+        <SpellID>113858</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if useCooldown then
+    return true;
+end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
