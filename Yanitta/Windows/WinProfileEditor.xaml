@@ -217,7 +217,7 @@
                                 <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}"    Content="{x:Static yanitta:Localization.SetRecastDelay}"    ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
                                 <CheckBox Margin="3" IsChecked="{Binding IsNotHCD}"          Content="{x:Static yanitta:Localization.IsNotHCD}"          ToolTip="{x:Static yanitta:Localization.IsNotHCDToolTip}"/>
                                 <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"     Content="{x:Static yanitta:Localization.CancelCasting}"     ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding CancelChanel}"      Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
+                                <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"     Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                             </StackPanel>
                         </Grid>
                         <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Row="1">
