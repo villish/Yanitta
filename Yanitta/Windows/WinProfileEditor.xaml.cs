@@ -186,6 +186,7 @@ namespace Yanitta
                 this.abilityList.SelectedIndex = this.CurrentProfile.AbilityList.Count - 1;
                 this.tbAbilityName.Focus();
                 this.tbAbilityName.SelectAll();
+                abilityList.ScrollIntoView(this.abilityList.SelectedItem);
             }
             SetAlavilableAbilityFilter();
         }
@@ -198,6 +199,7 @@ namespace Yanitta
                 this.abilityList.SelectedIndex = this.CurrentProfile.AbilityList.Count - 1;
                 this.tbAbilityName.Focus();
                 this.tbAbilityName.SelectAll();
+                this.abilityList.ScrollIntoView(this.abilityList.SelectedItem);
             }
             SetAlavilableAbilityFilter();
         }
@@ -223,6 +225,7 @@ namespace Yanitta
                 this.rotationList.SelectedIndex = this.CurrentProfile.RotationList.Count - 1;
                 this.tbRotationName.Focus();
                 this.tbRotationName.SelectAll();
+                this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
             }
             SetAlavilableAbilityFilter();
         }
@@ -235,6 +238,7 @@ namespace Yanitta
                 this.rotationList.SelectedIndex = this.CurrentProfile.RotationList.Count - 1;
                 this.tbRotationName.Focus();
                 this.tbRotationName.SelectAll();
+                this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
             }
             SetAlavilableAbilityFilter();
         }
