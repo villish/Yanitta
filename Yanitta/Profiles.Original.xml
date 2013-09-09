@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.2.248</Version>
+  <Version>0.0.3.6</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -548,7 +548,7 @@ end
 -----------------------------------------------
 DONT_HEAL_DEBUFF_LIST  = {
     { Id = 137341,  Count = 0   }, -- Наложницы блезнецы (Чудовище из кошмаров)
-    { Id = 137360,  Count = 0   }, -- Наложницы блезнецы (Искаженное лечение)
+    --{ Id = 137360,  Count = 0   }, -- Наложницы блезнецы (Искаженное лечение)
 };
 
 DISPELL_LIST = {
@@ -2358,18 +2358,16 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[ClearTarget();
-TargetNearestEnemy();
+        <Lua><![CDATA[-- 64399 Боевой штандарт координации
+UseItemById(64399);
 
-local name = UnitName("target");
+TargetNearestEnemy();
 if UnitExists("target") and not UnitIsDeadOrGhost("target") then
     if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
         StartAttack("target");
         return true;
     end
-end
-
-ClearTarget();]]></Lua>
+end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
@@ -5624,7 +5622,7 @@ isCat       = nil;]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if not UnitAffectingCombat("player") then
+        <Lua><![CDATA[if not UnitAffectingCombat("player") and not HasBuff("player", { 1126 }) then
     return true;
 end]]></Lua>
       </Ability>
@@ -5802,7 +5800,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.Agro > 2 and member.Role == "TANK" then
+    if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
         local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
         if count < 3 or rem < 2 then
             return member.Unit;
@@ -5853,8 +5851,10 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if not isMoving and (members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 80) and not members[1].DontHeal then
-    return members[1].Unit;
+        <Lua><![CDATA[if not isMoving and not members[1].DontHeal then
+    if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 80) then
+        return members[1].Unit;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Покровительство природы">
@@ -5869,7 +5869,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving then
-    if (members[1].HP < 80 or select(3, HasBuff("player", 77495) < 2) and not members[1].DontHeal then
+    if (members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2) and not members[1].DontHeal then
         return members[1].Unit;
     end
 end]]></Lua>
@@ -5885,7 +5885,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if mkLeftAlt then
+        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
     return true;
 end]]></Lua>
       </Ability>
@@ -5900,7 +5900,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if mkLeftShift then
+        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
     return true;
 end]]></Lua>
       </Ability>
@@ -5915,7 +5915,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if mkRightControl then
+        <Lua><![CDATA[if IsModKeyDown(mkRightControl) then
     return true;
 end]]></Lua>
       </Ability>
@@ -6774,7 +6774,7 @@ LeftAlt - Пауза
 RightControl - Включыние / Выключение кулдаунов]]></Notes>
       </Rotation>
       <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
-        <HotKey Key="A" Modifier="Alt Shift" />
+        <HotKey Key="B" Modifier="Alt" />
         <AbilityQueue>
           <string>Farm: Лунный огонь</string>
           <string>Знак дикой природы</string>
