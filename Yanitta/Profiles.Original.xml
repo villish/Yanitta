@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.8</Version>
+  <Version>0.0.3.12</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2350,8 +2350,8 @@ if not UnitExists("target") or UnitIsDead("target") then
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Чародейский выстрел : FARM">
-        <SpellID>0</SpellID>
+      <Ability Name="Укус змеи : FARM">
+        <SpellID>1978</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2365,6 +2365,25 @@ end]]></Lua>
 UseItemById(64399);
 
 TargetNearestEnemy();
+if UnitExists("target") and not UnitIsDeadOrGhost("target") then
+    if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
+        StartAttack("target");
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Выстрел кобры: Farm">
+        <SpellID>77767</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[TargetNearestEnemy();
 if UnitExists("target") and not UnitIsDeadOrGhost("target") then
     if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
         StartAttack("target");
@@ -2439,7 +2458,8 @@ LeftAlt - Пауза]]></Notes>
       <Rotation Name="Farm" ProcNotifyer="false">
         <HotKey Key="B" Modifier="Alt" />
         <AbilityQueue>
-          <string>Чародейский выстрел : FARM</string>
+          <string>Укус змеи : FARM</string>
+          <string>Выстрел кобры: Farm</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -5270,7 +5290,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HasBuff("player", 17962) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Destro: Ожег тьмы">
         <SpellID>17877</SpellID>
@@ -5283,12 +5305,14 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HealthByPercent("target") < 20 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Destro: Стрела хаоса">
         <SpellID>116858</SpellID>
         <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
+        <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
@@ -5296,7 +5320,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if not isMoving and not HasBuff("player", 117896) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Destro: Огненный ливень">
         <SpellID>5740</SpellID>
@@ -5338,6 +5364,21 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Destro: Черная душа: Изменчивость">
+        <SpellID>113858</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if useCooldown then
+    return true;
+end]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
