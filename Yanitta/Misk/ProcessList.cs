@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows.Threading;
+using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -28,7 +29,7 @@ namespace Yanitta
 
         private void CheckProcess()
         {
-            var wowProcessList = Process.GetProcessesByName("wow");
+            var wowProcessList = Process.GetProcessesByName(Settings.Default.ProcessName);
 
             if (!wowProcessList.Any())
             {

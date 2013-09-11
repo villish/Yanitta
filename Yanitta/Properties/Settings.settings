@@ -17,5 +17,8 @@
     <Setting Name="AniAFK" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ProcessName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">wow</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

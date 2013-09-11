@@ -21,6 +21,10 @@
                     <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
                     <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
                     <StackPanel Orientation="Horizontal">
+                        <Label Width="100" Content="Process name:" />
+                        <TextBox Width="300" Text="{Binding ProcessName}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                         <Label Width="100" Content="Profile file:" />
                         <TextBox Width="280" Text="{Binding ProfilesFileName}" />
                         <Button Width="20" Command="Open" Content="..." />
