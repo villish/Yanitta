@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.14</Version>
+  <Version>0.0.3.18</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -5802,7 +5802,13 @@ elseif IsModKeyDown(mkRightShift) then
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
-
+    if mouseover_dispel then
+        mouseover_dispel = false;
+        print("|cffff0000Диспел по mouseover: Выключен");
+    else
+        mouseover_dispel = true;
+        print("|cff00ff00Диспел по mouseover: Включен");
+    end
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
@@ -5840,6 +5846,143 @@ if LAST_TARGET_UNIT then
     end
 end]]></Lua>
       </Ability>
+      <Ability Name="Restor: Возрождение">
+        <SpellID>20484</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Дерево жизни">
+        <SpellID>33891</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if IsModKeyDown(mkRightControl) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Дикий гриб">
+        <SpellID>88747</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Природный целитель">
+        <SpellID>88423</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+   if member.NeedDispell then
+       return member.Unit;
+   end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Природный целитель (mouseover)">
+        <SpellID>88423</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if mouseover_dispel and ValidDispellForClass("mouseover") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Железная кора">
+        <SpellID>102342</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if members[1].HP < 30 and not member[1].DontHeal then
+    return members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Дикий гриб: Лечение">
+        <SpellID>102791</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if members[1].HP < 40 and not member[1].DontHeal then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Дубовая кора">
+        <SpellID>22812</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <Lua><![CDATA[if HealthByPercent("player") < 40 then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Restor: Буйный рост">
         <SpellID>48438</SpellID>
         <Target>Player</Target>
@@ -5866,7 +6009,11 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if LowHP.H80 <= 3 then
+        <Lua><![CDATA[if HasGlyph(145529) then
+    if members[1].HP < 60 and not members[1].DontHeal and not HasBuff("player", 132158) then
+        return members[1].Unit;
+    end
+elseif LowHP.H80 <= 3 then
     for _,member in ipairs(members) do
         if member.HP < 90 and HasBuff(member.Unit, { 774 }, "PLAYER") then
             local count = 0;
@@ -5893,7 +6040,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if mkRightShift then
+        <Lua><![CDATA[if IsModKeyDown(mkRightShift) then
     return true;
 end]]></Lua>
       </Ability>
@@ -5911,34 +6058,6 @@ end]]></Lua>
         <Lua><![CDATA[if myMana <= 80 then
     return true;
 end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Природная стремительность">
-        <SpellID>132158</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if members[1].HP < 40 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Железная кора">
-        <SpellID>102342</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Restor: Жизнецвет">
         <SpellID>33763</SpellID>
@@ -5960,20 +6079,20 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
-      <Ability Name="Restor: Омоложение">
-        <SpellID>774</SpellID>
+      <Ability Name="Restor: Восстановление">
+        <SpellID>8936</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.HP < 90 and not member.DontHeal and not HasBuff(member.Unit, 774, "PLAYER") then
-        return member.Unit;
+        <Lua><![CDATA[if not isMoving and not members[1].DontHeal and not HasBuff("player", 132158) then
+    if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 80) then
+        return members[1].Unit;
     end
 end]]></Lua>
       </Ability>
@@ -5992,20 +6111,20 @@ end]]></Lua>
     return members[1].Unit;
 end]]></Lua>
       </Ability>
-      <Ability Name="Restor: Восстановление">
-        <SpellID>8936</SpellID>
+      <Ability Name="Restor: Омоложение">
+        <SpellID>774</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if not isMoving and not members[1].DontHeal then
-    if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 80) then
-        return members[1].Unit;
+        <Lua><![CDATA[for _,member in ipairs(members) do
+    if member.HP < 85 and not member.DontHeal and not HasBuff(member.Unit, 774, "PLAYER") then
+        return member.Unit;
     end
 end]]></Lua>
       </Ability>
@@ -6016,7 +6135,7 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -6024,83 +6143,6 @@ end]]></Lua>
     if (members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2) and not members[1].DontHeal then
         return members[1].Unit;
     end
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Дикий гриб: Лечение">
-        <SpellID>102791</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Дикий гриб">
-        <SpellID>88747</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Дерево жизни">
-        <SpellID>33891</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkRightControl) then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Дубовая кора">
-        <SpellID>22812</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if HealthByPercent("player") < 40 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Природный целитель">
-        <SpellID>88423</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[for _,member in ipairs(members) do
-   if member.NeedDispell then
-       return member.Unit;
-   end
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Оживление">
@@ -6115,21 +6157,6 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not UnitAffectingCombat("player") and UnitIsDeadOrGhost("mouseover") then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Возрождение">
-        <SpellID>20484</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
     return true;
 end]]></Lua>
       </Ability>
@@ -6759,25 +6786,13 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[TargetNearestEnemy();
+        <Lua><![CDATA[-- 64399 Боевой штандарт координации
+UseItemById(64399);
+TargetNearestEnemy();
 -- and string.match(UnitName("target"), "^(.+).жных морей$")
 if UnitExists("target") and not UnitIsDeadOrGhost("target") then
     return true;
 end]]></Lua>
-      </Ability>
-      <Ability Name="Farm: Боевой штандарт координации">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[-- 64399 Боевой штандарт координации
-UseItemById(64399);]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
@@ -6785,19 +6800,25 @@ UseItemById(64399);]]></Lua>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Restor: Инициализация</string>
+          <string>Restor: Возрождение</string>
+          <string>Restor: Дерево жизни</string>
           <string>Restor: Дикий гриб</string>
-          <string>Restor: Дубовая кора</string>
+          <string>Restor: Природный целитель</string>
+          <string>Restor: Природный целитель (mouseover)</string>
+          <string>Restor: Железная кора</string>
           <string>Restor: Дикий гриб: Лечение</string>
-          <string>Restor: Озарение</string>
-          <string>Restor: Быстрое восстановление</string>
+          <string>Restor: Природная стремительность</string>
+          <string>Restor: Дубовая кора</string>
           <string>Restor: Буйный рост</string>
+          <string>Restor: Быстрое восстановление</string>
+          <string>Restor: Спокойствие</string>
+          <string>Restor: Озарение</string>
+          <string>Restor: Жизнецвет</string>
           <string>Restor: Восстановление</string>
           <string>Restor: Целительное прикосновение</string>
-          <string>Restor: Жизнецвет</string>
           <string>Restor: Омоложение</string>
-          <string>Restor: Железная кора</string>
           <string>Restor: Покровительство природы</string>
-          <string>Знак дикой природы</string>
+          <string>Restor: Оживление</string>
         </AbilityQueue>
         <Notes><![CDATA[LeftShift - Установка гриба
 LeftControl - Диспел (под мышкой)
@@ -6870,7 +6891,6 @@ RightControl - Включыние / Выключение кулдаунов]]></
         <AbilityQueue>
           <string>Farm: Лунный огонь</string>
           <string>Знак дикой природы</string>
-          <string>Farm: Боевой штандарт координации</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
