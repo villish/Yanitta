@@ -15,7 +15,7 @@ namespace Yanitta
         private IntPtr mDetour;
         private IntPtr mClientObjectManager;
 
-        private byte[] CltObjMrgSeach          = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00 };
+        private byte[] CltObjMrgSeach          = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x00, 0x00, 0x6A, 0x00, 0x00, 0x00, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x83, 0xC4, 0x14 };
         private byte[] OverwrittenBytes        = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00 };
         private byte[] OverwrittenBytesPattern = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00, 0x83, 0x7D, 0x14, 0x00, 0x56, 0x8B, 0x75 };
 
@@ -26,6 +26,7 @@ namespace Yanitta
             if (memory == null || !memory.IsOpened)
                 throw new ArgumentNullException();
 
+            this.mClientObjectManager = (IntPtr)Offsets.Default.ClntObjMgrGetActivePlayerObj;
             this.Memory = memory;
         }
 
@@ -34,7 +35,7 @@ namespace Yanitta
             if (this.mDetour == IntPtr.Zero || this.mClientObjectManager == IntPtr.Zero)
             {
                 this.mDetour              = this.Memory.Find(this.OverwrittenBytesPattern);
-                this.mClientObjectManager = this.Memory.Find(this.CltObjMrgSeach, "x???xx?x");
+                this.mClientObjectManager = this.Memory.Find(this.CltObjMrgSeach, "x????x????x????x???x????xxx");
 
                 if (this.mDetour == IntPtr.Zero)
                     throw new NullReferenceException("mDetour not found");

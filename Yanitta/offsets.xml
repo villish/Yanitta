@@ -6,4 +6,5 @@
   <IsInGame>13947902</IsInGame>
   <FrameScript_ExecuteBuffer>327584</FrameScript_ExecuteBuffer>
   <FrameScript_GetLocalizedText>4245146</FrameScript_GetLocalizedText>
+  <ClntObjMgrGetActivePlayerObj>20180</ClntObjMgrGetActivePlayerObj>
 </Offsets>

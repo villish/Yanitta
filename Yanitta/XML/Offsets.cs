@@ -20,7 +20,8 @@ namespace Yanitta
         public static readonly DependencyProperty FrameScript_ExecuteBufferProperty     = DependencyProperty.Register("FrameScript_ExecuteBuffer",      typeof(long), typeof(Offsets));
         [XmlIgnore]
         public static readonly DependencyProperty FrameScript_GetLocalizedTextProperty  = DependencyProperty.Register("FrameScript_GetLocalizedText",   typeof(long), typeof(Offsets));
-
+        [XmlIgnore]
+        public static readonly DependencyProperty ClntObjMgrGetActivePlayerObjProperty  = DependencyProperty.Register("ClntObjMgrGetActivePlayerObj",   typeof(long), typeof(Offsets));
         [XmlIgnore]
         private const string fileName = "offsets.xml";
 
@@ -66,6 +67,13 @@ namespace Yanitta
             set { SetValue(FrameScript_GetLocalizedTextProperty, value); }
         }
 
+        [XmlElement]
+        public long ClntObjMgrGetActivePlayerObj
+        {
+            get { return (long)GetValue(ClntObjMgrGetActivePlayerObjProperty); }
+            set { SetValue(ClntObjMgrGetActivePlayerObjProperty, value); }
+        }
+
         static Offsets()
         {
             if (File.Exists(fileName))
@@ -75,7 +83,7 @@ namespace Yanitta
         }
 
         [XmlIgnore]
-        public static Offsets Default { get; private set; }
+        public static Offsets Default { get; set; }
 
         public void Save()
         {
