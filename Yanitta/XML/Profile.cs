@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -11,12 +11,12 @@ namespace Yanitta
     ///
     /// </summary>
     [Serializable]
-    public class Profile : INotifyPropertyChanged, IDisposable
+    public class Profile : DependencyObject, IDisposable
     {
-        private WowClass m_class;
-        private string m_lua;
-        private ObservableCollection<Ability> m_AbilityList;
-        private ObservableCollection<Rotation> m_RotationList;
+        public static readonly DependencyProperty ClassProperty        = DependencyProperty.Register("Class",        typeof(WowClass),                       typeof(Profile));
+        public static readonly DependencyProperty LuaProperty          = DependencyProperty.Register("Lua",          typeof(string),                         typeof(Profile));
+        public static readonly DependencyProperty AbilityListProperty  = DependencyProperty.Register("AbilityList",  typeof(ObservableCollection<Ability>),  typeof(Profile));
+        public static readonly DependencyProperty RotationListProperty = DependencyProperty.Register("RotationList", typeof(ObservableCollection<Rotation>), typeof(Profile));
 
         /// <summary>
         ///
@@ -24,29 +24,16 @@ namespace Yanitta
         [XmlAttribute("Class")]
         public WowClass Class
         {
-            get { return this.m_class; }
-            set
-            {
-                if (this.m_class != value)
-                {
-                    this.m_class = value;
-                    OnPropertyChanged("Class");
-                }
-            }
+            get { return (WowClass)GetValue(ClassProperty); }
+            set { SetValue(ClassProperty, value); }
         }
+
 
         [XmlIgnore]
         public string Lua
         {
-            get { return m_lua ?? string.Empty; }
-            set
-            {
-                if (m_lua != value)
-                {
-                    m_lua = value;
-                    OnPropertyChanged("Lua");
-                }
-            }
+            get { return (string)(GetValue(LuaProperty) ?? ""); }
+            set { SetValue(LuaProperty, value); }
         }
 
         [XmlElement("Lua")]
@@ -61,15 +48,8 @@ namespace Yanitta
         /// </summary>
         public ObservableCollection<Ability> AbilityList
         {
-            get { return this.m_AbilityList; }
-            set
-            {
-                if (this.m_AbilityList != value)
-                {
-                    this.m_AbilityList = value;
-                    OnPropertyChanged("AbilityList");
-                }
-            }
+            get { return (ObservableCollection<Ability>)GetValue(AbilityListProperty); }
+            set { SetValue(AbilityListProperty, value); }
         }
 
         /// <summary>
@@ -77,15 +57,8 @@ namespace Yanitta
         /// </summary>
         public ObservableCollection<Rotation> RotationList
         {
-            get { return this.m_RotationList; }
-            set
-            {
-                if (this.m_RotationList != value)
-                {
-                    this.m_RotationList = value;
-                    OnPropertyChanged("RotationList");
-                }
-            }
+            get { return (ObservableCollection<Rotation>)GetValue(RotationListProperty); }
+            set { SetValue(RotationListProperty, value); }
         }
 
         /// <summary>
@@ -121,14 +94,6 @@ namespace Yanitta
                     }
                 }
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
         }
 
         public void Dispose()
