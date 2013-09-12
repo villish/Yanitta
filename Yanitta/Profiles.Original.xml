@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.13</Version>
+  <Version>0.0.3.14</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6200,36 +6200,6 @@ isCat      = GetShapeshiftForm() == 3;]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Guard: Природная стремительность">
-        <SpellID>132158</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[return true;]]></Lua>
-      </Ability>
-      <Ability Name="Guard: Целительное прикосновение">
-        <SpellID>5185</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if playerHP < 40 then
-    if HasBuff("player", 132158) then
-        return true;
-    end
-end]]></Lua>
-      </Ability>
       <Ability Name="Guard: Дикая защита">
         <SpellID>62606</SpellID>
         <Target>None</Target>
@@ -6841,8 +6811,6 @@ RightAlt -  Взрыв грибов]]></Notes>
         <AbilityQueue>
           <string>Инициализация (Страж)</string>
           <string>Guard: Неистовое восстановление</string>
-          <string>Guard: Природная стремительность</string>
-          <string>Guard: Целительное прикосновение</string>
           <string>Guard: Дикая защита</string>
           <string>Guard: Дубовая кожа</string>
           <string>Guard: Инстинкты выживания</string>
