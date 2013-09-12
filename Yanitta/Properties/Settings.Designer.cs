@@ -62,12 +62,12 @@ namespace Yanitta.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("http://dl.dropbox.com/u/39925787/PQR_Offsets")]
-        public string UpdateOffsetURL {
+        public string UpdateOffsetURLPQR {
             get {
-                return ((string)(this["UpdateOffsetURL"]));
+                return ((string)(this["UpdateOffsetURLPQR"]));
             }
             set {
-                this["UpdateOffsetURL"] = value;
+                this["UpdateOffsetURLPQR"] = value;
             }
         }
         
@@ -92,6 +92,18 @@ namespace Yanitta.Properties {
             }
             set {
                 this["ProcessName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://raw.github.com/Konctantin/Yanitta/master/Yanitta/offsets.xml")]
+        public string UpdateOffsetURLRepo {
+            get {
+                return ((string)(this["UpdateOffsetURLRepo"]));
+            }
+            set {
+                this["UpdateOffsetURLRepo"] = value;
             }
         }
     }

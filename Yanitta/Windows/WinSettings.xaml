@@ -20,6 +20,7 @@
                 <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
                     <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
                     <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
+                    <Separator />
                     <StackPanel Orientation="Horizontal">
                         <Label Width="100" Content="Process name:" />
                         <TextBox Width="300" Text="{Binding ProcessName}" />
@@ -30,11 +31,18 @@
                         <Button Width="20" Command="Open" Content="..." />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" />
+                    <Separator />
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Update Url:" Width="100" />
-                        <TextBox Width="300" Text="{Binding UpdateOffsetURL}" />
+                        <Label Content="Update Url PQR:" Width="100" />
+                        <TextBox Width="300" Text="{Binding UpdateOffsetURLPQR}" />
+                        <Button Command="Find" Content="Update" CommandParameter="PQR"/>
                     </StackPanel>
-                    <Button Command="Find" Content="UpdateOffset" />
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Update Url Repo:" Width="100" />
+                        <TextBox Width="300" Text="{Binding UpdateOffsetURLRepo}" />
+                        <Button Command="Find" Content="Update" CommandParameter="Repo" />
+                    </StackPanel>
                 </StackPanel>
             </TabItem>
             <TabItem Header="Offsets">
@@ -62,6 +70,10 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Width="200" Content="FrameScript_GetLocalizedText" />
                         <TextBox Width="150" TextAlignment="Right" Text="{Binding FrameScript_GetLocalizedText, Converter={StaticResource integerConverter}}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Width="200" Content="ClntObjMgrGetActivePlayerObj" />
+                        <TextBox Width="150" TextAlignment="Right" Text="{Binding ClntObjMgrGetActivePlayerObj, Converter={StaticResource integerConverter}}" />
                     </StackPanel>
                 </StackPanel>
             </TabItem>

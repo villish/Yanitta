@@ -6,6 +6,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml;
+using System.Xml.Serialization;
 using Yanitta.Properties;
 
 namespace Yanitta
@@ -43,7 +44,10 @@ namespace Yanitta
                     Cursor = Cursors.Wait;
                     try
                     {
-                        this.LoadOffsets();
+                        if (e.Parameter.ToString() == "PQR")
+                            this.LoadOffsetsPQR();
+                        else if (e.Parameter.ToString() == "Repo")
+                            this.LoadOffsetsRepo();
                     }
                     catch(Exception ex)
                     {
@@ -64,11 +68,23 @@ namespace Yanitta
             });
         }
 
-        private void LoadOffsets()
+        private void LoadOffsetsRepo()
+        {
+            using (var response = (HttpWebResponse)WebRequest.Create(Settings.Default.UpdateOffsetURLRepo).GetResponse())
+            {
+                var serializer = new XmlSerializer(typeof(Offsets));
+                using (var stream = response.GetResponseStream())
+                {
+                    Offsets.Default = (Offsets)serializer.Deserialize(response.GetResponseStream());
+                }
+            }
+        }
+
+        private void LoadOffsetsPQR()
         {
             var address = string.Empty;
 
-            using (var response = (HttpWebResponse)WebRequest.Create(Settings.Default.UpdateOffsetURL + "/offsets.txt").GetResponse())
+            using (var response = (HttpWebResponse)WebRequest.Create(Settings.Default.UpdateOffsetURLPQR + "/offsets.txt").GetResponse())
             {
                 using (var reader = new StreamReader(response.GetResponseStream()))
                 {
@@ -95,7 +111,7 @@ namespace Yanitta
                 return result;
             };
 
-            var request = WebRequest.Create(Settings.Default.UpdateOffsetURL + '/' + address);
+            var request = WebRequest.Create(Settings.Default.UpdateOffsetURLPQR + '/' + address);
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {

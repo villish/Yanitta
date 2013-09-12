@@ -11,7 +11,7 @@
     <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="UpdateOffsetURL" Type="System.String" Scope="User">
+    <Setting Name="UpdateOffsetURLPQR" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://dl.dropbox.com/u/39925787/PQR_Offsets</Value>
     </Setting>
     <Setting Name="AniAFK" Type="System.Boolean" Scope="User">
@@ -19,6 +19,9 @@
     </Setting>
     <Setting Name="ProcessName" Type="System.String" Scope="User">
       <Value Profile="(Default)">wow</Value>
+    </Setting>
+    <Setting Name="UpdateOffsetURLRepo" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://raw.github.com/Konctantin/Yanitta/master/Yanitta/offsets.xml</Value>
     </Setting>
   </Settings>
 </SettingsFile>
