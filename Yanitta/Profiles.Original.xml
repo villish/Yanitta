@@ -5772,8 +5772,17 @@ isCat       = nil;]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if not UnitAffectingCombat("player") and not HasBuff("player", { 1126 }) then
-    return true;
+        <Lua><![CDATA[if not UnitAffectingCombat("player") then
+    -- heallers table
+    if type(members) == "table" then
+        for _,member in ipairs(members) do
+            if not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
+                return member.Unit;
+            end
+        end
+    elseif not HasBuff("player", { 1126, 115921, 20217, 90363 }) then
+        return true;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Инициализация">
@@ -5919,7 +5928,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if mouseover_dispel and ValidDispellForClass("mouseover") then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) and ValidDispellForClass("mouseover") then
     return true;
 end]]></Lua>
       </Ability>
@@ -5995,7 +6004,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if LowHP.H90 > 4 then
-    return true;
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Быстрое восстановление">
@@ -6091,7 +6100,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <Lua><![CDATA[if not isMoving and not members[1].DontHeal and not HasBuff("player", 132158) then
-    if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 80) then
+    if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 75) then
         return members[1].Unit;
     end
 end]]></Lua>
@@ -6107,7 +6116,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <Lua><![CDATA[if not isMoving and members[1].HP < 60 and not members[1].DontHeal then
+        <Lua><![CDATA[if (not isMoving or HasBuff("player", 132158)) and members[1].HP < 60 and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
