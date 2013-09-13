@@ -23,6 +23,9 @@ namespace Yanitta
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            if (e.Args.Length > 0 && e.Args[0] == "/e")
+                StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
+
             Console.WriteLine("Yanitta startup!...");
 
             if (!File.Exists("FASM.DLL"))
