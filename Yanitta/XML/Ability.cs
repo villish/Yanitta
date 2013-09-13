@@ -13,56 +13,56 @@ namespace Yanitta
     {
         /// <summary>
         /// Имя способности, желательно полное соответствие с названием заклинания.
-        /// Если есть можификатор цели, пишем его.
+        /// Если есть модификатор цели, пишем его.
         /// Например: Огненный столб, Слово Тьмы: Боль (Target), Слово Тьмы: Боль (Mouseover)
         /// </summary>
         [XmlAttribute]
-        public string Name { get; set; }
+        public string Name            { get; set; }
 
         /// <summary>
         /// Ид заклинания
         /// </summary>
-        public uint SpellID { get; set; }
+        public uint SpellID           { get; set; }
 
         /// <summary>
         /// Тип цели
         /// </summary>
-        public TargetType Target { get; set; }
+        public TargetType Target      { get; set; }
 
         /// <summary>
         /// Прерывать канальные заклинания
         /// </summary>
-        public bool CancelChannel { get; set; }
+        public bool CancelChannel     { get; set; }
 
         /// <summary>
         /// Прерывать чтение заклинаний
         /// </summary>
-        public bool CancelCasting { get; set; }
+        public bool CancelCasting     { get; set; }
 
         /// <summary>
         /// Проверка дистанции
         /// </summary>
-        public bool IsRangeCheck { get; set; }
+        public bool IsRangeCheck      { get; set; }
 
         /// <summary>
         /// Проверка возможности атаковать цель
         /// </summary>
-        public bool IsAttacedTarget { get; set; }
+        public bool IsAttacedTarget   { get; set; }
 
         /// <summary>
         /// Проверка нахождения в бою
         /// </summary>
-        public bool IsUseIncombat { get; set; }
+        public bool IsUseIncombat     { get; set; }
 
         /// <summary>
         /// Использовать задержку на произнесение следующего заклинания
         /// </summary>
-        public bool SetRecastDelay { get; set; }
+        public bool SetRecastDelay    { get; set; }
 
         /// <summary>
         /// Это заклинание не имеет общего ГКД
         /// </summary>
-        public bool IsNotHCD { get; set; }
+        public bool IsNotHCD          { get; set; }
 
         /// <summary>
         /// Делает проверку на то, что данное заклинание доступно для персонажа.
@@ -74,7 +74,7 @@ namespace Yanitta
         /// Луа код для проверки использования способности
         /// </summary>
         [XmlIgnore]
-        public string Lua { get; set; }
+        public string Lua             { get; set; }
 
         /// <summary>
         ///

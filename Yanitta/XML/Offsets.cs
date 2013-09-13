@@ -8,21 +8,13 @@ namespace Yanitta
     [Serializable]
     public class Offsets : DependencyObject
     {
-        [XmlIgnore]
         public static readonly DependencyProperty BuildProperty                         = DependencyProperty.Register("Build",                          typeof(int),  typeof(Offsets));
-        [XmlIgnore]
         public static readonly DependencyProperty PlayerNameProperty                    = DependencyProperty.Register("PlayerName",                     typeof(long), typeof(Offsets));
-        [XmlIgnore]
         public static readonly DependencyProperty PlayerClassProperty                   = DependencyProperty.Register("PlayerClass",                    typeof(long), typeof(Offsets));
-        [XmlIgnore]
         public static readonly DependencyProperty IsInGameProperty                      = DependencyProperty.Register("IsInGame",                       typeof(long), typeof(Offsets));
-        [XmlIgnore]
         public static readonly DependencyProperty FrameScript_ExecuteBufferProperty     = DependencyProperty.Register("FrameScript_ExecuteBuffer",      typeof(long), typeof(Offsets));
-        [XmlIgnore]
         public static readonly DependencyProperty FrameScript_GetLocalizedTextProperty  = DependencyProperty.Register("FrameScript_GetLocalizedText",   typeof(long), typeof(Offsets));
-        [XmlIgnore]
         public static readonly DependencyProperty ClntObjMgrGetActivePlayerObjProperty  = DependencyProperty.Register("ClntObjMgrGetActivePlayerObj",   typeof(long), typeof(Offsets));
-        [XmlIgnore]
         private const string fileName = "offsets.xml";
 
         [XmlElement]
@@ -82,7 +74,6 @@ namespace Yanitta
                 Default = new Offsets();
         }
 
-        [XmlIgnore]
         public static Offsets Default { get; set; }
 
         public void Save()

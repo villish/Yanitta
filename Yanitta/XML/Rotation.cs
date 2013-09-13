@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
@@ -12,13 +11,10 @@ namespace Yanitta
     ///
     /// </summary>
     [Serializable]
-    public class Rotation : INotifyPropertyChanged, ICloneable, IDisposable
+    public class Rotation : DependencyObject, ICloneable
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private HotKey hotKey;
-        private string name;
-        private bool procNotifyer;
+        public static readonly DependencyProperty NameProperty   = DependencyProperty.Register("Name",   typeof(string), typeof(Rotation));
+        public static readonly DependencyProperty HotKeyProperty = DependencyProperty.Register("HotKey", typeof(HotKey), typeof(Rotation));
 
         /// <summary>
         /// Наименование ротации
@@ -26,29 +22,15 @@ namespace Yanitta
         [XmlAttribute]
         public string Name
         {
-            get { return name; }
-            set
-            {
-                name = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("Name"));
-            }
+            get { return (string)GetValue(NameProperty); }
+            set { SetValue(NameProperty, value); }
         }
 
         /// <summary>
         /// Установка режима уведомления о проках
         /// </summary>
         [XmlAttribute]
-        public bool ProcNotifyer
-        {
-            get { return procNotifyer; }
-            set
-            {
-                procNotifyer = value;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("ProcNotifyer"));
-            }
-        }
+        public bool ProcNotifyer { get; set; }
 
         /// <summary>
         /// Примечание по ротации
@@ -61,15 +43,8 @@ namespace Yanitta
         /// </summary>
         public HotKey HotKey
         {
-            get { return hotKey; }
-            set
-            {
-                hotKey = value;
-                this.hotKey.PropertyChanged -= OnPropertyChanged;
-                this.hotKey.PropertyChanged += OnPropertyChanged;
-                if (PropertyChanged != null)
-                    PropertyChanged(this, new PropertyChangedEventArgs("HotKey"));
-            }
+            get { return (HotKey)GetValue(HotKeyProperty); }
+            set { SetValue(HotKeyProperty, value); }
         }
 
         /// <summary>
@@ -97,11 +72,6 @@ namespace Yanitta
             set { this.Notes = value.Value; }
         }
 
-        public override string ToString()
-        {
-            return this.Name;
-        }
-
         public object Clone()
         {
             return new Rotation() {
@@ -111,22 +81,6 @@ namespace Yanitta
                 ProcNotifyer = this.ProcNotifyer,
                 AbilityQueue = new ObservableCollection<string>(this.AbilityQueue)
             };
-        }
-
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs("HotKey"));
-        }
-
-        public void Dispose()
-        {
-            if (hotKey != null)
-            {
-                hotKey.PropertyChanged -= OnPropertyChanged;
-                Debug.WriteLine("Disposing HotKey: {0}", hotKey);
-                hotKey.Dispose();
-            }
         }
     }
 }

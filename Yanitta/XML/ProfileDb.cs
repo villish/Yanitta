@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -13,70 +12,41 @@ using Yanitta.Properties;
 namespace Yanitta
 {
     [Serializable]
-    public class ProfileDb : INotifyPropertyChanged, IDisposable
+    public class ProfileDb : DependencyObject
     {
-        private string m_core;
-        private string m_func;
-        private string m_version;
-        private string m_author;
-        private string m_url;
-        private ObservableCollection<Profile> m_profileList;
+        public static readonly DependencyProperty CoreProperty          = DependencyProperty.Register("Core",       typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty FuncProperty          = DependencyProperty.Register("Func",       typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty VersionProperty       = DependencyProperty.Register("Version",    typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty AuthorProperty        = DependencyProperty.Register("Author",     typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty UrlProperty           = DependencyProperty.Register("Url",        typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty ProfileListProperty   = DependencyProperty.Register("ProfileList", typeof(ObservableCollection<Profile>), typeof(ProfileDb));
 
         [XmlElement]
-        [DefaultValue("0.0.0.1")]
         public string Version
         {
-            get { return m_version ?? string.Empty; }
-            set
-            {
-                if (m_version != value)
-                {
-                    m_version = value;
-                    OnPropertyChanged("Version");
-                }
-            }
+            get { return (string)GetValue(VersionProperty); }
+            set { SetValue(VersionProperty, value); }
         }
 
         [XmlElement]
         public string Author
         {
-            get { return m_author ?? string.Empty; }
-            set
-            {
-                if (m_author != value)
-                {
-                    m_author = value;
-                    OnPropertyChanged("Author");
-                }
-            }
+            get { return (string)GetValue(AuthorProperty); }
+            set { SetValue(AuthorProperty, value); }
         }
 
         [XmlElement]
         public string Url
         {
-            get { return m_url ?? string.Empty; }
-            set
-            {
-                if (m_url != value)
-                {
-                    m_url = value;
-                    OnPropertyChanged("Url");
-                }
-            }
+            get { return (string)GetValue(UrlProperty); }
+            set { SetValue(UrlProperty, value); }
         }
 
         [XmlIgnore]
         public string Core
         {
-            get { return m_core ?? string.Empty; }
-            set
-            {
-                if (m_core != value)
-                {
-                    m_core = value;
-                    OnPropertyChanged("Core");
-                }
-            }
+            get { return (string)GetValue(CoreProperty); }
+            set { SetValue(CoreProperty, value); }
         }
 
         [XmlElement("Core")]
@@ -89,15 +59,8 @@ namespace Yanitta
         [XmlIgnore]
         public string Func
         {
-            get { return m_func ?? string.Empty; }
-            set
-            {
-                if (m_func != value)
-                {
-                    m_func = value;
-                    OnPropertyChanged("Func");
-                }
-            }
+            get { return (string)GetValue(FuncProperty); }
+            set { SetValue(FuncProperty, value); }
         }
 
         [XmlElement("Func")]
@@ -110,15 +73,8 @@ namespace Yanitta
         [XmlElement("Profile")]
         public ObservableCollection<Profile> ProfileList
         {
-            get { return this.m_profileList; }
-            set
-            {
-                if (this.m_profileList != value)
-                {
-                    this.m_profileList = value;
-                    OnPropertyChanged("ProfileList");
-                }
-            }
+            get { return (ObservableCollection<Profile>)GetValue(ProfileListProperty); }
+            set { SetValue(ProfileListProperty, value); }
         }
 
         public static ProfileDb Instance { get; private set; }
@@ -135,13 +91,7 @@ namespace Yanitta
             this.ProfileList = new ObservableCollection<Profile>();
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string propName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-        }
+        #region Extension
 
         public Profile this[WowClass wowClass]
         {
@@ -269,10 +219,6 @@ namespace Yanitta
             }
         }
 
-        public void Dispose()
-        {
-            if (ProfileList != null)
-                ProfileList.ForEach((p) => p.Dispose());
-        }
+        #endregion
     }
 }

@@ -54,9 +54,6 @@ namespace Yanitta
             if (settingWindow != null)
                 settingWindow.Close();
 
-            if (ProfileDb.Instance != null)
-                ProfileDb.Instance.Dispose();
-
             App.Current.Shutdown();
         }
 

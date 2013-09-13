@@ -11,9 +11,8 @@ namespace Yanitta
     ///
     /// </summary>
     [Serializable]
-    public class Profile : DependencyObject, IDisposable
+    public class Profile : DependencyObject
     {
-        public static readonly DependencyProperty ClassProperty        = DependencyProperty.Register("Class",        typeof(WowClass),                       typeof(Profile));
         public static readonly DependencyProperty LuaProperty          = DependencyProperty.Register("Lua",          typeof(string),                         typeof(Profile));
         public static readonly DependencyProperty AbilityListProperty  = DependencyProperty.Register("AbilityList",  typeof(ObservableCollection<Ability>),  typeof(Profile));
         public static readonly DependencyProperty RotationListProperty = DependencyProperty.Register("RotationList", typeof(ObservableCollection<Rotation>), typeof(Profile));
@@ -22,12 +21,7 @@ namespace Yanitta
         ///
         /// </summary>
         [XmlAttribute("Class")]
-        public WowClass Class
-        {
-            get { return (WowClass)GetValue(ClassProperty); }
-            set { SetValue(ClassProperty, value); }
-        }
-
+        public WowClass Class { get; set; }
 
         [XmlIgnore]
         public string Lua
@@ -61,18 +55,10 @@ namespace Yanitta
             set { SetValue(RotationListProperty, value); }
         }
 
-        /// <summary>
-        ///
-        /// </summary>
         public Profile()
         {
             AbilityList  = new ObservableCollection<Ability>();
             RotationList = new ObservableCollection<Rotation>();
-        }
-
-        public override string ToString()
-        {
-            return this.Class.ToString();
         }
 
         public IEnumerable<Ability> this[Rotation rotation_filter]
@@ -93,15 +79,6 @@ namespace Yanitta
                         }
                     }
                 }
-            }
-        }
-
-        public void Dispose()
-        {
-            if (RotationList != null)
-            {
-                Console.WriteLine("Disposing Profile: {0}", Class);
-                RotationList.ForEach((r) => r.Dispose());
             }
         }
     }

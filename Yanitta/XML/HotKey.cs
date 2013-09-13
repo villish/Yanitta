@@ -292,45 +292,6 @@ namespace System.Windows.Input
             return modstr + "+" + this.Key;
         }
 
-        public static HotKey Parse(string str)
-        {
-            if (string.IsNullOrWhiteSpace(str))
-                return new HotKey();
-
-            if (str == "(Empty)")
-                return new HotKey();
-
-            var mod = ModifierKeys.None;
-            var key = Key.None;
-
-            for (int i = 0, j = 0; i < str.Length; ++i)
-            {
-                if (str[i] == '+' || i == str.Length - 1)
-                {
-                    var word = str.Substring(j, Math.Max(i - j, 1));
-
-                    switch (word)
-                    {
-                        case "Control": mod |= ModifierKeys.Control; break;
-                        case "Shift":   mod |= ModifierKeys.Shift;   break;
-                        case "Alt":     mod |= ModifierKeys.Alt;     break;
-                        case "Windows": mod |= ModifierKeys.Windows; break;
-                        default:
-                            if (Enum.TryParse<Key>(word, out key))
-                                break;
-                            else
-                                throw new Exception();
-                    }
-                    j = i + 1;
-                }
-            }
-
-            if (mod == ModifierKeys.None)
-                throw new Exception();
-
-            return new HotKey(key, mod);
-        }
-
         public void SetHandler(object tag, EventHandler<HandledEventArgs> handler)
         {
             this.Tag = tag;

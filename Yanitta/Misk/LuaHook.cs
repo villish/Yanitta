@@ -53,7 +53,7 @@ namespace Yanitta
 
             #region ASM_x32
 
-            var ASM_Code = new string[]
+            var asm = new string[]
             {
                 "pushfd",
                 "pushad",
@@ -73,7 +73,7 @@ namespace Yanitta
             #endregion ASM_x32
 
             this.Memory.WriteBytes(this.mDetourPtr, this.OverwrittenBytes);
-            this.Inject(ASM_Code, this.mDetourPtr + this.OverwrittenBytes.Length);
+            this.Inject(asm, this.mDetourPtr + this.OverwrittenBytes.Length);
             this.Inject(new[] { "jmp " + this.mDetourPtr }, this.mDetour, false);
 
             this.Memory.Resume();
@@ -103,7 +103,7 @@ namespace Yanitta
 
             #region ASM_x32
 
-            string[] asmCode = new string[]
+            var asm = new string[]
             {
                 "mov   eax, " + commandAdr,
                 "push  0",
@@ -127,7 +127,7 @@ namespace Yanitta
 
             #endregion ASM_x32
 
-            this.Inject(asmCode, injAddress);
+            this.Inject(asm, injAddress);
 
             this.Memory.Write<IntPtr>(this.mCodeCavePtr, injAddress);
 
