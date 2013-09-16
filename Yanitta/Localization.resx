@@ -363,4 +363,10 @@
   <data name="NameToolTip" xml:space="preserve">
     <value>Ability name</value>
   </data>
+  <data name="IsMovingCheck" xml:space="preserve">
+    <value>Moving check</value>
+  </data>
+  <data name="IsMovingCheckToolTip" xml:space="preserve">
+    <value>If true, then there is a check if the character is moving before you cast.</value>
+  </data>
 </root>

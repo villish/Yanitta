@@ -364,4 +364,10 @@
   <data name="NameToolTip" xml:space="preserve">
     <value>Наименование способности, это ключевое поле при построении ротации. Всегда должно быть заполнено, не допускает дубликатов.</value>
   </data>
+  <data name="IsMovingCheck" xml:space="preserve">
+    <value>Проверка движения</value>
+  </data>
+  <data name="IsMovingCheckToolTip" xml:space="preserve">
+    <value>Если истина, тогда идет проверка двигается ли персонаж перед произнесением заклинания.</value>
+  </data>
 </root>

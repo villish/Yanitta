@@ -71,6 +71,11 @@ namespace Yanitta
         public bool IsSpellKnownCheck { get; set; }
 
         /// <summary>
+        /// Проверка, движения персонажа.
+        /// </summary>
+        public MovingStates IsMovingCheck { get; set; }
+
+        /// <summary>
         /// Луа код для проверки использования способности
         /// </summary>
         [XmlIgnore]
@@ -111,6 +116,7 @@ namespace Yanitta
             var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
             var isNotHCD          = this.IsNotHCD.ToString().ToLower();
             var isSpellKnownCheck = this.IsSpellKnownCheck.ToString().ToLower();
+            var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
 
             // код
             var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
@@ -120,6 +126,7 @@ namespace Yanitta
             builder.AppendFormatLine("    SpellId           = {0},",     this.SpellID);
             builder.AppendFormatLine("    Name              = \"{0}\",", this.Name);
             builder.AppendFormatLine("    Target            = \"{0}\",", target);
+            builder.AppendFormatLine("    IsMovingCheck     = \"{0}\",", isMovingCheck);
             builder.AppendFormatLine("    DropChanel        = {0},",     cancelChannel);
             builder.AppendFormatLine("    CancelCasting     = {0},",     cancelCasting);
             builder.AppendFormatLine("    IsRangeCheck      = {0},",     isRangeCheck);

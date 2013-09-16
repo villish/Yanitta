@@ -16,6 +16,13 @@
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
 
+    <!--WowClass-->
+    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="MovingValues">
+        <ObjectDataProvider.MethodParameters>
+            <x:Type TypeName="yanitta:MovingStates" />
+        </ObjectDataProvider.MethodParameters>
+    </ObjectDataProvider>
+
     <!--Key-->
     <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="KeyValues">
         <ObjectDataProvider.MethodParameters>

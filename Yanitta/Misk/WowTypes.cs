@@ -27,4 +27,11 @@
         Mouseover,
         MouseLocation
     }
+
+    public enum MovingStates
+    {
+        None      = 0,
+        Moving    = 1,
+        NotMoving = 2,
+    }
 }
