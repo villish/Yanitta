@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.27</Version>
+  <Version>0.0.3.28</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2492,6 +2492,7 @@ end]]></Lua>
           <string>Инициализация</string>
           <string>Дух ястреба</string>
           <string>Дух гепарда</string>
+          <string>Метание ловушки</string>
           <string>Взрывная ловушка</string>
           <string>Ледяная ловушка</string>
           <string>Замораживающая ловушка</string>

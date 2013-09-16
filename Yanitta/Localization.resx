@@ -369,4 +369,22 @@
   <data name="IsMovingCheckToolTip" xml:space="preserve">
     <value>If true, then there is a check if the character is moving before you cast.</value>
   </data>
+  <data name="MovingStates_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="MovingStates_Moving" xml:space="preserve">
+    <value>Moving</value>
+  </data>
+  <data name="MovingStates_NotMoving" xml:space="preserve">
+    <value>Not moving</value>
+  </data>
+  <data name="MovingStates_None_ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MovingStates_Moving_ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="MovingStates_NotMoving_ToolTip" xml:space="preserve">
+    <value />
+  </data>
 </root>

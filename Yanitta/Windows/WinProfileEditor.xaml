@@ -85,10 +85,15 @@
                                     <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <ComboBox Width="{Binding ElementName=hIsMovingCheck, Path=Width, Converter={StaticResource ResizeConverter}, ConverterParameter=-10}"
-                                                          ItemsSource="{Binding Source={StaticResource MovingValues}}"
-                                                          SelectedValue="{Binding IsMovingCheck}"
-                                                          ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}" />
+                                                <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
+                                                          SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Path=., Converter={StaticResource EnumToStr}}"
+                                                                       ToolTip="{Binding Path=., Converter={StaticResource EnumToStr}, ConverterParameter=ToolTip}"/>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -221,7 +226,14 @@
                                                           SelectedValue="{Binding Target}" ToolTip="{x:Static yanitta:Localization.TargetToolTip}"/>
                                 <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,0" Text="{x:Static yanitta:Localization.IsMovingCheck}" ToolTip="" VerticalAlignment="Center"/>
                                 <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
-                                                          SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}"/>
+                                                          SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Path=., Converter={StaticResource EnumToStr}}"
+                                                       ToolTip="{Binding Path=., Converter={StaticResource EnumToStr}, ConverterParameter=ToolTip}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                             </Grid>
 
                             <StackPanel Grid.Column="2">

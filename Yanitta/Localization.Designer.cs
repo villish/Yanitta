@@ -511,6 +511,60 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Moving.
+        /// </summary>
+        public static string MovingStates_Moving {
+            get {
+                return ResourceManager.GetString("MovingStates_Moving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на .
+        /// </summary>
+        public static string MovingStates_Moving_ToolTip {
+            get {
+                return ResourceManager.GetString("MovingStates_Moving_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на None.
+        /// </summary>
+        public static string MovingStates_None {
+            get {
+                return ResourceManager.GetString("MovingStates_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на .
+        /// </summary>
+        public static string MovingStates_None_ToolTip {
+            get {
+                return ResourceManager.GetString("MovingStates_None_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Not moving.
+        /// </summary>
+        public static string MovingStates_NotMoving {
+            get {
+                return ResourceManager.GetString("MovingStates_NotMoving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на .
+        /// </summary>
+        public static string MovingStates_NotMoving_ToolTip {
+            get {
+                return ResourceManager.GetString("MovingStates_NotMoving_ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Name.
         /// </summary>
         public static string Name {

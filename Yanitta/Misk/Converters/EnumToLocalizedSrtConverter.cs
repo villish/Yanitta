@@ -12,6 +12,8 @@ namespace Yanitta
                 return Binding.DoNothing;
 
             var name = string.Format("{0}_{1}", value.GetType().Name, value);
+            if (parameter is string && !string.IsNullOrWhiteSpace((string)parameter))
+                name += "_" + parameter;
             return Localization.ResourceManager.GetString(name, System.Globalization.CultureInfo.CurrentUICulture);
         }
 
