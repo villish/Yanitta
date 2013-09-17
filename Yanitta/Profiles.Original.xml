@@ -560,23 +560,31 @@ DONT_HEAL_DEBUFF_LIST  = {
 DISPELL_LIST = {
     --  6622 Престол гроз
     --  Хоридон
-    { Id = 136587, Count = 0, Rem = 0, Map = 6622 }, -- Залп ядовитых стрел
-    { Id = 136719, Count = 0, Rem = 0, Map = 6622 }, -- Пылающий свет
-    { Id = 136710, Count = 6, Rem = 0, Map = 6622 }, -- Смертельная чума
-    { Id = 136512, Count = 0, Rem = 0, Map = 6622 }, -- Проклятие растерянности
+    { Id = 136587, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Залп ядовитых стрел
+    { Id = 136719, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Пылающий свет
+    { Id = 136710, Count = 6, Rem = 0, Map = 6622, Buff = 0      }, -- Смертельная чума
+    { Id = 136512, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Проклятие растерянности
     -- Совет старейшин
-    { Id = 136857, Count = 0, Rem = 0, Map = 6622 }, -- В ловушке
+    { Id = 136857, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- В ловушке
     -- Кон железный
-    { Id = 136615, Count = 0, Rem = 0, Map = 6622 }, -- Электрический заряд
+    { Id = 136615, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Электрический заряд
     -- Темный анимус
-    { Id = 139919, Count = 0, Rem = 0, Map = 6622 }, -- Обмен материей
+    { Id = 139919, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Обмен материей
+
+    -- 6738 Осада огримага
+    -- Падшие защитники
+    { Id = 143434, Count = 0, Rem = 0, Map = 6738, Buff = 0      }, -- Слово тьмы: Погибель
+    -- Ша гордыни
+    { Id = 144351, Count = 0, Rem = 0, Map = 6738, Buff = 144359 }, -- Знак самонадеянности
 };
 
-function ValidDispellForClass(dispelType)
+function ValidDispellForClass(dispelType, druidForce)
     -- Curse Disease Magic Poison
     local HealClass = UnitClass("player");
     if     HealClass == "PRIEST" then
         return dispelType == "Magic" or dispelType == "Disease";
+    elseif HealClass == "DRUID" and druidForce then -- Simbios of paladin
+        return dispelType == "Poison" or dispelType == "Disease";
     elseif HealClass == "DRUID" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
     elseif HealClass == "PALADIN" then
@@ -599,28 +607,36 @@ function CheckDontHeal(unit)
     end
 end
 
-function CheckDispell(unit)
+function CheckDispell(unit, druidForce)
     local areaId = GetCurrentMapAreaID();
     for _,debuff in ipairs(DISPELL_LIST) do
+        local needDispell = nil;
         if debuff.Map == 0 or debuff.Map == areaId then
             local spell_name, rank = GetSpellInfo(debuff.Id);
             if spell_name then
                 local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, spell_name, rank, nil);
-                if name and ValidDispellForClass(dispelType) then
+                if name and ValidDispellForClass(dispelType, druidForce) then
                     if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
-                        return true;
+                        needDispell = true;
                     end
                     if (debuff.Rem > 0) then
                         local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                        if rem  <= debuff.Rem then
-                            return true;
+                        if rem <= debuff.Rem then
+                            needDispell = true;
                         end
                     end
                     if name then
-                        return true;
+                        needDispell = true;
+                    end
+                    -- don't dispel
+                    if (debuff.Buff > 0 and not HasBuff("player", debuff.Buff)) then
+                        needDispell = nil;
                     end
                 end
             end
+        end
+        if needDispell then
+            return true;
         end
     end
 end
@@ -661,12 +677,12 @@ function FillPartyTables(standartSpellId)
     for _,member in ipairs(members) do
         member.Role           = UnitGroupRolesAssigned(member.Unit);
         member.Agro           = UnitThreatSituation(member.Unit) or 0;
-        member.HP             = 100 * UnitHealth(member.Unit) / UnitHealthMax(member.Unit);
         member.IncomingHeal   = UnitGetIncomingHeals(member.Unit) or 0;
         member.MyIncomingHeal = UnitGetIncomingHeals(member.Unit, "player") or 0;
+        member.HP             = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
 
         member.DontHeal       = CheckDontHeal(member.Unit);
-        member.NeedDispell    = CheckDispell(member.Unit);
+        member.NeedDispell    = CheckDispell(member.Unit); -- todo: move to ability code
         member.NeedOverheal   = CheckNeedOverheal(member.Unit);
 
         local xx, yy = GetPlayerMapPosition(member.Unit);
