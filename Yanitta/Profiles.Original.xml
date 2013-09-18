@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.28</Version>
+  <Version>0.0.3.37</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -478,13 +478,14 @@ end
 
 -- Проверка, была ли зажата клавиша модификатор mk*
 function IsModKeyDown(m_key)
-    local m_key = m_key or 0;
-    if     m_key == mkLeftShift    and not GetCurrentKeyBoardFocus() and IsLeftShiftKeyDown()    then return true;  -- 1
-    elseif m_key == mkLeftControl  and not GetCurrentKeyBoardFocus() and IsLeftControlKeyDown()  then return true;  -- 2
-    elseif m_key == mkLeftAlt      and not GetCurrentKeyBoardFocus() and IsLeftAltKeyDown()      then return true;  -- 3
-    elseif m_key == mkRightShift   and not GetCurrentKeyBoardFocus() and IsRightShiftKeyDown()   then return true;  -- 4
-    elseif m_key == mkRightControl and not GetCurrentKeyBoardFocus() and IsRightControlKeyDown() then return true;  -- 5
-    elseif m_key == mkRightAlt     and not GetCurrentKeyBoardFocus() and IsRightAltKeyDown()     then return true;  -- 6
+    if not GetCurrentKeyBoardFocus() then
+        if     m_key == mkLeftShift    and IsLeftShiftKeyDown()    then return true;  -- 1
+        elseif m_key == mkLeftControl  and IsLeftControlKeyDown()  then return true;  -- 2
+        elseif m_key == mkLeftAlt      and IsLeftAltKeyDown()      then return true;  -- 3
+        elseif m_key == mkRightShift   and IsRightShiftKeyDown()   then return true;  -- 4
+        elseif m_key == mkRightControl and IsRightControlKeyDown() then return true;  -- 5
+        elseif m_key == mkRightAlt     and IsRightAltKeyDown()     then return true;  -- 6
+        end
     end
 end
 
@@ -6093,8 +6094,8 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+-- если персонаж на маунте или в форме, тогда не выполняем ротацию дальше
+if IsMounted() or GetShapeshiftForm() ~= 0 then
     return true;
 end
 
@@ -6109,23 +6110,9 @@ if myMana < 75 then
     UseItemBySlot(INVSLOT_TRINKET2);
 end
 
-
--- прерывание целительного заклинания
-if LAST_TARGET_UNIT then
-
-    -- Прерываем целительное прикосновение, если цель не надо принудительно хилить и его здоровье поднялось до > 90%
-    if select(8, UnitCastingInfo("player")) == 8182 then
-        for i,member in ipairs(members) do
-            if not member.NeedOverheal and member.Unit == LAST_TARGET_UNIT and member.HP > 90 then
-                return true;
-            end
-        end
-    end
-
-
-    if select(8, UnitCastingInfo("player")) == 50464 then
-
-    end
+-- прервем чтение покровительства природы, если есть просевшие цели
+if (members[1].HP < 60 or LowHP.70 > 3) and select(8, UnitCastingInfo("player")) == 50464 then
+    SpellStopCasting();
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Возрождение">
@@ -6139,7 +6126,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
     return true;
 end]]></Lua>
@@ -6189,7 +6176,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-   if member.NeedDispell then
+   if CheckDispell(member.Unit) then
        return member.Unit;
    end
 end]]></Lua>
@@ -6210,6 +6197,40 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Restor: Очищение (Симбоз)">
+        <SpellID>122288</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+   if CheckDispell(member.Unit, true) then
+       return member.Unit;
+   end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Очищение (Симбоз): Mouseover">
+        <SpellID>122288</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) and ValidDispellForClass("mouseover", true) then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Restor: Железная кора">
         <SpellID>102342</SpellID>
         <Target>None</Target>
@@ -6222,7 +6243,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 30 and not member[1].DontHeal then
+        <Lua><![CDATA[if members[1].HP < 30 and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6254,7 +6275,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 40 and not member[1].DontHeal then
+        <Lua><![CDATA[if members[1].HP < 40 and not members[1].DontHeal then
     return true;
 end]]></Lua>
       </Ability>
@@ -6286,7 +6307,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H90 > 4 then
+        <Lua><![CDATA[if LowHP.H90 > 3 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6303,12 +6324,14 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if HasGlyph(145529) then
-    if members[1].HP < 60 and not members[1].DontHeal and not HasBuff("player", 132158) then
-        return members[1].Unit;
+    for _,member in ipairs(members) do
+        if member.HP < 60 and not member.DontHeal and HasBuff("player", { 774, 8936 }, "PLAYER") then
+            return member.Unit;
+        end
     end
 elseif LowHP.H80 <= 3 then
     for _,member in ipairs(members) do
-        if member.HP < 90 and HasBuff(member.Unit, { 774 }, "PLAYER") then
+        if member.HP < 90 and HasBuff(member.Unit, { 774, 8936 }, "PLAYER") then
             local count = 0;
             for _,unit in ipairs(members) do
                 if unit.HP < 90 and CheckDistance(unit.X, unit.Y, member.X, member.Y, 4) then
@@ -6333,7 +6356,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkRightShift) then
     return true;
 end]]></Lua>
@@ -6366,11 +6389,36 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
-        local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
-        if count < 3 or rem < 2 then
-            return member.Unit;
+        <Lua><![CDATA[-- В рейде накладываем жизнецвет только на танка
+if IsInRaid() then
+    -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
+    for _,member in ipairs(members) do
+        if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
+            local name,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
+            if name and (count < 3 or rem < 2) then
+                return member.Unit;
+            elseif count > 3 and rem > 2 then
+                return;
+            end
+        end
+    end
+
+    -- Накладываем жизнецвет на танка с агро
+    for _,member in ipairs(members) do
+        if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
+            local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
+            if count < 3 or rem < 2 then
+                return member.Unit;
+            end
+        end
+    end
+else -- не в рейде будем кидать жизнецвет на того, на ком агро.
+    for _,member in ipairs(members) do
+        if member.Agro > 2 and not member.DontHeal then
+            local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
+            if count < 3 or rem < 2 then
+                return member.Unit;
+            end
         end
     end
 end]]></Lua>
@@ -6386,8 +6434,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not isMoving and not members[1].DontHeal and not HasBuff("player", 132158) then
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if not members[1].DontHeal and not HasBuff("player", 132158) then
     if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 75) then
         return members[1].Unit;
     end
@@ -6404,8 +6452,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if (not isMoving or HasBuff("player", 132158)) and members[1].HP < 60 and not members[1].DontHeal then
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 60 and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6438,8 +6486,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not isMoving and LowHP.H80 < 3 then
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if LowHP.H80 < 3 then
     if (members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2) and not members[1].DontHeal then
         return members[1].Unit;
     end
@@ -6456,7 +6504,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[if not UnitAffectingCombat("player") and UnitIsDeadOrGhost("mouseover") then
     return true;
 end]]></Lua>
@@ -7143,6 +7191,8 @@ end]]></Lua>
           <string>Restor: Дикий гриб</string>
           <string>Restor: Природный целитель</string>
           <string>Restor: Природный целитель (mouseover)</string>
+          <string>Restor: Очищение (Симбоз)</string>
+          <string>Restor: Очищение (Симбоз): Mouseover</string>
           <string>Restor: Железная кора</string>
           <string>Restor: Дикий гриб: Лечение</string>
           <string>Restor: Природная стремительность</string>
@@ -7151,19 +7201,20 @@ end]]></Lua>
           <string>Restor: Быстрое восстановление</string>
           <string>Restor: Спокойствие</string>
           <string>Restor: Озарение</string>
-          <string>Restor: Жизнецвет</string>
           <string>Restor: Восстановление</string>
           <string>Restor: Целительное прикосновение</string>
+          <string>Restor: Жизнецвет</string>
           <string>Restor: Омоложение</string>
           <string>Restor: Покровительство природы</string>
           <string>Restor: Оживление</string>
+          <string>Знак дикой природы</string>
         </AbilityQueue>
-        <Notes><![CDATA[LeftShift - Установка гриба
-LeftControl - Диспел (под мышкой)
-LeftAlt - Пауза
-RightShift - Спокойствие
-RightControl - Дерево жизни
-RightAlt -  Взрыв грибов]]></Notes>
+        <Notes><![CDATA[LeftShift    - Установка гриба
+LeftControl  - Диспел (под мышкой)
+LeftAlt      - Пауза
+RightShift   - Спокойствие
+RightControl - Включение/выключение автодиспела
+RightAlt     - Взрыв грибов]]></Notes>
       </Rotation>
       <Rotation Name="Страж" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
