@@ -559,7 +559,7 @@ DONT_HEAL_DEBUFF_LIST  = {
 };
 
 DISPELL_LIST = {
-    --  6622 Престол гроз
+    --  930 Престол гроз
     --  Хоридон
     { Id = 136587, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Залп ядовитых стрел
     { Id = 136719, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Пылающий свет
@@ -572,7 +572,7 @@ DISPELL_LIST = {
     -- Темный анимус
     { Id = 139919, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Обмен материей
 
-    -- 6738 Осада огримага
+    -- 953 Осада огримага
     -- Падшие защитники
     { Id = 143434, Count = 0, Rem = 0, Map = 953, Buff = 0      }, -- Слово тьмы: Погибель
     -- Ша гордыни
@@ -6276,6 +6276,38 @@ end]]></Lua>
    if CheckDispell(member.Unit, true) then
        return member.Unit;
    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Очищение (Симбоз): Mouseover">
+        <SpellID>122288</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) and ValidDispellForClass("mouseover", true) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Железная кора">
+        <SpellID>102342</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 30 and not members[1].DontHeal then
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Очищение (Симбоз): Mouseover">
