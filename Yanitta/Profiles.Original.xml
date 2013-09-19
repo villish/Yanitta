@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.47</Version>
+  <Version>0.0.3.48</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6105,19 +6105,28 @@ isCat       = nil;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not UnitAffectingCombat("player") then
-    -- heallers table
+        <Lua><![CDATA[local param_buffs = {
+    1126,   -- Знак дикой природы (Друид)
+    115921, -- Наследие императора (Монах)
+    20217,  -- Благословение королей (Паладин)
+    90363   -- Объятия сланцевого паука (Охотник: БМ)
+};
+
+if GetShapeshiftForm() ~= 1 then -- Если не медвед, тогда просто проверяем
     if type(members) == "table" then
         for _,member in ipairs(members) do
-            if not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
+            if not HasBuff(member.Unit, param_buffs) then
                 return member.Unit;
             end
         end
-    elseif not HasBuff("player", { 1126, 115921, 20217, 90363 }) then
+    elseif not HasBuff("player", param_buffs) then
         return true;
     end
+-- В форме медведа накладываем только на себя и только вне боя.
+elseif not UnitAffectingCombat("player") not HasBuff("player", param_buffs) then
+    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Инициализация">
