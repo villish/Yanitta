@@ -1,12 +1,54 @@
-﻿<Application x:Class="Yanitta.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="Windows/MainWindow.xaml">
+﻿<Application
+    x:Class="Yanitta.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:yanitta="clr-namespace:Yanitta"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    StartupUri="Windows/MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/KamillaStyle.xaml" />
-                <ResourceDictionary Source="Misk.xaml" />
+
+                <ResourceDictionary>
+                    <!--TargetType-->
+                    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="TargetValues">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type TypeName="yanitta:TargetType" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
+
+                    <!--WowClass-->
+                    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="ClassValues">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type TypeName="yanitta:WowClass" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
+
+                    <!--WowClass-->
+                    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="MovingValues">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type TypeName="yanitta:MovingStates" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
+
+                    <!--Key-->
+                    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="KeyValues">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type TypeName="Key" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
+
+                    <!--Converters-->
+                    <yanitta:EnumToImageConverter        x:Key="enumToImage" />
+                    <yanitta:StringToIntConverter        x:Key="integerConverter" />
+                    <yanitta:EnumToLocalizedSrtConverter x:Key="EnumToStr" />
+                    <yanitta:CollectionToCountConverter  x:Key="CollectionToCount" />
+                    <yanitta:ResizeConverter             x:Key="ResizeConverter" />
+
+                    <!--Collections-->
+                    <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:MainWindow.ProcessList}}" />
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
