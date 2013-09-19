@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.37</Version>
+  <Version>0.0.3.47</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -559,24 +559,24 @@ DONT_HEAL_DEBUFF_LIST  = {
 };
 
 DISPELL_LIST = {
-    --  6622 Престол гроз
+    --  930 Престол гроз
     --  Хоридон
-    { Id = 136587, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Залп ядовитых стрел
-    { Id = 136719, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Пылающий свет
-    { Id = 136710, Count = 6, Rem = 0, Map = 6622, Buff = 0      }, -- Смертельная чума
-    { Id = 136512, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Проклятие растерянности
+    { Id = 136587, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Залп ядовитых стрел
+    { Id = 136719, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Пылающий свет
+    { Id = 136710, Count = 6, Rem = 0, Map = 930, Buff = 0      }, -- Смертельная чума
+    { Id = 136512, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Проклятие растерянности
     -- Совет старейшин
-    { Id = 136857, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- В ловушке
+    { Id = 136857, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- В ловушке
     -- Кон железный
-    { Id = 136615, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Электрический заряд
+    { Id = 136615, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Электрический заряд
     -- Темный анимус
-    { Id = 139919, Count = 0, Rem = 0, Map = 6622, Buff = 0      }, -- Обмен материей
+    { Id = 139919, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Обмен материей
 
-    -- 6738 Осада огримага
+    -- 953 Осада огримага
     -- Падшие защитники
-    { Id = 143434, Count = 0, Rem = 0, Map = 6738, Buff = 0      }, -- Слово тьмы: Погибель
+    { Id = 143434, Count = 0, Rem = 0, Map = 953, Buff = 0      }, -- Слово тьмы: Погибель
     -- Ша гордыни
-    { Id = 144351, Count = 0, Rem = 0, Map = 6738, Buff = 144359 }, -- Знак самонадеянности
+    { Id = 144351, Count = 0, Rem = 0, Map = 953, Buff = 144359 }, -- Знак самонадеянности
 };
 
 function ValidDispellForClass(dispelType, druidForce)
@@ -851,6 +851,11 @@ end
 -- Перейти в стойку защиты
 if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
     CastShapeshiftForm(2);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end
 
 agroStatus = UnitThreatSituation("player") or 0;
@@ -1176,6 +1181,11 @@ end
 -- Перейти в боевую стойку
 if GetSpecialization() ~= 3 and GetShapeshiftForm() ~= 1 then
     CastShapeshiftForm(1);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end
 
 FillFurryData();
@@ -1519,6 +1529,11 @@ end
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end
 
 agroStatus = UnitThreatSituation("player");
@@ -2079,6 +2094,11 @@ if IsMounted() then
     return true;
 end
 
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 if useCooldown then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
@@ -2633,6 +2653,11 @@ if IsMounted() then
     return true;
 end
 
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 -- Если мы в скрытности, то всегда, если возможно прыгаем в форму незаметности
 if GetSpecialization() == 3 then
     if GetShapeshiftForm() ~= 1 then
@@ -3087,6 +3112,11 @@ end
 -- Перейти в форму тьмы
 if GetSpecialization() == 3 and GetShapeshiftForm() ~= 1 then
     CastShapeshiftForm(1);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
@@ -3909,6 +3939,11 @@ end
 
 FillRunesInfo();
 
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 isInMeele  = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
 agroStatus = UnitThreatSituation("player");
 playerHP   = HealthByPercent("player");
@@ -4628,7 +4663,12 @@ end
 if IsMounted() then
     return true;
 end
-]]></Lua>
+
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end]]></Lua>
       </Ability>
       <Ability Name="Опаляющий тотем">
         <SpellID>3599</SpellID>
@@ -4829,7 +4869,12 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
-isMoving  = IsMoving();]]></Lua>
+isMoving  = IsMoving();
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end]]></Lua>
       </Ability>
       <Ability Name="Использование предметов">
         <SpellID>0</SpellID>
@@ -5120,6 +5165,11 @@ elseif GetSpecialization() == 2 then -- demonology
     end
 elseif GetSpecialization() == 3 then -- dectruction
     power2 = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end]]></Lua>
       </Ability>
       <Ability Name="Demo: Метаморфоза">
@@ -5746,7 +5796,12 @@ end
 TP  = HasBuff("player",   125359);            -- Сила тигра
 BoF = HasDebuff("target", 123725, "PLAYER");  -- Пламенное дыхание
 DH  = HasDebuff("target", 123727, "PLAYER");  -- Хмельная дымка
-SR  = select(3, HasBuff("player",   115307)); -- Скрытые резервы]]></Lua>
+SR  = select(3, HasBuff("player",   115307)); -- Скрытые резервы
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end]]></Lua>
       </Ability>
       <Ability Name="Наследие императора">
         <SpellID>117666</SpellID>
@@ -6086,9 +6141,11 @@ elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
         print("|cffff0000Кулдауны выключены");
+        ShowMessage("|cffff0000Кулдауны выключены");
     else
         useCooldown = true;
         print("|cff00ff00Кулдауны включены");
+        ShowMessage("|cff00ff00Кулдауны включены");
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -6105,13 +6162,19 @@ isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
 isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
-if myMana < 75 then
+-- используем аксесуар на ману, только в форме исцеления (0)
+if myMana < 85 and GetShapeshiftForm() == 0 then
     --UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
 end
 
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 -- прервем чтение покровительства природы, если есть просевшие цели
-if (members[1].HP < 60 or LowHP.70 > 3) and select(8, UnitCastingInfo("player")) == 50464 then
+if (members[1].HP < 60 or LowHP.H70 > 3) and select(8, UnitCastingInfo("player")) == 50464 then
     SpellStopCasting();
 end]]></Lua>
       </Ability>
@@ -6236,6 +6299,38 @@ end]]></Lua>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 30 and not members[1].DontHeal then
+    return members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Очищение (Симбоз): Mouseover">
+        <SpellID>122288</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) and ValidDispellForClass("mouseover", true) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Железная кора">
+        <SpellID>102342</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6245,22 +6340,6 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if members[1].HP < 30 and not members[1].DontHeal then
     return members[1].Unit;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Дикий гриб: Лечение">
-        <SpellID>102791</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
-    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Природная стремительность">
@@ -6302,7 +6381,7 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -6373,7 +6452,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if myMana <= 80 then
+        <Lua><![CDATA[if myMana <= 80 and GetShapeshiftForm() == 0 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6483,7 +6562,7 @@ end]]></Lua>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
@@ -6527,13 +6606,15 @@ elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
         print("|cff00ff00 >> Одиночная цель");
+        ShowMessage("|cff00ff00 Одиночная цель");
     else
         setAoE = true;
         print("|cffff0000 >> AOE");
+        ShowMessage("|cffff0000 AOE");
     end
-elseif IsModKeyDown(3) then
+elseif IsModKeyDown(mkLeftAlt) then
     return true;
-elseif IsModKeyDown(4) then
+elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
         print("|cffff0000Кулдауны выключены");
@@ -6541,8 +6622,8 @@ elseif IsModKeyDown(4) then
         useCooldown = true;
         print("|cff00ff00Кулдауны включены");
     end
-elseif IsModKeyDown(5) then
-elseif IsModKeyDown(6) then
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
     if isAltMod then
         isAltMod = false;
         print("|cffff0000Используется \'Дикая защита\'");
@@ -6555,6 +6636,11 @@ end
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() or HasBuff("player", 5215) then
     return true;
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end
 
 agroStatus = UnitThreatSituation("player");
@@ -6901,6 +6987,11 @@ if IsMounted() or HasBuff("player", 5215) then
     return true;
 end
 
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 agroStatus = UnitThreatSituation("player");
 playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
@@ -7194,7 +7285,6 @@ end]]></Lua>
           <string>Restor: Очищение (Симбоз)</string>
           <string>Restor: Очищение (Симбоз): Mouseover</string>
           <string>Restor: Железная кора</string>
-          <string>Restor: Дикий гриб: Лечение</string>
           <string>Restor: Природная стремительность</string>
           <string>Restor: Дубовая кора</string>
           <string>Restor: Буйный рост</string>
@@ -7209,9 +7299,9 @@ end]]></Lua>
           <string>Restor: Оживление</string>
           <string>Знак дикой природы</string>
         </AbilityQueue>
-        <Notes><![CDATA[LeftShift    - Установка гриба
+        <Notes><![CDATA[LeftShift    - Пауза
 LeftControl  - Диспел (под мышкой)
-LeftAlt      - Пауза
+LeftAlt      - Установка гриба
 RightShift   - Спокойствие
 RightControl - Включение/выключение автодиспела
 RightAlt     - Взрыв грибов]]></Notes>
