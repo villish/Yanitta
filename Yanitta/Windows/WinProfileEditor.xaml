@@ -85,7 +85,8 @@
                                     <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
-                                                <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
+                                                <ComboBox Width="{Binding ElementName=hIsMovingCheck, Path=Width, Converter={StaticResource ResizeConverter}, ConverterParameter=-10}"
+                                                          ItemsSource="{Binding Source={StaticResource MovingValues}}"
                                                           SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
