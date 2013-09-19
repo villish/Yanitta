@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -65,18 +66,16 @@ namespace Yanitta
         {
             get
             {
-                foreach (var rotation in this.RotationList)
+                var rotation = this.RotationList
+                    .Where(n => n.Name == rotation_filter.Name)
+                    .FirstOrDefault();
+
+                foreach (var rotationName in rotation.AbilityQueue)
                 {
-                    if (rotation == rotation_filter)
+                    foreach (var ability in this.AbilityList)
                     {
-                        foreach (var rotationName in rotation.AbilityQueue)
-                        {
-                            foreach (var ability in this.AbilityList)
-                            {
-                                if (ability.Name == rotationName)
-                                    yield return ability;
-                            }
-                        }
+                        if (ability.Name == rotationName)
+                            yield return ability;
                     }
                 }
             }
