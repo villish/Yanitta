@@ -146,10 +146,6 @@
     <Compile Include="XML\ProfileDb.cs" />
     <Compile Include="XML\Rotation.cs" />
     <Compile Include="XML\XmlManager.cs" />
-    <Page Include="Misk.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Themes\KamillaStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
