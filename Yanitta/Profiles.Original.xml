@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.48</Version>
+  <Version>0.0.3.49</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6111,7 +6111,7 @@ isCat       = nil;]]></Lua>
     1126,   -- Знак дикой природы (Друид)
     115921, -- Наследие императора (Монах)
     20217,  -- Благословение королей (Паладин)
-    90363   -- Объятия сланцевого паука (Охотник: БМ)
+    90363,  -- Объятия сланцевого паука (Охотник: БМ)
 };
 
 if GetShapeshiftForm() ~= 1 then -- Если не медвед, тогда просто проверяем
@@ -6231,7 +6231,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown( mkLeftAlt ) then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftAlt) then
     return true;
 end]]></Lua>
       </Ability>
