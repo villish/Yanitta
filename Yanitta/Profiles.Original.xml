@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.62</Version>
+  <Version>0.0.3.66</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -627,18 +627,26 @@ function ValidDispellForClass(dispelType, druidForce)
     end
 end
 
+function CheckRaidDispellLogic(spellId, unit)
+    -- ша гордыни: диспелим Слово тьмы: Погибель только с дебафом Дар титанов
+    if spellId == 144351 and not HasDebuff("player", 144359) then
+        return true;
+    end
+end
+
 function CheckDispell(unit, druidForce)
     for i = 1, 40 do
-        local name,_,_,count,dispelType,duration,expires =  UnitDebuff(unit, i);
+        local name,_,_,count,dispelType,duration,expires,_,_,_,spellId =  UnitDebuff(unit, i);
         print(name,count,dispelType,duration,expires);
         if not name then
             return;
         elseif ValidDispellForClass(dispelType, druidForce) then
-            return name,count,dispelType,duration,expires;
+            if not CheckRaidDispellLogic(spellId, unit) then
+                return name,count,dispelType,duration,expires;
+            end
         end
     end
 end
-
 
 function CheckDontHeal(unit)
     for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
@@ -646,40 +654,6 @@ function CheckDontHeal(unit)
         if count > 0 and debuf_rec.Count > 0 then
             return count >= debuf_rec.Count;
         elseif name then
-            return true;
-        end
-    end
-end
-
-function CheckDispell(unit, druidForce)
-    local areaId = GetCurrentMapAreaID();
-    for _,debuff in ipairs(DISPELL_LIST) do
-        local needDispell = nil;
-        if debuff.Map == 0 or debuff.Map == areaId then
-            local spell_name, rank = GetSpellInfo(debuff.Id);
-            if spell_name then
-                local name,_,_,count,dispelType,duration,expires = UnitDebuff(unit, spell_name, rank, nil);
-                if name and ValidDispellForClass(dispelType, druidForce) then
-                    if (debuff.Count > 0 and (count or 0) >= debuff.Count) then
-                        needDispell = true;
-                    end
-                    if (debuff.Rem > 0) then
-                        local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                        if rem <= debuff.Rem then
-                            needDispell = true;
-                        end
-                    end
-                    if name then
-                        needDispell = true;
-                    end
-                    -- don't dispel
-                    if (debuff.Buff > 0 and not HasBuff("player", debuff.Buff)) then
-                        needDispell = nil;
-                    end
-                end
-            end
-        end
-        if needDispell then
             return true;
         end
     end
