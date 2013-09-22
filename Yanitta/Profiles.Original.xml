@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.88</Version>
+  <Version>0.0.3.91</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -105,9 +105,7 @@ function CheckAndCastAbility(ability)
         end
     end
 
-    if ability.IsMovingCheck == "notmoving"  and IsMoving() then
-        return;
-    elseif ability.IsMovingCheck == "moving" and not IsMoving() then
+    if (ability.IsMovingCheck == "notmoving" and IsMoving()) or (ability.IsMovingCheck == "moving" and not IsMoving()) then
         return;
     end
 
@@ -564,20 +562,16 @@ function CheckInterrupt(unit)
     if not UnitExists(unit) then
         return;
     end
-
     -- чтение заклинания прерываем только перед окончанием каста.
     local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
-    
-    if name and not notInterruptible and not isTrade then
-        --print(name,startTime,endTime,isTrade,_,notInterruptible);
-        if (endTime - (GetTime() * 1000) - ping) <= 1000 then
+    if name and not (notInterruptible or isTrade) then
+        if ((endTime / 1000) - GetTime()) - ping) <= 1 then
             return true;
         end
     end
-
     -- канальное заклинание прерываем сразу.
     local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
-    if name and not notInterruptible and not isTrade then
+    if name and not (notInterruptible or isTrade) then
         return true;
     end
 end
@@ -645,9 +639,7 @@ function CheckDispell(unit, druidForce)
         if not name then
             return;
         elseif ValidDispellForClass(dispelType, druidForce) then
-            print(name,count,dispelType,duration,expires);
             if not CheckRaidDispellLogic(spellId, unit) then
-                print("dispel true")
                 return name,count,dispelType,duration,expires;
             end
         end
@@ -798,6 +790,22 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Зуботычина">
+        <SpellID>6552</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if CheckInterrupt("target") then
     return true;
 end]]></Lua>
       </Ability>
@@ -1430,22 +1438,6 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if rage < 70 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Зуботычина">
-        <SpellID>6552</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if CheckInterrupt("target") then
     return true;
 end]]></Lua>
       </Ability>
@@ -6596,6 +6588,22 @@ playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;]]></Lua>
       </Ability>
+      <Ability Name="Guard: Лобовая атака">
+        <SpellID>80964</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if CheckInterrupt("target") then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Guard: Неистовое восстановление">
         <SpellID>22842</SpellID>
         <Target>Player</Target>
@@ -7258,6 +7266,7 @@ RightControl - Включение/выключение автодиспела
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Страж)</string>
+          <string>Guard: Лобовая атака</string>
           <string>Guard: Неистовое восстановление</string>
           <string>Guard: Дикая защита</string>
           <string>Guard: Дубовая кожа</string>
