@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.66</Version>
+  <Version>0.0.3.88</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -561,14 +561,16 @@ function UseItemById(itemId)
 end
 
 function CheckInterrupt(unit)
-    if UnitExists(unit) then
+    if not UnitExists(unit) then
         return;
     end
 
     -- чтение заклинания прерываем только перед окончанием каста.
     local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
+    
     if name and not notInterruptible and not isTrade then
-        if (endTime - (GetTime() * 1000) - ping) <= 1 then
+        --print(name,startTime,endTime,isTrade,_,notInterruptible);
+        if (endTime - (GetTime() * 1000) - ping) <= 1000 then
             return true;
         end
     end
@@ -612,6 +614,8 @@ DISPELL_LIST = {
 function ValidDispellForClass(dispelType, druidForce)
     -- Curse Disease Magic Poison
     local HealClass = select(2, UnitClass("player"));
+    if not dispelType then return; end
+    print(dispelType);
     if     HealClass == "PRIEST" then
         return dispelType == "Magic" or dispelType == "Disease";
     elseif HealClass == "DRUID" and druidForce then -- Simbios of paladin
@@ -637,11 +641,13 @@ end
 function CheckDispell(unit, druidForce)
     for i = 1, 40 do
         local name,_,_,count,dispelType,duration,expires,_,_,_,spellId =  UnitDebuff(unit, i);
-        print(name,count,dispelType,duration,expires);
+        
         if not name then
             return;
         elseif ValidDispellForClass(dispelType, druidForce) then
+            print(name,count,dispelType,duration,expires);
             if not CheckRaidDispellLogic(spellId, unit) then
+                print("dispel true")
                 return name,count,dispelType,duration,expires;
             end
         end
@@ -812,10 +818,10 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 >> Одиночная цель", true);
+        ShowMessage("|cff00ff00         Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 >> AOE", true);
+        ShowMessage("|cffff0000 AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
@@ -901,7 +907,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if isInCombat and playerHP < 25  and useCooldown then
     return true;
@@ -937,7 +943,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if not setAoE HasBuff("player", 122510) or rage > 90 then
+if not setAoE and (HasBuff("player", 122510) or rage > 90 or agroStatus < 2) then
     return true;
 end]]></Lua>
       </Ability>
@@ -955,7 +961,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if setAoE HasBuff("player", 122510) or rage > 90 then
+if setAoE and (HasBuff("player", 122510) or rage > 90 or agroStatus < 2) then
     return true;
 end]]></Lua>
       </Ability>
@@ -986,7 +992,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[local rage          = UnitPower("player");
 local hasShieldBuff = HasBuff("player", 112048);
@@ -1427,6 +1433,22 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Зуботычина">
+        <SpellID>6552</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if CheckInterrupt("target") then
+    return true;
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Неистовство" ProcNotifyer="false">
@@ -1458,6 +1480,7 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализация (Защита)</string>
           <string>Prot: Героический прыжок</string>
+          <string>Зуботычина</string>
           <string>Prot: Победный раж</string>
           <string>Prot: Непроницаемый щит</string>
           <string>Prot: Глухая оборона</string>
@@ -6203,7 +6226,7 @@ end]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftAlt) then
     return true;
@@ -6219,11 +6242,11 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftControl) or useAutoDispell then
     for _,member in ipairs(members) do
-        if CheckDispell(member.Unit, true) then
+        if CheckDispell(member.Unit) then
             return member.Unit;
         end
     end
@@ -6243,7 +6266,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftControl) or useAutoDispell then
     for _,member in ipairs(members) do
-        if CheckDispell(member.Unit) then
+        if CheckDispell(member.Unit, true) then
             return member.Unit;
         end
     end
@@ -7217,9 +7240,9 @@ end]]></Lua>
           <string>Restor: Спокойствие</string>
           <string>Restor: Озарение</string>
           <string>Restor: Восстановление</string>
-          <string>Restor: Омоложение</string>
-          <string>Restor: Целительное прикосновение</string>
           <string>Restor: Жизнецвет</string>
+          <string>Restor: Целительное прикосновение</string>
+          <string>Restor: Омоложение</string>
           <string>Restor: Покровительство природы</string>
           <string>Restor: Оживление</string>
           <string>Знак дикой природы</string>
