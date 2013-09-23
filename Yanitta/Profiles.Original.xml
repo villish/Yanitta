@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.93</Version>
+  <Version>0.0.3.94</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -565,7 +565,7 @@ function CheckInterrupt(unit)
     -- чтение заклинания прерываем только перед окончанием каста.
     local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
     if name and not (notInterruptible or isTrade) then
-        if ((endTime / 1000) - GetTime()) - ping) <= 1 then
+        if (((endTime / 1000) - GetTime()) - ping) <= 1 then
             return true;
         end
     end
@@ -581,72 +581,28 @@ end
 -----------------------------------------------
 DONT_HEAL_DEBUFF_LIST  = {
     { Id = 137341,  Count = 0   }, -- Наложницы блезнецы (Чудовище из кошмаров)
-    --{ Id = 137360,  Count = 0   }, -- Наложницы блезнецы (Искаженное лечение)
 };
 
-DISPELL_LIST = {
-    --  930 Престол гроз
-    --  Хоридон
-    { Id = 136587, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Залп ядовитых стрел
-    { Id = 136719, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Пылающий свет
-    { Id = 136710, Count = 6, Rem = 0, Map = 930, Buff = 0      }, -- Смертельная чума
-    { Id = 136512, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Проклятие растерянности
-    -- Совет старейшин
-    { Id = 136857, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- В ловушке
-    -- Кон железный
-    { Id = 136615, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Электрический заряд
-    -- Темный анимус
-    { Id = 139919, Count = 0, Rem = 0, Map = 930, Buff = 0      }, -- Обмен материей
-
-    -- 953 Осада огримага
-    -- Падшие защитники
-    { Id = 143434, Count = 0, Rem = 0, Map = 953, Buff = 0      }, -- Слово тьмы: Погибель
-    -- Ша гордыни
-    { Id = 144351, Count = 0, Rem = 0, Map = 953, Buff = 144359 }, -- Знак самонадеянности
-};
-
-function ValidDispellForClass(dispelType, druidForce)
-    -- Curse Disease Magic Poison
-    local HealClass = select(2, UnitClass("player"));
-    if not dispelType then return; end
-    print(dispelType);
-    if     HealClass == "PRIEST" then
-        return dispelType == "Magic" or dispelType == "Disease";
-    elseif HealClass == "DRUID" and druidForce then -- Simbios of paladin
-        return dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "DRUID" then
-        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
-    elseif HealClass == "PALADIN" then
-        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "MONK" then
-        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "SHAMAN" then
-        return dispelType == "Magic" or dispelType == "Curse";
+-- в эту функцию добавляем логику по особому поведению в рейдах
+-- на пример, если есть какой-то дебаф, который надо выхиливать.
+function CheckInstanseLogic(member)
+    -- Малкорок 142861, 142862
+    -- Отхил не проходит, надо настакивать щит под дебафом
+    -- по этому просто занижаем реальное здоровье.
+    if HasDebuff(member.Unit, 142862) then
+        -- возможно есть дебаф, который показывает уровень щита, если этот так,
+        -- надо добавить логику и на него.
+        --if HasDebuff(member.Unit, 0000) then
+        --    member.HP = 60;
+        --elseif HasDebuff(member.Unit, 0000) then
+        --    member.HP = 80;
+        --else
+            member.HP = 95;
+        --end
     end
-end
-
-function CheckRaidDispellLogic(spellId, unit)
-    -- ша гордыни: диспелим Слово тьмы: Погибель только с дебафом Дар титанов
-    if spellId == 144351 and not HasDebuff("player", 144359) then
-        return true;
-    end
-end
-
-function CheckDispell(unit, druidForce)
-    for i = 1, 40 do
-        local name,_,_,count,dispelType,duration,expires,_,_,_,spellId =  UnitDebuff(unit, i);
-        
-        if not name then
-            return;
-        elseif ValidDispellForClass(dispelType, druidForce) then
-            if not CheckRaidDispellLogic(spellId, unit) then
-                return name,count,dispelType,duration,expires;
-            end
-        end
-    end
-end
-
-function CheckDontHeal(unit)
+    
+    -- если есть дебаф (перечисленный в таблице), тогда ставим признак, что хилить нельзя.
+    -- Пример (Престол гроз: Наложницы блезнецы (Чудовище из кошмаров))
     for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
         local name, count = HasDebuff(unit, debuf_rec.Id);
         if count > 0 and debuf_rec.Count > 0 then
@@ -654,15 +610,6 @@ function CheckDontHeal(unit)
         elseif name then
             return true;
         end
-    end
-end
-
-function CheckNeedOverheal(member)
-    -- Малкорок 142861, 142862
-    if HasDebuff(member.Unit, 142862) then
-        if member.HP > 80 then
-           member.HP = 80;
-        end 
     end
 end
 
@@ -702,12 +649,12 @@ function FillPartyTables(standartSpellId)
         member.MyIncomingHeal = UnitGetIncomingHeals(member.Unit, "player") or 0;
         member.HP             = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
 
-        CheckNeedOverheal(member);
-        member.DontHeal = CheckDontHeal(member.Unit);
-
         local xx, yy = GetPlayerMapPosition(member.Unit);
         member.X     = xx or 0;
         member.Y     = yy or 0;
+
+        -- логика по особому поведению в рейдах
+        CheckInstanseLogic(member);
 
         if member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
         if member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
@@ -728,6 +675,46 @@ function FillPartyTables(standartSpellId)
     end);
 end
 
+function ValidDispellForClass(dispelType, druidForce)
+    -- Curse Disease Magic Poison
+    local HealClass = select(2, UnitClass("player"));
+    if not dispelType then return; end
+    print(dispelType);
+    if     HealClass == "PRIEST" then
+        return dispelType == "Magic" or dispelType == "Disease";
+    elseif HealClass == "DRUID" and druidForce then -- Simbios of paladin
+        return dispelType == "Poison" or dispelType == "Disease";
+    elseif HealClass == "DRUID" then
+        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
+    elseif HealClass == "PALADIN" then
+        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
+    elseif HealClass == "MONK" then
+        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
+    elseif HealClass == "SHAMAN" then
+        return dispelType == "Magic" or dispelType == "Curse";
+    end
+end
+
+-- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
+function CheckRaidDispellLogic(spellId, unit)
+    -- ша гордыни: диспелим Слово тьмы: Погибель только с дебафом Дар титанов
+    if spellId == 144351 and not HasDebuff("player", 144359) then
+        return true;
+    end
+end
+
+function CheckDispell(unit, druidForce)
+    for i = 1, 40 do
+        local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(unit, i);
+        if not name then
+            return;
+        elseif ValidDispellForClass(dispelType, druidForce) then
+            if not CheckRaidDispellLogic(spellId, unit) then
+                return name,count,dispelType,duration,expires,spellId;
+            end
+        end
+    end
+end
 ]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
