@@ -1,8 +1,8 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.Windows.Controls;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Windows.Controls;
 using Yanitta.Plugins;
 using Yanitta.Properties;
 using Yanitta.Windows;
@@ -46,13 +46,6 @@ namespace Yanitta
 
             if (ProcessList != null)
                 ProcessList.Dispose();
-
-            if (codeExecuteWindow != null)
-                codeExecuteWindow.Close();
-            if (profileWindows != null)
-                profileWindows.Close();
-            if (settingWindow != null)
-                settingWindow.Close();
 
             App.Current.Shutdown();
         }
