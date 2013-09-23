@@ -127,7 +127,7 @@ namespace Yanitta
             {
                 this.IsInGame = isInGame;
 
-                Debug.WriteLine("IsInGame: {0}", this.IsInGame);
+                Debug.WriteLine("IsInGame: " + this.IsInGame);
 
                 if (this.IsInGame)
                 {
@@ -189,7 +189,7 @@ namespace Yanitta
 
         private void GameFocusChanged()
         {
-            Debug.WriteLine("IsFocus: {0}", this.IsFocus);
+            Debug.WriteLine("IsFocus: " + this.IsFocus);
             try
             {
                 // main

@@ -17,7 +17,7 @@ namespace MemoryModule
         public unsafe byte[] Assemble(string source)
         {
             var passesLimit = 0x100;
-            Debug.WriteLine("AsmSource:\n{0}", source);
+            Debug.WriteLine("AsmSource:\n" + source);
 
             var tbuffer = new byte[source.Length * passesLimit];
             FASM.Internals.fasm_Assemble(source, tbuffer, tbuffer.Length, passesLimit, 0);
@@ -35,7 +35,7 @@ namespace MemoryModule
 
                 var buffer = new byte[fasm_result.output_lenght];
                 Marshal.Copy(new IntPtr(fasm_result.output_data), buffer, 0, fasm_result.output_lenght);
-                Debug.WriteLine("ByteCode:\n{0}", string.Join(" ", buffer.Select(n => n.ToString("X2"))));
+                Debug.WriteLine("ByteCode:\n" + string.Join(" ", buffer.Select(n => n.ToString("X2"))));
                 return buffer;
             }
         }

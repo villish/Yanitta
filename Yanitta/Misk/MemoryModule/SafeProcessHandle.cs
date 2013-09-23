@@ -35,7 +35,7 @@ namespace MemoryModule
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         protected override bool ReleaseHandle()
         {
-            Debug.WriteLine("Releasing handle on 0x{0:X}" + handle.ToInt64());
+            Debug.WriteLine("Releasing handle on 0x{0:X}", new object[] { handle.ToInt64() });
             return CloseHandle(handle);
         }
     }

@@ -70,7 +70,7 @@ namespace Yanitta
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error WowMemory: {0}", ex.Message);
+                    Debug.WriteLine("Error WowMemory: " + ex.Message);
                 }
             }
         }
