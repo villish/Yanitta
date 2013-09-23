@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.98</Version>
+  <Version>0.0.3.99</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -677,20 +677,19 @@ end
 
 function ValidDispellForClass(dispelType, druidForce)
     -- Curse Disease Magic Poison
-    local HealClass = select(2, UnitClass("player"));
     if not dispelType then return; end
-    print(dispelType);
-    if     HealClass == "PRIEST" then
+    local class = select(2, UnitClass("player"));
+    if     class == "PRIEST" then
         return dispelType == "Magic" or dispelType == "Disease";
-    elseif HealClass == "DRUID" and druidForce then -- Simbios of paladin
-        return dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "DRUID" then
+    elseif class == "DRUID" and druidForce then -- Simbios of paladin
+        return                          dispelType == "Poison" or dispelType == "Disease";
+    elseif class == "DRUID" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
-    elseif HealClass == "PALADIN" then
+    elseif class == "PALADIN" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "MONK" then
+    elseif class == "MONK" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif HealClass == "SHAMAN" then
+    elseif class == "SHAMAN" then
         return dispelType == "Magic" or dispelType == "Curse";
     end
 end
