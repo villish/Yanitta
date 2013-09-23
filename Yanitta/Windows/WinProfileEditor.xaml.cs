@@ -72,6 +72,7 @@ namespace Yanitta
                 && !(shift == 1  && index == CurrentProfile.AbilityList.Count - 1))
             {
                 CurrentProfile.AbilityList.Move(index, index + shift);
+                abilityList.ScrollIntoView(this.abilityList.SelectedItem);
             }
         }
 
@@ -157,22 +158,7 @@ namespace Yanitta
 
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            var res = MessageBox.Show("Сохранить профиль?", "Выход",
-                MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-
-            if (res == MessageBoxResult.Yes)
-            {
-                ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
-                e.Cancel = false;
-            }
-            else if (res == MessageBoxResult.No)
-            {
-                e.Cancel = false;
-            }
-            else if (res == MessageBoxResult.Cancel)
-            {
-                e.Cancel = true;
-            }
+            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
         }
 
         #region Commands
