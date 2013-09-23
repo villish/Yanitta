@@ -33,7 +33,7 @@ namespace Yanitta
 
         public Profile CurrentProfile
         {
-            get { return (Profile)GetValue(CurrentProfileProperty); }
+            get { return ProfileDb.Instance[this.Class]; }
             private set { SetValue(CurrentProfileProperty, value);  }
         }
 
