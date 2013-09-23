@@ -6415,9 +6415,11 @@ if IsInRaid() then
     -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
     for _,member in ipairs(members) do
         if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
-            local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
-            if count < 3 or rem < 3 then
+            local name,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
+            -- Обновим стаки жизнецвета на танке с агро
+            if name and (count < 3 or rem < 3) then
                 return member.Unit;
+            -- Если жизнецвет уже есть на танке с агро, тогда дальше не продолжаем.
             elseif count > 2 and rem > 3 then
                 return;
             end
@@ -6427,10 +6429,7 @@ if IsInRaid() then
     -- Накладываем жизнецвет на танка с агро
     for _,member in ipairs(members) do
         if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
-            local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
-            if count < 3 or rem < 2 then
-                return member.Unit;
-            end
+            return member.Unit;
         end
     end
 else -- не в рейде будем кидать жизнецвет на того, на ком агро.
