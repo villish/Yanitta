@@ -61,6 +61,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Ability count: .
+        /// </summary>
+        public static string AbilityCount {
+            get {
+                return ResourceManager.GetString("AbilityCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ability list.
         /// </summary>
         public static string AbilityList {
@@ -111,6 +120,15 @@ namespace Yanitta {
         public static string AlavilableAbilitys {
             get {
                 return ResourceManager.GetString("AlavilableAbilitys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Author.
+        /// </summary>
+        public static string Author {
+            get {
+                return ResourceManager.GetString("Author", resourceCulture);
             }
         }
         
@@ -214,6 +232,24 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Lua tester.
+        /// </summary>
+        public static string CodeExequteTitle {
+            get {
+                return ResourceManager.GetString("CodeExequteTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Run (F5).
+        /// </summary>
+        public static string CommandRun {
+            get {
+                return ResourceManager.GetString("CommandRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Constructor.
         /// </summary>
         public static string Constructor {
@@ -264,6 +300,15 @@ namespace Yanitta {
         public static string CoreHeaderToolTip {
             get {
                 return ResourceManager.GetString("CoreHeaderToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Curent profile: .
+        /// </summary>
+        public static string CurentProfile {
+            get {
+                return ResourceManager.GetString("CurentProfile", resourceCulture);
             }
         }
         
@@ -583,11 +628,29 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Not selected prosess.
+        /// </summary>
+        public static string NotSelectedProcessMessage {
+            get {
+                return ResourceManager.GetString("NotSelectedProcessMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на OK.
         /// </summary>
         public static string OK {
             get {
                 return ResourceManager.GetString("OK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Process: .
+        /// </summary>
+        public static string ProcessName {
+            get {
+                return ResourceManager.GetString("ProcessName", resourceCulture);
             }
         }
         
@@ -619,6 +682,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Profile info.
+        /// </summary>
+        public static string ProfileInfo {
+            get {
+                return ResourceManager.GetString("ProfileInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Reload.
         /// </summary>
         public static string Reload {
@@ -642,6 +714,15 @@ namespace Yanitta {
         public static string Rotation {
             get {
                 return ResourceManager.GetString("Rotation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Rotation count: .
+        /// </summary>
+        public static string RotationCount {
+            get {
+                return ResourceManager.GetString("RotationCount", resourceCulture);
             }
         }
         
@@ -754,6 +835,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Update adress.
+        /// </summary>
+        public static string UpdAdress {
+            get {
+                return ResourceManager.GetString("UpdAdress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Check update.
         /// </summary>
         public static string Update {
@@ -768,6 +858,15 @@ namespace Yanitta {
         public static string UpdateToolTip {
             get {
                 return ResourceManager.GetString("UpdateToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Version.
+        /// </summary>
+        public static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
         

@@ -368,7 +368,7 @@
     <value>Движение персонажа</value>
   </data>
   <data name="IsMovingCheckToolTip" xml:space="preserve">
-    <value>Проверяет состояние персонада на предмет движения перед началом чтения заклинания.</value>
+    <value>Проверяет состояние персонажа на предмет движения перед началом чтения заклинания.</value>
   </data>
   <data name="MovingStates_None" xml:space="preserve">
     <value>Не использовать</value>
@@ -387,5 +387,38 @@
   </data>
   <data name="MovingStates_NotMoving_ToolTip" xml:space="preserve">
     <value>Происходит когда персонаж не двигается.</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Автор:</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Версия:</value>
+  </data>
+  <data name="UpdAdress" xml:space="preserve">
+    <value>Адресс обновления:</value>
+  </data>
+  <data name="ProfileInfo" xml:space="preserve">
+    <value>Информация по профилю</value>
+  </data>
+  <data name="CodeExequteTitle" xml:space="preserve">
+    <value>Отладчик Lua</value>
+  </data>
+  <data name="ProcessName" xml:space="preserve">
+    <value>Процесс: </value>
+  </data>
+  <data name="CommandRun" xml:space="preserve">
+    <value>Выполнить (F5)</value>
+  </data>
+  <data name="NotSelectedProcessMessage" xml:space="preserve">
+    <value>Не выбран просесс</value>
+  </data>
+  <data name="CurentProfile" xml:space="preserve">
+    <value>Текущий профиль: </value>
+  </data>
+  <data name="AbilityCount" xml:space="preserve">
+    <value>Количество способностей: </value>
+  </data>
+  <data name="RotationCount" xml:space="preserve">
+    <value>Количество ротаций: </value>
   </data>
 </root>

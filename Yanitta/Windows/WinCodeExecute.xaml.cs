@@ -11,6 +11,9 @@ namespace Yanitta.Windows
         public WinCodeExecute()
         {
             InitializeComponent();
+
+            if (DataContext is ProcessList)
+                this.cbProcess.SelectedIndex = (DataContext as ProcessList).Count > 0 ? 0 : -1;
         }
 
         private void Exec()
@@ -24,7 +27,7 @@ namespace Yanitta.Windows
                 }
                 else
                 {
-                    MessageBox.Show("Нет доступного процесса!");
+                    MessageBox.Show(Localization.NotSelectedProcessMessage);
                 }
             }
         }

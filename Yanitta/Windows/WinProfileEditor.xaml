@@ -47,9 +47,9 @@
                     <KeyBinding Command="yanitta:YanittaCommand.AddAbility" Key="Insert" />
                 </TabItem.InputBindings>
                 <TabItem.CommandBindings>
-                    <CommandBinding Command="yanitta:YanittaCommand.AddAbility"      Executed="CommandBinding_Executed_AddAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"     Executed="CommandBinding_Executed_CopyAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility"   Executed="CommandBinding_Executed_DeleteAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.AddAbility"    Executed="CommandBinding_Executed_AddAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"   Executed="CommandBinding_Executed_CopyAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility" Executed="CommandBinding_Executed_DeleteAbility" />
                 </TabItem.CommandBindings>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -387,18 +387,18 @@
             <TabItem Header="{x:Static yanitta:Localization.GlobalFunk}" ToolTip="{x:Static yanitta:Localization.GlobalFunkToolTip}">
                 <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Func, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </TabItem>
-            <TabItem Header="Информация по профилю">
+            <TabItem Header="{x:Static yanitta:Localization.ProfileInfo}">
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Автор: " HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5" Width="150" />
+                        <TextBlock Text="{x:Static yanitta:Localization.Author}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5" Width="150" />
                         <TextBox Width="500" Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" FontFamily="Consolas" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Версия: " HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5" Width="150" />
+                        <TextBlock Text="{x:Static yanitta:Localization.Version}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5" Width="150" />
                         <TextBox Width="500" Text="{Binding Version, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Center" FontFamily="Consolas" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Адрес: " HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5" Width="150" />
+                        <TextBlock Text="{x:Static yanitta:Localization.UpdAdress}" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="5" Width="150" />
                         <TextBox Width="500" Text="{Binding Url, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" FontFamily="Consolas" />
                     </StackPanel>
                 </StackPanel>
@@ -437,20 +437,20 @@
         </Menu>
 
         <StatusBar Grid.ColumnSpan="2" Grid.Row="2">
-            <TextBlock Text="Currect profile: "/>
+            <TextBlock Text="{x:Static yanitta:Localization.CurentProfile}"/>
             <Image Source="{Binding ProfileList/Class, Converter={StaticResource enumToImage}}" />
             <TextBlock Text="{Binding ProfileList/Class, Converter={StaticResource EnumToStr}}" Width="100"/>
             <Separator />
-            <TextBlock Text="Ability count: "/>
+            <TextBlock Text="{x:Static yanitta:Localization.AbilityCount}"/>
             <TextBlock Text="{Binding ProfileList/AbilityList, Converter={StaticResource CollectionToCount}}" Width="30"/>
             <Separator />
-            <TextBlock Text="Rotation count: "/>
+            <TextBlock Text="{x:Static yanitta:Localization.RotationCount}"/>
             <TextBlock Text="{Binding ProfileList/RotationList, Converter={StaticResource CollectionToCount}}" Width="30"/>
             <Separator />
-            <TextBlock Text="Author: "/>
+            <TextBlock Text="{x:Static yanitta:Localization.Author}"/>
             <TextBlock Text="{Binding Author}"/>
             <Separator />
-            <TextBlock Text="Version: "/>
+            <TextBlock Text="{x:Static yanitta:Localization.Version}"/>
             <TextBlock Text="{Binding Version}"/>
         </StatusBar>
     </Grid>

@@ -387,4 +387,37 @@
   <data name="MovingStates_NotMoving_ToolTip" xml:space="preserve">
     <value />
   </data>
+  <data name="Author" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="UpdAdress" xml:space="preserve">
+    <value>Update adress</value>
+  </data>
+  <data name="ProfileInfo" xml:space="preserve">
+    <value>Profile info</value>
+  </data>
+  <data name="CodeExequteTitle" xml:space="preserve">
+    <value>Lua tester</value>
+  </data>
+  <data name="ProcessName" xml:space="preserve">
+    <value>Process: </value>
+  </data>
+  <data name="CommandRun" xml:space="preserve">
+    <value>Run (F5)</value>
+  </data>
+  <data name="NotSelectedProcessMessage" xml:space="preserve">
+    <value>Not selected prosess</value>
+  </data>
+  <data name="CurentProfile" xml:space="preserve">
+    <value>Curent profile: </value>
+  </data>
+  <data name="AbilityCount" xml:space="preserve">
+    <value>Ability count: </value>
+  </data>
+  <data name="RotationCount" xml:space="preserve">
+    <value>Rotation count: </value>
+  </data>
 </root>

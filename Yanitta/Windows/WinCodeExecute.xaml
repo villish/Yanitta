@@ -5,7 +5,7 @@
     x:Class="Yanitta.Windows.WinCodeExecute"
     xmlns:yanitta="clr-namespace:Yanitta"
     PreviewKeyDown="Window_PreviewKeyDown_1"
-    Title="Lua Executor" Height="321" Width="435"
+    Title="{x:Static yanitta:Localization.CodeExequteTitle}" Height="321" Width="435"
     Style="{DynamicResource KamillaStyle}"
     FontFamily="../Resources/#MORPHEUS"
     Icon="/Yanitta;component/Resources/PTR_client.png">
@@ -18,9 +18,9 @@
             <RowDefinition Height="265*" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Process: " VerticalAlignment="Center" />
+            <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
             <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}" DisplayMemberPath="." />
-            <Button Content="Run (F5)" Margin="10,0,0,0" Width="70" Command="Save" />
+            <Button Content="{x:Static yanitta:Localization.CommandRun}" Margin="10,0,0,0" Width="100" Command="Save" />
         </StackPanel>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="#FF17AD1A">
             <avalonedit:TextEditor Name="teCode" FontFamily="Consolas" />
