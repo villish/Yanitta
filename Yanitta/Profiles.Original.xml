@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.99</Version>
+  <Version>0.0.3.106</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -592,19 +592,21 @@ function CheckInstanseLogic(member)
     if HasDebuff(member.Unit, 142861) then
         -- возможно есть дебаф, который показывает уровень щита, если этот так,
         -- надо добавить логику и на него.
-        --if HasDebuff(member.Unit, 142862) then
-        --    member.HP = 60;
-        --elseif HasDebuff(member.Unit, 142862) then
+        if HasDebuff(member.Unit, 142863) then -- красный
+            member.HP = 50;
+        elseif HasDebuff(member.Unit, 142864) then -- желтый
             member.HP = 80;
-        --else
-        --    member.HP = 95;
-        --end
+        elseif HasDebuff(member.Unit, 142865) then -- зеленый
+            member.HP = 100;
+        else -- без щита
+            member.HP = 30;
+        end
     end
     
     -- если есть дебаф (перечисленный в таблице), тогда ставим признак, что хилить нельзя.
     -- Пример (Престол гроз: Наложницы блезнецы (Чудовище из кошмаров))
     for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
-        local name, count = HasDebuff(unit, debuf_rec.Id);
+        local name, count = HasDebuff(member.Unit, debuf_rec.Id);
         if count > 0 and debuf_rec.Count > 0 then
             return count >= debuf_rec.Count;
         elseif name then
@@ -699,6 +701,18 @@ function CheckRaidDispellLogic(spellId, unit)
     -- ша гордыни: диспелим Слово тьмы: Погибель только с дебафом Дар титанов
     if spellId == 144351 and not HasDebuff("player", 144359) then
         return true;
+    end
+    -- Блуждающая энергия
+    if spellId == 142913 then
+--        for i,member in ipairs(members) do
+--            if CheckDistance(unit.X, unit.Y, member.X, member.Y, 4) then
+--                return true;
+--            end
+--        end
+        local name, count, rem = HasDebuff(unit, 142913);
+        if rem >= 7 then
+            return true;
+        end
     end
 end
 
@@ -6449,7 +6463,7 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -6467,7 +6481,7 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -6600,7 +6614,7 @@ isCat      = GetShapeshiftForm() == 3;]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if CheckInterrupt("target") then
     return true;
@@ -6615,7 +6629,7 @@ end]]></Lua>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
+        <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not isCat and playerHP < 80 and UnitPower("player") > 55 then
@@ -7251,8 +7265,8 @@ end]]></Lua>
           <string>Restor: Озарение</string>
           <string>Restor: Восстановление</string>
           <string>Restor: Жизнецвет</string>
-          <string>Restor: Целительное прикосновение</string>
           <string>Restor: Омоложение</string>
+          <string>Restor: Целительное прикосновение</string>
           <string>Restor: Покровительство природы</string>
           <string>Restor: Оживление</string>
           <string>Знак дикой природы</string>
