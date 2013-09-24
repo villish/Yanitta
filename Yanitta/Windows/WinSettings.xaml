@@ -4,81 +4,77 @@
         xmlns:settings="clr-namespace:Yanitta.Properties"
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="WindowSettings"
-        Width="496.667"
-        Height="320.629"
+        Width="470"
+        Height="390"
         FontFamily="../Resources/#MORPHEUS"
         ShowInTaskbar="False"
-        Style="{DynamicResource KamillaStyle}" Icon="/Yanitta;component/Resources/Background_Downloader.png">
+        Style="{DynamicResource KamillaStyle}"
+        Icon="/Yanitta;component/Resources/Background_Downloader.png"
+        ResizeMode="NoResize">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="48" />
-        </Grid.RowDefinitions>
-        <TabControl Grid.ColumnSpan="2">
-            <TabItem Header="Main">
-                <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
-                    <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
-                    <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
-                    <Separator />
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="100" Content="Process name:" />
-                        <TextBox Width="300" Text="{Binding ProcessName}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="100" Content="Profile file:" />
-                        <TextBox Width="280" Text="{Binding ProfilesFileName}" />
-                        <Button Width="20" Command="Open" Content="..." />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" />
-                    <Separator />
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Update Url PQR:" Width="100" />
-                        <TextBox Width="300" Text="{Binding UpdateOffsetURLPQR}" />
-                        <Button Command="Find" Content="Update" CommandParameter="PQR"/>
-                    </StackPanel>
+    <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
+        <StackPanel Orientation="Horizontal">
+            <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
+            <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
+        </StackPanel>
+        <Separator />
 
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Update Url Repo:" Width="100" />
-                        <TextBox Width="300" Text="{Binding UpdateOffsetURLRepo}" />
-                        <Button Command="Find" Content="Update" CommandParameter="Repo" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-            <TabItem Header="Offsets">
-                <StackPanel x:Name="spOffsets" DataContext="{Binding Source={x:Static yanitta:Offsets.Default}}">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="Build:" />
-                        <TextBox Width="150" Text="{Binding Build}" TextAlignment="Right" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="PlayerName" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding PlayerName, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="PlayerClass" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding PlayerClass, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="IsInGame" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding IsInGame, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="FrameScript_ExecuteBuffer" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding FrameScript_ExecuteBuffer, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="FrameScript_GetLocalizedText" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding FrameScript_GetLocalizedText, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Width="200" Content="ClntObjMgrGetActivePlayerObj" />
-                        <TextBox Width="150" TextAlignment="Right" Text="{Binding ClntObjMgrGetActivePlayerObj, Converter={StaticResource integerConverter}}" />
-                    </StackPanel>
-                </StackPanel>
-            </TabItem>
-        </TabControl>
+        <StackPanel Orientation="Horizontal">
+            <Label Width="100" Content="Process name:" />
+            <TextBox Width="350" Text="{Binding ProcessName}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+            <Label Width="100" Content="Profile file:" />
+            <TextBox Width="330" Text="{Binding ProfilesFileName}" />
+            <Button Width="20" Command="Open" Content="..." />
+        </StackPanel>
 
-        <Button Grid.Row="1" Grid.Column="1" Width="123" Height="40" Margin="329,0,0,3" HorizontalAlignment="Left" VerticalAlignment="Bottom" Command="Save" Content="Save" />
-    </Grid>
+        <Separator />
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Update Url PQR:" Width="100" />
+            <TextBox Width="310" Text="{Binding UpdateOffsetURLPQR}" />
+            <Button Command="Find" Content="Update" CommandParameter="PQR"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal">
+            <Label Content="Update Url Repo:" Width="100" />
+            <TextBox Width="310" Text="{Binding UpdateOffsetURLRepo}" />
+            <Button Command="Find" Content="Update" CommandParameter="Repo" />
+        </StackPanel>
+
+        <Separator />
+        <StackPanel DataContext="{Binding Source={x:Static yanitta:Offsets.Default}}">
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="Build:" />
+                <TextBox Width="250" Text="{Binding Build}" TextAlignment="Right" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="PlayerName" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerName, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="PlayerClass" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerClass, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="IsInGame" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding IsInGame, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="FrameScript_ExecuteBuffer" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding FrameScript_ExecuteBuffer, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="FrameScript_GetLocalizedText" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding FrameScript_GetLocalizedText, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="ClntObjMgrGetActivePlayerObj" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding ClntObjMgrGetActivePlayerObj, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+        </StackPanel>
+
+        <Separator />
+        <Button Width="123" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="Save" Content="Save" />
+    </StackPanel>
 </Window>
