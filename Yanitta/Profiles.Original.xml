@@ -587,6 +587,16 @@ function UnitId(unit)
     return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
 end
 
+function InsertNewUnitToHeallersTable(unit)
+    if UnitExists(unit) and UnitIsFriend("player", unit) then
+        for i,member in ipairs(members) do
+            if UnitGUID(member.Unit) == UnitGUID(unit) then
+                table.insert(members, { Unit = unit, Name = UnitName(unit), Class = UnitClass(unit) });
+            end
+        end
+    end
+end
+
 function ExtendTheHealTable()
     if type(members) == "table" then
         -- Норусхен
@@ -598,6 +608,10 @@ function ExtendTheHealTable()
                 end
             end
         end
+        -- отхил дружествунной цели по mouseover/target/focus
+        InsertNewUnitToHeallersTable("target");
+        InsertNewUnitToHeallersTable("focus");
+        InsertNewUnitToHeallersTable("mouseover");
     end
 end
 
