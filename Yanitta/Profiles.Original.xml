@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.107</Version>
+  <Version>0.0.3.108</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -583,6 +583,24 @@ DONT_HEAL_DEBUFF_LIST  = {
     { Id = 137341,  Count = 0   }, -- Наложницы блезнецы (Чудовище из кошмаров)
 };
 
+function UnitId(unit)
+    return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
+end
+
+function ExtendTheHealTable()
+    if type(members) == "table" then
+        -- Норусхен
+        if UnitId("boss1") == 72276 then
+            for i = 2, 4 do
+                local unit = "boss"..tostring(i);
+                if UnitIsFriend("player", unit) then
+                    table.insert(members, { Unit = unit, Name = UnitName(unit), Class = UnitClass(unit) });
+                end
+            end
+        end
+    end
+end
+
 -- в эту функцию добавляем логику по особому поведению в рейдах
 -- на пример, если есть какой-то дебаф, который надо выхиливать.
 function CheckInstanseLogic(member)
@@ -602,7 +620,7 @@ function CheckInstanseLogic(member)
             member.HP = 30;
         end
     end
-    
+
     -- если есть дебаф (перечисленный в таблице), тогда ставим признак, что хилить нельзя.
     -- Пример (Престол гроз: Наложницы блезнецы (Чудовище из кошмаров))
     for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
@@ -643,6 +661,8 @@ function FillPartyTables(standartSpellId)
         end
     end
 
+    ExtendTheHealTable();
+
     -- Обновляем статиы игроков из пати/рейда
     for _,member in ipairs(members) do
         member.Role           = UnitGroupRolesAssigned(member.Unit);
@@ -651,9 +671,14 @@ function FillPartyTables(standartSpellId)
         member.MyIncomingHeal = UnitGetIncomingHeals(member.Unit, "player") or 0;
         member.HP             = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
 
-        local xx, yy = GetPlayerMapPosition(member.Unit);
-        member.X     = xx or 0;
-        member.Y     = yy or 0;
+        if UnitIsPlayer(member.Unit) then
+            local xx, yy = GetPlayerMapPosition(member.Unit);
+            member.X     = xx or 0;
+            member.Y     = yy or 0;
+        else
+            member.X     = xx or 0;
+            member.Y     = yy or 0;
+        end
 
         -- логика по особому поведению в рейдах
         CheckInstanseLogic(member);
