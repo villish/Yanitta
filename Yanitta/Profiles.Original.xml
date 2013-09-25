@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.108</Version>
+  <Version>0.0.3.110</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6567,6 +6567,40 @@ end]]></Lua>
     end
 end]]></Lua>
       </Ability>
+      <Ability Name="Restor: Лунный огонь">
+        <SpellID>8921</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Гнев">
+        <SpellID>5176</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if LowHP.H80 < 3 then
+    if (members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2) and not members[1].DontHeal then
+        return members[1].Unit;
+    end
+end]]></Lua>
+      </Ability>
       <Ability Name="Restor: Оживление">
         <SpellID>50769</SpellID>
         <Target>Mouseover</Target>
@@ -7307,8 +7341,10 @@ end]]></Lua>
           <string>Restor: Омоложение</string>
           <string>Restor: Целительное прикосновение</string>
           <string>Restor: Покровительство природы</string>
-          <string>Restor: Оживление</string>
           <string>Знак дикой природы</string>
+          <string>Restor: Лунный огонь</string>
+          <string>Restor: Гнев</string>
+          <string>Restor: Оживление</string>
         </AbilityQueue>
         <Notes><![CDATA[LeftShift    - Пауза
 LeftControl  - Диспел (под мышкой)
