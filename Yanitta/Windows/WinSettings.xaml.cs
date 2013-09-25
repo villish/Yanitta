@@ -129,6 +129,7 @@ namespace Yanitta
                                 case "GameState":                   Offsets.Default.IsInGame                        = read(reader); break;
                                 case "Lua_DoStringAddress":         Offsets.Default.FrameScript_ExecuteBuffer       = read(reader); break;
                                 case "Lua_GetLocalizedTextAddress": Offsets.Default.FrameScript_GetLocalizedText    = read(reader); break;
+                                case "ClntObjMgrGetActivePlayerObjAddress": Offsets.Default.ClntObjMgrGetActivePlayerObj = read(reader); break;
                                 default: reader.Read(); break;
                             }
                         }
