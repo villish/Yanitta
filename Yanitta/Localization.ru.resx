@@ -421,4 +421,7 @@
   <data name="RotationCount" xml:space="preserve">
     <value>Количество ротаций: </value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>Файл</value>
+  </data>
 </root>

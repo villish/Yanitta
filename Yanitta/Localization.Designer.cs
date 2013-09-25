@@ -376,6 +376,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на File.
+        /// </summary>
+        public static string File {
+            get {
+                return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Common functions.
         /// </summary>
         public static string GlobalFunk {

@@ -420,4 +420,7 @@
   <data name="RotationCount" xml:space="preserve">
     <value>Rotation count: </value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
 </root>

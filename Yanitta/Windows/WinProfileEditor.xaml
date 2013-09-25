@@ -415,7 +415,7 @@
         </ListBox>
 
         <Menu Grid.ColumnSpan="2">
-            <MenuItem Header="File">
+            <MenuItem Header="{x:Static yanitta:Localization.File}">
                 <MenuItem Header="{x:Static yanitta:Localization.Save}"      ToolTip="{x:Static yanitta:Localization.SaveToolTip}"   Command="Save" />
                 <MenuItem Header="{x:Static yanitta:Localization.Reload}"    ToolTip="{x:Static yanitta:Localization.ReloadToolTip}" Command="yanitta:YanittaCommand.Reload" />
                 <MenuItem Header="{x:Static yanitta:Localization.Update}"    ToolTip="{x:Static yanitta:Localization.UpdateToolTip}" Command="yanitta:YanittaCommand.Update" />
