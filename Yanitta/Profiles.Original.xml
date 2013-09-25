@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.106</Version>
+  <Version>0.0.3.107</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -697,32 +697,32 @@ function ValidDispellForClass(dispelType, druidForce)
 end
 
 -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
-function CheckRaidDispellLogic(spellId, unit)
+function CheckRaidDispellLogic(spellId, member)
     -- ша гордыни: диспелим Слово тьмы: Погибель только с дебафом Дар титанов
     if spellId == 144351 and not HasDebuff("player", 144359) then
         return true;
     end
     -- Блуждающая энергия
     if spellId == 142913 then
---        for i,member in ipairs(members) do
---            if CheckDistance(unit.X, unit.Y, member.X, member.Y, 4) then
---                return true;
---            end
---        end
-        local name, count, rem = HasDebuff(unit, 142913);
-        if rem >= 7 then
-            return true;
+        for i,member2 in ipairs(members) do
+            if CheckDistance(member.X, member.Y, member2.X, member2.Y, 9) then
+                return true;
+            end
         end
+--        local name, count, rem = HasDebuff(member.Unit, 142913);
+--        if rem >= 7 then
+--            return true;
+--        end
     end
 end
 
-function CheckDispell(unit, druidForce)
+function CheckDispell(member, druidForce)
     for i = 1, 40 do
-        local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(unit, i);
+        local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, i);
         if not name then
             return;
         elseif ValidDispellForClass(dispelType, druidForce) then
-            if not CheckRaidDispellLogic(spellId, unit) then
+            if not CheckRaidDispellLogic(spellId, member) then
                 return name,count,dispelType,duration,expires,spellId;
             end
         end
@@ -6255,7 +6255,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftControl) or useAutoDispell then
     for _,member in ipairs(members) do
-        if CheckDispell(member.Unit) then
+        if CheckDispell(member) then
             return member.Unit;
         end
     end
@@ -6275,7 +6275,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkLeftControl) or useAutoDispell then
     for _,member in ipairs(members) do
-        if CheckDispell(member.Unit, true) then
+        if CheckDispell(member, true) then
             return member.Unit;
         end
     end
