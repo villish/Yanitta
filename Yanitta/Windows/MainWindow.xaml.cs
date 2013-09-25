@@ -64,6 +64,9 @@ namespace Yanitta
 
             if (!window.IsActive)
                 window.Activate();
+
+            if (window.WindowState == WindowState.Minimized)
+                window.WindowState = WindowState.Normal;
         }
 
         private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)
