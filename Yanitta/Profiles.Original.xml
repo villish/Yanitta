@@ -21,7 +21,6 @@ AURA_PROC_LIST = { };
 LOSS_TABLE     = { };
 
 LAST_TARGET = 0;
-LAST_TARGET_UNIT = nil;
 
 -- Возвращает ограниченное сверху и снизу значение
 function asc(m_value, m_min, m_max)
@@ -82,8 +81,8 @@ function CheckAndCastAbility(ability)
 
     -- Проверка на то, поддерживает ли в этот момент персонаж заклинание (с учетом пинга)
     if not ability.DropChanel then
-        local endTime = select(6, UnitChannelInfo("player"));
-        if ((endTime or 0) - (GetTime() * 1000)) >= castPing then
+        local endTime = select(6, UnitChannelInfo("player")) or 0;
+        if (endTime - (GetTime() * 1000)) >= castPing then
             return;
         end
     end
@@ -181,7 +180,6 @@ function CheckAndCastAbility(ability)
     -- чтение заклинания по области
     if ability.Target == "mouselocation" then
         LAST_TARGET = 0;
-        LAST_TARGET_UNIT = nil;
         CastSpellByName(spellInfo, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
@@ -190,12 +188,10 @@ function CheckAndCastAbility(ability)
     -- чтения заклинания без цели
     elseif ability.Target == "none" then
         LAST_TARGET = 0;
-        LAST_TARGET_UNIT = nil;
         CastSpellByName(spellInfo, nil);
     -- чтение заклинания по конкретной цели
     else
         LAST_TARGET = UnitGUID(ability.Target);
-        LAST_TARGET_UNIT = ability.Target;
         CastSpellByName(spellInfo, ability.Target);
     end
 
@@ -286,15 +282,6 @@ function AddonFrame_OnUpdate(self, elapsed)
     if type(ABILITY_TABLE) == "table" then
         if GetTime() >= LastTime and #ABILITY_TABLE > 0 then
             if AddonEnabled and not UnitIsDeadOrGhost("player") then
-                -- Для того, чтобы определить, сколько времени двигается персонаж
-                -- Запишем время начала движения.
-                local speed = GetUnitSpeed("player");
-                if speed == 0 then
-                    LastStartMovingTime = 0;
-                elseif speed > 0 and LastStartMovingTime == 0 then
-                    LastStartMovingTime = GetTime();
-                end
-
                 -- Передираем способности, и останавляваемся, если условия выполнены
                 for _,ability in ipairs(ABILITY_TABLE) do
                     if CheckAndCastAbility(ability) then
@@ -304,6 +291,7 @@ function AddonFrame_OnUpdate(self, elapsed)
             end
             LastTime = GetTime() + (Delay / 1000);
         end
+        -- Будем каждые 30 сек. обнулять таблицу
         if GetTime() >= LastTimeClearLossTable then
             LOSS_TABLE = { };
             LastTimeClearLossTable = GetTime() + 30;
@@ -452,20 +440,13 @@ end
 -- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шанам)
 -- Параметры:
 --    sec - Количество секунд, сколько должен двигатся персонаж.
-function IsMoving(sec)
-    local sec = sec or 0;
+function IsMoving()
 
     if HasBuff("player", moving_spell_table) then
         return;
     end
 
-    -- Для определения значениря, двигается ли персонаж, необходимо
-    -- записать его время начала движения, а потом мы можем определить, сколько двигается персонаж.
-    if sec == 0 then
-        return LastStartMovingTime ~= 0;
-    else
-        return GetTime() - LastStartMovingTime >= sec;
-    end
+    return GetUnitSpeed("player") ~= 0;
 end
 
 -- Проверка на нахождение персонажа за спиной цели
@@ -617,8 +598,8 @@ function ExtendTheHealTable()
         end
         -- отхил дружествунной цели по mouseover/target/focus
         InsertNewUnitToHeallersTable("target");
-        InsertNewUnitToHeallersTable("focus");
-        InsertNewUnitToHeallersTable("mouseover");
+        --InsertNewUnitToHeallersTable("focus");
+        --InsertNewUnitToHeallersTable("mouseover");
     end
 end
 
@@ -691,15 +672,7 @@ function FillPartyTables(standartSpellId)
         member.IncomingHeal   = UnitGetIncomingHeals(member.Unit) or 0;
         member.MyIncomingHeal = UnitGetIncomingHeals(member.Unit, "player") or 0;
         member.HP             = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
-
-        if UnitIsPlayer(member.Unit) then
-            local xx, yy = GetPlayerMapPosition(member.Unit);
-            member.X     = xx or 0;
-            member.Y     = yy or 0;
-        else
-            member.X     = xx or 0;
-            member.Y     = yy or 0;
-        end
+        member.X, member.Y    = GetPlayerMapPosition(member.Unit);
 
         -- логика по особому поведению в рейдах
         CheckInstanseLogic(member);
@@ -888,7 +861,7 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00         Одиночная цель", true);
+        ShowMessage("|cff00ff00 Одиночная цель", true);
     else
         setAoE = true;
         ShowMessage("|cffff0000 AOE", true);
@@ -1239,7 +1212,7 @@ elseif IsModKeyDown(mkRightControl) then
         if targetCount >= 4 or targetCount <= 1 then
             targetCount = 2;
         end
-        print("|cff00ff00 >> Кровавый фарш: "..targetCount);
+        print("|cff00ff00 >> Кровавый фарш: "..tostring(targetCount));
     end
 elseif IsModKeyDown(mkRightAlt) then
 end
@@ -1278,6 +1251,7 @@ playerHP   = HealthByPercent("player");]]></Lua>
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
+    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Furry: Удар героя">
@@ -3157,20 +3131,20 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 >> Одиночная цель");
+        ShowMessage("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 >> AOE");
+        ShowMessage("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены");
+        ShowMessage("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены");
+        ShowMessage("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -6178,7 +6152,7 @@ useAutoDispell = true;]]></Lua>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not UnitAffectingCombat("player") then
     -- heallers table
@@ -6639,31 +6613,29 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
-        ShowMessage("|cff00ff00 Одиночная цель");
+        ShowMessage("|cff00ff00 Одиночная цель", true);
     else
         setAoE = true;
-        print("|cffff0000 >> AOE");
-        ShowMessage("|cffff0000 AOE");
+        ShowMessage("|cffff0000 AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        ShowMessage("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        ShowMessage("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
     if isAltMod then
         isAltMod = false;
-        print("|cffff0000Используется \'Дикая защита\'");
+        ShowMessage("|cffff0000Используется \'Дикая защита\'", true);
     else
         isAltMod = true;
-        print("|cff00ff00Используется \'Неистовое восстановление\'");
+        ShowMessage("|cff00ff00Используется \'Неистовое восстановление\'", true);
     end
 end
 
