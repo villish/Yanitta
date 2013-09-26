@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.111</Version>
+  <Version>0.0.3.119</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -522,18 +522,18 @@ function GetDistance(unit1, unit2)
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
 
-    return sqrt( (((x1 or 0) - (x2 or 0)) ^ 2) + (((y1 or 0) - (y2 or 0)) ^ 2) );
+    return sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000;
 end
 
-function CheckDistance(x1, y1, x2, y2, distance)
-    return sqrt( (((x1 or 0) - (x2 or 0)) ^ 2) + (((y1 or 0) - (y2 or 0)) ^ 2) ) <= distance;
+function CheckDistance(x1, x2, y2, y2, distance)
+    return (sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000) <= distance;
 end
 
 function CheckDistance2(unit1, unit2, distance)
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
 
-    return sqrt( (((x1 or 0) - (x2 or 0)) ^ 2) + (((y1 or 0) - (y2 or 0)) ^ 2) ) <= distance;
+    return (sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000) <= distance;
 end
 
 -- Проверка, имеется ли у персонажа указанный символ
@@ -597,7 +597,7 @@ end
 function InsertNewUnitToHeallersTable(unit)
     if UnitExists(unit) and UnitIsFriend("player", unit) then
         for i,member in ipairs(members) do
-            if UnitGUID(member.Unit) == UnitGUID(unit) then
+            if UnitGUID(member.Unit) ~= UnitGUID(unit) then
                 table.insert(members, { Unit = unit, Name = UnitName(unit), Class = UnitClass(unit) });
             end
         end
@@ -748,10 +748,10 @@ function CheckRaidDispellLogic(spellId, member)
     if spellId == 144351 and not HasDebuff("player", 144359) then
         return true;
     end
-    -- Блуждающая энергия
+    -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету 
     if spellId == 142913 then
         for i,member2 in ipairs(members) do
-            if CheckDistance2(member, member2, 9) then
+            if CheckDistance2(member.X, member2.X, member.Y, member2.Y, 9) then
                 return true;
             end
         end
@@ -6184,7 +6184,7 @@ useAutoDispell = true;]]></Lua>
     -- heallers table
     if type(members) == "table" then
         for _,member in ipairs(members) do
-            if not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
+            if UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
                 return true;
             end
         end
@@ -6586,7 +6586,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
+        <Lua><![CDATA[if myMana > 40 and select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6598,14 +6598,12 @@ end]]></Lua>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
+        <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H80 < 3 then
-    if (members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2) and not members[1].DontHeal then
-        return members[1].Unit;
-    end
+        <Lua><![CDATA[if myMana > 40 then
+    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Оживление">
@@ -7323,6 +7321,23 @@ if UnitExists("target") and not UnitIsDeadOrGhost("target") then
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Test: Лунный огонь">
+        <SpellID>8921</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[-- 64399 Боевой штандарт координации
+if not CheckDistance2("player", "target", 10) then
+    return true;
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Лекарь" ProcNotifyer="false">
@@ -7345,8 +7360,8 @@ end]]></Lua>
           <string>Restor: Озарение</string>
           <string>Restor: Восстановление</string>
           <string>Restor: Жизнецвет</string>
-          <string>Restor: Омоложение</string>
           <string>Restor: Целительное прикосновение</string>
+          <string>Restor: Омоложение</string>
           <string>Restor: Покровительство природы</string>
           <string>Знак дикой природы</string>
           <string>Restor: Лунный огонь</string>
@@ -7425,6 +7440,13 @@ RightControl - Включыние / Выключение кулдаунов]]></
         <AbilityQueue>
           <string>Farm: Лунный огонь</string>
           <string>Знак дикой природы</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="lol" ProcNotifyer="false">
+        <HotKey Key="N" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Test: Лунный огонь</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
