@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.119</Version>
+  <Version>0.0.3.122</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6158,7 +6158,7 @@ useAutoDispell = true;]]></Lua>
     -- heallers table
     if type(members) == "table" then
         for _,member in ipairs(members) do
-            if UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
+            if isInRange and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
                 return true;
             end
         end
@@ -6202,8 +6202,13 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если персонаж на маунте или в форме, тогда не выполняем ротацию дальше
-if IsMounted() or GetShapeshiftForm() ~= 0 then
+-- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
+if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", 58984) then
+    return true;
+end
+
+-- Если кастуем спокойствие - тогда ничего не делаем
+if select(8, UnitCastingInfo("player")) == 740 then
     return true;
 end
 
@@ -6225,7 +6230,8 @@ if HealthByPercent("player") < 30 then
 end
 
 -- прервем чтение покровительства природы, если есть просевшие цели
-if (members[1].HP < 60 or LowHP.H70 > 3) and select(8, UnitCastingInfo("player")) == 50464 then
+if (members[1].HP < 60 or LowHP.H80 > 3) and select(8, UnitCastingInfo("player")) == 50464 then
+    print("|cffff0000Прерываем чтение Покровительства природы");
     SpellStopCasting();
 end]]></Lua>
       </Ability>
@@ -6317,22 +6323,6 @@ end]]></Lua>
     return members[1].Unit;
 end]]></Lua>
       </Ability>
-      <Ability Name="Restor: Природная стремительность">
-        <SpellID>132158</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 40 and not members[1].DontHeal then
-    return true;
-end]]></Lua>
-      </Ability>
       <Ability Name="Restor: Дубовая кора">
         <SpellID>22812</SpellID>
         <Target>Player</Target>
@@ -6346,6 +6336,22 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if HealthByPercent("player") < 40 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 40 and not members[1].DontHeal then
     return true;
 end]]></Lua>
       </Ability>
@@ -6388,7 +6394,7 @@ elseif LowHP.H80 <= 3 then
         if member.HP < 90 and HasBuff(member.Unit, { 774, 8936 }, "PLAYER") then
             local count = 0;
             for _,unit in ipairs(members) do
-                if unit.HP < 90 and CheckDistance(unit.X, unit.Y, member.X, member.Y, 4) then
+                if unit.HP < 90 and CheckDistance(unit.X, unit.Y, member.X, member.Y, 9) then
                     count = count + 1;
                 end
             end
@@ -6429,6 +6435,64 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if myMana <= 80 and GetShapeshiftForm() == 0 then
     return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Омоложение (Сильный Урон)">
+        <SpellID>774</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if LowHP.H70 > 3 then -- Опытным путем надо определить условие
+    for _,member in ipairs(members) do
+        if (member.HP < 70 or (member.Agro > 2 and member.Role == "TANK")) and not member.DontHeal then
+            if not HasBuff(member.Unit, 774, "PLAYER") then
+                return member.Unit;
+            end
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Восстановление">
+        <SpellID>8936</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[-- 113043 Знамение ясности
+-- 132158 Природная стремительность
+if not members[1].DontHeal and not HasBuff("player", 132158) then
+    if members[1].HP < 40 or (members[1].HP < 75 and HasBuff("player", 113043)) then
+        return members[1].Unit;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Целительное прикосновение">
+        <SpellID>5185</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 60 and not members[1].DontHeal then
+    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Жизнецвет">
@@ -6474,40 +6538,6 @@ else -- не в рейде будем кидать жизнецвет на то�
             end
         end
     end
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Восстановление">
-        <SpellID>8936</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if not members[1].DontHeal and not HasBuff("player", 132158) then
-    if members[1].HP < 40 or (HasBuff("player", 113043) and members[1].HP < 75) then
-        return members[1].Unit;
-    end
-end]]></Lua>
-      </Ability>
-      <Ability Name="Restor: Целительное прикосновение">
-        <SpellID>5185</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 60 and not members[1].DontHeal then
-    return members[1].Unit;
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Омоложение">
@@ -6639,8 +6669,8 @@ elseif IsModKeyDown(mkRightAlt) then
     end
 end
 
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or HasBuff("player", 5215) then
+-- если персонаж на маунте, или в инвизе или не в форме медведа или кота
+if IsMounted() or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1) or HasBuff("player", { 5215, 58984 }) then
     return true;
 end
 
@@ -7317,19 +7347,18 @@ end]]></Lua>
         <AbilityQueue>
           <string>Restor: Инициализация</string>
           <string>Restor: Возрождение</string>
-          <string>Restor: Дерево жизни</string>
           <string>Restor: Дикий гриб</string>
           <string>Restor: Природный целитель</string>
           <string>Restor: Природный целитель (mouseover)</string>
           <string>Restor: Очищение (Симбоз)</string>
           <string>Restor: Очищение (Симбоз): Mouseover</string>
+          <string>Restor: Озарение</string>
           <string>Restor: Железная кора</string>
-          <string>Restor: Природная стремительность</string>
           <string>Restor: Дубовая кора</string>
           <string>Restor: Буйный рост</string>
+          <string>Restor: Омоложение (Сильный Урон)</string>
           <string>Restor: Быстрое восстановление</string>
-          <string>Restor: Спокойствие</string>
-          <string>Restor: Озарение</string>
+          <string>Restor: Природная стремительность</string>
           <string>Restor: Восстановление</string>
           <string>Restor: Жизнецвет</string>
           <string>Restor: Целительное прикосновение</string>
