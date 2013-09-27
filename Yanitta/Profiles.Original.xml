@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.122</Version>
+  <Version>0.0.3.129</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -205,8 +205,7 @@ function ChangeRotation(rotation, notes)
         CurentRotation = nil;
         AddonEnabled   = false;
         -- [красный]Ротация отключена.
-        print("|cfff5360cРотация отключена.|r");
-        ShowMessage("|cfff5360cРотация отключена.|r");
+        ShowMessage("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
 
         -- При выключении ротации, снимаем регистрацию с событий
@@ -224,8 +223,7 @@ function ChangeRotation(rotation, notes)
         CurentRotation = rotation;
         AddonEnabled   = true;
         -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
-        print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.." |r|cff15bd05 - Включена.|r");
-        ShowMessage("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.." |r|cff15bd05 - Включена.|r");
+        ShowMessage("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
         if notes and strtrim(notes) ~= "" then
             print("|cff6f0a9a     "..notes.."|r");
         end
@@ -6230,10 +6228,9 @@ if HealthByPercent("player") < 30 then
 end
 
 -- прервем чтение покровительства природы, если есть просевшие цели
-if (members[1].HP < 60 or LowHP.H80 > 3) and select(8, UnitCastingInfo("player")) == 50464 then
-    print("|cffff0000Прерываем чтение Покровительства природы");
-    SpellStopCasting();
-end]]></Lua>
+--if (members[1].HP < 60 or LowHP.H80 > 3) and UnitCastingInfo("player") == GetSpellInfo(50464) then
+--    SpellStopCasting();
+--end]]></Lua>
       </Ability>
       <Ability Name="Restor: Возрождение">
         <SpellID>20484</SpellID>
@@ -6263,7 +6260,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftAlt) then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) then
     return true;
 end]]></Lua>
       </Ability>
@@ -6279,7 +6276,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) or useAutoDispell then
+        <Lua><![CDATA[if useAutoDispell then
     for _,member in ipairs(members) do
         if CheckDispell(member) then
             return member.Unit;
@@ -6299,7 +6296,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) or useAutoDispell then
+        <Lua><![CDATA[if useAutoDispell then
     for _,member in ipairs(members) do
         if CheckDispell(member, true) then
             return member.Unit;
@@ -6449,15 +6446,15 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H70 > 3 then -- Опытным путем надо определить условие
-    for _,member in ipairs(members) do
-        if (member.HP < 70 or (member.Agro > 2 and member.Role == "TANK")) and not member.DontHeal then
-            if not HasBuff(member.Unit, 774, "PLAYER") then
-                return member.Unit;
-            end
-        end
-    end
-end]]></Lua>
+        <Lua><![CDATA[--if LowHP.H70 > 3 then -- Опытным путем надо определить условие
+--    for _,member in ipairs(members) do
+--        if (member.HP < 70 or (member.Agro > 2 and member.Role == "TANK")) and not member.DontHeal then
+--            if not HasBuff(member.Unit, 774, "PLAYER") then
+--                return member.Unit;
+--            end
+--        end
+--    end
+--end]]></Lua>
       </Ability>
       <Ability Name="Restor: Восстановление">
         <SpellID>8936</SpellID>
@@ -6491,7 +6488,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 60 and not members[1].DontHeal then
+        <Lua><![CDATA[if members[1].HP < 70 and not members[1].DontHeal then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -7365,14 +7362,10 @@ end]]></Lua>
           <string>Restor: Омоложение</string>
           <string>Restor: Покровительство природы</string>
           <string>Знак дикой природы</string>
-          <string>Restor: Лунный огонь</string>
-          <string>Restor: Гнев</string>
           <string>Restor: Оживление</string>
         </AbilityQueue>
-        <Notes><![CDATA[LeftShift    - Пауза
-LeftControl  - Диспел (под мышкой)
-LeftAlt      - Установка гриба
-RightShift   - Спокойствие
+        <Notes><![CDATA[LeftShift        - Пауза
+LeftControl    - Установка гриба
 RightControl - Включение/выключение автодиспела
 ]]></Notes>
       </Rotation>
