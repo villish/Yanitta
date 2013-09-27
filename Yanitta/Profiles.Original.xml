@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.129</Version>
+  <Version>0.0.3.135</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -626,9 +626,13 @@ function CheckInstanseLogic(member)
     for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
         local name, count = HasDebuff(member.Unit, debuf_rec.Id);
         if count > 0 and debuf_rec.Count > 0 then
-            return count >= debuf_rec.Count;
+            if count >= debuf_rec.Count then
+                member.DontHeal = true;
+                return;
+            end
         elseif name then
-            return true;
+            member.DontHeal = true;
+            return;
         end
     end
 end
@@ -647,15 +651,14 @@ function FillPartyTables(standartSpellId)
 
     for index = 1, GetNumGroupMembers() do
         local name,_,subgroup,_,class,_,_,online = GetRaidRosterInfo(index);
-        local unit = string.format("%s%i", prefix, index);
+        local unit = prefix..tostring(index);
 
-        if UnitExists(unit) then
+        if UnitExists(unit) and not UnitIsUnit("player", member.Unit) then
             local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
             local isDead    = UnitIsDeadOrGhost(unit);
-            local isMe      = UnitGUID(unit) == UnitGUID("player");
             local isVisible = not IsNotLineOfSight(unit); -- need testing
 
-            if inRange and online and not isMe and not isDead and isVisible then
+            if inRange and online and not isDead and isVisible then
                 table.insert(members, { Unit = unit, Name = name, Class = class });
             end
         end
@@ -663,17 +666,21 @@ function FillPartyTables(standartSpellId)
 
     ExtendTheHealTable();
 
-    -- Обновляем статиы игроков из пати/рейда
-    for _,member in ipairs(members) do
-        member.Role           = UnitGroupRolesAssigned(member.Unit);
-        member.Agro           = UnitThreatSituation(member.Unit) or 0;
-        member.IncomingHeal   = UnitGetIncomingHeals(member.Unit) or 0;
-        member.MyIncomingHeal = UnitGetIncomingHeals(member.Unit, "player") or 0;
-        member.HP             = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
-        member.X, member.Y    = GetPlayerMapPosition(member.Unit);
+    -- Обновляем статы игроков из пати/рейда
+    for i,member in ipairs(members) do
+        member.IsTank       = UnitGroupRolesAssigned(member.Unit) == "TANK";
+        member.Agro         = UnitThreatSituation(member.Unit) or 0;
+        member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
+        member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
+        member.X, member.Y  = GetPlayerMapPosition(member.Unit);
 
         -- логика по особому поведению в рейдах
         CheckInstanseLogic(member);
+
+        -- удаляем из таблицы тех, кого хилить нельзя.
+        if member.DontHeal then
+            table.remove(members, i);
+        end
 
         if member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
         if member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
@@ -686,12 +693,7 @@ function FillPartyTables(standartSpellId)
     end
 
     -- сортируем таблицы по наименьшему количеству ХР
-    table.sort(members, function(x, y)
-        if x.DontHeal then
-            return false;
-        end
-        return x.HP < y.HP;
-    end);
+    table.sort(members, function(x, y) return x.HP < y.HP; end);
 end
 
 function ValidDispellForClass(dispelType, druidForce)
@@ -715,21 +717,17 @@ end
 
 -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
 function CheckRaidDispellLogic(spellId, member)
-    -- ша гордыни: диспелим Слово тьмы: Погибель только с дебафом Дар титанов
+    -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
     if spellId == 144351 and not HasDebuff("player", 144359) then
         return true;
     end
-    -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету 
+    -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     if spellId == 142913 then
         for i,member2 in ipairs(members) do
             if CheckDistance2(member.X, member2.X, member.Y, member2.Y, 9) then
                 return true;
             end
         end
---        local name, count, rem = HasDebuff(member.Unit, 142913);
---        if rem >= 7 then
---            return true;
---        end
     end
 end
 
@@ -3457,19 +3455,19 @@ elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        ShowMessage("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        ShowMessage("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
-    if mouseover_dispel then
-        mouseover_dispel = false;
-        print("|cffff0000Диспел по mouseover: Выключен");
+    if useAutoDispell then
+        useAutoDispell = false;
+        ShowMessage("|cffff0000Диспел по mouseover: Выключен", true);
     else
-        mouseover_dispel = true;
-        print("|cff00ff00Диспел по mouseover: Включен");
+        useAutoDispell = true;
+        ShowMessage("|cff00ff00Диспел по mouseover: Включен", true);
     end
 end
 
@@ -3485,8 +3483,13 @@ isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
-    UseItemBySlot(INVSLOT_TRINKET1);
+    --UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Массовое разсеивание">
@@ -3500,31 +3503,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[return IsModKeyDown(mkLeftAlt);]]></Lua>
-      </Ability>
-      <Ability Name="Disc: Разсеивание заклинаний (Mouseover)">
-        <SpellID>528</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if mouseover_dispel and UnitIsFriend("player", "mouseover") then
-    for i = 1, 40 do
-        local name,_,_,_,dispelType = UnitDebuff("mouseover", i, 1);
-        if not name then
-            return false;
-        elseif name and ValidDispellForClass(dispelType) then
-            return true;
-        end
-    end
-end]]></Lua>
       </Ability>
       <Ability Name="Disc: Разсеивание заклинаний (Авто)">
         <SpellID>528</SpellID>
@@ -3538,10 +3518,12 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[for _,member in ipairs(members) do
-   if member.NeedDispell then
-       return member.Unit;
-   end
+        <Lua><![CDATA[if useAutoDispell then
+    for _,member in ipairs(members) do
+        if CheckDispell(member) then
+            return member.Unit;
+        end
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Придание сил">
@@ -3597,8 +3579,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return not isMoving;]]></Lua>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Disc: Подавление боли">
         <SpellID>33206</SpellID>
@@ -3660,7 +3642,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H90 > 2 and members[1].HP < 85 and not members[1].DontHeal then
+        <Lua><![CDATA[if LowHP.H90 > 2 and members[1].HP < 85 then
    return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -3675,9 +3657,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[-- Если активен щит души, тогда настакиваем щит
-if not isMoving and (LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER")) then
+if LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER") then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -3694,7 +3676,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-   if not member.DontHeal and ((member.Role == "TANK" and member.HP < 90) or member.HP < 70) then
+   if (member.IsTank and member.HP < 90) or member.HP < 70 then
        if not HasBuff(member.Unit, 139, "PLAYER") then
            return member.Unit;
        end
@@ -3715,7 +3697,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Ослабленная душа (6788)
 for _,member in ipairs(members) do
-    if not (member.DontHeal or HasDebuff(member.Unit, 6788)) then
+    if not HasDebuff(member.Unit, 6788) then
         if member.Agro > 2 or (isMoving and member.HP < 70) or member.HP < 50 then
             return member.Unit;
         end
@@ -3733,9 +3715,9 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[if UnitCanAttack("player", "target") ~= 1 then
-    if not isMoving and not members[1].DontHeal and members[1].HP < 90 then
+    if members[1].HP < 90 then
         return members[1].Unit;
     end
 end]]></Lua>
@@ -3751,8 +3733,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not isMoving and not members[1].DontHeal and members[1].HP < 40 then
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 40 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -3767,8 +3749,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not isMoving and not members[1].DontHeal and members[1].HP < 60 then
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 60 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6316,7 +6298,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 30 and not members[1].DontHeal then
+        <Lua><![CDATA[if members[1].HP < 30 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6348,7 +6330,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 40 and not members[1].DontHeal then
+        <Lua><![CDATA[if members[1].HP < 40 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6382,7 +6364,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if HasGlyph(145529) then
     for _,member in ipairs(members) do
-        if member.HP < 60 and not member.DontHeal and HasBuff("player", { 774, 8936 }, "PLAYER") then
+        if member.HP < 60 and HasBuff("player", { 774, 8936 }, "PLAYER") then
             return member.Unit;
         end
     end
@@ -6448,7 +6430,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[--if LowHP.H70 > 3 then -- Опытным путем надо определить условие
 --    for _,member in ipairs(members) do
---        if (member.HP < 70 or (member.Agro > 2 and member.Role == "TANK")) and not member.DontHeal then
+--        if member.HP < 70 or (member.Agro > 2 and member.IsTank) then
 --            if not HasBuff(member.Unit, 774, "PLAYER") then
 --                return member.Unit;
 --            end
@@ -6470,7 +6452,7 @@ end]]></Lua>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[-- 113043 Знамение ясности
 -- 132158 Природная стремительность
-if not members[1].DontHeal and not HasBuff("player", 132158) then
+if not HasBuff("player", 132158) then
     if members[1].HP < 40 or (members[1].HP < 75 and HasBuff("player", 113043)) then
         return members[1].Unit;
     end
@@ -6488,7 +6470,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 70 and not members[1].DontHeal then
+        <Lua><![CDATA[if members[1].HP < 70 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6508,7 +6490,7 @@ end]]></Lua>
 if IsInRaid() then
     -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
     for _,member in ipairs(members) do
-        if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
+        if member.Agro > 2 and member.IsTank then
             local name,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
             -- Обновим стаки жизнецвета на танке с агро
             if name and (count < 3 or rem < 3) then
@@ -6522,13 +6504,13 @@ if IsInRaid() then
 
     -- Накладываем жизнецвет на танка с агро
     for _,member in ipairs(members) do
-        if member.Agro > 2 and member.Role == "TANK" and not member.DontHeal then
+        if member.Agro > 2 and member.IsTank then
             return member.Unit;
         end
     end
 else -- не в рейде будем кидать жизнецвет на того, на ком агро.
     for _,member in ipairs(members) do
-        if member.Agro > 2 and not member.DontHeal then
+        if member.Agro > 2 then
             local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
             if count < 3 or rem < 2 then
                 return member.Unit;
@@ -6550,7 +6532,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-    if (member.HP < 85 or (member.Agro > 2 and member.Role == "TANK")) and not member.DontHeal then
+    if member.HP < 85 or (member.IsTank and member.Agro > 2)then
         if not HasBuff(member.Unit, 774, "PLAYER") then
             return member.Unit;
         end
@@ -6570,7 +6552,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[if LowHP.H80 < 3 then
-    if (members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2) and not members[1].DontHeal then
+    if members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2 then
         return members[1].Unit;
     end
 end]]></Lua>
