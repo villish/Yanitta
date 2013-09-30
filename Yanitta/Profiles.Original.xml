@@ -2087,10 +2087,10 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 >> Одиночная цель", true);
+        ShowMessage("|cff00ff00 Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 >> AOE", true);
+        ShowMessage("|cffff0000 AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     StopAttack();
@@ -2117,7 +2117,14 @@ if HasBuff("player", { 5384, 51755 }) then
     return true;
 end
 
-unitFocus = UnitPower("player");]]></Lua>
+unitFocus = UnitPower("player");
+
+-- При проке "На изготовку" прерываем чтение "Выстрел кобры"
+if UnitCastingInfo("player") == GetSpellInfo(77767) then
+    if HasBuff("player", 56453) then
+        SpellStopCasting();
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Триньки/перчатки">
         <SpellID>0</SpellID>
@@ -2230,9 +2237,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and UnitPower("player") >= 25 then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Черная стрела">
         <SpellID>3674</SpellID>
@@ -2246,7 +2251,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and UnitPower("player") >= 35 then
+        <Lua><![CDATA[if not setAoE then
     return true;
 end]]></Lua>
       </Ability>
@@ -2260,7 +2265,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- далее, оптимизировать
 if UnitPower("player") >= 15 then
@@ -2321,7 +2326,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and UnitPower("player") > 25 then
+        <Lua><![CDATA[if not setAoE and UnitPower("player") > 35 then
     if UnitLevel("player") < 90 then
         return true;
     else
@@ -2577,7 +2582,6 @@ end]]></Lua>
           <string>Ледяная ловушка</string>
           <string>Замораживающая ловушка</string>
           <string>Лечение питомца</string>
-          <string>Змеиная ловушка</string>
           <string>Триньки/перчатки</string>
           <string>Убийственный выстрел</string>
           <string>Залп</string>
@@ -2595,6 +2599,8 @@ end]]></Lua>
         <Notes><![CDATA[LeftShift - Метание огненной ловушки
 LeftControl - включение/выключение AOE
 RightControl - Метание замораживающей ловушки
+RightAlt - Ледяная ловушка
+RightShift - Кулдауны
 LeftAlt - Пауза]]></Notes>
       </Rotation>
       <Rotation Name="Повелитель зверей" ProcNotifyer="false">
