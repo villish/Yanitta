@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.139</Version>
+  <Version>0.0.3.142</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -2086,15 +2086,15 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если в комуфляже или притворились мертвыми
-if HasBuff("player", { 5384, 51755 }) then
+-- если в комуфляже или притворились мертвыми или "Слился с тенью"
+if HasBuff("player", { 5384, 51755, 58984 }) then
     return true;
 end
 
 unitFocus = UnitPower("player");
 
 -- При проке "На изготовку" прерываем чтение "Выстрел кобры"
-if UnitCastingInfo("player") == GetSpellInfo(77767) then
+if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
     if HasBuff("player", 56453) then
         SpellStopCasting();
     end
@@ -6317,7 +6317,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 40 then
+        <Lua><![CDATA[if members[1].HP < 35 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6333,7 +6333,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H90 > 3 then
+        <Lua><![CDATA[if LowHP.H85 > 3 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
