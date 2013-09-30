@@ -4689,6 +4689,13 @@ elseif IsModKeyDown(mkRightShift) then
         print("|cff00ff00Кулдауны включены");
     end
 elseif IsModKeyDown(mkRightControl) then
+    if useAutoDispell then
+        useAutoDispell = false;
+        ShowMessage("|cffff0000Автодиспел выключен", true);
+    else
+        useAutoDispell = true;
+        ShowMessage("|cff00ff00Автодиспел включен", true);
+    end
 elseif IsModKeyDown(mkRightAlt)     then
 end
 
@@ -4697,11 +4704,12 @@ if IsMounted() then
     return true;
 end
 
-
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
-end]]></Lua>
+end
+
+FillPartyTables(331);]]></Lua>
       </Ability>
       <Ability Name="Опаляющий тотем">
         <SpellID>3599</SpellID>
@@ -4797,6 +4805,153 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[return setAoE;]]></Lua>
       </Ability>
+      <Ability Name="Restor: Дух предков">
+        <SpellID>2008</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if UnitIsDead("mouseover") and not UnitAffectingCombat("player") and UnitIsPlayer("mouseover") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Щит земли">
+        <SpellID>974</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+    if member.Agro > 2 and member.IsTank then
+        if select(3, HasBuff(member.Unit, 974, "PLAYER")) > 10 then
+            return;
+        end
+    end
+end
+
+-- Накладываем щит земли на танка с агро
+for _,member in ipairs(members) do
+    if member.Agro > 2 and member.IsTank then
+        return member.Unit;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Быстрина">
+        <SpellID>61295</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[for _,member in ipairs(members) do
+    if member.HP < 70 or (member.IsTank and member.Agro > 2)then
+        if not HasBuff(member.Unit, 61295, "PLAYER") then
+            return member.Unit;
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Волна исцеления">
+        <SpellID>331</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 70 then
+    return members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Исцелающий всплеск">
+        <SpellID>8004</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if members[1].HP < 70 then
+    return members[1].Unit;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Тотем исцеляющего потока">
+        <SpellID>5394</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not GetTotemInfo(3) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Водяной щит">
+        <SpellID>52127</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not HasBuff("player", 52127) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Очищение духа">
+        <SpellID>77130</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if useAutoDispell then
+    for _,member in ipairs(members) do
+        if CheckDispell(member) then
+            return member.Unit;
+        end
+    end
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Стихии" ProcNotifyer="false">
@@ -4819,7 +4974,16 @@ end]]></Lua>
       </Rotation>
       <Rotation Name="Исцеление" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
-        <AbilityQueue />
+        <AbilityQueue>
+          <string>Инициализация Стихии</string>
+          <string>Restor: Водяной щит</string>
+          <string>Restor: Щит земли</string>
+          <string>Restor: Быстрина</string>
+          <string>Restor: Исцелающий всплеск</string>
+          <string>Restor: Волна исцеления</string>
+          <string>Restor: Тотем исцеляющего потока</string>
+          <string>Restor: Дух предков</string>
+        </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
     </RotationList>
