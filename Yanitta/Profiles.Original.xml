@@ -653,7 +653,7 @@ function FillPartyTables(standartSpellId)
         local name,_,subgroup,_,class,_,_,online = GetRaidRosterInfo(index);
         local unit = prefix..tostring(index);
 
-        if UnitExists(unit) and not UnitIsUnit("player", member.Unit) then
+        if UnitExists(unit) and not UnitIsUnit("player", unit) then
             local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
             local isDead    = UnitIsDeadOrGhost(unit);
             local isVisible = not IsNotLineOfSight(unit); -- need testing
@@ -6200,13 +6200,20 @@ myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 -- используем аксесуар на ману, только в форме исцеления (0)
 if myMana < 85 and GetShapeshiftForm() == 0 then
-    --UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
+end
+
+if myMana < 90 and GetShapeshiftForm() == 0 then
+    UseItemBySlot(INVSLOT_TRINKET1);
 end
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
+end
+
+if LowHP.H70 > 3 then
+    UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 
 -- прервем чтение покровительства природы, если есть просевшие цели
@@ -6428,15 +6435,37 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[--if LowHP.H70 > 3 then -- Опытным путем надо определить условие
---    for _,member in ipairs(members) do
---        if member.HP < 70 or (member.Agro > 2 and member.IsTank) then
---            if not HasBuff(member.Unit, 774, "PLAYER") then
---                return member.Unit;
---            end
---        end
---    end
---end]]></Lua>
+        <Lua><![CDATA[if LowHP.H60 > 3 then -- Опытным путем надо определить условие
+    for _,member in ipairs(members) do
+        if member.HP < 70 or (member.Agro > 2 and member.IsTank) then
+            if not HasBuff(member.Unit, 774, "PLAYER") then
+                return member.Unit;
+            end
+        end
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Restor: Сотворение">
+        <SpellID>145518</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[local count = 0;
+for _,member in ipairs(members) do
+    if member.HP < 85 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
+        count = count + 1;
+        if count > 2 then
+            return true;
+        end
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Restor: Восстановление">
         <SpellID>8936</SpellID>
@@ -6532,7 +6561,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.HP < 85 or (member.IsTank and member.Agro > 2)then
+    if member.HP < 80 or (member.IsTank and member.Agro > 2)then
         if not HasBuff(member.Unit, 774, "PLAYER") then
             return member.Unit;
         end
@@ -7336,6 +7365,7 @@ end]]></Lua>
           <string>Restor: Дубовая кора</string>
           <string>Restor: Буйный рост</string>
           <string>Restor: Омоложение (Сильный Урон)</string>
+          <string>Restor: Сотворение</string>
           <string>Restor: Быстрое восстановление</string>
           <string>Restor: Природная стремительность</string>
           <string>Restor: Восстановление</string>
