@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.142</Version>
+  <Version>0.0.3.145</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6114,15 +6114,16 @@ useAutoDispell = true;]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not UnitAffectingCombat("player") then
-    -- heallers table
-    if type(members) == "table" then
-        for _,member in ipairs(members) do
-            if isInRange and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
-                return true;
-            end
+        <Lua><![CDATA[local form = GetShapeshiftForm();
+local params_buff = { 1126, 115921, 20217, 90363 };
+if type(members) == "table" and form ~= 1 and form ~= 2 and form ~= 3 and form ~= 4 then
+    for _,member in ipairs(members) do
+        if isInRange and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+            return true;
         end
-    elseif not HasBuff("player", { 1126, 115921, 20217, 90363 }) then
+    end
+elseif not UnitAffectingCombat("player") then
+    if not HasBuff("player", params_buff) then
         return true;
     end
 end]]></Lua>
