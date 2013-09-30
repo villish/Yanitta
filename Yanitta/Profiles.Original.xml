@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.135</Version>
+  <Version>0.0.3.145</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -436,8 +436,6 @@ end
 
 -- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
 -- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шанам)
--- Параметры:
---    sec - Количество секунд, сколько должен двигатся персонаж.
 function IsMoving()
 
     if HasBuff("player", moving_spell_table) then
@@ -565,9 +563,6 @@ end
 -----------------------------------------------
 --                    HEAL                   --
 -----------------------------------------------
-DONT_HEAL_DEBUFF_LIST  = {
-    { Id = 137341,  Count = 0   }, -- Наложницы блезнецы (Чудовище из кошмаров)
-};
 
 function UnitId(unit)
     return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
@@ -586,15 +581,14 @@ end
 function ExtendTheHealTable()
     if type(members) == "table" then
         -- Норусхен
-        if UnitId("boss1") == 72276 then
-            for i = 2, 4 do
-                local unit = "boss"..tostring(i);
-                if UnitIsFriend("player", unit) then
-                    table.insert(members, { Unit = unit, Name = UnitName(unit), Class = UnitClass(unit) });
-                end
-            end
+        local bossId = UnitId("boss1");
+        -- Если хиллер на испытании, добавляем юнитов для отхила.
+        if bossId == 71475 or bossId == 71479 or bossId == 71480 then
+            if UnitExists("boss1") then table.insert(members, { Unit = "boss1" }) end
+            if UnitExists("boss2") then table.insert(members, { Unit = "boss2" }) end
+            if UnitExists("boss3") then table.insert(members, { Unit = "boss3" }) end
         end
-        -- отхил дружествунной цели по mouseover/target/focus
+        -- отхил дружественной цели по mouseover/target/focus
         InsertNewUnitToHeallersTable("target");
         --InsertNewUnitToHeallersTable("focus");
         --InsertNewUnitToHeallersTable("mouseover");
@@ -603,8 +597,9 @@ end
 
 -- в эту функцию добавляем логику по особому поведению в рейдах
 -- на пример, если есть какой-то дебаф, который надо выхиливать.
-function CheckInstanseLogic(member)
-    -- Малкорок 142861, 142862
+function CheckInstanseLogic(members, index)
+    local member = members[index];
+    -- Осада Огриммара: Малкорок
     -- Отхил не проходит, надо настакивать щит под дебафом
     -- по этому просто занижаем реальное здоровье.
     if HasDebuff(member.Unit, 142861) then
@@ -621,26 +616,16 @@ function CheckInstanseLogic(member)
         end
     end
 
-    -- если есть дебаф (перечисленный в таблице), тогда ставим признак, что хилить нельзя.
-    -- Пример (Престол гроз: Наложницы блезнецы (Чудовище из кошмаров))
-    for _,debuf_rec in ipairs(DONT_HEAL_DEBUFF_LIST) do
-        local name, count = HasDebuff(member.Unit, debuf_rec.Id);
-        if count > 0 and debuf_rec.Count > 0 then
-            if count >= debuf_rec.Count then
-                member.DontHeal = true;
-                return;
-            end
-        elseif name then
-            member.DontHeal = true;
-            return;
-        end
+    -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
+    if HasDebuff(member.Unit, 137341) then
+        table.remove(members, index);
     end
 end
 
 function FillPartyTables(standartSpellId)
 
-    LowHP   = { H90 = 0, H80 = 0, H70 = 0, H60 = 0, H50 = 0, H40 = 0, H30 = 0, H20 = 0    };
-    members = {{ Unit = "player", Name = UnitName("player"), Class = UnitClass("player") }};
+    LowHP   = { };
+    members = {{ Unit = "player" }};
 
     local prefix = "party";
     if IsInRaid() then
@@ -650,16 +635,12 @@ function FillPartyTables(standartSpellId)
     end
 
     for index = 1, GetNumGroupMembers() do
-        local name,_,subgroup,_,class,_,_,online = GetRaidRosterInfo(index);
-        local unit = prefix..tostring(index);
-
-        if UnitExists(unit) and not UnitIsUnit("player", unit) then
+        local unit = prefix..index; -- raid5
+        if UnitExists(unit) and not UnitIsUnit("player", unit) and UnitIsConnected(unit) then
             local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
-            local isDead    = UnitIsDeadOrGhost(unit);
             local isVisible = not IsNotLineOfSight(unit); -- need testing
-
-            if inRange and online and not isDead and isVisible then
-                table.insert(members, { Unit = unit, Name = name, Class = class });
+            if inRange and isVisible and not UnitIsDeadOrGhost(unit) then
+                table.insert(members, { Unit = unit });
             end
         end
     end
@@ -667,7 +648,7 @@ function FillPartyTables(standartSpellId)
     ExtendTheHealTable();
 
     -- Обновляем статы игроков из пати/рейда
-    for i,member in ipairs(members) do
+    for i, member in ipairs(members) do
         member.IsTank       = UnitGroupRolesAssigned(member.Unit) == "TANK";
         member.Agro         = UnitThreatSituation(member.Unit) or 0;
         member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
@@ -675,23 +656,16 @@ function FillPartyTables(standartSpellId)
         member.X, member.Y  = GetPlayerMapPosition(member.Unit);
 
         -- логика по особому поведению в рейдах
-        CheckInstanseLogic(member);
+        CheckInstanseLogic(members, i);
 
-        -- удаляем из таблицы тех, кого хилить нельзя.
-        if member.DontHeal then
-            table.remove(members, i);
+        -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
+        for i = 95, 10, -5 do
+            LowHP["H"..i] = LowHP["H"..i] and LowHP["H"..i] or 0;
+            if member.HP <= i then
+                LowHP["H"..i] = LowHP["H"..i] + 1;
+            end
         end
-
-        if member.HP < 90 then LowHP.H90 = LowHP.H90 + 1; end
-        if member.HP < 80 then LowHP.H80 = LowHP.H80 + 1; end
-        if member.HP < 70 then LowHP.H70 = LowHP.H70 + 1; end
-        if member.HP < 60 then LowHP.H60 = LowHP.H60 + 1; end
-        if member.HP < 50 then LowHP.H50 = LowHP.H50 + 1; end
-        if member.HP < 40 then LowHP.H40 = LowHP.H40 + 1; end
-        if member.HP < 30 then LowHP.H30 = LowHP.H30 + 1; end
-        if member.HP < 20 then LowHP.H20 = LowHP.H20 + 1; end
     end
-
     -- сортируем таблицы по наименьшему количеству ХР
     table.sort(members, function(x, y) return x.HP < y.HP; end);
 end
@@ -2112,15 +2086,15 @@ elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
 end
 
--- если в комуфляже или притворились мертвыми
-if HasBuff("player", { 5384, 51755 }) then
+-- если в комуфляже или притворились мертвыми или "Слился с тенью"
+if HasBuff("player", { 5384, 51755, 58984 }) then
     return true;
 end
 
 unitFocus = UnitPower("player");
 
 -- При проке "На изготовку" прерываем чтение "Выстрел кобры"
-if UnitCastingInfo("player") == GetSpellInfo(77767) then
+if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
     if HasBuff("player", 56453) then
         SpellStopCasting();
     end
@@ -6304,15 +6278,16 @@ useAutoDispell = true;]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not UnitAffectingCombat("player") then
-    -- heallers table
-    if type(members) == "table" then
-        for _,member in ipairs(members) do
-            if isInRange and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, { 1126, 115921, 20217, 90363 }) then
-                return true;
-            end
+        <Lua><![CDATA[local form = GetShapeshiftForm();
+local params_buff = { 1126, 115921, 20217, 90363 };
+if type(members) == "table" and form ~= 1 and form ~= 2 and form ~= 3 and form ~= 4 then
+    for _,member in ipairs(members) do
+        if isInRange and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+            return true;
         end
-    elseif not HasBuff("player", { 1126, 115921, 20217, 90363 }) then
+    end
+elseif not UnitAffectingCombat("player") then
+    if not HasBuff("player", params_buff) then
         return true;
     end
 end]]></Lua>
@@ -6507,7 +6482,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 40 then
+        <Lua><![CDATA[if members[1].HP < 35 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6523,7 +6498,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H90 > 3 then
+        <Lua><![CDATA[if LowHP.H85 > 3 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
