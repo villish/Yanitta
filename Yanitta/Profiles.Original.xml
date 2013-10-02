@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.145</Version>
+  <Version>0.0.3.153</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -264,12 +264,12 @@ function AddonFrame_OnEvent(self, event, ...)
                 end
             end
         elseif subEvent == "SPELL_CAST_FAILED" then
-            if failedType == SPELL_FAILED_LINE_OF_SIGHT and LAST_TARGET ~= 0 then
+            if param15 == SPELL_FAILED_LINE_OF_SIGHT and LAST_TARGET ~= 0 then
                 LOSS_TABLE[LAST_TARGET] = {
                     ctime  = GetTime(),
                     cspell = spellId
                 };
-            elseif failedType == SPELL_FAILED_NOT_BEHIND then
+            elseif param15 == SPELL_FAILED_NOT_BEHIND then
                 LastNotBehindTime = GetTime();
             end
         end
@@ -1010,7 +1010,7 @@ end]]></Lua>
         <Lua><![CDATA[local rage          = UnitPower("player");
 local hasShieldBuff = HasBuff("player", 112048);
 
-if isAltMod and rage > 55 and not hasShieldBuff and agroStatus > 0 then
+if playerHP < 60 and rage > 55 and not hasShieldBuff and agroStatus > 2 then
     return true;
 end]]></Lua>
       </Ability>
@@ -1088,7 +1088,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not isAltMod and UnitPower("player") >= 60 then
+        <Lua><![CDATA[if UnitPower("player") >= 60 and agroStatus > 2 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6361,6 +6361,12 @@ if LowHP.H70 > 3 then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 
+if UnitId("boss1") == 71529 and UnitCastingInfo("boss1") then
+    if UnitCastingInfo("player") == GetSpellInfo(5185) or UnitCastingInfo("player") == GetSpellInfo(50464) then
+        SpellStopCasting()
+    end
+end
+
 -- прервем чтение покровительства природы, если есть просевшие цели
 --if (members[1].HP < 60 or LowHP.H80 > 3) and UnitCastingInfo("player") == GetSpellInfo(50464) then
 --    SpellStopCasting();
@@ -6607,6 +6613,7 @@ for _,member in ipairs(members) do
     if member.HP < 85 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
         count = count + 1;
         if count > 2 then
+            print("|cff00ff00 >> Кастую сотворение <<")
             return true;
         end
     end
@@ -6706,7 +6713,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.HP < 80 or (member.IsTank and member.Agro > 2)then
+    if member.HP < 82 or (member.IsTank and member.Agro > 2)then
         if not HasBuff(member.Unit, 774, "PLAYER") then
             return member.Unit;
         end
@@ -7233,7 +7240,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if power1 < 35 then
+        <Lua><![CDATA[if energy < 35 then
     return true;
 end]]></Lua>
       </Ability>
@@ -7249,7 +7256,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if useCooldown and power1 < 35 and not HasBuff("player", 106952) then
+        <Lua><![CDATA[if useCooldown and energy < 35 and not HasBuff("player", 106952) then
     return true;
 end]]></Lua>
       </Ability>
@@ -7265,7 +7272,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if isInMeele and (setAoE or HasBuff("player", 16864)) and not HasDebuff("target", 106832, "PLAYER") then
+        <Lua><![CDATA[if isInMeele and (setAoE or HasBuff("player", 16864)) and not HasDebuff("target", 106830, "PLAYER") then
     return true;
 end]]></Lua>
       </Ability>
@@ -7380,7 +7387,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not IsNotBehind(0.5) then
+        <Lua><![CDATA[if not IsNotBehind(3) then
     return true;
 end]]></Lua>
       </Ability>
@@ -7520,6 +7527,8 @@ end]]></Lua>
           <string>Restor: Покровительство природы</string>
           <string>Знак дикой природы</string>
           <string>Restor: Оживление</string>
+          <string>Restor: Лунный огонь</string>
+          <string>Restor: Гнев</string>
         </AbilityQueue>
         <Notes><![CDATA[LeftShift        - Пауза
 LeftControl    - Установка гриба
@@ -7600,6 +7609,35 @@ RightControl - Включыние / Выключение кулдаунов]]></
           <string>Test: Лунный огонь</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Лекарь (Ток)" ProcNotifyer="false">
+        <HotKey Key="Z" Modifier="Alt Shift" />
+        <AbilityQueue>
+          <string>Restor: Инициализация</string>
+          <string>Restor: Возрождение</string>
+          <string>Restor: Дикий гриб</string>
+          <string>Restor: Природный целитель</string>
+          <string>Restor: Природный целитель (mouseover)</string>
+          <string>Restor: Очищение (Симбоз)</string>
+          <string>Restor: Очищение (Симбоз): Mouseover</string>
+          <string>Restor: Озарение</string>
+          <string>Restor: Железная кора</string>
+          <string>Restor: Дубовая кора</string>
+          <string>Restor: Буйный рост</string>
+          <string>Restor: Омоложение (Сильный Урон)</string>
+          <string>Restor: Сотворение</string>
+          <string>Restor: Быстрое восстановление</string>
+          <string>Restor: Природная стремительность</string>
+          <string>Restor: Восстановление</string>
+          <string>Restor: Жизнецвет</string>
+          <string>Restor: Омоложение</string>
+          <string>Знак дикой природы</string>
+          <string>Restor: Оживление</string>
+        </AbilityQueue>
+        <Notes><![CDATA[LeftShift        - Пауза
+LeftControl    - Установка гриба
+RightControl - Включение/выключение автодиспела
+]]></Notes>
       </Rotation>
     </RotationList>
   </Profile>

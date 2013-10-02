@@ -25,7 +25,12 @@ namespace Yanitta
         public int ProcessId
         {
 #if !TRACE
-            get { return this.Memory.Process.Id; }
+            get
+            {
+                if (this.Memory == null)
+                    return 0;
+                return this.Memory.Process.Id;
+            }
 #else
             get; private set;
 #endif
