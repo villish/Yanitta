@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.153</Version>
+  <Version>0.0.3.159</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -922,7 +922,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if isInCombat and playerHP < 25  and useCooldown then
+        <Lua><![CDATA[if isInCombat and playerHP < 25 and useCooldown then
     return true;
 end]]></Lua>
       </Ability>
@@ -935,10 +935,10 @@ end]]></Lua>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
+        <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not HasBuff("player", 12880) then
+        <Lua><![CDATA[if not HasBuff("player", 12880) and rage < 20 then
     return true;
 end]]></Lua>
       </Ability>
@@ -951,7 +951,7 @@ end]]></Lua>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
+        <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
@@ -969,7 +969,7 @@ end]]></Lua>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
+        <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
@@ -1007,10 +1007,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[local rage          = UnitPower("player");
-local hasShieldBuff = HasBuff("player", 112048);
-
-if playerHP < 60 and rage > 55 and not hasShieldBuff and agroStatus > 2 then
+        <Lua><![CDATA[if playerHP < 60 and rage > 55 and agroStatus > 2 and not HasBuff("player", 112048) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1056,7 +1053,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if isInMeele then
+        <Lua><![CDATA[if isInMeele and (setAoE or not HasDebuff("target", 115798)) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1205,115 +1202,6 @@ end
 FillFurryData();
 playerHP   = HealthByPercent("player");]]></Lua>
       </Ability>
-      <Ability Name="Furry: Кровавая баня">
-        <SpellID>12292</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if useCooldown and koloss_remains < 1 then
-    UseItemBySlot(INVSLOT_HAND);
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET2);
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Удар героя">
-        <SpellID>78</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- if=((debuff.colossus_smash.up&rage>=40)&target.health.pct>=20)|rage>=110
-if (koloss and rage >= 40 and targetHP >= 20) or rage >= 110 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Яростный выпад (1)">
-        <SpellID>85288</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[--if=buff.raging_blow.stack=2&debuff.colossus_smash.up&target.health.pct>=20
-if RB_Count == 2 and koloss and targetHP >= 20 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Кровожадность">
-        <SpellID>23881</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)
-if not (targetHP < 20 and koloss and rage >= 30) then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Зверский удар (1)">
-        <SpellID>100130</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- if=buff.bloodsurge.react&target.health.pct>=20&cooldown.bloodthirst.remains<=1
-if not setAoE and HasBuff("player", 46915) and targetHP >= 20 and bloodthirst_remains <= 1 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Вихрь">
-        <SpellID>1680</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if setAoE then
-    if targetCount == 2 and meat_cleaver then
-        return false;
-    elseif targetCount == 3 and meat_cleaver_couunt == 3 then
-        return false;
-    elseif targetCount == 4 then
-        return true;
-    end
-end]]></Lua>
-      </Ability>
       <Ability Name="Furry: Рев дракона">
         <SpellID>118000</SpellID>
         <Target>Target</Target>
@@ -1324,10 +1212,10 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- if=talent.dragon_roar.enabled&(!debuff.colossus_smash.up&buff.bloodbath.up)
-if IsSpellKnown(118000) and HasBuff("player", 12292) and not koloss then
+if HasBuff("player", 12292) and not koloss then
     return true;
 end]]></Lua>
       </Ability>
@@ -1347,6 +1235,107 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Furry: Кровавая баня">
+        <SpellID>12292</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if useCooldown and koloss_remains < 1 then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Безрассудство">
+        <SpellID>1719</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if useCooldown and kolossRem > 5 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Знамя с черепом">
+        <SpellID>114207</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if useCooldown and kolossRem > 5 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Вихрь">
+        <SpellID>1680</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if setAoE then
+    if targetCount == 2 and meat_cleaver_couunt < 1 then
+        return true;
+    elseif targetCount == 3 and meat_cleaver_couunt < 2 then
+        return true;
+    elseif targetCount == 4 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Яростный выпад">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if setAoE then
+    if targetCount == 2 and meat_cleaver then
+        return true;
+    elseif targetCount >= 3 and meat_cleaver_couunt == 3 then
+        return true;
+    end
+else
+    if koloss and targetHP >= 20 then
+        return true;
+    elseif RB_Count == 2 and (koloss_remains > 3 or RB_Rem <= 3) then
+        return true;
+    elseif ragingBlow and koloss_remains > 5 then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
       <Ability Name="Furry: Казнь">
         <SpellID>5308</SpellID>
         <Target>Target</Target>
@@ -1364,38 +1353,7 @@ if koloss or HasBuff("player", { 1719, 13046 }) or rage > 90 then
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Furry: Яростный выпад (2)">
-        <SpellID>85288</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- if=buff.raging_blow.stack=2 |(buff.raging_blow.up&(debuff.colossus_smash.up|cooldown.colossus_smash.remains>=3
--- |(cooldown.bloodthirst.remains>=1&buff.raging_blow.remains<=3)))
-local enable_RB = false;
-
-if RB_Count == 2 or (ragingBlow and (koloss or koloss_remains >= 3 or (bloodthirst_remains >= 1 and RB_Rem <= 3))) then
-    enable_RB = true;
-end
-
-if setAoE then
-    if targetCount == 2 and meat_cleaver then
-        return true;
-    elseif targetCount >= 3 and meat_cleaver_couunt == 3 then
-        return true;
-    end
-else
-    return enable_RB;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Furry: Зверский удар (2)">
+      <Ability Name="Furry: Зверский удар">
         <SpellID>100130</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1407,11 +1365,47 @@ end
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- if=buff.bloodsurge.react
--- if=debuff.colossus_smash.up&target.health.pct>=20
--- if=cooldown.colossus_smash.remains>=2&rage>=80&target.health.pct>=20
-if HasBuff("player", 46915) or (koloss and targetHP >= 20)
-    or (koloss_remains >= 2 and rage >= 80 and targetHP >= 20) then
+        <Lua><![CDATA[if not setAoE then
+    if targetHP >= 20 and koloss_remains >= 2 and rage > 80 then
+        return true;
+    elseif koloss and targetHP >= 20 then
+        return true;
+    elseif HasBuff("player", 46915) then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Удар героя">
+        <SpellID>78</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[-- if=((debuff.colossus_smash.up&rage>=40)&target.health.pct>=20)|rage>=110
+if (koloss and rage >= 40 and targetHP >= 20) or rage >= 110 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Furry: Кровожадность">
+        <SpellID>23881</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[-- if=!(target.health.pct<20&debuff.colossus_smash.up&rage>=30)
+if not (targetHP < 20 and koloss and rage >= 30) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1454,19 +1448,20 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализация (Неистовство)</string>
           <string>Prot: Победный раж</string>
+          <string>Зуботычина</string>
+          <string>Разрушительный крик</string>
           <string>Prot: Героический прыжок</string>
           <string>Furry: Кровавая баня</string>
-          <string>Furry: Удар героя</string>
-          <string>Furry: Яростный выпад (1)</string>
-          <string>Furry: Кровожадность</string>
-          <string>Furry: Зверский удар (1)</string>
-          <string>Furry: Вихрь</string>
-          <string>Furry: Пауза (Накопление/Сохранение)</string>
           <string>Furry: Рев дракона</string>
           <string>Furry: Удар колосса</string>
+          <string>Furry: Безрассудство</string>
+          <string>Furry: Знамя с черепом</string>
+          <string>Furry: Вихрь</string>
+          <string>Furry: Яростный выпад</string>
+          <string>Furry: Зверский удар</string>
+          <string>Furry: Удар героя</string>
+          <string>Furry: Кровожадность</string>
           <string>Furry: Казнь</string>
-          <string>Furry: Яростный выпад (2)</string>
-          <string>Furry: Зверский удар (2)</string>
           <string>Furry: Героический бросок</string>
           <string>Furry: Боевой крик</string>
         </AbilityQueue>
@@ -6166,8 +6161,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if HasDebuff ("player",124273) and MyChi >= 1
-return true;]]></Lua>
+        <Lua><![CDATA[if HasDebuff("player", 124273) and MyChi >= 1
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Brew: Отвар неуловимости">
         <SpellID>115308</SpellID>
