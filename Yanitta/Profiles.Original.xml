@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.166</Version>
+  <Version>0.0.3.170</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -1162,7 +1162,7 @@ elseif IsModKeyDown(mkLeftControl) then
     -- setAoE = 0   - solo
     -- setAoE = 2   - 2-3 target's
     -- setAoE = 3   - >4 target's
-    local setAoE = setAoE or 0;
+    setAoE = setAoE or 0;
     if setAoE == 0 then
         setAoE = 2;
         ShowMessage("|cff6f0a9a Несколько целей", true);
@@ -6582,7 +6582,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H85 > 3 then
+        <Lua><![CDATA[if LowHP.H80 > 3 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
