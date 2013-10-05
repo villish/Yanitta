@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.170</Version>
+  <Version>0.0.3.173</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -885,7 +885,7 @@ rage       = UnitPower("player");]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if rage < 70 and not hasAPbuff then
     return true;
@@ -901,7 +901,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if rage < 70 and hasAPbuff then
     return true;
@@ -933,7 +933,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not HasBuff("player", 12880) and rage < 20 then
     return true;
@@ -985,7 +985,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- 5 - RightControl
 if IsModKeyDown(5) then
@@ -1018,7 +1018,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
@@ -1032,7 +1032,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if playerHP < 20 and useCooldown then
     return true;
@@ -1064,7 +1064,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if playerHP < 20 and useCooldown then
     return true;
@@ -1080,7 +1080,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if UnitPower("player") >= 60 and agroStatus > 2 then
     return true;
@@ -1096,7 +1096,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
@@ -1110,7 +1110,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[return isInMeele;]]></Lua>
       </Ability>
@@ -1138,7 +1138,7 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if playerHP <= 50 and isInMeele and useCooldown then
     return true;
@@ -4213,7 +4213,7 @@ end]]></Lua>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
+        <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
