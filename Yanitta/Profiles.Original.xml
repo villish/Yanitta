@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.183</Version>
+  <Version>0.0.3.189</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -561,15 +561,21 @@ end
 --                    HEAL                   --
 -----------------------------------------------
 
+MAIN_CLASS_SPELL = 0;
+
 function UnitId(unit)
     return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
 end
 
 function InsertNewUnitToHeallersTable(unit)
-    if UnitExists(unit) and UnitIsFriend("player", unit) then
+    if UnitExists(unit)
+        and not UnitIsDeadOrGhost(unit)
+        and UnitCanAssist(unit, "player")
+        and IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+        and not IsNotLineOfSight(unit) then
         for i,member in ipairs(members) do
             if UnitGUID(member.Unit) ~= UnitGUID(unit) then
-                table.insert(members, { Unit = unit, Name = UnitName(unit), Class = UnitClass(unit) });
+                table.insert(members, { Unit = unit });
             end
         end
     end
@@ -581,14 +587,14 @@ function ExtendTheHealTable()
         local bossId = UnitId("boss1");
         -- Если хиллер на испытании, добавляем юнитов для отхила.
         if bossId == 71475 or bossId == 71479 or bossId == 71480 then
-            if UnitExists("boss1") then table.insert(members, { Unit = "boss1" }) end
-            if UnitExists("boss2") then table.insert(members, { Unit = "boss2" }) end
-            if UnitExists("boss3") then table.insert(members, { Unit = "boss3" }) end
+            InsertNewUnitToHeallersTable("boss1");
+            InsertNewUnitToHeallersTable("boss2");
+            InsertNewUnitToHeallersTable("boss3");
         end
         -- отхил дружественной цели по mouseover/target/focus
         InsertNewUnitToHeallersTable("target");
-        --InsertNewUnitToHeallersTable("focus");
-        --InsertNewUnitToHeallersTable("mouseover");
+        InsertNewUnitToHeallersTable("focus");
+        InsertNewUnitToHeallersTable("mouseover");
     end
 end
 
@@ -620,7 +626,7 @@ function CheckInstanseLogic(members, index)
 end
 
 function FillPartyTables(standartSpellId)
-
+    MAIN_CLASS_SPELL = standartSpellId;
     LowHP   = { };
     members = {{ Unit = "player" }};
 
@@ -6437,11 +6443,10 @@ useAutoDispell = true;]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[local form = GetShapeshiftForm();
-local params_buff = { 1126, 115921, 20217, 90363 };
-if type(members) == "table" and form ~= 1 and form ~= 2 and form ~= 3 and form ~= 4 then
+        <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
+if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if isInRange and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
@@ -6470,6 +6475,7 @@ elseif IsModKeyDown(mkLeftControl) then
 elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
+        useCooldown = false;
         ShowMessage("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
@@ -6484,6 +6490,13 @@ elseif IsModKeyDown(mkRightControl) then
         ShowMessage("|cff00ff00Автодиспел включен", true);
     end
 elseif IsModKeyDown(mkRightAlt) then
+    if useDamage then
+        useDamage = false;
+        ShowMessage("|cffff0000Нанесение урона выключено", true);
+    else
+        useDamage = true;
+        ShowMessage("|cff00ff00Нанесение урона выключено", true);
+    end
 end
 
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
@@ -6901,7 +6914,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if myMana > 40 and select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
+        <Lua><![CDATA[if useDamage and myMana > 40 and select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6917,7 +6930,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if myMana > 40 then
+        <Lua><![CDATA[if useDamage and myMana > 40 then
     return true;
 end]]></Lua>
       </Ability>
