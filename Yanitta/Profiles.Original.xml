@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.173</Version>
+  <Version>0.0.3.179</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -636,7 +636,7 @@ function FillPartyTables(standartSpellId)
         if UnitExists(unit) and not UnitIsUnit("player", unit) and UnitIsConnected(unit) then
             local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
             local isVisible = not IsNotLineOfSight(unit); -- need testing
-            if inRange and isVisible and not UnitIsDeadOrGhost(unit) then
+            if inRange and isVisible and not UnitIsDeadOrGhost(unit) and not UnitCanAttack("player", unit) then
                 table.insert(members, { Unit = unit });
             end
         end
@@ -650,7 +650,6 @@ function FillPartyTables(standartSpellId)
         member.Agro         = UnitThreatSituation(member.Unit) or 0;
         member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
         member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
-        member.X, member.Y  = GetPlayerMapPosition(member.Unit);
 
         -- логика по особому поведению в рейдах
         CheckInstanseLogic(members, i);
@@ -667,13 +666,13 @@ function FillPartyTables(standartSpellId)
     table.sort(members, function(x, y) return x.HP < y.HP; end);
 end
 
-function ValidDispellForClass(dispelType, druidForce)
+function ValidDispellForClass(dispelType, druidSimbios)
     -- Curse Disease Magic Poison
     if not dispelType then return; end
     local class = select(2, UnitClass("player"));
     if     class == "PRIEST" then
         return dispelType == "Magic" or dispelType == "Disease";
-    elseif class == "DRUID" and druidForce then -- Simbios of paladin
+    elseif class == "DRUID" and druidSimbios then -- Simbios of paladin
         return                          dispelType == "Poison" or dispelType == "Disease";
     elseif class == "DRUID" then
         return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
@@ -695,26 +694,35 @@ function CheckRaidDispellLogic(spellId, member)
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     if spellId == 142913 then
         for i,member2 in ipairs(members) do
-            if CheckDistance2(member.X, member2.X, member.Y, member2.Y, 9) then
+            if CheckDistance2(member, member2, 9) then
                 return true;
             end
         end
     end
 end
 
-function CheckDispell(member, druidForce)
-    for i = 1, 40 do
-        local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, i);
-        if not name then
-            return;
-        elseif ValidDispellForClass(dispelType, druidForce) then
-            if not CheckRaidDispellLogic(spellId, member) then
-                return name,count,dispelType,duration,expires,spellId;
+-- Возвращает юнита, с которого надо диспелить (с наибольшим количеством стаков)
+-- Параметр druidSimbios - Указывает, что это заклинание от симбиоза
+-- Возвращает: unit, count или nil - если диспелить нечего.
+function GetDispellInfo(druidSimbios)
+    local dispellTable = {};
+    for _,member in ipairs(members) do
+        for i = 1, 40 do
+            local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, i);
+            if not name then
+                break;
+            end
+            -- Проверяем можем ли мы диспелить данный тип дебафа + проверяем надо ли диспелить.
+            if ValidDispellForClass(dispelType, druidSimbios) and not CheckRaidDispellLogic(spellId, member) then
+                table.insert(dispellTable, { Unit = member.Unit, Count = count });
             end
         end
     end
-end
-]]></Func>
+    if #dispellTable > 0 then
+        table.sort(dispellTable, function(A, B) return A.Count > B.Count end);
+        return dispellTable[1].Unit, dispellTable[1].Count;
+    end
+end]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;
@@ -3576,11 +3584,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    for _,member in ipairs(members) do
-        if CheckDispell(member) then
-            return member.Unit;
-        end
-    end
+    return GetDispellInfo();
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Придание сил">
@@ -4996,11 +5000,7 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    for _,member in ipairs(members) do
-        if CheckDispell(member) then
-            return member.Unit;
-        end
-    end
+    return GetDispellInfo();
 end]]></Lua>
       </Ability>
     </AbilityList>
@@ -6495,11 +6495,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    for _,member in ipairs(members) do
-        if CheckDispell(member) then
-            return member.Unit;
-        end
-    end
+    return GetDispellInfo();
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Очищение (Симбоз)">
@@ -6515,11 +6511,7 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    for _,member in ipairs(members) do
-        if CheckDispell(member, true) then
-            return member.Unit;
-        end
-    end
+    return GetDispellInfo(true);
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Железная кора">
@@ -6664,9 +6656,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H60 > 3 then -- Опытным путем надо определить условие
+        <Lua><![CDATA[if LowHP.H50 > 3 then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 70 or (member.Agro > 2 and member.IsTank) then
+        if member.HP < 55 or (member.Agro > 2 and member.IsTank) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
                 return member.Unit;
             end
@@ -6709,10 +6701,10 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[-- 113043 Знамение ясности
+        <Lua><![CDATA[-- 16870 Ясность мысли
 -- 132158 Природная стремительность
 if not HasBuff("player", 132158) then
-    if members[1].HP < 40 or (members[1].HP < 75 and HasBuff("player", 113043)) then
+    if members[1].HP <= 40 or (members[1].HP <= 80 and HasBuff("player", 16870)) then
         return members[1].Unit;
     end
 end]]></Lua>
@@ -6729,7 +6721,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[if members[1].HP < 70 then
+        <Lua><![CDATA[if members[1].HP <= 60 then
     return members[1].Unit;
 end]]></Lua>
       </Ability>
@@ -6745,36 +6737,36 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- В рейде накладываем жизнецвет только на танка
-if IsInRaid() then
-    -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
-    for _,member in ipairs(members) do
-        if member.Agro > 2 and member.IsTank then
-            local name,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
-            -- Обновим стаки жизнецвета на танке с агро
-            if name and (count < 3 or rem < 3) then
-                return member.Unit;
-            -- Если жизнецвет уже есть на танке с агро, тогда дальше не продолжаем.
-            elseif count > 2 and rem > 3 then
-                return;
-            end
-        end
+        <Lua><![CDATA[local hasTank = false;
+for _,member in ipairs(members) do
+    if member.IsTank then
+        hasTank = true;
+        break;
     end
+end
 
-    -- Накладываем жизнецвет на танка с агро
-    for _,member in ipairs(members) do
-        if member.Agro > 2 and member.IsTank then
+-- если рейд проседает, то держим 1 стак жизнецвета на танке
+local lb_count = LowHP.H50 > 3 and 1 or 3;
+
+-- В рейде накладываем жизнецвет только на танка
+-- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
+for _,member in ipairs(members) do
+    if member.Agro > 2 and (not hasTank or member.IsTank) then
+        local name,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
+        -- Обновим стаки жизнецвета
+        if name and (count < lb_count or rem < 3) then
             return member.Unit;
+        -- Если жизнецвет уже есть, тогда дальше не продолжаем.
+        elseif count >= lb_count and rem > 3 then
+            return;
         end
     end
-else -- не в рейде будем кидать жизнецвет на того, на ком агро.
-    for _,member in ipairs(members) do
-        if member.Agro > 2 then
-            local _,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
-            if count < 3 or rem < 2 then
-                return member.Unit;
-            end
-        end
+end
+
+-- Накладываем жизнецвет на юнита с агро или если в рейде то на танка
+for _,member in ipairs(members) do
+    if member.Agro > 2 and (not hasTank or member.IsTank) then
+        return member.Unit;
     end
 end]]></Lua>
       </Ability>
@@ -6791,7 +6783,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[for _,member in ipairs(members) do
-    if member.HP < 82 or (member.IsTank and member.Agro > 2)then
+    if member.HP < 82 or ((not IsInRaid() or member.IsTank) and member.Agro > 2)then
         if not HasBuff(member.Unit, 774, "PLAYER") then
             return member.Unit;
         end
@@ -7680,42 +7672,6 @@ RightControl - Включыние / Выключение кулдаунов]]></
           <string>Знак дикой природы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
-      </Rotation>
-      <Rotation Name="lol" ProcNotifyer="false">
-        <HotKey Key="N" Modifier="Alt" />
-        <AbilityQueue>
-          <string>Test: Лунный огонь</string>
-        </AbilityQueue>
-        <Notes><![CDATA[]]></Notes>
-      </Rotation>
-      <Rotation Name="Лекарь (Ток)" ProcNotifyer="false">
-        <HotKey Key="Z" Modifier="Alt Shift" />
-        <AbilityQueue>
-          <string>Restor: Инициализация</string>
-          <string>Restor: Возрождение</string>
-          <string>Restor: Дикий гриб</string>
-          <string>Restor: Природный целитель</string>
-          <string>Restor: Природный целитель (mouseover)</string>
-          <string>Restor: Очищение (Симбоз)</string>
-          <string>Restor: Очищение (Симбоз): Mouseover</string>
-          <string>Restor: Озарение</string>
-          <string>Restor: Железная кора</string>
-          <string>Restor: Дубовая кора</string>
-          <string>Restor: Буйный рост</string>
-          <string>Restor: Омоложение (Сильный Урон)</string>
-          <string>Restor: Сотворение</string>
-          <string>Restor: Быстрое восстановление</string>
-          <string>Restor: Природная стремительность</string>
-          <string>Restor: Восстановление</string>
-          <string>Restor: Жизнецвет</string>
-          <string>Restor: Омоложение</string>
-          <string>Знак дикой природы</string>
-          <string>Restor: Оживление</string>
-        </AbilityQueue>
-        <Notes><![CDATA[LeftShift        - Пауза
-LeftControl    - Установка гриба
-RightControl - Включение/выключение автодиспела
-]]></Notes>
       </Rotation>
     </RotationList>
   </Profile>
