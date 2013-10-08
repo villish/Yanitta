@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.189</Version>
+  <Version>0.0.3.192</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -96,10 +96,8 @@ function CheckAndCastAbility(ability)
     -- Проверка, на присутствие бафа прока, если бафа нет - значит убираем прок
     if ProcNotifyer then
         for _,ab in ipairs(ABILITY_TABLE) do
-            if ab.HasProc then
-                if not HasBuff("player", AURA_PROC_LIST) then
-                    ab.HasProc = false;
-                end
+            if ab.HasProc and not HasBuff("player", AURA_PROC_LIST) then
+                ab.HasProc = false;
             end
         end
     end
@@ -162,7 +160,7 @@ function CheckAndCastAbility(ability)
         -- IsSpellInRange([заклинание одинаковое по радиусу действия], unit)
         if ability.IsRangeCheck then
             local isRange = IsSpellInRange(spellInfo, ability.Target);
-            if isRange == nil and DebugEnabled then
+            if not isRange and DebugEnabled then
                 print("|cfff5360c Ошибка IsSpellInRange: ["..tostring(ability.SpellId).."] "..spellInfo..".|r");
             end
             if isRange ~= 1 then
@@ -179,23 +177,26 @@ function CheckAndCastAbility(ability)
 
     -- чтение заклинания по области
     if ability.Target == "mouselocation" then
-        LAST_TARGET = 0;
         CastSpellByName(spellInfo, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
         -- для того, чтобы была видна область действия заклинания
         CastSpellByName(spellInfo, nil);
+        if UnitGUID("target") ~= LAST_TARGET then
+            TargetLastTarget();
+        end
     -- чтения заклинания без цели
     elseif ability.Target == "none" then
-        LAST_TARGET = 0;
+        LAST_TARGET = UnitGUID("player");
         CastSpellByName(spellInfo, nil);
     -- чтение заклинания по конкретной цели
     else
         LAST_TARGET = UnitGUID(ability.Target);
         CastSpellByName(spellInfo, ability.Target);
     end
-
-    return true;
+    if not ability.IsNotHCD then
+        return true;
+    end
 end
 
 -- Включение/выключение текущей ротации
@@ -360,7 +361,8 @@ AURA_PROC_LIST = {
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Параметры:
 --  unit - Цель ("palyer", "target", "focus", "mouseover")
---  ... - перечень бафов
+--  {...} - перечень бафов
+--  filter - фильтр
 function HasBuff(unit, spellId, filter)
 
     local spell_table = { };
@@ -386,7 +388,8 @@ end
 -- Возвращает, есть ли один из перечисленных дебафов на персонаже
 -- Параметры:
 --  unit - Цель ("palyer", "target", "focus", "mouseover")
---  ... - перечень дебафов
+--  {...} - перечень дебафов
+--  filter - фильтр
 function HasDebuff(unit, spellId, filter)
 
     local spell_table = { };
@@ -491,7 +494,7 @@ function IsModKeyDown(m_key)
     end
 end
 
--- Проверка дистанции между 2 игроками (рейд или группа)
+-- вычисление дистанции между 2 игроками (рейд или группа)
 function GetDistance(unit1, unit2)
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
@@ -499,10 +502,12 @@ function GetDistance(unit1, unit2)
     return sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000;
 end
 
+-- Проверяет растояние между 2мя игроками по их координатам
 function CheckDistance(x1, x2, y2, y2, distance)
     return (sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000) <= distance;
 end
 
+-- Проверяет растояние между 2мя игроками
 function CheckDistance2(unit1, unit2, distance)
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
@@ -529,6 +534,7 @@ function UseItemBySlot(slotId)
     end
 end
 
+-- Использование предмета в инвентаре по его ID
 function UseItemById(itemId)
     local count = GetItemCount(itemId);
     if (count or 0) > 0 then
@@ -539,6 +545,7 @@ function UseItemById(itemId)
     end
 end
 
+-- Проверяет, надо ли сбивать заклинание текущему юниту.
 function CheckInterrupt(unit)
     if not UnitExists(unit) then
         return;
@@ -563,10 +570,12 @@ end
 
 MAIN_CLASS_SPELL = 0;
 
+-- Возвращает ID юнита
 function UnitId(unit)
     return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
 end
 
+-- Добавляет в таблицу "members" указанного юнита, при этом делая проверки (возможность лечить)
 function InsertNewUnitToHeallersTable(unit)
     if UnitExists(unit)
         and not UnitIsDeadOrGhost(unit)
@@ -581,6 +590,7 @@ function InsertNewUnitToHeallersTable(unit)
     end
 end
 
+-- Исключительные ситуации в рейде, добавление юнитов для дополнительного лечения.
 function ExtendTheHealTable()
     if type(members) == "table" then
         -- Норусхен
@@ -625,53 +635,7 @@ function CheckInstanseLogic(members, index)
     end
 end
 
-function FillPartyTables(standartSpellId)
-    MAIN_CLASS_SPELL = standartSpellId;
-    LowHP   = { };
-    members = {{ Unit = "player" }};
-
-    local prefix = "party";
-    if IsInRaid() then
-        prefix = "raid";
-    elseif IsInArenaTeam() then
-        prefix = "arena";
-    end
-
-    for index = 1, GetNumGroupMembers() do
-        local unit = prefix..index; -- raid5
-        if UnitExists(unit) and not UnitIsUnit("player", unit) and UnitIsConnected(unit) then
-            local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
-            local isVisible = not IsNotLineOfSight(unit); -- need testing
-            if inRange and isVisible and not UnitIsDeadOrGhost(unit) and not UnitCanAttack("player", unit) then
-                table.insert(members, { Unit = unit });
-            end
-        end
-    end
-
-    ExtendTheHealTable();
-
-    -- Обновляем статы игроков из пати/рейда
-    for i, member in ipairs(members) do
-        member.IsTank       = UnitGroupRolesAssigned(member.Unit) == "TANK";
-        member.Agro         = UnitThreatSituation(member.Unit) or 0;
-        member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
-        member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
-
-        -- логика по особому поведению в рейдах
-        CheckInstanseLogic(members, i);
-
-        -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
-        for i = 95, 10, -5 do
-            LowHP["H"..i] = LowHP["H"..i] and LowHP["H"..i] or 0;
-            if member.HP <= i then
-                LowHP["H"..i] = LowHP["H"..i] + 1;
-            end
-        end
-    end
-    -- сортируем таблицы по наименьшему количеству ХР
-    table.sort(members, function(x, y) return x.HP < y.HP; end);
-end
-
+-- Выполняет проверку на доступность диспела для текущего лекаря (учитывается симбиоз друида)
 function ValidDispellForClass(dispelType, druidSimbios)
     -- Curse Disease Magic Poison
     if not dispelType then return; end
@@ -728,6 +692,56 @@ function GetDispellInfo(druidSimbios)
         table.sort(dispellTable, function(A, B) return A.Count > B.Count end);
         return dispellTable[1].Unit, dispellTable[1].Count;
     end
+end
+
+-- Формирует таблицу "members" которая содержит юнитов нуждающихся в лечении.
+-- при формировании происходят проверки: (доступность + рейдовая логика)
+-- сформированная таблица будет отчортирована по наименьшему здоровью.
+function FillPartyTables(standartSpellId)
+    MAIN_CLASS_SPELL = standartSpellId;
+    LowHP   = { };
+    members = {{ Unit = "player" }};
+
+    local prefix = "party";
+    if IsInRaid() then
+        prefix = "raid";
+    elseif IsInArenaTeam() then
+        prefix = "arena";
+    end
+
+    for index = 1, GetNumGroupMembers() do
+        local unit = prefix..index; -- raid5
+        if UnitExists(unit) and not UnitIsUnit("player", unit) and UnitIsConnected(unit) then
+            local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
+            local isVisible = not IsNotLineOfSight(unit); -- need testing
+            if inRange and isVisible and not UnitIsDeadOrGhost(unit) and not UnitCanAttack("player", unit) then
+                table.insert(members, { Unit = unit });
+            end
+        end
+    end
+
+    ExtendTheHealTable();
+
+    -- Обновляем статы игроков из пати/рейда
+    for i, member in ipairs(members) do
+        member.IsTank       = UnitGroupRolesAssigned(member.Unit) == "TANK";
+        member.Agro         = UnitThreatSituation(member.Unit) or 0;
+        member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
+        member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
+
+        -- логика по особому поведению в рейдах
+        CheckInstanseLogic(members, i);
+
+        -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
+        for i = 95, 10, -5 do
+            LowHP["H"..i] = LowHP["H"..i] and LowHP["H"..i] or 0;
+            if member.HP <= i then
+                LowHP["H"..i] = LowHP["H"..i] + 1;
+            end
+        end
+    end
+    -- сортируем таблицы по наименьшему количеству ХР
+    table.sort(members, function(x, y) return x.HP < y.HP; end);
 end]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
