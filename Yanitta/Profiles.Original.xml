@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.192</Version>
+  <Version>0.0.3.195</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -342,8 +342,10 @@ if not AddonFrame then
 end]]></Core>
   <Func><![CDATA[-- Заклинания (бафы), которые позволяют произносить заклинания на ходу
 moving_spell_table = {
-    97128, -- Опаляющее перо (Алисразор)
-    79206, -- Благосклонность предков (Шанам) [заносим в общее, так как предается через симбиоз]
+    97128,  -- Опаляющее перо (Алисразор)
+    79206,  -- Благосклонность предков (Шанам)
+    110806, -- Благосклонность предков (Друид: Симбиоз)
+    --0, -- Вневременной остров
 };
 
 AURA_PROC_LIST = {
@@ -437,9 +439,13 @@ end
 -- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
 -- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шанам)
 function IsMoving()
-
-    if HasBuff("player", moving_spell_table) then
-        return;
+    for _,spell in ipairs(moving_spell_table) do
+        local name,rank = GetSpellInfo(spell);
+        if name then
+            if UnitAura("player", name, rank, nil) then
+                return;
+            end
+        end
     end
 
     return GetUnitSpeed("player") ~= 0;
