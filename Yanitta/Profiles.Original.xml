@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.195</Version>
+  <Version>0.0.3.205</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -34,10 +34,8 @@ end
 
 function CheckAndCastAbility(ability)
     -- Если способность требует проверки в бою
-    if ability.IsCheckInCombat then
-        if not UnitAffectingCombat("player") then
-            return;
-        end
+    if ability.IsCheckInCombat and (not FORCE_IN_COMBAT and not UnitAffectingCombat("player")) then
+        return;
     end
 
     -- Имитация задержки на повторное произнесение заклинания
@@ -124,10 +122,8 @@ function CheckAndCastAbility(ability)
 
     -- Делает проверку на то, что данное заклинание доступно для персонажа.
     -- Не работает для некоторых заклинаний (например: Увечье (друид))
-    if ability.IsSpellKnownCheck then
-        if not IsSpellKnown(ability.SpellId) then
-            return;
-        end
+    if ability.IsSpellKnownCheck and not IsSpellKnown(ability.SpellId) then
+        return;
     end
 
     -- проверку на доступность цели делаем только для определенных видов целей
@@ -345,7 +341,7 @@ moving_spell_table = {
     97128,  -- Опаляющее перо (Алисразор)
     79206,  -- Благосклонность предков (Шанам)
     110806, -- Благосклонность предков (Друид: Симбиоз)
-    --0, -- Вневременной остров
+    147806, -- Вневременной остров
 };
 
 AURA_PROC_LIST = {
@@ -590,7 +586,7 @@ function InsertNewUnitToHeallersTable(unit)
         and not IsNotLineOfSight(unit) then
         for i,member in ipairs(members) do
             if UnitGUID(member.Unit) ~= UnitGUID(unit) then
-                table.insert(members, { Unit = unit });
+                table.insert(members, { Unit = unit, IsInMyPaty = false });
             end
         end
     end
@@ -670,7 +666,7 @@ function CheckRaidDispellLogic(spellId, member)
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     if spellId == 142913 then
         for i,member2 in ipairs(members) do
-            if CheckDistance2(member, member2, 9) then
+            if CheckDistance2(member.Unit, member2.Unit, 9) then
                 return true;
             end
         end
@@ -690,12 +686,14 @@ function GetDispellInfo(druidSimbios)
             end
             -- Проверяем можем ли мы диспелить данный тип дебафа + проверяем надо ли диспелить.
             if ValidDispellForClass(dispelType, druidSimbios) and not CheckRaidDispellLogic(spellId, member) then
-                table.insert(dispellTable, { Unit = member.Unit, Count = count });
+                table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
             end
         end
     end
     if #dispellTable > 0 then
-        table.sort(dispellTable, function(A, B) return A.Count > B.Count end);
+        table.sort(dispellTable, function(A, B)
+            return A.Count > B.Count;
+        end);
         return dispellTable[1].Unit, dispellTable[1].Count;
     end
 end
@@ -704,9 +702,11 @@ end
 -- при формировании происходят проверки: (доступность + рейдовая логика)
 -- сформированная таблица будет отчортирована по наименьшему здоровью.
 function FillPartyTables(standartSpellId)
+    -- Обнуляем все хиловские глобальные переменные.
+    FORCE_IN_COMBAT  = false;
     MAIN_CLASS_SPELL = standartSpellId;
-    LowHP   = { };
-    members = {{ Unit = "player" }};
+    LowHP            = { };
+    members          = {{ Unit = "player", IsInMyPaty = true }};
 
     local prefix = "party";
     if IsInRaid() then
@@ -721,7 +721,7 @@ function FillPartyTables(standartSpellId)
             local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
             local isVisible = not IsNotLineOfSight(unit); -- need testing
             if inRange and isVisible and not UnitIsDeadOrGhost(unit) and not UnitCanAttack("player", unit) then
-                table.insert(members, { Unit = unit });
+                table.insert(members, { Unit = unit, IsInMyPaty = true });
             end
         end
     end
@@ -734,6 +734,10 @@ function FillPartyTables(standartSpellId)
         member.Agro         = UnitThreatSituation(member.Unit) or 0;
         member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
         member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
+
+        if UnitAffectingCombat(member.Unit) then
+            FORCE_IN_COMBAT = true;
+        end
 
         -- логика по особому поведению в рейдах
         CheckInstanseLogic(members, i);
@@ -6466,7 +6470,7 @@ useAutoDispell = true;]]></Lua>
         <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
 if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if member.IsInMyPaty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
@@ -6515,7 +6519,7 @@ elseif IsModKeyDown(mkRightAlt) then
         ShowMessage("|cffff0000Нанесение урона выключено", true);
     else
         useDamage = true;
-        ShowMessage("|cff00ff00Нанесение урона выключено", true);
+        ShowMessage("|cff00ff00Нанесение урона включено", true);
     end
 end
 
@@ -6525,7 +6529,7 @@ if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", 58984) then
 end
 
 -- Если кастуем спокойствие - тогда ничего не делаем
-if select(8, UnitCastingInfo("player")) == 740 then
+if UnitChannelInfo("player") then
     return true;
 end
 
@@ -6549,7 +6553,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-if LowHP.H70 > 3 then
+if LowHP.H70 > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 
@@ -6706,7 +6710,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if HasGlyph(145529) then
     for _,member in ipairs(members) do
-        if member.HP < 60 and HasBuff("player", { 774, 8936 }, "PLAYER") then
+        if member.HP < 70 and HasBuff("player", { 774, 8936 }, "PLAYER") then
             return member.Unit;
         end
     end
@@ -6815,10 +6819,12 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[-- 16870 Ясность мысли
--- 132158 Природная стремительность
+        <Lua><![CDATA[-- 132158 Природная стремительность
 if not HasBuff("player", 132158) then
-    if members[1].HP <= 40 or (members[1].HP <= 80 and HasBuff("player", 16870)) then
+    local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
+    local harmony = select(3, HasBuff("player", 100977));
+    local hp = members[1].HP;
+    if hp <= 40 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
         return members[1].Unit;
     end
 end]]></Lua>
@@ -7780,10 +7786,22 @@ LeftAlt - Пауза
 RightControl - Включыние / Выключение кулдаунов]]></Notes>
       </Rotation>
       <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
-        <HotKey Key="B" Modifier="Alt" />
+        <HotKey Key="N" Modifier="Alt" />
         <AbilityQueue>
           <string>Farm: Лунный огонь</string>
           <string>Знак дикой природы</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Лекарь: Дамаг" ProcNotifyer="false">
+        <HotKey Key="B" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Restor: Инициализация</string>
+          <string>Restor: Дикий гриб</string>
+          <string>Restor: Возрождение</string>
+          <string>Restor: Озарение</string>
+          <string>Restor: Лунный огонь</string>
+          <string>Restor: Гнев</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
