@@ -30,7 +30,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// </summary>
         public static readonly DependencyProperty FoldingMarkerBrushProperty =
             DependencyProperty.RegisterAttached("FoldingMarkerBrush", typeof(Brush), typeof(FoldingMargin),
-                                                new FrameworkPropertyMetadata(Brushes.Gray, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
+                                                new FrameworkPropertyMetadata(Brushes.Green, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
 
         /// <summary>
         /// Gets/sets the Brush used for displaying the lines of folding markers.
@@ -46,7 +46,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// </summary>
         public static readonly DependencyProperty FoldingMarkerBackgroundBrushProperty =
             DependencyProperty.RegisterAttached("FoldingMarkerBackgroundBrush", typeof(Brush), typeof(FoldingMargin),
-                                                new FrameworkPropertyMetadata(Brushes.White, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
+                                                new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
 
         /// <summary>
         /// Gets/sets the Brush used for displaying the background of folding markers.
@@ -61,9 +61,8 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// SelectedFoldingMarkerBrush dependency property.
         /// </summary>
         public static readonly DependencyProperty SelectedFoldingMarkerBrushProperty =
-            DependencyProperty.RegisterAttached("SelectedFoldingMarkerBrush",
-                                                typeof(Brush), typeof(FoldingMargin),
-                                                new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
+            DependencyProperty.RegisterAttached("SelectedFoldingMarkerBrush", typeof(Brush), typeof(FoldingMargin),
+                                                new FrameworkPropertyMetadata(Brushes.Red, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
 
         /// <summary>
         /// Gets/sets the Brush used for displaying the lines of selected folding markers.
@@ -78,9 +77,8 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// SelectedFoldingMarkerBackgroundBrush dependency property.
         /// </summary>
         public static readonly DependencyProperty SelectedFoldingMarkerBackgroundBrushProperty =
-            DependencyProperty.RegisterAttached("SelectedFoldingMarkerBackgroundBrush",
-                                                typeof(Brush), typeof(FoldingMargin),
-                                                new FrameworkPropertyMetadata(Brushes.White, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
+            DependencyProperty.RegisterAttached("SelectedFoldingMarkerBackgroundBrush", typeof(Brush), typeof(FoldingMargin),
+                                                new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.Inherits, OnUpdateBrushes));
 
         /// <summary>
         /// Gets/sets the Brush used for displaying the background of selected folding markers.

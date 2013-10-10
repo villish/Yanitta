@@ -32,8 +32,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// </summary>
         public RegexFoldingStrategy()
         {
-            this.StartPattern = @"\b(?<start>function|while|if|for|\{)\b";
-            this.EndPattern = @"\b(?<end>end|\})\b";
+            this.StartPattern = @"(?<start>\b(function|while|if|for)\b|{|--\[\[)";
+            this.EndPattern = @"(?<end>\b(end)\b|}|]])";
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                 var line = document.Lines[i];
 
                 // комментарии пропускаем
-                if (line.Text.TrimStart().StartsWith("--"))
+                if (line.Text.TrimStart().StartsWith("--") && !line.Text.TrimStart().StartsWith("--[["))
                     continue;
 
                 foreach (Match match in startPattern.Matches(line.Text))

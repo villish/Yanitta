@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 
 <SyntaxDefinition name="LUA" extensions=".lua" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Comment"       foreground="Green"       fontStyle="oblique"    exampleText="-- comment" />
+  <Color name="Comment"       foreground="Gray"       fontStyle="oblique"    exampleText="-- comment" />
   <Color name="String"        foreground="#FF5E5EAE"                          exampleText="text = &quot;Hello, World!&quot;" />
   <Color name="Operators"     foreground="#FFFF0F27"                          exampleText="= + * /"/>
   <Color name="Keywords"      foreground="#FF569CD6"   fontWeight="bold"      exampleText="if then else end function" />
@@ -11,13 +11,22 @@
 
   <RuleSet ignoreCase="false">
 
+    <Span color="Comment" multiline="true">
+      <Begin><![CDATA[--\[\[]]></Begin>
+      <End><![CDATA[]]]]></End>
+    </Span>
+
     <Span color="Comment">
       <Begin>--</Begin>
     </Span>
-    <!--<Span color="Comment" multiline="true">
-      <Begin>[[</Begin>
-      <End>]]</End>
-    </Span>-->
+
+    <Span color="String" multiline="true">
+      <Begin><![CDATA[\[\[]]></Begin>
+      <End><![CDATA[]]]]></End>
+      <RuleSet>
+        <Span begin="\\" end="."/>
+      </RuleSet>
+    </Span>
 
     <Span color="String">
       <Begin>'</Begin>
@@ -26,11 +35,11 @@
         <Span begin="\\" end="."/>
       </RuleSet>
     </Span>
+
     <Span color="String">
       <Begin>"</Begin>
       <End>"</End>
       <RuleSet>
-        <!-- span for escape sequences -->
         <Span begin="\\" end="."/>
       </RuleSet>
     </Span>
@@ -197,6 +206,19 @@
       <Word>unpack</Word>
       <Word>wipe</Word>
       <Word>xpcall</Word>
+      <Word>table</Word>
+      <Word>insert</Word>
+      <Word>remove</Word>
+      <Word>setn</Word>
+      <Word>getn</Word>
+      <Word>foreach</Word>
+      <Word>foreachi</Word>
+      <Word>bit</Word>
+      <Word>bit</Word>
+      <Word>band</Word>
+      <Word>bor</Word>
+      <Word>bnot</Word>
+      <Word>bxor</Word>
     </Keywords>
 
     <Rule color="Number">
@@ -222,6 +244,19 @@
       <Word>GetDistance</Word>
       <Word>HasGlyph</Word>
       <Word>UseItemBySlot</Word>
+      <Word>UseItemById</Word>
+      <Word>CheckInterrupt</Word>
+      <Word>UnitId</Word>
+      <Word>ExtendTheHealTable</Word>
+      <Word>CheckInstanseLogic</Word>
+      <Word>ValidDispellForClass</Word>
+      <Word>CheckRaidDispellLogic</Word>
+      <Word>GetDispellInfo</Word>
+      <Word>FillPartyTables</Word>
+      <Word>CheckDistance</Word>
+      <Word>CheckDistance2</Word>
+      <Word>IsNotBehind</Word>
+      <Word>IsNotLineOfSight</Word>
     </Keywords>
 
     <Keywords color="WowFunctions">
@@ -3002,6 +3037,16 @@
 
       <Word>setAoE</Word>
       <Word>useCooldown</Word>
+
+      <Word>FORCE_IN_COMBAT</Word>
+      <Word>MAIN_CLASS_SPELL</Word>
+      <Word>AURA_PROC_LIST</Word>
+      <Word>ABILITY_TABLE</Word>
+      <Word>LOSS_TABLE</Word>
+      <Word>LAST_TARGET</Word>
+      <Word>LowHP</Word>
+      <Word>members</Word>
+      <Word>moving_spell_table</Word>
     </Keywords>
 
     <Rule color="Number">\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?</Rule>
