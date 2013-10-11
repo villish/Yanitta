@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.205</Version>
+  <Version>0.0.3.208</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6523,8 +6523,10 @@ elseif IsModKeyDown(mkRightAlt) then
     end
 end
 
+local b_ufs = { 58984, 104270 };
+
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", 58984) then
+if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", b_ufs) then
     return true;
 end
 
@@ -6540,7 +6542,7 @@ isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 -- используем аксесуар на ману, только в форме исцеления (0)
-if myMana < 85 and GetShapeshiftForm() == 0 then
+if myMana < 80 and GetShapeshiftForm() == 0 then
     UseItemBySlot(INVSLOT_TRINKET2);
 end
 
@@ -6758,7 +6760,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if myMana <= 80 and GetShapeshiftForm() == 0 then
+        <Lua><![CDATA[if myMana <= 75 and GetShapeshiftForm() == 0 then
     return true;
 end]]></Lua>
       </Ability>
