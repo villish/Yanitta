@@ -660,7 +660,8 @@ end
 -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
 function CheckRaidDispellLogic(spellId, member)
     -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
-    if spellId == 144351 and not HasDebuff("player", 144359) then
+    -- После "Освобождения" Дар титанов больше не кидается, поэтому диспелим по КД
+    if spellId == 144351 and (not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30) then
         return true;
     end
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
@@ -731,7 +732,7 @@ function FillPartyTables(standartSpellId)
     -- Обновляем статы игроков из пати/рейда
     for i, member in ipairs(members) do
         member.IsTank       = UnitGroupRolesAssigned(member.Unit) == "TANK";
-        member.Agro         = UnitThreatSituation(member.Unit) or 0;
+        member.Agro         = UnitThreatSituation(member.Unit)  or 0;
         member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
         member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
 
@@ -744,9 +745,8 @@ function FillPartyTables(standartSpellId)
 
         -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
         for i = 95, 10, -5 do
-            LowHP["H"..i] = LowHP["H"..i] and LowHP["H"..i] or 0;
             if member.HP <= i then
-                LowHP["H"..i] = LowHP["H"..i] + 1;
+                LowHP["H"..i] = (LowHP["H"..i] or 0) + 1;
             end
         end
     end
