@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.227</Version>
+  <Version>0.0.3.229</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
 ShowInChat   = true;    -- показывать сообщения в чате
 DebugEnabled = true;    -- показывать отладочные сообщения в чате
 ProcNotifyer = false;
+OnEventExtended = nil;
 ping         = 0;       -- текущий пинг
 -- Константы горячих клавиш
 mkLeftShift     = 1;
@@ -71,8 +72,8 @@ function CheckAndCastAbility(ability)
 
     -- Проверка на то, читает ли в этот момент персонаж заклинание (с учетом пинга)
     if not ability.CencelCasting then
-        local endTime = select(6, UnitCastingInfo("player"));
-        if ((endTime or 0) - (GetTime() * 1000)) >= castPing then
+        local endTime = select(6, UnitCastingInfo("player")) or 0;
+        if (endTime - (GetTime() * 1000)) >= castPing then
             return;
         end
     end
@@ -93,11 +94,7 @@ function CheckAndCastAbility(ability)
 
     -- Проверка, на присутствие бафа прока, если бафа нет - значит убираем прок
     if ProcNotifyer then
-        for _,ab in ipairs(ABILITY_TABLE) do
-            if ab.HasProc and not HasBuff("player", AURA_PROC_LIST) then
-                ab.HasProc = false;
-            end
-        end
+        -- todo: implement proc notifier;
     end
 
     if (ability.IsMovingCheck == "notmoving" and IsMoving()) or (ability.IsMovingCheck == "moving" and not IsMoving()) then
@@ -173,13 +170,14 @@ function CheckAndCastAbility(ability)
 
     -- чтение заклинания по области
     if ability.Target == "mouselocation" then
+        local last_target_guid = UnitGUID("target");
         CastSpellByName(spellInfo, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
         -- для того, чтобы была видна область действия заклинания
         CastSpellByName(spellInfo, nil);
-        if UnitGUID("target") ~= LAST_TARGET then
-            TargetLastTarget();
+        if UnitGUID("target") ~= last_target_guid then
+            TargetLastTarget())
         end
     -- чтения заклинания без цели
     elseif ability.Target == "none" then
@@ -347,18 +345,6 @@ moving_spell_table = {
     110806, -- Благосклонность предков (Друид: Симбиоз)
     147806, -- Вневременной остров
 };
-
-AURA_PROC_LIST = {
-    74241,  -- Силовой поток
-    79476,  -- Вулканическая сила
-    96230,  -- Нейронные пружины
-
-    2825,   -- Жажда крови
-    32182,  -- Героизм
-    80353,  -- Искажение времени
-    90355,  -- Древняя истерия
-    26297,  -- Берсерк
- };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
