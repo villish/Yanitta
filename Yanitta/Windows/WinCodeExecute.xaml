@@ -19,7 +19,18 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
-            <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}" DisplayMemberPath="." />
+            <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=ProcessId, StringFormat={}[{0}]}"/>
+                            <TextBlock Text="{Binding Path=Name,      StringFormat={} {0}}"/>
+                            <TextBlock Text="{Binding Path=Class,     StringFormat={} ({0})}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
             <Button Content="{x:Static yanitta:Localization.CommandRun}" Margin="10,0,0,0" Width="100" Command="Save" />
         </StackPanel>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="#FF17AD1A">
