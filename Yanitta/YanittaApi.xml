@@ -21,18 +21,32 @@
     <Description>
       <![CDATA[  HasBuff(...)
 Возвращает, есть ли один из перечисленных бафов на персонаже
+Возвращает:
+ Имя эффекта
+ Количество стаков
+ Оставшееся время действия
+ value1, value2, value3 - Величина эффекта
 Параметры:
-  unit - Цель ("palyer", "target", "focus", "mouseover")
-  ... - перечень бафов]]>
+ unit - Цель ("palyer", "target", "focus", "mouseover")
+ {...} - перечень бафов
+ filter - фильтр
+  ]]>
     </Description>
   </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="HasDebuff">
     <Description>
       <![CDATA[  HasDebuff(...)
 Возвращает, есть ли один из перечисленных дебафов на персонаже
+Возвращает:
+ Имя эффекта
+ Количество стаков
+ Оставшееся время действия
+ value1, value2, value3 - Величина эффекта
 Параметры:
-  unit - Цель ("palyer", "target", "focus", "mouseover")
-  ... - перечень дебафов]]>
+ unit - Цель ("palyer", "target", "focus", "mouseover")
+ {...} - перечень дебафов
+ filter - фильтр
+  ]]>
     </Description>
   </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="UnitBuffId">

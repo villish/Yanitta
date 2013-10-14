@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.224</Version>
+  <Version>0.0.3.225</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -361,6 +361,11 @@ AURA_PROC_LIST = {
  };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
+-- Возвращает:
+--  Имя эффекта
+--  Количество стаков
+--  Оставшееся время действия
+--  value1, value2, value3 - Величина эффекта
 -- Параметры:
 --  unit - Цель ("palyer", "target", "focus", "mouseover")
 --  {...} - перечень бафов
@@ -377,17 +382,23 @@ function HasBuff(unit, spellId, filter)
     for _,spell_id in ipairs(spell_table) do
         local spellName, spellRank = GetSpellInfo(spell_id);
         if spellName then
-            local name,_,_,count,_,_,expires = UnitBuff(unit, spellName, spellRank, filter);
+            -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
+            local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitBuff(unit, spellName, spellRank, filter);
             if name then
                 local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                return name, count, rem;
+                return name, count, rem, value1, value2, value3;
             end
         end
     end
-    return nil, 0, 0;
+    return nil, 0, 0, 0, 0, 0;
 end
 
 -- Возвращает, есть ли один из перечисленных дебафов на персонаже
+-- Возвращает:
+--  Имя эффекта
+--  Количество стаков
+--  Оставшееся время действия
+--  value1, value2, value3 - Величина эффекта
 -- Параметры:
 --  unit - Цель ("palyer", "target", "focus", "mouseover")
 --  {...} - перечень дебафов
@@ -404,14 +415,15 @@ function HasDebuff(unit, spellId, filter)
     for _,spell_id in ipairs(spell_table) do
         local spellName, spellRank = GetSpellInfo(spell_id);
         if spellName then
-            local name,_,_,count,_,_,expires = UnitDebuff(unit, spellName, spellRank, filter);
+            -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
+            local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitDebuff(unit, spellName, spellRank, filter);
             if name then
                 local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
-                return name, count, rem;
+                return name, count, rem, value1, value2, value3;
             end
         end
     end
-    return nil, 0, 0;
+    return nil, 0, 0, 0, 0, 0;
 end
 
 function UnitBuffId(target, spellId, filter)
