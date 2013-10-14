@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.208</Version>
+  <Version>0.0.3.224</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -270,6 +270,10 @@ function AddonFrame_OnEvent(self, event, ...)
                 LastNotBehindTime = GetTime();
             end
         end
+    end
+    --print(type(OnEventExtended) )
+    if type(OnEventExtended) == "function" then
+        OnEventExtended(self, event, ...);
     end
 end
 
@@ -829,9 +833,7 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if CheckInterrupt("target") then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return CheckInterrupt("target");]]></Lua>
       </Ability>
       <Ability Name="Разрушительный крик">
         <SpellID>102060</SpellID>
@@ -3203,7 +3205,7 @@ end]]></Lua>
   <Profile Class="Priest">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;
-mouseover_dispel = false;]]></Lua>
+useAutoDispell = true;]]></Lua>
     <AbilityList>
       <Ability Name="Инициализация (Тьма)">
         <SpellID>0</SpellID>
@@ -3602,11 +3604,11 @@ end]]></Lua>
         <Lua><![CDATA[return IsModKeyDown(mkLeftAlt);]]></Lua>
       </Ability>
       <Ability Name="Disc: Разсеивание заклинаний (Авто)">
-        <SpellID>528</SpellID>
+        <SpellID>527</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
+        <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
@@ -5077,8 +5079,8 @@ igniteDamage = 0;       -- Урон от тика доты Воспламене�
 pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
 pyroCrit     = false;   -- Было ли заклинание Огненная глыба (11366) критическим
 
-hooksecurefunc("AddonFrame_OnEvent", function (self, event, ...)
-
+function OnEventExtended (self, event, ...)
+--print("AddonFrame_OnEvent")
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         -- для начала приведу полный список параметров.
         local timestamp, subEvent, hideCaster,
@@ -5088,10 +5090,10 @@ hooksecurefunc("AddonFrame_OnEvent", function (self, event, ...)
               resisted,  blocked,  absorbed,   critical,    glancing,crushing = ...;
 
         if subEvent == "SPELL_PERIODIC_DAMAGE" then
-            if UnitName("player") == srcName and destName == UnitName("target") then
+            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
                 -- Воспламенение
                 if spellId == 12654 then
-                    IgniteDamage = amount;
+                    igniteDamage = amount;
                     --print("Тик: Воспламенение (12654) - "..tostring(amount));
                 end
             end
@@ -5108,7 +5110,7 @@ hooksecurefunc("AddonFrame_OnEvent", function (self, event, ...)
             end
         end
     end
-end);]]></Lua>
+end]]></Lua>
     <AbilityList>
       <Ability Name="Инициализация(Огонь)">
         <SpellID>0</SpellID>
@@ -5251,7 +5253,7 @@ end]]></Lua>
         <SpellID>108853</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
+        <CancelCasting>true</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
@@ -5265,8 +5267,6 @@ end]]></Lua>
 -- чтобы следующий Огненный шар (133) не успел и долететь до цели и сбить бафф, если вдруг не критонет.
 
 if isInRange or HasBuff("player", 48107) then
-    -- возможно надо остановить чтение заклинания
-    SpellStopCasting();
     return true;
 end]]></Lua>
       </Ability>
@@ -5281,7 +5281,7 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Fire: Ожoг">
@@ -5295,8 +5295,8 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return isMoving;]]></Lua>
+        <IsMovingCheck>Moving</IsMovingCheck>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Fire: Возгорание">
         <SpellID>11129</SpellID>
@@ -5317,7 +5317,7 @@ end]]></Lua>
 -- Надо в ручную определить это значение.
 -- вычислением пиковой/средней величины.
 local MAX_DOTE_IGNITE = 5000;
-
+--print(pyroCrit ,igniteDamage)
 if useCooldown and pyroCrit and igniteDamage > MAX_DOTE_IGNITE then
     if select(3, HasDebuff("target", 12654, "PLAYER")) > 3 then
         return true;
@@ -5352,7 +5352,73 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+if IsMounted() or HasBuff("player", 87959) then
+    return true;
+end
+
+isInRange = IsSpellInRange(GetSpellInfo(116), "target") == 1;
+isMoving  = IsMoving();
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Ледяная преграда">
+        <SpellID>11426</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not HasBuff("player", 11426) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Снежная Буря">
+        <SpellID>10</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Живая бомба">
         <SpellID>44457</SpellID>
@@ -5433,7 +5499,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Огонь" ProcNotifyer="false">
-        <HotKey Key="X" Modifier="Alt" />
+        <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация(Огонь)</string>
           <string>Использование предметов</string>
@@ -5450,9 +5516,11 @@ end]]></Lua>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
       <Rotation Name="Лед" ProcNotifyer="false">
-        <HotKey Key="Z" Modifier="Alt" />
+        <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Лед)</string>
+          <string>Frost: Снежная Буря</string>
+          <string>Frost: Ледяная преграда</string>
           <string>Frost: Живая бомба</string>
           <string>Frost: Ледяной шар</string>
           <string>Frost: Стрела ледяного огня</string>
@@ -6223,9 +6291,9 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[--                                             Пламенное дыхание
-if setAoE and power2 >= 3 and not HasDebuff("target", 123725, "PLAYER") then
+if isInMeele and setAoE and power2 >= 3 and not HasDebuff("target", 123725, "PLAYER") then
     --                       Скрытые резервы                        Хмельная дымка
-    if select(3, HasBuff("player", 115307)) > 20 and HasDebuff("target", 123727, "PLAYER")
+    if select(3, HasBuff("player", 115307)) > 20 and HasDebuff("target", 123727, "PLAYER") then
         return true;
     end
 end]]></Lua>
@@ -6274,7 +6342,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if setAoE and and power2 >= 2 then
+        <Lua><![CDATA[if setAoE and power2 >= 2 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6285,12 +6353,12 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if setAoE and power1 >= 40 then
+        <Lua><![CDATA[if setAoE and isInMeele and power1 >= 40 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6354,7 +6422,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if HasDebuff("player", 124273) and MyChi >= 1
+        <Lua><![CDATA[if HasDebuff("player", 124273) and MyChi >= 1 then
     return true;
 end]]></Lua>
       </Ability>
@@ -6374,17 +6442,19 @@ end]]></Lua>
       </Ability>
       <Ability Name="Brew: Целительная сфера">
         <SpellID>115460</SpellID>
-        <Target>Player</Target>
+        <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if IsModKeyDown(mkRightAlt) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Brew: Защита">
         <SpellID>123402</SpellID>
@@ -6426,7 +6496,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[return CheckInterrupt("target");]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
@@ -6439,6 +6509,23 @@ end]]></Lua>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
+          <string>Наследие императора</string>
+          <string>Brew: Рука-копье</string>
+          <string>Brew: Смертельное касание</string>
+          <string>Brew: Лапа тигра</string>
+          <string>Brew: Пламенное дыхание</string>
+          <string>Brew: Нокаутирующий удар</string>
+          <string>Brew: Удар кружкой</string>
+          <string>Brew: Порыв нефритового ветра</string>
+          <string>Brew: Танцующий журавль</string>
+          <string>Brew: Устранение вреда</string>
+          <string>Brew: Дзуки</string>
+          <string>Brew: Хмельная дымка</string>
+          <string>Brew: Очищающий отвар</string>
+          <string>Brew: Отвар неуловимости</string>
+          <string>Brew: Целительная сфера</string>
+          <string>Brew: Защита</string>
+          <string>Brew: Скрытые резервы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -7048,9 +7135,7 @@ isCat      = GetShapeshiftForm() == 3;]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if CheckInterrupt("target") then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return CheckInterrupt("target");]]></Lua>
       </Ability>
       <Ability Name="Guard: Неистовое восстановление">
         <SpellID>22842</SpellID>
