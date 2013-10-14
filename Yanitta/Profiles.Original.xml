@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.229</Version>
+  <Version>0.0.3.231</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -177,7 +177,7 @@ function CheckAndCastAbility(ability)
         -- для того, чтобы была видна область действия заклинания
         CastSpellByName(spellInfo, nil);
         if UnitGUID("target") ~= last_target_guid then
-            TargetLastTarget())
+            TargetLastTarget();
         end
     -- чтения заклинания без цели
     elseif ability.Target == "none" then
@@ -6338,7 +6338,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if agroStatus > 2 then
+        <Lua><![CDATA[if agroStatus > 2 and HasBuff("player", 118636) then
     return true;
 end]]></Lua>
       </Ability>
@@ -6355,6 +6355,22 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if playerHP < 40 and useCooldown then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Brew: Удар кружкой">
+        <SpellID>121253</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if chi < (2 + additionalChi) then
     return true;
 end]]></Lua>
       </Ability>
@@ -6405,23 +6421,12 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if setAoE and isInMeele and energy >= 40 then
-    return true;
-end]]></Lua>
-      </Ability>
-      <Ability Name="Brew: Удар кружкой">
-        <SpellID>121253</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if chi < (2 + additionalChi) then
+        <Lua><![CDATA[if isInMeele and setAoE and chi > 2 then
+    if HasDebuff("target", 123727, "PLAYER") and not HasDebuff("target", 123725, "PLAYER") then
+        return false;
+    end
+end
+if setAoE and isInMeele and energy >= 40 then
     return true;
 end]]></Lua>
       </Ability>
