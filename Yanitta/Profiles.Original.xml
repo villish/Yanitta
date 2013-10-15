@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.231</Version>
+  <Version>0.0.3.234</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -733,10 +733,14 @@ function FillPartyTables(standartSpellId)
 
     -- Обновляем статы игроков из пати/рейда
     for i, member in ipairs(members) do
-        member.IsTank       = UnitGroupRolesAssigned(member.Unit) == "TANK";
-        member.Agro         = UnitThreatSituation(member.Unit)  or 0;
-        member.IncomingHeal = UnitGetIncomingHeals(member.Unit) or 0;
-        member.HP           = 100 * (UnitHealth(member.Unit) + member.IncomingHeal) / UnitHealthMax(member.Unit);
+        member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
+        member.Agro    = UnitThreatSituation(member.Unit) or 0;
+
+        local max_hp   = UnitHealthMax(member.Unit) or 0;
+        local inc_hp   = UnitGetIncomingHeals(member.Unit) or 0;
+        local cur_hp   = UnitHealth(member.Unit) or 0;
+        member.IncHeal = 100 * inc_hp / max_hp;
+        member.HP      = 100 * (cur_hp + inc_hp) / max_hp;
 
         if UnitAffectingCombat(member.Unit) then
             FORCE_IN_COMBAT = true;
@@ -747,8 +751,9 @@ function FillPartyTables(standartSpellId)
 
         -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
         for i = 95, 10, -5 do
+            LowHP["H"..i] = LowHP["H"..i] and LowHP["H"..i] or 0; -- Первичная инициализация
             if member.HP <= i then
-                LowHP["H"..i] = (LowHP["H"..i] or 0) + 1;
+                LowHP["H"..i] = LowHP["H"..i] + 1;
             end
         end
     end
@@ -2227,8 +2232,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
+        <Lua><![CDATA[-- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() then
     return true;
 end
@@ -2242,8 +2246,7 @@ if useCooldown then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
-end
-]]></Lua>
+end]]></Lua>
       </Ability>
       <Ability Name="Метание ловушки">
         <SpellID>77769</SpellID>
@@ -2273,9 +2276,8 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitAffectingCombat("player") or IsMounted() then
-    if GetShapeshiftForm() ~= 1 then
+        <Lua><![CDATA[if UnitAffectingCombat("player") or IsMounted() then
+    if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
         CastShapeshiftForm(1);
         return true;
     end
@@ -2294,7 +2296,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not UnitAffectingCombat("player") and not IsMounted() then
-    if GetShapeshiftForm() ~= 2 then
+    if GetShapeshiftForm() ~= 2 and GetShapeshiftFormCooldown(2) == 0 then
         CastShapeshiftForm(2);
         return true;
     end
@@ -2340,9 +2342,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return not setAoE;]]></Lua>
       </Ability>
       <Ability Name="Бросок глеф">
         <SpellID>117050</SpellID>
@@ -2356,10 +2356,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[-- далее, оптимизировать
-if UnitPower("player") >= 15 then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return unitFocus >= 15;]]></Lua>
       </Ability>
       <Ability Name="Звериный натиск">
         <SpellID>121818</SpellID>
@@ -2415,7 +2412,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and UnitPower("player") > 35 then
+        <Lua><![CDATA[if not setAoE and unitFocus > 35 then
     if UnitLevel("player") < 90 then
         return true;
     else
@@ -2439,9 +2436,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return IsSpellInRange(GetSpellInfo(3044), "target") == 1;]]></Lua>
       </Ability>
       <Ability Name="Змеиная ловушка">
         <SpellID>82948</SpellID>
@@ -2455,10 +2450,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
-    return true;
-end
-]]></Lua>
+        <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
       </Ability>
       <Ability Name="Взрывная ловушка">
         <SpellID>82939</SpellID>
@@ -2472,10 +2464,7 @@ end
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
-    return true;
-end
-]]></Lua>
+        <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
       </Ability>
       <Ability Name="Ледяная ловушка">
         <SpellID>82941</SpellID>
@@ -2489,9 +2478,7 @@ end
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkRightAlt) then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return IsModKeyDown(mkRightAlt);]]></Lua>
       </Ability>
       <Ability Name="Замораживающая ловушка">
         <SpellID>60192</SpellID>
@@ -2505,9 +2492,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkRightControl) then
-    return true;
-end]]></Lua>
+        <Lua><![CDATA[return IsModKeyDown(mkRightControl);]]></Lua>
       </Ability>
       <Ability Name="Быстрая стрельба">
         <SpellID>3045</SpellID>
@@ -2535,10 +2520,8 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE then
-    if not HasDebuff("target", 118253, "PLAYER") then
-        return true;
-    end
+        <Lua><![CDATA[if not setAoE and not HasDebuff("target", 118253, "PLAYER") then
+    return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Убийственный выстрел">
@@ -2609,8 +2592,7 @@ if not UnitExists("target") or UnitIsDead("target") then
     if UnitAffectingCombat("focus") then
         if UnitIsFriend("player", "focus") then
             RunMacroText("/target focustarget");
-            RunMacroText("/startattack");
-            --RunMacroText("/startattack focustarget");
+            StartAttack("target");
         end
     end
 end]]></Lua>
@@ -6626,7 +6608,7 @@ end
 local b_ufs = { 58984, 104270 };
 
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", b_ufs) then
+if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", b_ufs) or IsStealthed() then
     return true;
 end
 
