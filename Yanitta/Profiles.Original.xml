@@ -711,6 +711,10 @@ function FillPartyTables(standartSpellId)
     LowHP            = { };
     members          = {{ Unit = "player", IsInMyPaty = true }};
 
+    for i = 95, 10, -5 do
+        LowHP["H"..i] = 0; -- Первичная инициализация
+    end
+
     local prefix = "party";
     if IsInRaid() then
         prefix = "raid";
@@ -751,14 +755,17 @@ function FillPartyTables(standartSpellId)
 
         -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
         for i = 95, 10, -5 do
-            LowHP["H"..i] = LowHP["H"..i] and LowHP["H"..i] or 0; -- Первичная инициализация
             if member.HP <= i then
                 LowHP["H"..i] = LowHP["H"..i] + 1;
             end
         end
     end
     -- сортируем таблицы по наименьшему количеству ХР
-    table.sort(members, function(x, y) return x.HP < y.HP; end);
+    if #members > 1 then
+        table.sort(members, function(x, y) return x.HP < y.HP; end);
+    elseif #members == 0 then
+        members = {{ Unit = "none", Agro = 0, HP = 100, IncHeal = 0 }};
+    end
 end]]></Func>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
@@ -6608,7 +6615,7 @@ end
 local b_ufs = { 58984, 104270 };
 
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted() or GetShapeshiftForm() ~= 0 or HasBuff("player", b_ufs) or IsStealthed() then
+if IsMounted() or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6) or HasBuff("player", b_ufs) or IsStealthed() then
     return true;
 end
 
@@ -6902,14 +6909,16 @@ end]]></Lua>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- 132158 Природная стремительность
 if not HasBuff("player", 132158) then
     local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
     local harmony = select(3, HasBuff("player", 100977));
     local hp = members[1].HP;
     if hp <= 40 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
-        return members[1].Unit;
+        if GetShapeshiftForm() == 6 or not isMoving then
+            return members[1].Unit;
+        end
     end
 end]]></Lua>
       </Ability>
