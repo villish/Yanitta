@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.249</Version>
+  <Version>0.0.4.2</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -1565,6 +1565,187 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Инициализация (Оружие)">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[-- модификатор
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    -- setAoE = 0   - solo
+    -- setAoE = 2   - 2-3 target's
+    -- setAoE = 3   - >4 target's
+    setAoE = setAoE or 0;
+    if setAoE == 0 then
+        setAoE = 2;
+        ShowMessage("|cff6f0a9a Несколько целей", true);
+    elseif setAoE == 2 then
+        setAoE = 3;
+        ShowMessage("|cffff0000 AOE", true);
+    else
+        setAoE = 0;
+        ShowMessage("|cff00ff00 Одиночная цель", true);
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        ShowMessage("|cff00ff00Кулдауны включены", true);
+    else
+        useCooldown = true;
+        ShowMessage("|cffff0000Кулдауны выключены", true);
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() then
+    return true;
+end
+
+-- Перейти в боевую стойку
+--if GetSpecialization() ~= 3 and GetShapeshiftForm() ~= 1 then
+--    CastShapeshiftForm(1);
+--end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
+rage       = UnitPower("player");
+playerHP   = HealthByPercent("player");
+targetHP   = HealthByPercent("target");
+isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
+koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER");
+koloss_cd  = SpellCD(86346);]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Знамя с черепом">
+        <SpellID>114207</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if useCooldown and isInMeele and ((koloss_cd < 2 or kolossRem >= 5) or HasBuff("player", 1719)) then
+    if not HasBuff("player", 114207) then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Смертельный удар">
+        <SpellID>12294</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Удар колосса">
+        <SpellID>86346</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if kolossRem <= 1 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Казнь">
+        <SpellID>5308</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not setAoE and (not HasBuff("player", 29725) or not HasBuff("player", 60503) or rage > 70) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Превосходство">
+        <SpellID>7384</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not setAoE and rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Удар героя">
+        <SpellID>78</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not setAoE and ((HasGlyph(4339) and rage > 115) or rage > 85) or (kolossRem > 0 and rage > 40) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Мощный удар">
+        <SpellID>1464</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if rage >=25 then
+    if setAoE and (kolossRem > 0 or HasBuff("player", 12328)) then -- Размашистые удары
+        return true;
+    elseif not setAoE and (kolossRem > 0 and select(3, HasBuff("player", 60503)) < 3) and targetHP >= 20 then -- Вкус крови
+        return true;
+    end
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Неистовство" ProcNotifyer="false">
@@ -1624,6 +1805,22 @@ end]]></Lua>
           <string>Prot: Командирский крик</string>
           <string>Prot: Ярость берсерка</string>
           <string>Prot: Сокрушение</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Оружие" ProcNotifyer="false">
+        <HotKey Key="C" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Оружие)</string>
+          <string>Prot: Героический прыжок</string>
+          <string>Prot: Победный раж</string>
+          <string>Arms: Знамя с черепом</string>
+          <string>Arms: Смертельный удар</string>
+          <string>Arms: Удар колосса</string>
+          <string>Arms: Казнь</string>
+          <string>Arms: Превосходство</string>
+          <string>Arms: Удар героя</string>
+          <string>Arms: Мощный удар</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
