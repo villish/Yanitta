@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.3.239</Version>
+  <Version>0.0.3.249</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -6853,14 +6853,18 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if LowHP.H50 > 3 then -- Опытным путем надо определить условие
+        <Lua><![CDATA[if IsMouseButtonDown(3) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") and not HasBuff("mouseover", 774, "PLAYER") then
+    return "mouseover";
+end
+
+if LowHP.H50 > 3 or IsMouseButtonDown(3) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 55 or (member.Agro > 2 and member.IsTank) then
+        if member.HP < 55 or (member.Agro > 2 and member.IsTank) or IsMouseButtonDown(3) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
                 return member.Unit;
             end
@@ -7710,12 +7714,12 @@ end]]></Lua>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Balance: Гнев">
-        <SpellID>0</SpellID>
+        <SpellID>5176</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
@@ -7737,6 +7741,30 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
+      <Ability Name="Farm: Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if IsModKeyDown(mkLeftAlt) then
+    return true;
+end
+
+if IsMounted() then
+    return true;
+end
+
+if GetShapeshiftForm() ~= 0 then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Farm: Лунный огонь">
         <SpellID>8921</SpellID>
         <Target>Target</Target>
@@ -7750,10 +7778,10 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- 64399 Боевой штандарт координации
-UseItemById(64399);
+--UseItemById(64399);
 TargetNearestEnemy();
 -- and string.match(UnitName("target"), "^(.+).жных морей$")
-if UnitExists("target") and not UnitIsDeadOrGhost("target") then
+if UnitExists("target") and not UnitIsDeadOrGhost("target") and (IsMoving() or not HasDebuff("target", 8921)) then
     return true;
 end]]></Lua>
       </Ability>
@@ -7872,7 +7900,9 @@ RightControl - Включыние / Выключение кулдаунов]]></
       <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
         <HotKey Key="N" Modifier="Alt" />
         <AbilityQueue>
+          <string>Farm: Инициализация</string>
           <string>Farm: Лунный огонь</string>
+          <string>Balance: Гнев</string>
           <string>Знак дикой природы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
