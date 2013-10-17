@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using MemoryModule;
-using Yanitta.Plugins;
 using Yanitta.Properties;
 
 namespace Yanitta
@@ -150,14 +149,6 @@ namespace Yanitta
                 GameFocusChanged();
             }
 
-            if (this.IsInGame)
-            {
-                PluginManager.ForEach((plugin) => {
-                    if (plugin.IsRuning)
-                        plugin.ReadMemory(this);
-                });
-            }
-
             if (this.Memory.IsFocusWindow != this.IsFocus)
             {
                 this.IsFocus = this.Memory.IsFocusWindow;
@@ -200,23 +191,8 @@ namespace Yanitta
                 // main
                 ProfileDb.Instance.Exec((profile, rotation) => rotation.HotKey.Unregister());
 
-                // plugin
-                PluginManager.ForEach((plugin) => {
-                    if (!plugin.HotKey.IsEmpty)
-                        plugin.HotKey.Unregister();
-                });
-
                 if (this.IsFocus)
                 {
-                    // plugin
-                    PluginManager.ForEach((plugin) => {
-                        if (!plugin.HotKey.IsEmpty)
-                        {
-                            plugin.HotKey.Register();
-                            Debug.WriteLine("Registered HotKey: " + plugin.HotKey);
-                        }
-                    });
-
                     // main
                     ProfileDb.Instance.Exec((profile, rotation) => {
                         if (profile.Class == Class)

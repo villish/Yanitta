@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Yanitta.Plugins;
 
 namespace Yanitta
 {
@@ -43,7 +42,6 @@ namespace Yanitta
         protected override void OnExit(ExitEventArgs e)
         {
             Console.WriteLine("Yanitta stoped ... !");
-            PluginManager.Close();
             ConsoleWriter.CloseWriter();
             base.OnExit(e);
         }

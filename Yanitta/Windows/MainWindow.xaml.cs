@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Yanitta.Plugins;
 using Yanitta.Properties;
 using Yanitta.Windows;
 
@@ -87,17 +86,6 @@ namespace Yanitta
         private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
         {
             this.WindowState = System.Windows.WindowState.Minimized;
-        }
-
-        private void CommandBinding_Executed_ShowPluginSettingWindow(object sender, ExecutedRoutedEventArgs e)
-        {
-            var button = e.OriginalSource as Button;
-            var plugin = button.Tag as IYanittaPlugin;
-            if (plugin != null)
-            {
-                var style = App.Current.Resources["KamillaStyle"] as Style;
-                plugin.ShowSettingWindow(style);
-            }
         }
     }
 }
