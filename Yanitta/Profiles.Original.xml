@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.2</Version>
+  <Version>0.0.4.8</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -827,7 +827,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
+        <Lua><![CDATA[if IsMouseButtonDown(3) then
     return true;
 end]]></Lua>
       </Ability>
@@ -985,13 +985,13 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not HasBuff("player", 12880) and rage < 20 then
+        <Lua><![CDATA[if rage < 20 and not HasBuff("player", 12880) then
     return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Prot: Удар героя">
         <SpellID>78</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
@@ -1009,7 +1009,7 @@ end]]></Lua>
       </Ability>
       <Ability Name="Prot: Разсекающий удар">
         <SpellID>845</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>true</IsRangeCheck>
@@ -1054,23 +1054,18 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if playerHP < 60 and rage > 55 and agroStatus > 2 and not HasBuff("player", 112048) then
-    return true;
+        <Lua><![CDATA[if rage > 55 and agroStatus > 2 then
+    if not HasBuff("player", 112048) then
+        local vengens = select(4, HasBuff("player", 93098));
+        if isAltMod then
+            return true;
+        elseif playerHP < 60 then
+            return true;
+        elseif vengens > 150000 then
+            return true;
+        end
+    end
 end]]></Lua>
-      </Ability>
-      <Ability Name="Prot: Реванш">
-        <SpellID>6572</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
-        <IsAttacedTarget>true</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
       <Ability Name="Prot: Ни шагу назад">
         <SpellID>12975</SpellID>
@@ -1084,7 +1079,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if playerHP < 20 and useCooldown then
+        <Lua><![CDATA[if playerHP < 20 and agroStatus > 2 and useCooldown then
     return true;
 end]]></Lua>
       </Ability>
@@ -1116,7 +1111,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if playerHP < 20 and useCooldown then
+        <Lua><![CDATA[if playerHP < 30 and agroStatus > 2 and useCooldown then
     return true;
 end]]></Lua>
       </Ability>
@@ -1132,12 +1127,26 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if UnitPower("player") >= 60 and agroStatus > 2 then
+        <Lua><![CDATA[if rage >= 60 and agroStatus > 2 then
     return true;
 end]]></Lua>
       </Ability>
       <Ability Name="Prot: Мощный удар щитом">
         <SpellID>23922</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[return true;]]></Lua>
+      </Ability>
+      <Ability Name="Prot: Реванш">
+        <SpellID>6572</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -1797,9 +1806,9 @@ end]]></Lua>
           <string>Prot: Сокрушительный Бросок</string>
           <string>Prot: Мощный удар щитом</string>
           <string>Prot: Удар грома (AOE)</string>
+          <string>Prot: Реванш</string>
           <string>Prot: Удар героя</string>
           <string>Prot: Разсекающий удар</string>
-          <string>Prot: Реванш</string>
           <string>Prot: Удар грома (SOLO)</string>
           <string>Prot: Боевой крик</string>
           <string>Prot: Командирский крик</string>
@@ -6884,7 +6893,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) then
+        <Lua><![CDATA[if IsMouseButtonDown(3) then
     return true;
 end]]></Lua>
       </Ability>
@@ -6996,15 +7005,16 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if HasGlyph(145529) then
+        <Lua><![CDATA[local buffs = { 774, 8936 };
+if HasGlyph(145529) then
     for _,member in ipairs(members) do
-        if member.HP < 70 and HasBuff("player", { 774, 8936 }, "PLAYER") then
+        if member.HP < 70 and HasBuff("player", buffs, "PLAYER") then
             return member.Unit;
         end
     end
 elseif LowHP.H80 <= 3 then
     for _,member in ipairs(members) do
-        if member.HP < 90 and HasBuff(member.Unit, { 774, 8936 }, "PLAYER") then
+        if member.HP < 90 and HasBuff(member.Unit, buffs, "PLAYER") then
             local count = 0;
             for _,unit in ipairs(members) do
                 if unit.HP < 90 and CheckDistance(unit.X, unit.Y, member.X, member.Y, 9) then
@@ -7025,10 +7035,10 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[if IsModKeyDown(mkRightShift) then
     return true;
@@ -7044,9 +7054,9 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if myMana <= 75 and GetShapeshiftForm() == 0 then
+        <Lua><![CDATA[if myMana <= 75 and (GetShapeshiftForm() == 0 or GetShapeshiftForm() == 6) then
     return true;
 end]]></Lua>
       </Ability>
@@ -7062,11 +7072,11 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsMouseButtonDown(3) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") and not HasBuff("mouseover", 774, "PLAYER") then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") and not HasBuff("mouseover", 774, "PLAYER") then
     return "mouseover";
 end
 
-if LowHP.H50 > 3 or IsMouseButtonDown(3) then -- Опытным путем надо определить условие
+if LowHP.H50 > 3 or IsModKeyDown(mkLeftShift) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
         if member.HP < 55 or (member.Agro > 2 and member.IsTank) or IsMouseButtonDown(3) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
@@ -7090,7 +7100,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[local count = 0;
 for _,member in ipairs(members) do
-    if member.HP < 85 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
+    if member.HP < 85 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 3 then
         count = count + 1;
         if count > 2 then
             print("|cff00ff00 >> Кастую сотворение <<")
@@ -7104,15 +7114,18 @@ end]]></Lua>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
+        <IsRangeCheck>true</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- 132158 Природная стремительность
 if not HasBuff("player", 132158) then
+    if IsMouseButtonDown(5) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") then
+        return "mouseover";
+    end
     local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
     local harmony = select(3, HasBuff("player", 100977));
     local hp = members[1].HP;
