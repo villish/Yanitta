@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.8</Version>
+  <Version>0.0.4.28</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -827,7 +827,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsMouseButtonDown(3) then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1056,7 +1056,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if rage > 55 and agroStatus > 2 then
     if not HasBuff("player", 112048) then
-        local vengens = select(4, HasBuff("player", 93098));
+        local vengens = select(5, HasBuff("player", 93098)) or 0;
         if isAltMod then
             return true;
         elseif playerHP < 60 then
@@ -1587,17 +1587,21 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- модификатор
+if type(setAoE) ~= "number" then
+    setAoE = 0;
+end
+
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
-    -- setAoE = 0   - solo
-    -- setAoE = 2   - 2-3 target's
-    -- setAoE = 3   - >4 target's
     setAoE = setAoE or 0;
     if setAoE == 0 then
         setAoE = 2;
-        ShowMessage("|cff6f0a9a Несколько целей", true);
+        ShowMessage("|cff6f0a9a Несколько целей 2", true);
     elseif setAoE == 2 then
         setAoE = 3;
+        ShowMessage("|cff6f0a9a Несколько целей 3", true);
+    elseif setAoE == 3 then
+        setAoE = 4;
         ShowMessage("|cffff0000 AOE", true);
     else
         setAoE = 0;
@@ -1657,6 +1661,88 @@ koloss_cd  = SpellCD(86346);]]></Lua>
     end
 end]]></Lua>
       </Ability>
+      <Ability Name="Arms: Кровавая Баня">
+        <SpellID>12292</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if isInMeele and useCooldown and HasDebuff("target", 86346, "PLAYER") then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Ярость Берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if isInMeele and not HasBuff("player", 12880) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Размашистые удары">
+        <SpellID>12328</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if setAoE > 0 then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Удар грома">
+        <SpellID>6343</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if setAoE > 3 and isInMeele and not HasDebuff("target", 115767, "PLAYER") then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Вихрь">
+        <SpellID>1680</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if setAoE > 3 and isInMeele then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Arms: Смертельный удар">
         <SpellID>12294</SpellID>
         <Target>Target</Target>
@@ -1683,8 +1769,26 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if kolossRem <= 1 then
+        <Lua><![CDATA[if kolossRem <= 1 and kolossRem < 1 then
     return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Рев дракона">
+        <SpellID>118000</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if isInMeele and not koloss then
+    if HasBuff("player", 12292) then
+        return true;
+    end
 end]]></Lua>
       </Ability>
       <Ability Name="Arms: Казнь">
@@ -1699,7 +1803,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and (not HasBuff("player", 29725) or not HasBuff("player", 60503) or rage > 70) then
+        <Lua><![CDATA[if setAoE < 4 and (not HasBuff("player", 29725) or not HasBuff("player", 60503) or rage > 70) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1715,7 +1819,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
+        <Lua><![CDATA[if  (rage >= 10 and targetHP >= 20 or HasBuff("player", 29725)) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1731,7 +1835,23 @@ end]]></Lua>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not setAoE and ((HasGlyph(4339) and rage > 115) or rage > 85) or (kolossRem > 0 and rage > 40) then
+        <Lua><![CDATA[if setAoE < 3 and ((HasGlyph(4339) and rage > 115) or rage > 85) or (kolossRem > 0 and rage > 40) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Разсекающий удар">
+        <SpellID>845</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if setAoE > 2 and ((HasGlyph(4339) and rage > 115) or rage > 85) or (kolossRem > 0 and rage > 40) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1754,6 +1874,36 @@ end]]></Lua>
         return true;
     end
 end]]></Lua>
+      </Ability>
+      <Ability Name="Arms: Боевой крик">
+        <SpellID>6673</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if rage < 70 and not koloss then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Other: Удар героя">
+        <SpellID>78</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[return true;]]></Lua>
       </Ability>
     </AbilityList>
     <RotationList>
@@ -1822,14 +1972,32 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализация (Оружие)</string>
           <string>Prot: Героический прыжок</string>
-          <string>Prot: Победный раж</string>
-          <string>Arms: Знамя с черепом</string>
+          <string>Зуботычина</string>
+          <string>Разрушительный крик</string>
+          <string>Arms: Кровавая Баня</string>
+          <string>Arms: Ярость Берсерка</string>
+          <string>Arms: Размашистые удары</string>
+          <string>Arms: Удар грома</string>
+          <string>Arms: Вихрь</string>
           <string>Arms: Смертельный удар</string>
           <string>Arms: Удар колосса</string>
+          <string>Arms: Рев дракона</string>
           <string>Arms: Казнь</string>
           <string>Arms: Превосходство</string>
           <string>Arms: Удар героя</string>
+          <string>Arms: Разсекающий удар</string>
           <string>Arms: Мощный удар</string>
+          <string>Arms: Боевой крик</string>
+        </AbilityQueue>
+        <Notes><![CDATA[]]></Notes>
+      </Rotation>
+      <Rotation Name="Прокачка" ProcNotifyer="false">
+        <HotKey Key="V" Modifier="Alt" />
+        <AbilityQueue>
+          <string>Инициализация (Неистовство)</string>
+          <string>Prot: Победный раж</string>
+          <string>Arms: Казнь</string>
+          <string>Other: Удар героя</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
       </Rotation>
@@ -7072,13 +7240,13 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if IsModKeyDown(mkLeftShift) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") and not HasBuff("mouseover", 774, "PLAYER") then
+        <Lua><![CDATA[if IsModKeyDown(mkLeftControl) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") and not HasBuff("mouseover", 774, "PLAYER") then
     return "mouseover";
 end
 
-if LowHP.H50 > 3 or IsModKeyDown(mkLeftShift) then -- Опытным путем надо определить условие
+if LowHP.H50 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 55 or (member.Agro > 2 and member.IsTank) or IsMouseButtonDown(3) then
+        if member.HP < 55 or (member.Agro > 2 and member.IsTank) or IsModKeyDown(mkLeftControl) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
                 return member.Unit;
             end
