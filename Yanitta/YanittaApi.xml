@@ -17,6 +17,17 @@
     <Description><![CDATA[player - Питомец персонажа]]></Description>
   </WowApi>
 
+  <WowApi ImageType="ExtensionMethod" Name="CheckProc">
+    <Description>
+      <![CDATA[  (procFlag, prockType, pct)
+-- Делает проверку есть ли прок.
+-- Параметры:
+--  procFlag - ability.ProcFlag
+--  prockType - Тип стата ("Intellect", "SpellHaste"б и т.п.)
+--  pct - Значение показывающее на сколько увеличился стат
+  ]]>
+    </Description>
+  </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="HasBuff">
     <Description>
       <![CDATA[  HasBuff(...)

@@ -136,7 +136,7 @@ namespace Yanitta
             builder.AppendFormatLine("    IsSpellKnownCheck = {0},",     isSpellKnownCheck);
             builder.AppendFormatLine("    IsNotHCD          = {0},",     isNotHCD);
             builder.AppendFormatLine("    LastCastingTime   = 0,");
-            builder.AppendFormatLine("    HasProc           = false,");
+            builder.AppendFormatLine("    ProcFlag          = 0,");
             builder.AppendFormatLine("    Func = function(ability)\n{0}\nend",  lua);
             builder.AppendFormatLine("});");
 

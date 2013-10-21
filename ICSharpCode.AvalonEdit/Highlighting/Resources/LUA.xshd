@@ -257,6 +257,7 @@
       <Word>CheckDistance2</Word>
       <Word>IsNotBehind</Word>
       <Word>IsNotLineOfSight</Word>
+      <Word>CheckProc</Word>
     </Keywords>
 
     <Keywords color="WowFunctions">

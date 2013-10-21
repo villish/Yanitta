@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.28</Version>
+  <Version>0.0.4.42</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -22,6 +22,23 @@ AURA_PROC_LIST = { };
 LOSS_TABLE     = { };
 
 LAST_TARGET = 0;
+
+-- Таблица содержит проки и их значения.
+PROC_TABLE = {
+    ["Intellect"]    = { Value = 1, Pct = 0, Flag = 0x0001, Func = UnitStat,                  Params = { "player", 4 }},
+    ["Strength"]     = { Value = 1, Pct = 0, Flag = 0x0002, Func = UnitStat,                  Params = { "player", 1 }},
+    ["Agility"]      = { Value = 1, Pct = 0, Flag = 0x0004, Func = UnitStat,                  Params = { "player", 2 }},
+    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x0008, Func = nil,                       Params = { }            },
+    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x0010, Func = nil,                       Params = { }            },
+    ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x0020, Func = GetOverrideSpellPowerByAP, Params = { }            },
+    ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x0040, Func = GetMeleeHaste,             Params = { }            },
+    ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x0080, Func = GetRangedHaste,            Params = { }            },
+    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x0100, Func = GetSpellHaste,             Params = { }            },
+    ["MeeleCrit"]    = { Value = 1, Pct = 0, Flag = 0x0200, Func = GetCritChance,             Params = { }            },
+    ["RangedCrit"]   = { Value = 1, Pct = 0, Flag = 0x0400, Func = GetRangedCritChance,       Params = { }            },
+    ["SpellCrit"]    = { Value = 1, Pct = 0, Flag = 0x0800, Func = GetSpellCritChance,        Params = { }            },
+    ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x1000, Func = GetMastery,                Params = { }            },
+};
 
 -- Возвращает ограниченное сверху и снизу значение
 function asc(m_value, m_min, m_max)
@@ -92,9 +109,29 @@ function CheckAndCastAbility(ability)
         return;
     end
 
-    -- Проверка, на присутствие бафа прока, если бафа нет - значит убираем прок
+    -- Отслеживание проков.
+    -- Если срабатывает прок, который повышает стат - тогда запишет значение этого стата  и процент прироста,
+    -- а так же поствим флаг прока.
     if ProcNotifyer then
-        -- todo: implement proc notifier;
+        local procFlag = 0;
+        -- заполнение таблицы проков.
+        for key,procRecord in pairs(PROC_TABLE) do
+            if type(procRecord.Func) == "function" then
+                local statVal = procRecord.Func(unpack(procRecord.Params)) or 0;
+                -- print("    "..key.." ->"..statVal)
+                if statVal > procRecord.Value then
+                    procRecord.Pct = (statVal-procRecord.Value)*100/procRecord.Value;
+                    PROC_FLAG = bit.bor(procFlag, procRecord.Flag);
+                elseif statVal < procRecord.Value then
+                    procRecord.Pct = 0;
+                end
+                procRecord.Value = statVal;
+            end
+        end
+        -- установка флага прока.
+        for i,ability in ipairs(ABILITY_TABLE) do
+            ability.ProcFlag = bit.bor(ability.ProcFlag, procFlag);
+        end
     end
 
     if (ability.IsMovingCheck == "notmoving" and IsMoving()) or (ability.IsMovingCheck == "moving" and not IsMoving()) then
@@ -241,8 +278,8 @@ function AddonFrame_OnEvent(self, event, ...)
         if (subEvent == "SPELL_CAST_SUCCESS" and type(ABILITY_TABLE) == "table" and sourceGUID == UnitGUID("player")) then
             for i, ability in ipairs(ABILITY_TABLE) do
                 if (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target)) then
-                    -- Если мы удачно прочитали заклинание под проком, убираем его из списка
-                    ability.HasProc = false;
+                    -- Если мы удачно прочитали заклинание под проком, убираем его.
+                    ability.ProcFlag = 0;
                     -- Устанавливаем время последнего удачного каста
                     if ability.SetRecastDelay then
                         ability.LastCastingTime = GetTime();
@@ -345,6 +382,19 @@ moving_spell_table = {
     110806, -- Благосклонность предков (Друид: Симбиоз)
     147806, -- Вневременной остров
 };
+
+-- Делает проверку есть ли прок.
+-- Параметры:
+--  procFlag - ability.ProcFlag
+--  prockType - Тип стата ("Intellect", "SpellHaste"б и т.п.)
+--  pct - Значение показывающее на сколько увеличился стат
+function CheckProc(procFlag, prockType, pct)
+    if bit.band(procFlag, PROC_TABLE[prockType].Flag) ~= 0 then
+        if PROC_TABLE[prockType].Pct > pct then
+            return true;
+        end
+    end
+end
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
@@ -3635,10 +3685,13 @@ isMoving  = IsMoving();]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if ability.HasProc then
+        <Lua><![CDATA[if CheckProc(ability.ProcFlag, "Intellect",  10)
+or CheckProc(ability.ProcFlag, "SpellHaste", 15)
+or CheckProc(ability.ProcFlag, "Mastery",    15) then
     return true;
 end
-local name, count, rem = HasDebuff("target", 589, "PLAYER");
+
+local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
 if not name or rem < 2 or isMoving then
     return true;
 end]]></Lua>
@@ -3655,10 +3708,13 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if ability.HasProc then
+        <Lua><![CDATA[if CheckProc(ability.ProcFlag, "Intellect",  10)
+or CheckProc(ability.ProcFlag, "SpellHaste", 15)
+or CheckProc(ability.ProcFlag, "Mastery",    15) then
     return true;
 end
-local name, count, rem = HasDebuff("focus", 589, "PLAYER");
+
+local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
 if not name or rem < 2 or isMoving then
     return true;
 end]]></Lua>
@@ -3675,10 +3731,13 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if ability.HasProc then
+        <Lua><![CDATA[if CheckProc(ability.ProcFlag, "Intellect",  10)
+or CheckProc(ability.ProcFlag, "SpellHaste", 15)
+or CheckProc(ability.ProcFlag, "Mastery",    15) then
     return true;
 end
-local name, count, rem = HasDebuff("mouseover", 589, "PLAYER");
+
+local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
 if not name or rem < 2 or isMoving then
     return true;
 end]]></Lua>
@@ -3696,10 +3755,12 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not isMoving then
-    if ability.HasProc then
+    if CheckProc(ability.ProcFlag, "Intellect",  10)
+    or CheckProc(ability.ProcFlag, "SpellHaste", 15)
+    or CheckProc(ability.ProcFlag, "Mastery",    15) then
         return true;
     end
-    local name, count, rem = HasDebuff("target", 34914, "PLAYER");
+    local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
     if not name or rem < 2 then
         return true;
     end
@@ -3718,10 +3779,12 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not isMoving then
-    if ability.HasProc then
+    if CheckProc(ability.ProcFlag, "Intellect",  10)
+    or CheckProc(ability.ProcFlag, "SpellHaste", 15)
+    or CheckProc(ability.ProcFlag, "Mastery",    15) then
         return true;
     end
-    local name, count, rem = HasDebuff("focus", 34914, "PLAYER");
+    local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
     if not name or rem < 2 then
         return true;
     end
@@ -3740,10 +3803,12 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if not isMoving then
-    if ability.HasProc then
+    if CheckProc(ability.ProcFlag, "Intellect",  10)
+    or CheckProc(ability.ProcFlag, "SpellHaste", 15)
+    or CheckProc(ability.ProcFlag, "Mastery",    15) then
         return true;
     end
-    local name, count, rem = HasDebuff("mouseover", 34914, "PLAYER");
+    local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
     if not name or rem < 2 then
         return true;
     end
