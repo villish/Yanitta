@@ -4,8 +4,6 @@
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
-ShowInChat   = true;    -- показывать сообщения в чате
-DebugEnabled = true;    -- показывать отладочные сообщения в чате
 ProcNotifyer = false;
 OnEventExtended = nil;
 ping         = 0;       -- текущий пинг

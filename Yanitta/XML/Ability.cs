@@ -137,7 +137,8 @@ namespace Yanitta
             builder.AppendFormatLine("    IsNotHCD          = {0},",     isNotHCD);
             builder.AppendFormatLine("    LastCastingTime   = 0,");
             builder.AppendFormatLine("    ProcFlag          = 0,");
-            builder.AppendFormatLine("    Func = function(ability)\n{0}\nend",  lua);
+            builder.AppendFormatLine("    Func = function(ability)\n        {0}\n    end",
+                string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
             builder.AppendFormatLine("});");
 
             return builder.ToString();

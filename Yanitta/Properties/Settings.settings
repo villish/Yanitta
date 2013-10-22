@@ -5,9 +5,6 @@
     <Setting Name="ProfilesFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Profiles.xml</Value>
     </Setting>
-    <Setting Name="ShowChat" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>

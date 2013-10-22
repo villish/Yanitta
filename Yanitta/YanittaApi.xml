@@ -23,7 +23,7 @@
 -- Делает проверку есть ли прок.
 -- Параметры:
 --  procFlag - ability.ProcFlag
---  prockType - Тип стата ("Intellect", "SpellHaste"б и т.п.)
+--  prockType - Тип стата ("Intellect", "SpellHaste", и т.п.)
 --  pct - Значение показывающее на сколько увеличился стат
   ]]>
     </Description>
