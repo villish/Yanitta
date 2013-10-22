@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.42</Version>
+  <Version>0.0.4.43</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -21,21 +21,22 @@ LOSS_TABLE     = { };
 
 LAST_TARGET = 0;
 
--- Таблица содержит проки и их значения.
-PROC_TABLE = {
-    ["Intellect"]    = { Value = 1, Pct = 0, Flag = 0x0001, Func = UnitStat,                  Params = { "player", 4 }},
-    ["Strength"]     = { Value = 1, Pct = 0, Flag = 0x0002, Func = UnitStat,                  Params = { "player", 1 }},
-    ["Agility"]      = { Value = 1, Pct = 0, Flag = 0x0004, Func = UnitStat,                  Params = { "player", 2 }},
-    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x0008, Func = nil,                       Params = { }            },
-    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x0010, Func = nil,                       Params = { }            },
-    ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x0020, Func = GetOverrideSpellPowerByAP, Params = { }            },
-    ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x0040, Func = GetMeleeHaste,             Params = { }            },
-    ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x0080, Func = GetRangedHaste,            Params = { }            },
-    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x0100, Func = GetSpellHaste,             Params = { }            },
-    ["MeeleCrit"]    = { Value = 1, Pct = 0, Flag = 0x0200, Func = GetCritChance,             Params = { }            },
-    ["RangedCrit"]   = { Value = 1, Pct = 0, Flag = 0x0400, Func = GetRangedCritChance,       Params = { }            },
-    ["SpellCrit"]    = { Value = 1, Pct = 0, Flag = 0x0800, Func = GetSpellCritChance,        Params = { }            },
-    ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x1000, Func = GetMastery,                Params = { }            },
+PROC_TABLE = { -- Таблица содержит проки и их значения.
+    ["Intellect"]    = { Value = 1, Pct = 0, Flag = 0x0001, GetStat = function() return local s,_,p,n = UnitStat("player", 4); return max(s+p+n, 0); end },
+    ["Strength"]     = { Value = 1, Pct = 0, Flag = 0x0002, GetStat = function() return local s,_,p,n = UnitStat("player", 1); return max(s+p+n, 0); end },
+    ["Agility"]      = { Value = 1, Pct = 0, Flag = 0x0004, GetStat = function() return local s,_,p,n = UnitStat("player", 2); return max(s+p+n, 0); end },
+
+    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x0008, GetStat = function() return local b,p,n = UnitAttackPower(unit);      return max(b+p+n, 0); end },
+    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x0010, GetStat = function() return local b,p,n = UnitRangedAttackPower(unit);return max(b+p+n, 0); end },
+    ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x0020, GetStat = function() return GetAttackPowerForStat(4, select(2, UnitStat("player", 4)));     end },
+
+    ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x0040, GetStat = GetMeleeHaste,      },
+    ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x0080, GetStat = GetRangedHaste,     },
+    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x0100, GetStat = GetSpellHaste,      },
+    ["MeeleCrit"]    = { Value = 1, Pct = 0, Flag = 0x0200, GetStat = GetCritChance,      },
+    ["RangedCrit"]   = { Value = 1, Pct = 0, Flag = 0x0400, GetStat = GetRangedCritChance,},
+    ["SpellCrit"]    = { Value = 1, Pct = 0, Flag = 0x0800, GetStat = GetSpellCritChance, },
+    ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x1000, GetStat = GetMastery,         },
 };
 
 -- Возвращает ограниченное сверху и снизу значение
@@ -114,17 +115,14 @@ function CheckAndCastAbility(ability)
         local procFlag = 0;
         -- заполнение таблицы проков.
         for key,procRecord in pairs(PROC_TABLE) do
-            if type(procRecord.Func) == "function" then
-                local statVal = procRecord.Func(unpack(procRecord.Params)) or 0;
-                -- print("    "..key.." ->"..statVal)
-                if statVal > procRecord.Value then
-                    procRecord.Pct = (statVal-procRecord.Value)*100/procRecord.Value;
-                    PROC_FLAG = bit.bor(procFlag, procRecord.Flag);
-                elseif statVal < procRecord.Value then
-                    procRecord.Pct = 0;
-                end
-                procRecord.Value = statVal;
+            local statVal = procRecord.GetStat() or 0;
+            if statVal > procRecord.Value then
+                procRecord.Pct = (statVal-procRecord.Value)*100/procRecord.Value;
+                procFlag = bit.bor(procFlag, procRecord.Flag);
+            elseif statVal < procRecord.Value then
+                procRecord.Pct = 0;
             end
+            procRecord.Value = statVal;
         end
         -- установка флага прока.
         for i,ability in ipairs(ABILITY_TABLE) do
@@ -167,18 +165,9 @@ function CheckAndCastAbility(ability)
         end
 
         -- проверка, если стоит свойство на возможность атаковать
-        if ability.IsAttackedCheck then
-            -- если юнит дух или мертв, тогда не выполняем ротацию
-            local deadOrGhost = UnitIsDeadOrGhost(ability.Target);
-            if deadOrGhost == 1 then
-                return;
-            end
-
-            -- если цель незьзя атаковать
-            local isCanAttack = UnitCanAttack("player", ability.Target);
-            if isCanAttack ~= 1 then
-                return;
-            end
+        -- если юнит дух или мертв или его нельзя атковать, тогда не выполняем ротацию
+        if ability.IsAttackedCheck and (UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target)) then
+            return;
         end
 
         -- Проверка на досягаемость цели
@@ -186,14 +175,8 @@ function CheckAndCastAbility(ability)
         -- Если эта функция возвращает nil, тогда проверка не проходит, и надо извращатся.
         -- Если проверка не проходит используйте стнадартную проверку:
         -- IsSpellInRange([заклинание одинаковое по радиусу действия], unit)
-        if ability.IsRangeCheck then
-            local isRange = IsSpellInRange(spellInfo, ability.Target);
-            if not isRange and DebugEnabled then
-                print("|cfff5360c Ошибка IsSpellInRange: ["..tostring(ability.SpellId).."] "..spellInfo..".|r");
-            end
-            if isRange ~= 1 then
-                return;
-            end
+        if ability.IsRangeCheck and IsSpellInRange(spellInfo, ability.Target) ~= 1 then
+            return;
         end
     end
 
@@ -294,12 +277,16 @@ function AddonFrame_OnEvent(self, event, ...)
                 end
             end
         elseif subEvent == "SPELL_CAST_FAILED" then
-            if param15 == SPELL_FAILED_LINE_OF_SIGHT and LAST_TARGET ~= 0 then
+            local failedType = param15;
+            if LAST_TARGET ~= 0 and (
+                failedType == SPELL_FAILED_LINE_OF_SIGHT
+                --or failedType == SPELL_FAILED_LINE_OF_SIGHT
+                                                            ) then
                 LOSS_TABLE[LAST_TARGET] = {
                     ctime  = GetTime(),
                     cspell = spellId
                 };
-            elseif param15 == SPELL_FAILED_NOT_BEHIND then
+            elseif failedType == SPELL_FAILED_NOT_BEHIND then
                 LastNotBehindTime = GetTime();
             end
         end
