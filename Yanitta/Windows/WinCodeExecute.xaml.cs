@@ -20,10 +20,13 @@ namespace Yanitta.Windows
         {
             if (!string.IsNullOrWhiteSpace(this.teCode.Text))
             {
+                var code = string.IsNullOrWhiteSpace(this.teCode.SelectedText)
+                    ? this.teCode.Text
+                    : this.teCode.SelectedText;
                 var process = cbProcess.SelectedValue as WowMemory;
                 if (process != null)
                 {
-                    process.LuaHook.LuaExecute(this.teCode.Text);
+                    process.LuaHook.LuaExecute(code);
                 }
                 else
                 {
