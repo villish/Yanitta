@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.43</Version>
+  <Version>0.0.4.46</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -22,20 +22,18 @@ LOSS_TABLE     = { };
 LAST_TARGET = 0;
 
 PROC_TABLE = { -- Таблица содержит проки и их значения.
-    ["Intellect"]    = { Value = 1, Pct = 0, Flag = 0x0001, GetStat = function() return local s,_,p,n = UnitStat("player", 4); return max(s+p+n, 0); end },
-    ["Strength"]     = { Value = 1, Pct = 0, Flag = 0x0002, GetStat = function() return local s,_,p,n = UnitStat("player", 1); return max(s+p+n, 0); end },
-    ["Agility"]      = { Value = 1, Pct = 0, Flag = 0x0004, GetStat = function() return local s,_,p,n = UnitStat("player", 2); return max(s+p+n, 0); end },
+    ["Intellect"]    = { Value = 1, Pct = 0, Flag = 0x0001, GetStat = function() local s,_,p,n = UnitStat("player", 4); return max(s+p+n, 0); end },
+    ["Strength"]     = { Value = 1, Pct = 0, Flag = 0x0002, GetStat = function() local s,_,p,n = UnitStat("player", 1); return max(s+p+n, 0); end },
+    ["Agility"]      = { Value = 1, Pct = 0, Flag = 0x0004, GetStat = function() local s,_,p,n = UnitStat("player", 2); return max(s+p+n, 0); end },
 
-    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x0008, GetStat = function() return local b,p,n = UnitAttackPower(unit);      return max(b+p+n, 0); end },
-    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x0010, GetStat = function() return local b,p,n = UnitRangedAttackPower(unit);return max(b+p+n, 0); end },
+    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x0008, GetStat = function() local b,p,n = UnitAttackPower("player");      return max(b+p+n, 0); end },
+    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x0010, GetStat = function() local b,p,n = UnitRangedAttackPower("player");return max(b+p+n, 0); end },
     ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x0020, GetStat = function() return GetAttackPowerForStat(4, select(2, UnitStat("player", 4)));     end },
 
     ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x0040, GetStat = GetMeleeHaste,      },
     ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x0080, GetStat = GetRangedHaste,     },
-    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x0100, GetStat = GetSpellHaste,      },
-    ["MeeleCrit"]    = { Value = 1, Pct = 0, Flag = 0x0200, GetStat = GetCritChance,      },
-    ["RangedCrit"]   = { Value = 1, Pct = 0, Flag = 0x0400, GetStat = GetRangedCritChance,},
-    ["SpellCrit"]    = { Value = 1, Pct = 0, Flag = 0x0800, GetStat = GetSpellCritChance, },
+    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x0100, GetStat = function() return UnitSpellHaste("player") end, },
+    ["Crit"]         = { Value = 1, Pct = 0, Flag = 0x0200, GetStat = GetCritChance,      },
     ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x1000, GetStat = GetMastery,         },
 };
 
@@ -6848,14 +6846,14 @@ end]]></Lua>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>true</IsRangeCheck>
+        <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if playerHP < 80 then
+        <Lua><![CDATA[if isInMeele and playerHP < 90 then
     return true;
 end]]></Lua>
       </Ability>
