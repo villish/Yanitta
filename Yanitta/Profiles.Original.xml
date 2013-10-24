@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.46</Version>
+  <Version>0.0.4.50</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
@@ -649,6 +649,14 @@ end
 -- на пример, если есть какой-то дебаф, который надо выхиливать.
 function CheckInstanseLogic(members, index)
     local member = members[index];
+
+    -- дебафы, которые надо отхиливать
+    local debuff_list = {
+        143198, -- Гаротта (Падшие защитники)
+        144089, -- Токсичный туман (Кор'конские темные шаманы)
+        143579, -- Скверна ша (Глубиний)
+    };
+
     -- Осада Огриммара: Малкорок
     -- Отхил не проходит, надо настакивать щит под дебафом
     -- по этому просто занижаем реальное здоровье.
@@ -664,10 +672,12 @@ function CheckInstanseLogic(members, index)
         else -- без щита
             member.HP = 30;
         end
-    end
-
+    -- Если присутствует дебаф, который наносит урон, надо держать постоянно хоту.
+    -- поэтому уменьшим значение здоровья.
+    elseif HasDebuff(member.Unit, debuff_list) then
+        member.HP = min(80, member.HP);
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
-    if HasDebuff(member.Unit, 137341) then
+    elseif HasDebuff(member.Unit, 137341) then
         table.remove(members, index);
     end
 end
@@ -696,15 +706,20 @@ end
 function CheckRaidDispellLogic(spellId, member)
     -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
     -- После "Освобождения" Дар титанов больше не кидается, поэтому диспелим по КД
-    if spellId == 144351 and (not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30) then
-        return true;
-    end
+    if spellId == 144351 then
+        if not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30 then
+            return true;
+        end
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
-    if spellId == 142913 then
+    elseif spellId == 142913 then
         for i,member2 in ipairs(members) do
             if CheckDistance2(member.Unit, member2.Unit, 9) then
                 return true;
             end
+        end
+    elseif spellId == 143579 then
+        if select(2, HasDebuff(member.Unit, 143579)) < 3 then
+            return true;
         end
     end
 end
