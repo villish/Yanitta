@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.50</Version>
+  <Version>0.0.4.51</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
-  <Core><![CDATA[-- первоначальные настройки, используются, когда аддон работает в режиме отладки
-ProcNotifyer = false;
+  <Core><![CDATA[
 OnEventExtended = nil;
-ping         = 0;       -- текущий пинг
+ping            = 0;
 -- Константы горячих клавиш
 mkLeftShift     = 1;
 mkLeftControl   = 2;
@@ -21,20 +20,25 @@ LOSS_TABLE     = { };
 
 LAST_TARGET = 0;
 
+function GetMainStat()
+    local statVal = 0;
+    for i,stat in ipairs({1,2,4}) do
+        local stat,_,pos,neg = UnitStat("player", stat);
+        statVal = math.max(stat+pos+neg, statVal);
+    end
+    return statVal;
+end
+
 PROC_TABLE = { -- Таблица содержит проки и их значения.
-    ["Intellect"]    = { Value = 1, Pct = 0, Flag = 0x0001, GetStat = function() local s,_,p,n = UnitStat("player", 4); return max(s+p+n, 0); end },
-    ["Strength"]     = { Value = 1, Pct = 0, Flag = 0x0002, GetStat = function() local s,_,p,n = UnitStat("player", 1); return max(s+p+n, 0); end },
-    ["Agility"]      = { Value = 1, Pct = 0, Flag = 0x0004, GetStat = function() local s,_,p,n = UnitStat("player", 2); return max(s+p+n, 0); end },
-
-    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x0008, GetStat = function() local b,p,n = UnitAttackPower("player");      return max(b+p+n, 0); end },
-    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x0010, GetStat = function() local b,p,n = UnitRangedAttackPower("player");return max(b+p+n, 0); end },
-    ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x0020, GetStat = function() return GetAttackPowerForStat(4, select(2, UnitStat("player", 4)));     end },
-
-    ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x0040, GetStat = GetMeleeHaste,      },
-    ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x0080, GetStat = GetRangedHaste,     },
-    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x0100, GetStat = function() return UnitSpellHaste("player") end, },
-    ["Crit"]         = { Value = 1, Pct = 0, Flag = 0x0200, GetStat = GetCritChance,      },
-    ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x1000, GetStat = GetMastery,         },
+    ["Main"]         = { Value = 1, Pct = 0, Flag = 0x001, GetStat = GetMainStat },
+    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x002, GetStat = function() local b,p,n = UnitAttackPower("player");      return max(b+p+n, 0); end },
+    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x004, GetStat = function() local b,p,n = UnitRangedAttackPower("player");return max(b+p+n, 0); end },
+    ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x008, GetStat = function() return GetAttackPowerForStat(4, select(2, UnitStat("player", 4)));  end },
+    ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x010, GetStat = GetMeleeHaste  },
+    ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x020, GetStat = GetRangedHaste },
+    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x040, GetStat = function() return UnitSpellHaste("player") end, },
+    ["Crit"]         = { Value = 1, Pct = 0, Flag = 0x080, GetStat = GetCritChance  },
+    ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x100, GetStat = GetMastery     },
 };
 
 -- Возвращает ограниченное сверху и снизу значение
@@ -124,7 +128,7 @@ function CheckAndCastAbility(ability)
         end
         -- установка флага прока.
         for i,ability in ipairs(ABILITY_TABLE) do
-            ability.ProcFlag = bit.bor(ability.ProcFlag, procFlag);
+            ability.ProcFlag = bit.bor((ability.ProcFlag or 0), procFlag);
         end
     end
 
