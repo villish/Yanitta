@@ -227,13 +227,15 @@ namespace Yanitta
 
             builder.AppendLine(ProfileDb.Instance.Core);
             builder.AppendLine(ProfileDb.Instance.Func);
-            builder.AppendLine(CurrentProfile.Lua);
 
             foreach (var ability in abilityQueue)
             {
                 var ability_code = ability.ToString();
                 builder.Append(ability_code);
             }
+
+            builder.AppendLine(CurrentProfile.Lua);
+            builder.AppendLine(rotation.Lua);
 
             builder.AppendFormatLine(@"DebugEnabled = {0};", Settings.Default.DebugMode.ToString().ToLower());
             builder.AppendFormatLine(@"ProcNotifyer = {0};", rotation.ProcNotifyer.ToString().ToLower());

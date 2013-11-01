@@ -423,4 +423,16 @@
   <data name="File" xml:space="preserve">
     <value>File</value>
   </data>
+  <data name="Rotation_Code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="Rotation_Code_ToolTip" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Rotation_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Rotation_Note_ToolTip" xml:space="preserve">
+    <value />
+  </data>
 </root>
