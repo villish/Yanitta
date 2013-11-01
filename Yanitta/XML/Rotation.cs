@@ -39,6 +39,12 @@ namespace Yanitta
         public string Notes { get; set; }
 
         /// <summary>
+        /// Rotation code
+        /// </summary>
+        [XmlIgnore]
+        public string Lua { get; set; }
+
+        /// <summary>
         /// Горячие клавиши для управления ротацией
         /// </summary>
         public HotKey HotKey
@@ -72,12 +78,23 @@ namespace Yanitta
             set { this.Notes = value.Value; }
         }
 
+        /// <summary>
+        /// [not used] use for serialisation
+        /// </summary>
+        [XmlElement("Lua")]
+        public XmlCDataSection _rotationCode
+        {
+            get { return new XmlDocument().CreateCDataSection(this.Lua ?? ""); }
+            set { this.Lua = value.Value; }
+        }
+
         public object Clone()
         {
             return new Rotation() {
-                Name   = this.Name + " (1)",
-                Notes  = this.Notes,
-                HotKey = new HotKey(),
+                Name         = this.Name + " (1)",
+                Notes        = this.Notes,
+                Lua         = this.Lua,
+                HotKey       = new HotKey(),
                 ProcNotifyer = this.ProcNotifyer,
                 AbilityQueue = new ObservableCollection<string>(this.AbilityQueue)
             };

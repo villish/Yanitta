@@ -228,6 +228,7 @@ namespace Yanitta
             builder.AppendLine(ProfileDb.Instance.Core);
             builder.AppendLine(ProfileDb.Instance.Func);
             builder.AppendLine(CurrentProfile.Lua);
+            builder.AppendLine(rotation.Lua);
 
             foreach (var ability in abilityQueue)
             {

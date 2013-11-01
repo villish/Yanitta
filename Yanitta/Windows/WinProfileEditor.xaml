@@ -365,9 +365,14 @@
                         </Button>
                     </ToolBar>
 
-                    <TextBox Grid.Row="2" AcceptsReturn="True" HorizontalScrollBarVisibility="Auto" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged}"
-                             TextWrapping="NoWrap" VerticalScrollBarVisibility="Auto" Margin="0,28,0,0" />
-
+                    <TabControl Grid.Row="2" Margin="0,28,0,0">
+                        <TabItem Header="{x:Static yanitta:Localization.Rotation_Note}" ToolTip="{x:Static yanitta:Localization.Rotation_Note_ToolTip}">
+                            <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        </TabItem>
+                        <TabItem Header="{x:Static yanitta:Localization.Rotation_Code}" ToolTip="{x:Static yanitta:Localization.Rotation_Code_ToolTip}">
+                            <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        </TabItem>
+                    </TabControl>
                     <TextBox
                         Grid.Row="2" x:Name="tbRotationName" Height="23" VerticalAlignment="Top"
                         Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
