@@ -1278,7 +1278,7 @@ end]]></Lua>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
         <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -1305,10 +1305,10 @@ elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        ShowMessage("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        ShowMessage("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -1378,6 +1378,8 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useCooldown and isInMeele and koloss_remains < 1 and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
     return true;
 end]]></Lua>
       </Ability>
