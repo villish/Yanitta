@@ -763,6 +763,24 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Tick delay:.
+        /// </summary>
+        public static string Rotation_TickDelay {
+            get {
+                return ResourceManager.GetString("Rotation_TickDelay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Tick delay.
+        /// </summary>
+        public static string Rotation_TickDelayToolTip {
+            get {
+                return ResourceManager.GetString("Rotation_TickDelayToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Rotation count: .
         /// </summary>
         public static string RotationCount {

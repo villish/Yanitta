@@ -239,6 +239,7 @@ namespace Yanitta
 
             builder.AppendFormatLine(@"DebugEnabled = {0};", Settings.Default.DebugMode.ToString().ToLower());
             builder.AppendFormatLine(@"ProcNotifyer = {0};", rotation.ProcNotifyer.ToString().ToLower());
+            builder.AppendFormatLine(@"TickDelay = {0}",     rotation.TickDelay.ToString().ToLower());
             // Запуск ротации
             builder.AppendFormatLine(@"ChangeRotation(""{0}"", [[{1}]]);", rotation.Name, rotation.Notes);
 
