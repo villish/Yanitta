@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.51</Version>
+  <Version>0.0.4.67</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
@@ -654,13 +654,6 @@ end
 function CheckInstanseLogic(members, index)
     local member = members[index];
 
-    -- дебафы, которые надо отхиливать
-    local debuff_list = {
-        143198, -- Гаротта (Падшие защитники)
-        144089, -- Токсичный туман (Кор'конские темные шаманы)
-        143579, -- Скверна ша (Глубиний)
-    };
-
     -- Осада Огриммара: Малкорок
     -- Отхил не проходит, надо настакивать щит под дебафом
     -- по этому просто занижаем реальное здоровье.
@@ -678,8 +671,8 @@ function CheckInstanseLogic(members, index)
         end
     -- Если присутствует дебаф, который наносит урон, надо держать постоянно хоту.
     -- поэтому уменьшим значение здоровья.
-    elseif HasDebuff(member.Unit, debuff_list) then
-        member.HP = min(80, member.HP);
+--    elseif HasDebuff(member.Unit, debuff_list) then
+--        member.HP = min(80, member.HP);
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
     elseif HasDebuff(member.Unit, 137341) then
         table.remove(members, index);
@@ -2008,6 +2001,7 @@ end]]></Lua>
         </AbilityQueue>
         <Notes><![CDATA[
 ]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Защита" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
@@ -2037,6 +2031,7 @@ end]]></Lua>
           <string>Prot: Сокрушение</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Оружие" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -2062,6 +2057,7 @@ end]]></Lua>
           <string>Arms: Боевой крик</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Прокачка" ProcNotifyer="false">
         <HotKey Key="V" Modifier="Alt" />
@@ -2072,6 +2068,7 @@ end]]></Lua>
           <string>Other: Удар героя</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -2584,11 +2581,13 @@ end]]></Lua>
           <string>Prot: Праведное неистовство</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лекарь" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Воздаяние" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -2609,6 +2608,7 @@ end]]></Lua>
           <string>Retri: Вердикт храмовника (2)</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -3126,16 +3126,19 @@ RightControl - Метание замораживающей ловушки
 RightAlt - Ледяная ловушка
 RightShift - Кулдауны
 LeftAlt - Пауза]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Повелитель зверей" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Стрельба" ProcNotifyer="false">
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="PVE Выживание (прокачка)" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
@@ -3162,6 +3165,7 @@ LeftAlt - Пауза]]></Notes>
 LeftControl - включение/выключение AOE
 RightControl - Метание замораживающей ловушки
 LeftAlt - Пауза]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Farm" ProcNotifyer="false">
         <HotKey Key="B" Modifier="Alt" />
@@ -3170,6 +3174,7 @@ LeftAlt - Пауза]]></Notes>
           <string>Выстрел кобры: Farm</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -3607,6 +3612,7 @@ end]]></Lua>
           <string>Незаметность</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Ликвидация" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
@@ -3618,11 +3624,13 @@ end]]></Lua>
           <string>Мясорубка </string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Скрытность" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Фарм ларей" ProcNotifyer="false">
         <HotKey Key="V" Modifier="Alt" />
@@ -3630,6 +3638,7 @@ end]]></Lua>
           <string>Обшаривание карманов</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -4389,11 +4398,13 @@ RightAlt - Диспел по mouseover
 RightShift - Кулдауны
 LeftControl - Слово силы: Барьер
 LeftAlt - Массовое разсеивание]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Свет" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Тьма" ProcNotifyer="true">
         <HotKey Key="X" Modifier="Alt" />
@@ -4418,6 +4429,7 @@ LeftAlt - Массовое разсеивание]]></Notes>
           <string>Shadow: Пытка разума</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -5148,6 +5160,7 @@ end]]></Lua>
         <Notes><![CDATA[Left Shift - Смерть и разложение
 Left Alt - Пауза
 Right Shift - Кулдауны]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лед" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
@@ -5178,11 +5191,13 @@ Right Shift - Кулдауны]]></Notes>
           <string>Frost: Усиление рунического оружия (2)</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Нечестивость" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -5495,11 +5510,13 @@ end]]></Lua>
           <string>молния</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Совершенствование" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Исцеление" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -5514,6 +5531,7 @@ end]]></Lua>
           <string>Restor: Дух предков</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -5960,6 +5978,7 @@ end]]></Lua>
           <string>Fire: Огненный шар</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лед" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
@@ -5974,11 +5993,13 @@ end]]></Lua>
           <string>Frost: Ледяная стрела</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Тайная магия" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -6581,11 +6602,13 @@ end]]></Lua>
           <string>Demo: Узы тьмы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Разрушение" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Колдовство" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -6608,6 +6631,7 @@ end]]></Lua>
           <string>Demo: Узы тьмы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -6965,6 +6989,7 @@ end]]></Lua>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Хмелевар" ProcNotifyer="false">
         <HotKey Key="Z" Modifier="Alt" />
@@ -6989,11 +7014,13 @@ end]]></Lua>
           <string>Наследие императора</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Танцующий с ветром" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -8306,6 +8333,7 @@ end]]></Lua>
 LeftControl    - Установка гриба
 RightControl - Включение/выключение автодиспела
 ]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Страж" ProcNotifyer="false">
         <HotKey Key="X" Modifier="Alt" />
@@ -8333,6 +8361,7 @@ RightControl - Включение/выключение автодиспела
           <string>Знак дикой природы</string>
         </AbilityQueue>
         <Notes><![CDATA[Тест]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Баланс" ProcNotifyer="false">
         <HotKey Key="V" Modifier="Alt" />
@@ -8344,6 +8373,7 @@ RightControl - Включение/выключение автодиспела
           <string>Знак дикой природы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Сила зверя" ProcNotifyer="false">
         <HotKey Key="C" Modifier="Alt" />
@@ -8366,6 +8396,7 @@ RightControl - Включение/выключение автодиспела
         <Notes><![CDATA[LeftControl - Включыние / Выключение AOE
 LeftAlt - Пауза
 RightControl - Включыние / Выключение кулдаунов]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
         <HotKey Key="N" Modifier="Alt" />
@@ -8388,6 +8419,7 @@ RightControl - Включыние / Выключение кулдаунов]]></
           <string>Restor: Гнев</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>

@@ -65,7 +65,7 @@
                     <GridSplitter Grid.RowSpan="3" Grid.Column="1" Width="4" HorizontalAlignment="Left" />
                     <GridSplitter Grid.RowSpan="3" Grid.Column="1" Width="4" HorizontalAlignment="Left" />
                     <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
-                        <ListView x:Name="abilityList" Margin="0,0,0,8" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}">
+                        <ListView x:Name="abilityList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
@@ -421,10 +421,10 @@
 
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="{x:Static yanitta:Localization.File}">
-                <MenuItem Header="{x:Static yanitta:Localization.Save}"      ToolTip="{x:Static yanitta:Localization.SaveToolTip}"   Command="Save" />
-                <MenuItem Header="{x:Static yanitta:Localization.Reload}"    ToolTip="{x:Static yanitta:Localization.ReloadToolTip}" Command="yanitta:YanittaCommand.Reload" />
-                <MenuItem Header="{x:Static yanitta:Localization.Update}"    ToolTip="{x:Static yanitta:Localization.UpdateToolTip}" Command="yanitta:YanittaCommand.Update" />
-                <MenuItem Header="{x:Static yanitta:Localization.Close}"     ToolTip="{x:Static yanitta:Localization.CloseToolTip}"  Command="Close" />
+                <MenuItem Header="{x:Static yanitta:Localization.Save}"              ToolTip="{x:Static yanitta:Localization.SaveToolTip}"     Command="Save" />
+                <MenuItem Header="{x:Static yanitta:Localization.Reload}"            ToolTip="{x:Static yanitta:Localization.ReloadToolTip}"   Command="yanitta:YanittaCommand.Reload" />
+                <MenuItem Header="{x:Static yanitta:Localization.Update}"            ToolTip="{x:Static yanitta:Localization.UpdateToolTip}"   Command="yanitta:YanittaCommand.Update" />
+                <MenuItem Header="{x:Static yanitta:Localization.Close}"             ToolTip="{x:Static yanitta:Localization.CloseToolTip}"    Command="Close" />
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.AbilityList}">
                 <MenuItem Header="{x:Static yanitta:Localization.AddAbility}"        ToolTip="{x:Static yanitta:Localization.AddAbility}"      Command="yanitta:YanittaCommand.AddAbility" />
@@ -437,7 +437,7 @@
                 <MenuItem Header="{x:Static yanitta:Localization.DeleteRotation}"    ToolTip="{x:Static yanitta:Localization.DeleteRotation}"  Command="yanitta:YanittaCommand.DeleteRotation" />
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.Help}">
-                <MenuItem Header="{x:Static yanitta:Localization.Help}" ToolTip="{x:Static yanitta:Localization.HelpToolTip}" Command="Help" />
+                <MenuItem Header="{x:Static yanitta:Localization.Help}"              ToolTip="{x:Static yanitta:Localization.HelpToolTip}"     Command="Help" />
             </MenuItem>
         </Menu>
 
