@@ -436,9 +436,9 @@
     <value />
   </data>
   <data name="Rotation_TickDelay" xml:space="preserve">
-    <value>Tick delay:</value>
+    <value>Tick delay (ms): </value>
   </data>
   <data name="Rotation_TickDelayToolTip" xml:space="preserve">
-    <value>Tick delay</value>
+    <value>Tick delay (ms)</value>
   </data>
 </root>

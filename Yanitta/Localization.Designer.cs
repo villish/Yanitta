@@ -763,7 +763,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Tick delay:.
+        ///   Ищет локализованную строку, похожую на Tick delay (ms): .
         /// </summary>
         public static string Rotation_TickDelay {
             get {
@@ -772,7 +772,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Tick delay.
+        ///   Ищет локализованную строку, похожую на Tick delay (ms).
         /// </summary>
         public static string Rotation_TickDelayToolTip {
             get {
