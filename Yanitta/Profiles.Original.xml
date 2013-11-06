@@ -718,7 +718,7 @@ end
 function GetDispellInfo(dispeller_type)
     local dispeller = dispeller_type or "HEAL";
     local d_class   = select(2, UnitClass("player")) or "";
-    local c_rec     = DISPELL_TABLE[d_class.."_"..mType];
+    local c_rec     = DISPELL_TABLE[d_class.."_"..dispeller];
 
     if type(c_rec) ~= "table" then
         return;
@@ -784,7 +784,7 @@ function FillPartyTables(standartSpellId)
 
     -- Обновляем статы игроков из пати/рейда
     for index = #members, 1, -1 do
-        local member = members[i];
+        local member = members[index];
         if UnitAffectingCombat(member.Unit) then
             FORCE_IN_COMBAT = true;
         end
