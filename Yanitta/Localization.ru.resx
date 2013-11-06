@@ -436,4 +436,10 @@
   <data name="Rotation_Note_ToolTip" xml:space="preserve">
     <value>Примечание для ратации</value>
   </data>
+  <data name="Rotation_TickDelay" xml:space="preserve">
+    <value>Задержка (мс): </value>
+  </data>
+  <data name="Rotation_TickDelayToolTip" xml:space="preserve">
+    <value>Задержка для тика ротации (мс)</value>
+  </data>
 </root>

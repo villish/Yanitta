@@ -610,6 +610,21 @@ end
 -----------------------------------------------
 
 MAIN_CLASS_SPELL = 0;
+DISPELL_TABLE = {
+    ["PRIEST_HEAL"]     = { "Magic", "Disease", "Curse"  },
+    ["PRIEST_NONE"]     = {          "Disease", "Curse"  },
+    ["DRUID_HEAL"]      = { "Magic", "Curse",   "Poison" },
+    ["DRUID_NONE"]      = {          "Curse",   "Poison" },
+    ["DRUID_SIMBIOS"]   = {          "Disease", "Poison" },
+    ["PALADIN_HEAL"]    = { "Magic", "Disease", "Poison" },
+    ["PALADIN_NONE"]    = {          "Disease", "Poison" },
+    ["MONK_HEAL"]       = { "Magic", "Disease", "Poison" },
+    ["MONK_NONE"]       = {          "Disease", "Poison" },
+    ["SHAMAN_HEAL"]     = { "Magic", "Curse"             },
+    ["SHAMAN_NONE"]     = {          "Curse"             },
+    ["MAGE_NONE"]       = { },
+    ["WARLOCK_NONE"]    = { },
+};
 
 -- Возвращает ID юнита
 function UnitId(unit)
@@ -651,9 +666,7 @@ end
 
 -- в эту функцию добавляем логику по особому поведению в рейдах
 -- на пример, если есть какой-то дебаф, который надо выхиливать.
-function CheckInstanseLogic(members, index)
-    local member = members[index];
-
+function CheckInstanseLogic(member)
     -- Осада Огриммара: Малкорок
     -- Отхил не проходит, надо настакивать щит под дебафом
     -- по этому просто занижаем реальное здоровье.
@@ -669,33 +682,9 @@ function CheckInstanseLogic(members, index)
         else -- без щита
             member.HP = 30;
         end
-    -- Если присутствует дебаф, который наносит урон, надо держать постоянно хоту.
-    -- поэтому уменьшим значение здоровья.
---    elseif HasDebuff(member.Unit, debuff_list) then
---        member.HP = min(80, member.HP);
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
     elseif HasDebuff(member.Unit, 137341) then
-        table.remove(members, index);
-    end
-end
-
--- Выполняет проверку на доступность диспела для текущего лекаря (учитывается симбиоз друида)
-function ValidDispellForClass(dispelType, druidSimbios)
-    -- Curse Disease Magic Poison
-    if not dispelType then return; end
-    local class = select(2, UnitClass("player"));
-    if     class == "PRIEST" then
-        return dispelType == "Magic" or dispelType == "Disease";
-    elseif class == "DRUID" and druidSimbios then -- Simbios of paladin
-        return                          dispelType == "Poison" or dispelType == "Disease";
-    elseif class == "DRUID" then
-        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Curse";
-    elseif class == "PALADIN" then
-        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif class == "MONK" then
-        return dispelType == "Magic" or dispelType == "Poison" or dispelType == "Disease";
-    elseif class == "SHAMAN" then
-        return dispelType == "Magic" or dispelType == "Curse";
+        member.DontHeal = true;
     end
 end
 
@@ -707,6 +696,11 @@ function CheckRaidDispellLogic(spellId, member)
         if not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30 then
             return true;
         end
+    -- Глубиний
+    elseif spellId == 143579 then
+        if select(2, HasDebuff(member.Unit, 143579)) < 3 then
+            return true;
+        end
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     elseif spellId == 142913 then
         for i,member2 in ipairs(members) do
@@ -714,18 +708,23 @@ function CheckRaidDispellLogic(spellId, member)
                 return true;
             end
         end
-    elseif spellId == 143579 then
-        if select(2, HasDebuff(member.Unit, 143579)) < 3 then
-            return true;
-        end
     end
 end
 
 -- Возвращает юнита, с которого надо диспелить (с наибольшим количеством стаков)
--- Параметр druidSimbios - Указывает, что это заклинание от симбиоза
+-- Параметр dispeller_type - Указывает тип диспеллера ("HEAL", "NONE", "SIMBIOS")
+-- По умолчанию: "HEAL"
 -- Возвращает: unit, count или nil - если диспелить нечего.
-function GetDispellInfo(druidSimbios)
-    local dispellTable = {};
+function GetDispellInfo(dispeller_type)
+    local dispeller = dispeller_type or "HEAL";
+    local d_class   = select(2, UnitClass("player")) or "";
+    local c_rec     = DISPELL_TABLE[d_class.."_"..mType];
+
+    if type(c_rec) ~= "table" then
+        return;
+    end
+
+    local dispellTable   = {};
     for _,member in ipairs(members) do
         for i = 1, 40 do
             local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, i);
@@ -733,8 +732,11 @@ function GetDispellInfo(druidSimbios)
                 break;
             end
             -- Проверяем можем ли мы диспелить данный тип дебафа + проверяем надо ли диспелить.
-            if ValidDispellForClass(dispelType, druidSimbios) and not CheckRaidDispellLogic(spellId, member) then
-                table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
+            for _,d_type in ipairs(c_rec) do
+                if d_type == dispelType and not CheckRaidDispellLogic(spellId, member) then
+                    table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
+                    break;
+                end
             end
         end
     end
@@ -742,7 +744,7 @@ function GetDispellInfo(druidSimbios)
         table.sort(dispellTable, function(A, B)
             return A.Count > B.Count;
         end);
-        return dispellTable[1].Unit, dispellTable[1].Count;
+        return dispellTable[1].Unit, dispellTable[1].Count, dispellTable[1].HP;
     end
 end
 
@@ -781,7 +783,12 @@ function FillPartyTables(standartSpellId)
     ExtendTheHealTable();
 
     -- Обновляем статы игроков из пати/рейда
-    for i, member in ipairs(members) do
+    for index = #members, 1, -1 do
+        local member = members[i];
+        if UnitAffectingCombat(member.Unit) then
+            FORCE_IN_COMBAT = true;
+        end
+
         member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
         member.Agro    = UnitThreatSituation(member.Unit) or 0;
 
@@ -791,18 +798,22 @@ function FillPartyTables(standartSpellId)
         member.IncHeal = 100 * inc_hp / max_hp;
         member.HP      = 100 * (cur_hp + inc_hp) / max_hp;
 
-        if UnitAffectingCombat(member.Unit) then
-            FORCE_IN_COMBAT = true;
-        end
-
         -- логика по особому поведению в рейдах
-        CheckInstanseLogic(members, i);
+        CheckInstanseLogic(member);
 
         -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
-        for i = 95, 10, -5 do
-            if member.HP <= i then
-                LowHP["H"..i] = LowHP["H"..i] + 1;
+        -- не учитываем цели, которые хилить нельзя
+        if not member.DontHeal then
+            for i = 95, 10, -5 do
+                if member.HP <= i then
+                    LowHP["H"..i] = LowHP["H"..i] + 1;
+                end
             end
+        end
+
+        -- удаляем из талицы юнит, которого нельзя хилить
+        if member.DontHeal then
+            table.remove(members, index);
         end
     end
     -- сортируем таблицы по наименьшему количеству ХР
@@ -4071,7 +4082,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo();
+    return GetDispellInfo("HEAL");
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Придание сил">
@@ -5493,7 +5504,7 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo();
+    return GetDispellInfo("HEAL");
 end]]></Lua>
       </Ability>
     </AbilityList>
@@ -7190,7 +7201,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo();
+    return GetDispellInfo("HEAL");
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Очищение (Симбоз)">
@@ -7206,7 +7217,7 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo(true);
+    return GetDispellInfo("SIMBIOS");
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Железная кора">

@@ -38,6 +38,8 @@ namespace Yanitta
         [XmlIgnore]
         public string Notes { get; set; }
 
+        public int TickDelay { get; set; }
+
         /// <summary>
         /// Rotation code
         /// </summary>
@@ -66,6 +68,7 @@ namespace Yanitta
             this.HotKey = new HotKey();
             this.AbilityQueue = new ObservableCollection<string>();
             this.Name = "<>";
+            this.TickDelay = 250;
         }
 
         /// <summary>
@@ -93,7 +96,8 @@ namespace Yanitta
             return new Rotation() {
                 Name         = this.Name + " (1)",
                 Notes        = this.Notes,
-                Lua         = this.Lua,
+                Lua          = this.Lua,
+                TickDelay    = this.TickDelay,
                 HotKey       = new HotKey(),
                 ProcNotifyer = this.ProcNotifyer,
                 AbilityQueue = new ObservableCollection<string>(this.AbilityQueue)

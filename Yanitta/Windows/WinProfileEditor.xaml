@@ -373,10 +373,16 @@
                             <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                         </TabItem>
                     </TabControl>
-                    <TextBox
-                        Grid.Row="2" x:Name="tbRotationName" Height="23" VerticalAlignment="Top"
-                        Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-
+                    <Grid Grid.Row="2" Height="23" VerticalAlignment="Top">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="311*"/>
+                            <ColumnDefinition Width="155*"/>
+                            <ColumnDefinition Width="124*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Name="tbRotationName"  Height="23" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        <TextBlock Grid.Column="1" TextAlignment="Right" Text="{x:Static yanitta:Localization.Rotation_TickDelay}" VerticalAlignment="Center" />
+                        <TextBox Grid.Column="2" Text="{Binding ProfileList/RotationList/TickDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" ToolTip="{x:Static yanitta:Localization.Rotation_TickDelayToolTip}"/>
+                    </Grid>
                     <Label Grid.Column="1" Width="176" Height="26" Margin="5,1,5,0" HorizontalAlignment="Center" VerticalAlignment="Top" HorizontalContentAlignment="Center"
                            Content="{x:Static yanitta:Localization.AlavilableAbilitys}" />
                     <Label Grid.Column="2" Width="168" Height="26" Margin="43,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center"
