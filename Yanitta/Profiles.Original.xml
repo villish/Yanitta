@@ -4066,7 +4066,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo();
+    return GetDispellInfo("HEAL");
 end]]></Lua>
       </Ability>
       <Ability Name="Disc: Придание сил">
@@ -5482,7 +5482,7 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo();
+    return GetDispellInfo("HEAL");
 end]]></Lua>
       </Ability>
     </AbilityList>
@@ -7167,7 +7167,7 @@ end]]></Lua>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo();
+    return GetDispellInfo("HEAL");
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Очищение (Симбоз)">
@@ -7183,7 +7183,7 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if useAutoDispell then
-    return GetDispellInfo(true);
+    return GetDispellInfo("SIMBIOS");
 end]]></Lua>
       </Ability>
       <Ability Name="Restor: Железная кора">
