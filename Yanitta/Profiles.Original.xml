@@ -1045,6 +1045,22 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Prot: Казнь">
+        <SpellID>5308</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if rage > 60 and (playerHP > 70 or agroStatus < 3) then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Prot: Удар героя">
         <SpellID>78</SpellID>
         <Target>Target</Target>
@@ -1059,7 +1075,7 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if not setAoE and (HasBuff("player", 122510) or rage > 90 or agroStatus < 2) then
+if not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308))) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1117,7 +1133,7 @@ end]]></Lua>
             return true;
         elseif playerHP < 60 then
             return true;
-        elseif vengens > 150000 then
+        elseif vengens > 100000 then
             return true;
         end
     end
@@ -2011,6 +2027,7 @@ end]]></Lua>
           <string>Prot: Блок щитом</string>
           <string>Prot: Сокрушительный Бросок</string>
           <string>Prot: Мощный удар щитом</string>
+          <string>Prot: Казнь</string>
           <string>Prot: Удар грома (AOE)</string>
           <string>Prot: Реванш</string>
           <string>Prot: Удар героя</string>
@@ -2030,6 +2047,7 @@ end]]></Lua>
           <string>Prot: Героический прыжок</string>
           <string>Зуботычина</string>
           <string>Разрушительный крик</string>
+          <string>Prot: Победный раж</string>
           <string>Arms: Кровавая Баня</string>
           <string>Arms: Ярость Берсерка</string>
           <string>Arms: Размашистые удары</string>
