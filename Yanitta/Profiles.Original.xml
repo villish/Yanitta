@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.76</Version>
+  <Version>0.0.4.80</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
@@ -309,15 +309,15 @@ function AddonFrame_OnUpdate(self, elapsed)
         local delay = asc((TickDelay or 250), 100, 1000) / 1000;
         LastTime = GetTime() + delay;
     end
-    if (durationMessage or 0) < GetTime() then
-        AddonFrame.text:SetText("");
+    if (AddonFrame.Duration or 0) < GetTime() then
+        AddonFrame.Msg:SetText("");
     end
 end
 
 function ShowMessage(msg, toConsole, duration)
     if AddonFrame then
         AddonFrame.Msg:SetText(msg);
-        durationMessage = (GetTime() + (duration or 5));
+        AddonFrame.Duration = GetTime() + (duration or 5);
     end
     if toConsole then
         print(msg);
@@ -326,14 +326,13 @@ end
 
 if not AddonFrame then
     AddonFrame = CreateFrame("Frame");
-    AddonFrame:ClearAllPoints();
     AddonFrame:SetHeight(300);
     AddonFrame:SetWidth(600);
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
     AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);
     AddonFrame.Msg = AddonFrame:CreateFontString(nil, 'BACKGROUND', 'PVPInfoTextFont');
     AddonFrame.Msg:SetAllPoints();
-    AddonFrame:SetPoint('CENTER', 0, 100);
+    AddonFrame:SetPoint('CENTER', 0, 200);
     AddonFrame:Show();
 end]]></Core>
   <Func><![CDATA[
