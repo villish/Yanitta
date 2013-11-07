@@ -4,7 +4,6 @@
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
-
 OnEventExtended   = nil;
 ABILITY_TABLE     = { };
 AURA_PROC_LIST    = { };
@@ -35,13 +34,13 @@ PROC_TABLE = { -- Таблица содержит проки и их значе�
 };
 
 -- Возвращает ограниченное сверху и снизу значение
-function asc(val, x, y)
+function minmax(val, x, y)
     return min(max(val, x), y);
 end
 
 function CheckAndCastAbility(ability)
     -- Если способность требует проверки в бою
-    if ability.IsCheckInCombat and (not FORCE_IN_COMBAT and not UnitAffectingCombat("player")) then
+    if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
         return;
     end
 
@@ -58,7 +57,7 @@ function CheckAndCastAbility(ability)
     -- вычисление задержки от пинга
     local pingin, pingout = select(3, GetNetStats());
     ping = ((pingin + pingout) / 1000);
-    ping = asc(ping, 0.05, 0.80);
+    ping = minmax(ping, 0.05, 0.80);
     local castPing = (ping * 1000) - recastDelay;
 
     -- Если не указан ид заклинания,
@@ -302,7 +301,7 @@ function AddonFrame_OnUpdate(self, elapsed)
                 end
             end
         end
-        local delay = asc((TickDelay or 250), 100, 1000) / 1000;
+        local delay = minmax((TickDelay or 250), 100, 1000) / 1000;
         LastTime = GetTime() + delay;
     end
     if (AddonFrame.Duration or 0) < GetTime() then
@@ -312,10 +311,10 @@ end
 
 if not AddonFrame then
     AddonFrame = CreateFrame("Frame");
-    AddonFrame:SetHeight(300);
-    AddonFrame:SetWidth(600);
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
     AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);
+    AddonFrame:SetHeight(300);
+    AddonFrame:SetWidth(600);
     AddonFrame.Msg = AddonFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
     AddonFrame.Msg:SetAllPoints();
     AddonFrame.print = function(msg, con)
@@ -381,7 +380,7 @@ function HasBuff(unit, spellId, filter)
             -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
             local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitBuff(unit, spellName, spellRank, filter);
             if name then
-                local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                local rem = minmax((expires or 0) - GetTime(), 0, 0xffff);
                 return name, count, rem, value1, value2, value3;
             end
         end
@@ -414,7 +413,7 @@ function HasDebuff(unit, spellId, filter)
             -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
             local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitDebuff(unit, spellName, spellRank, filter);
             if name then
-                local rem = asc((expires or 0) - GetTime(), 0, 0xffff);
+                local rem = minmax((expires or 0) - GetTime(), 0, 0xffff);
                 return name, count, rem, value1, value2, value3;
             end
         end
