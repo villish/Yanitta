@@ -4,13 +4,11 @@
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
-OnEventExtended   = nil;
-ABILITY_TABLE     = { };
-AURA_PROC_LIST    = { };
-LOSS_TABLE        = { };
-ping              = 0;
-LAST_TARGET       = 0;
-LastNotBehindTime = 0;
+OnEventExtended = nil;
+ABILITY_TABLE   = { };
+LOSS_TABLE      = { };
+ping            = 0;
+LAST_TARGET     = 0;
 
 function GetMainStat()
     local statVal = 0;
@@ -39,7 +37,7 @@ function minmax(val, x, y)
 end
 
 function CheckAndCastAbility(ability)
-    -- Если способность требует проверки в бою
+    -- Проверка нахождения в бою
     if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
         return;
     end
@@ -47,7 +45,6 @@ function CheckAndCastAbility(ability)
     -- Имитация задержки на повторное произнесение заклинания
     local recastDelay = 0;
     if ability.SetRecastDelay then
-        -- установка задержки, для текущего заклинания
         recastDelay = ping + 300;
         if (GetTime() - ability.LastCastingTime) < 1 then
             return;
@@ -56,21 +53,14 @@ function CheckAndCastAbility(ability)
 
     -- вычисление задержки от пинга
     local pingin, pingout = select(3, GetNetStats());
-    ping = ((pingin + pingout) / 1000);
-    ping = minmax(ping, 0.05, 0.80);
+    ping = minmax((pingin + pingout) / 1000, 0.05, 0.80);
     local castPing = (ping * 1000) - recastDelay;
 
-    -- Если не указан ид заклинания,
-    -- тогда выполняем только код проверки, и дальше не идем
     if ability.SpellId < 1 then
         return ability.Func(ability);
     end
 
-    -- проверка на возможность использовать заклинание
-    -- тут входит и проверка на основной ресурс и условия к применению.
-    -- На пример, если произношение заклинания требует  меньше 20% здоровья цели.
-    -- ВАЖНО. Не надо городить кучи проверок, лучше использовать эту функцию
-    -- Не делает проверку на доступность заклинания по уровню
+    -- возможность использовать заклинание
     if not IsUsableSpell(ability.SpellId) then
         return;
     end
@@ -134,64 +124,49 @@ function CheckAndCastAbility(ability)
         ability.Target = mResult;
     end
 
-    -- Поскольку многие функции требуют имени заклинания, получим его.
     local spellInfo = GetSpellInfo(ability.SpellId);
     if not spellInfo then
         return;
     end
 
-    -- Делает проверку на то, что данное заклинание доступно для персонажа.
-    -- Не работает для некоторых заклинаний (например: Увечье (друид))
+    -- Доступность заклинания
     if ability.IsSpellKnownCheck and not IsSpellKnown(ability.SpellId) then
         return;
     end
 
     -- проверку на доступность цели делаем только для определенных видов целей
     if ability.Target ~= "none" and ability.Target ~= "player" and ability.Target ~= "mouselocation" then
-
-        -- Проверка на доступность юнита, тоесть есть ли он.
         if not UnitExists(ability.Target) then
             return;
         end
 
-        -- проверка, если стоит свойство на возможность атаковать
-        -- если юнит дух или мертв или его нельзя атковать, тогда не выполняем ротацию
         if ability.IsAttackedCheck and (UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target)) then
             return;
         end
 
-        -- Проверка на досягаемость цели
-        -- эта функция работает не для всех заклинаний, поэтому нужна постоянная проверка.
+        -- Досягаемость цели: эта функция работает не для всех заклинаний, поэтому нужна постоянная проверка.
         -- Если эта функция возвращает nil, тогда проверка не проходит, и надо извращатся.
-        -- Если проверка не проходит используйте стнадартную проверку:
-        -- IsSpellInRange([заклинание одинаковое по радиусу действия], unit)
         if ability.IsRangeCheck and IsSpellInRange(spellInfo, ability.Target) ~= 1 then
             return;
         end
     end
 
-    -- прерываем канальное или потоковое заклинание,
-    -- ести стоит соответствующая установка
     if ability.CencelCasting or ability.DropChanel then
         SpellStopCasting();
     end
 
-    -- чтение заклинания по области
     if ability.Target == "mouselocation" then
-        local last_target_guid = UnitGUID("target");
+        local last = UnitGUID("target");
         CastSpellByName(spellInfo, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
-        -- для того, чтобы была видна область действия заклинания
         CastSpellByName(spellInfo, nil);
-        if UnitGUID("target") ~= last_target_guid then
+        if UnitGUID("target") ~= last then
             TargetLastTarget();
         end
-    -- чтения заклинания без цели
     elseif ability.Target == "none" then
         LAST_TARGET = UnitGUID("player");
         CastSpellByName(spellInfo, nil);
-    -- чтение заклинания по конкретной цели
     else
         LAST_TARGET = UnitGUID(ability.Target);
         CastSpellByName(spellInfo, ability.Target);
@@ -210,7 +185,6 @@ function ChangeRotation(rotation, notes)
         -- [красный]Ротация отключена.
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
-
         -- При выключении ротации, снимаем регистрацию с событий
         if AddonFrame then
             AddonFrame:UnregisterAllEvents();
@@ -222,8 +196,6 @@ function ChangeRotation(rotation, notes)
             AddonFrame:RegisterEvent("PLAYER_LOGOUT");
             AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
         end
-
-        -- Иначе запускаем ротацию
         CurentRotation = rotation;
         AddonEnabled   = true;
         -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
@@ -237,9 +209,7 @@ end
 
 function AddonFrame_OnEvent(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
-        if AddonFrame then
-            AddonFrame:Show();
-        end
+        self:Show();
     elseif event == "PLAYER_LOGOUT" then
         ChangeRotation();
     elseif event == "WORLD_MAP_UPDATE" then
@@ -249,38 +219,21 @@ function AddonFrame_OnEvent(self, event, ...)
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
               destGUID,  destName, destFlags,  destFlags2,
               spellId,   spellName,spellSchool, param15 = ...;
-        if (subEvent == "SPELL_CAST_SUCCESS" and type(ABILITY_TABLE) == "table" and sourceGUID == UnitGUID("player")) then
+        if (subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player")) then
             for i, ability in ipairs(ABILITY_TABLE) do
                 if (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target)) then
-                    -- Если мы удачно прочитали заклинание под проком, убираем его.
                     ability.ProcFlag = 0;
-                    -- Устанавливаем время последнего удачного каста
                     if ability.SetRecastDelay then
                         ability.LastCastingTime = GetTime();
                     end
                 end
             end
-        elseif ProcNotifyer and subEvent == "SPELL_AURA_APPLIED" and sourceGUID == UnitGUID("player") then
-            for i, ability in ipairs(ABILITY_TABLE) do
-                for _,proc_aura_id in ipairs(AURA_PROC_LIST) do
-                    if proc_aura_id == spellId then
-                        ability.HasProc = spellId;
-                        break;
-                    end
-                end
-            end
         elseif subEvent == "SPELL_CAST_FAILED" then
             local failedType = param15;
-            if LAST_TARGET ~= 0 and (
-                failedType == SPELL_FAILED_LINE_OF_SIGHT
-                --or failedType == SPELL_FAILED_LINE_OF_SIGHT
-                                                            ) then
-                LOSS_TABLE[LAST_TARGET] = {
-                    ctime  = GetTime(),
-                    cspell = spellId
-                };
+            if LAST_TARGET ~= 0 and failedType == SPELL_FAILED_LINE_OF_SIGHT then
+                LOSS_TABLE[LAST_TARGET] = { ctime  = GetTime(), cspell = spellId };
             elseif failedType == SPELL_FAILED_NOT_BEHIND then
-                LastNotBehindTime = GetTime();
+                AddonFrame.LastNotBehindTime = GetTime();
             end
         end
     end
@@ -294,7 +247,6 @@ function AddonFrame_OnUpdate(self, elapsed)
     if type(ABILITY_TABLE) == "table" and GetTime() >= (LastTime or 0) then
         if AddonEnabled and not UnitIsDeadOrGhost("player") then
             IS_MOVING = IsMoving();
-            -- Передираем способности, и останавляваемся, если условия выполнены
             for _,ability in ipairs(ABILITY_TABLE) do
                 if CheckAndCastAbility(ability) then
                     break;
@@ -446,12 +398,10 @@ end
 -- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
 -- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шанам)
 function IsMoving()
-    for _,spell in ipairs(moving_spell_table) do
+    for _, spell in ipairs(moving_spell_table) do
         local name,rank = GetSpellInfo(spell);
-        if name then
-            if UnitAura("player", name, rank, nil) then
-                return;
-            end
+        if name and UnitAura("player", name, rank, nil) then
+            return;
         end
     end
 
@@ -461,20 +411,16 @@ end
 -- Проверка на нахождение персонажа за спиной цели
 function IsNotBehind(sec)
     local sec = sec or 1;
-    if (GetTime() - LastNotBehindTime <= sec) then
+    if GetTime() - (AddonFrame.LastNotBehindTime or 0) <= sec then
         return true;
     end
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
 function IsNotLineOfSight(unit,sec)
-    local sec = sec or 1;
-    local guid = UnitGUID(unit);
-    if type(LOSS_TABLE) == "table" then
-        local rec = LOSS_TABLE[guid];
-        if rec and GetTime() - rec.ctime <= sec then
-            return true;
-        end
+    local rec = LOSS_TABLE[UnitGUID(unit)];
+    if rec and (GetTime() - rec.ctime) <= (sec or 1) then
+        return true;
     end
 end
 
@@ -511,7 +457,6 @@ end
 function GetDistance(unit1, unit2)
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
-
     return sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000;
 end
 
@@ -524,7 +469,6 @@ end
 function CheckDistance2(unit1, unit2, distance)
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
-
     return (sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000) <= distance;
 end
 
@@ -541,7 +485,6 @@ end
 -- Если предмет (перчатка, тринька, пояс и т.п) юзабелен и не имеет КД - имитируем клик правой кн. мыши.
 function UseItemBySlot(slotId)
     local start, duration, enable = GetInventoryItemCooldown("player", slotId);
-    -- Проверку на пинг делать не будем, так как это не критично
     if duration == 0 and enable == 1 then
         UseInventoryItem(slotId);
     end
@@ -560,20 +503,19 @@ end
 
 -- Проверяет, надо ли сбивать заклинание текущему юниту.
 function CheckInterrupt(unit)
-    if not UnitExists(unit) then
-        return;
-    end
-    -- чтение заклинания прерываем только перед окончанием каста.
-    local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
-    if name and not (notInterruptible or isTrade) then
-        if (((endTime / 1000) - GetTime()) - ping) <= 1 then
+    if UnitExists(unit) then
+        -- чтение заклинания прерываем только перед окончанием каста.
+        local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
+        if name and not (notInterruptible or isTrade) then
+            if (((endTime / 1000) - GetTime()) - ping) <= 1 then
+                return true;
+            end
+        end
+        -- канальное заклинание прерываем сразу.
+        local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
+        if name and not (notInterruptible or isTrade) then
             return true;
         end
-    end
-    -- канальное заклинание прерываем сразу.
-    local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
-    if name and not (notInterruptible or isTrade) then
-        return true;
     end
 end
 
@@ -688,7 +630,7 @@ end
 -- По умолчанию: "HEAL"
 -- Возвращает: unit, count или nil - если диспелить нечего.
 function GetDispellInfo(dispeller_type)
-    local dispeller = dispeller_type or "HEAL";
+    local dispeller = dispeller_type or "NONE";
     local d_class   = select(2, UnitClass("player")) or "";
     local c_rec     = DISPELL_TABLE[d_class.."_"..dispeller];
 
@@ -722,7 +664,7 @@ end
 
 -- Формирует таблицу "members" которая содержит юнитов нуждающихся в лечении.
 -- при формировании происходят проверки: (доступность + рейдовая логика)
--- сформированная таблица будет отчортирована по наименьшему здоровью.
+-- сформированная таблица будет отсортирована по наименьшему здоровью.
 function FillPartyTables(standartSpellId)
     -- Обнуляем все хиловские глобальные переменные.
     FORCE_IN_COMBAT  = false;
@@ -731,7 +673,7 @@ function FillPartyTables(standartSpellId)
     members          = {{ Unit = "player", IsInMyPaty = true }};
 
     for i = 95, 10, -5 do
-        LowHP["H"..i] = 0; -- Первичная инициализация
+        LowHP["H"..i] = 0;
     end
 
     local prefix = "party";
@@ -742,7 +684,7 @@ function FillPartyTables(standartSpellId)
     end
 
     for index = 1, GetNumGroupMembers() do
-        local unit = prefix..index; -- raid5
+        local unit = prefix..index;
         if UnitExists(unit) and not UnitIsUnit("player", unit) and UnitIsConnected(unit) then
             local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
             local isVisible = not IsNotLineOfSight(unit); -- need testing
