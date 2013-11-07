@@ -4,21 +4,13 @@
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
-OnEventExtended = nil;
-ping            = 0;
--- Константы горячих клавиш
-mkLeftShift     = 1;
-mkLeftControl   = 2;
-mkLeftAlt       = 3;
-mkRightShift    = 4;
-mkRightControl  = 5;
-mkRightAlt      = 6;
-
-ABILITY_TABLE  = { };
-AURA_PROC_LIST = { };
-LOSS_TABLE     = { };
-
-LAST_TARGET = 0;
+OnEventExtended   = nil;
+ABILITY_TABLE     = { };
+AURA_PROC_LIST    = { };
+LOSS_TABLE        = { };
+ping              = 0;
+LAST_TARGET       = 0;
+LastNotBehindTime = 0;
 
 function GetMainStat()
     local statVal = 0;
@@ -120,7 +112,7 @@ function CheckAndCastAbility(ability)
             local statVal = procRecord.GetStat() or 0;
             if statVal > procRecord.Value then
                 procRecord.Pct = (statVal-procRecord.Value)*100/procRecord.Value;
-                procFlag = bit.bor(procFlag, procRecord.Flag);
+                procFlag = bit.bor(procFlag, procRecord.Flag); -- procFlag |= procRecord.Flag
             elseif statVal < procRecord.Value then
                 procRecord.Pct = 0;
             end
@@ -132,7 +124,8 @@ function CheckAndCastAbility(ability)
         end
     end
 
-    if (ability.IsMovingCheck == "notmoving" and IsMoving()) or (ability.IsMovingCheck == "moving" and not IsMoving()) then
+    if (ability.IsMovingCheck == "notmoving"  and IS_MOVING)
+    or (ability.IsMovingCheck == "moving" and not IS_MOVING) then
         return;
     end
 
@@ -232,6 +225,7 @@ function ChangeRotation(rotation, notes)
             AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
             AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
             AddonFrame:RegisterEvent("PLAYER_LOGOUT");
+            AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
         end
 
         -- Иначе запускаем ротацию
@@ -253,6 +247,8 @@ function AddonFrame_OnEvent(self, event, ...)
         end
     elseif event == "PLAYER_LOGOUT" then
         ChangeRotation();
+    elseif event == "WORLD_MAP_UPDATE" then
+        LOSS_TABLE = { };
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subEvent, hideCaster,
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
@@ -293,37 +289,34 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         end
     end
-    --print(type(OnEventExtended) )
+
     if type(OnEventExtended) == "function" then
         OnEventExtended(self, event, ...);
     end
 end
 
 function AddonFrame_OnUpdate(self, elapsed)
-    if type(ABILITY_TABLE) == "table" then
-        if GetTime() >= LastTime and #ABILITY_TABLE > 0 then
-            if AddonEnabled and not UnitIsDeadOrGhost("player") then
-                -- Передираем способности, и останавляваемся, если условия выполнены
-                for _,ability in ipairs(ABILITY_TABLE) do
-                    if CheckAndCastAbility(ability) then
-                        break;
-                    end
+    if type(ABILITY_TABLE) == "table" and GetTime() >= (LastTime or 0) then
+        if AddonEnabled and not UnitIsDeadOrGhost("player") then
+            IS_MOVING = IsMoving();
+            -- Передираем способности, и останавляваемся, если условия выполнены
+            for _,ability in ipairs(ABILITY_TABLE) do
+                if CheckAndCastAbility(ability) then
+                    break;
                 end
             end
-            LastTime = GetTime() + (Delay / 1000);
         end
-        -- Будем каждые 30 сек. обнулять таблицу
-        if GetTime() >= LastTimeClearLossTable then
-            LOSS_TABLE = { };
-            LastTimeClearLossTable = GetTime() + 30;
-        end
+        local delay = asc((TickDelay or 250), 100, 1000) / 1000;
+        LastTime = GetTime() + delay;
+    end
+    if (durationMessage or 0) < GetTime() then
+        AddonFrame.text:SetText("");
     end
 end
 
 function ShowMessage(msg, toConsole, duration)
-    if NotifyFrame then
-        NotifyFrame.text:SetText(msg);
-        NotifyFrame:Show();
+    if AddonFrame then
+        AddonFrame.Msg:SetText(msg);
         durationMessage = (GetTime() + (duration or 5));
     end
     if toConsole then
@@ -331,38 +324,28 @@ function ShowMessage(msg, toConsole, duration)
     end
 end
 
-if not NotifyFrame then
-    durationMessage = 0;
-    NotifyFrame = CreateFrame('Frame');
-    NotifyFrame:ClearAllPoints();
-    NotifyFrame:SetHeight(300);
-    NotifyFrame:SetWidth(600);
-    NotifyFrame:SetScript('OnUpdate', function()
-        if durationMessage < GetTime() then
-            NotifyFrame:Hide();
-        end
-    end);
-    NotifyFrame:Hide();
-    NotifyFrame.text = NotifyFrame:CreateFontString(nil, 'BACKGROUND', 'PVPInfoTextFont');
-    NotifyFrame.text:SetAllPoints();
-    NotifyFrame:SetPoint('CENTER', 0, 100);
-end
-
 if not AddonFrame then
-    CurentRotation  = nil;      -- текущая ротация
-    AddonEnabled    = false;    -- признак включенного аддона
-    Delay           = 250;      -- интервал таймера (милисекунды)
-    LastTime        = 0;        -- служебная переменная для таймера
-    LastTimeClearLossTable = 0;
-    LastStartMovingTime    = 0;
-    LastNotBehindTime      = 0;
-
     AddonFrame = CreateFrame("Frame");
+    AddonFrame:ClearAllPoints();
+    AddonFrame:SetHeight(300);
+    AddonFrame:SetWidth(600);
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
     AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);
+    AddonFrame.Msg = AddonFrame:CreateFontString(nil, 'BACKGROUND', 'PVPInfoTextFont');
+    AddonFrame.Msg:SetAllPoints();
+    AddonFrame:SetPoint('CENTER', 0, 100);
     AddonFrame:Show();
 end]]></Core>
-  <Func><![CDATA[-- Заклинания (бафы), которые позволяют произносить заклинания на ходу
+  <Func><![CDATA[
+-- Константы горячих клавиш
+mkLeftShift     = 1;
+mkLeftControl   = 2;
+mkLeftAlt       = 3;
+mkRightShift    = 4;
+mkRightControl  = 5;
+mkRightAlt      = 6;
+
+-- Заклинания (бафы), которые позволяют произносить заклинания на ходу
 moving_spell_table = {
     97128,  -- Опаляющее перо (Алисразор)
     79206,  -- Благосклонность предков (Шанам)
