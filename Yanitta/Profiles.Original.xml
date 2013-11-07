@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.67</Version>
+  <Version>0.0.4.76</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
@@ -900,6 +900,45 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
+      <Ability Name="Обезоруживание">
+        <SpellID>676</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if UnitIsPlayer(ability.Target) then
+    local class = select(2, UnitClass(ability.Target));
+    if  (class == "WARRIOR") or
+        (class == "PALDIN")  or
+        (class == "ROGUE")   or
+        (class == "SHAMAN")  or
+        (class == "DEATHKNIGHT") then
+        return true;
+    end
+end]]></Lua>
+      </Ability>
+      <Ability Name="Подрезать сухожилья">
+        <SpellID>1715</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if UnitIsPlayer(ability.Target) and not HasDebuff(ability.Target, 1715) then
+    return true;
+end]]></Lua>
+      </Ability>
       <Ability Name="Инициализация (Защита)">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -1040,7 +1079,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if rage > 60 and (playerHP > 70 or agroStatus < 3) then
+        <Lua><![CDATA[if UnitIsPlayer(ability.Target) then
+    return true;
+elseif rage > 60 and (playerHP > 70 or agroStatus < 3) then
     return true;
 end]]></Lua>
       </Ability>
@@ -1058,7 +1099,9 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[-- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308))) then
+if UnitIsPlayer(ability.Target) and HealthByPercent(ability.Target) > 20 then
+    return true;
+elseif not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308))) then
     return true;
 end]]></Lua>
       </Ability>
@@ -2014,6 +2057,8 @@ end]]></Lua>
           <string>Prot: Сокрушительный Бросок</string>
           <string>Prot: Мощный удар щитом</string>
           <string>Prot: Казнь</string>
+          <string>Подрезать сухожилья</string>
+          <string>Обезоруживание</string>
           <string>Prot: Удар грома (AOE)</string>
           <string>Prot: Реванш</string>
           <string>Prot: Удар героя</string>
