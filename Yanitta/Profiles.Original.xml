@@ -4,6 +4,7 @@
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[
+
 OnEventExtended   = nil;
 ABILITY_TABLE     = { };
 AURA_PROC_LIST    = { };
@@ -34,13 +35,8 @@ PROC_TABLE = { -- Таблица содержит проки и их значе�
 };
 
 -- Возвращает ограниченное сверху и снизу значение
-function asc(m_value, m_min, m_max)
-    if m_value < m_min then
-        return m_min;
-    elseif m_value > m_max then
-        return m_max;
-    end
-    return m_value;
+function asc(val, x, y)
+    return min(max(val, x), y);
 end
 
 function CheckAndCastAbility(ability)
@@ -213,7 +209,7 @@ function ChangeRotation(rotation, notes)
         CurentRotation = nil;
         AddonEnabled   = false;
         -- [красный]Ротация отключена.
-        ShowMessage("|cfff5360cРотация отключена.|r", true);
+        AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
 
         -- При выключении ротации, снимаем регистрацию с событий
@@ -232,7 +228,7 @@ function ChangeRotation(rotation, notes)
         CurentRotation = rotation;
         AddonEnabled   = true;
         -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
-        ShowMessage("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
+        AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
         if notes and strtrim(notes) ~= "" then
             print("|cff6f0a9a     "..notes.."|r");
         end
@@ -314,25 +310,20 @@ function AddonFrame_OnUpdate(self, elapsed)
     end
 end
 
-function ShowMessage(msg, toConsole, duration)
-    if AddonFrame then
-        AddonFrame.Msg:SetText(msg);
-        AddonFrame.Duration = GetTime() + (duration or 5);
-    end
-    if toConsole then
-        print(msg);
-    end
-end
-
 if not AddonFrame then
     AddonFrame = CreateFrame("Frame");
     AddonFrame:SetHeight(300);
     AddonFrame:SetWidth(600);
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
     AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);
-    AddonFrame.Msg = AddonFrame:CreateFontString(nil, 'BACKGROUND', 'PVPInfoTextFont');
+    AddonFrame.Msg = AddonFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
     AddonFrame.Msg:SetAllPoints();
-    AddonFrame:SetPoint('CENTER', 0, 200);
+    AddonFrame.print = function(msg, con)
+        AddonFrame.Msg:SetText(msg);
+        if con then print(msg) end
+        AddonFrame.Duration = GetTime() + 5;
+    end
+    AddonFrame:SetPoint("CENTER", 0, 200);
     AddonFrame:Show();
 end]]></Core>
   <Func><![CDATA[
@@ -955,29 +946,29 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 AOE", true);
+        AddonFrame.print("|cffff0000 AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt)     then
     if isAltMod then
         isAltMod = false;
-        ShowMessage("|cffff0000Используется блок щитом", true);
+        AddonFrame.print("|cffff0000Используется блок щитом", true);
     else
         isAltMod = true;
-        ShowMessage("|cff00ff00Используется непроницаемый щит", true);
+        AddonFrame.print("|cff00ff00Используется непроницаемый щит", true);
     end
 end
 
@@ -1321,23 +1312,23 @@ elseif IsModKeyDown(mkLeftControl) then
     setAoE = setAoE or 0;
     if setAoE == 0 then
         setAoE = 2;
-        ShowMessage("|cff6f0a9a Несколько целей", true);
+        AddonFrame.print("|cff6f0a9a Несколько целей", true);
     elseif setAoE == 2 then
         setAoE = 3;
-        ShowMessage("|cffff0000 AOE", true);
+        AddonFrame.print("|cffff0000 AOE", true);
     else
         setAoE = 0;
-        ShowMessage("|cff00ff00 Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -1695,26 +1686,26 @@ elseif IsModKeyDown(mkLeftControl) then
     setAoE = setAoE or 0;
     if setAoE == 0 then
         setAoE = 2;
-        ShowMessage("|cff6f0a9a Несколько целей 2", true);
+        AddonFrame.print("|cff6f0a9a Несколько целей 2", true);
     elseif setAoE == 2 then
         setAoE = 3;
-        ShowMessage("|cff6f0a9a Несколько целей 3", true);
+        AddonFrame.print("|cff6f0a9a Несколько целей 3", true);
     elseif setAoE == 3 then
         setAoE = 4;
-        ShowMessage("|cffff0000 AOE", true);
+        AddonFrame.print("|cffff0000 AOE", true);
     else
         setAoE = 0;
-        ShowMessage("|cff00ff00 Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     else
         useCooldown = true;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -2007,6 +1998,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Неистовство" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Неистовство)</string>
@@ -2040,6 +2032,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Защита" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Защита)</string>
@@ -2072,6 +2065,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Оружие" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Оружие)</string>
@@ -2098,6 +2092,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Прокачка" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Неистовство)</string>
@@ -2132,20 +2127,20 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 >> Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 >> AOE", true);
+        AddonFrame.print("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -2599,6 +2594,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Защита" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -2622,12 +2618,14 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лекарь" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Воздаяние" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -2672,10 +2670,10 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 AOE", true);
+        AddonFrame.print("|cffff0000 AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     StopAttack();
@@ -2688,10 +2686,10 @@ elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -3134,6 +3132,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="PVE Выживание" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -3167,18 +3166,21 @@ LeftAlt - Пауза]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Повелитель зверей" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Стрельба" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="PVE Выживание (прокачка)" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -3206,6 +3208,7 @@ LeftAlt - Пауза]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Farm" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="B" Modifier="Alt" />
         <AbilityQueue>
           <string>Укус змеи : FARM</string>
@@ -3274,28 +3277,28 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 >> Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 >> AOE", true);
+        AddonFrame.print("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
     if invisible then
         invisible = false;
-        ShowMessage("|cffff0000Незаметность выключена", true);
+        AddonFrame.print("|cffff0000Незаметность выключена", true);
     else
         invisible = true;
-        ShowMessage("|cff00ff00Незаметность включена", true);
+        AddonFrame.print("|cff00ff00Незаметность включена", true);
     end
 elseif IsModKeyDown(mkRightAlt) then
 end
@@ -3634,6 +3637,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Бой" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализаця</string>
@@ -3653,6 +3657,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Ликвидация" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализаця</string>
@@ -3665,12 +3670,14 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Скрытность" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Фарм ларей" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue>
           <string>Обшаривание карманов</string>
@@ -3702,20 +3709,20 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 >> Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 >> AOE", true);
+        AddonFrame.print("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -4045,19 +4052,19 @@ elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
     if useAutoDispell then
         useAutoDispell = false;
-        ShowMessage("|cffff0000Диспел по mouseover: Выключен", true);
+        AddonFrame.print("|cffff0000Диспел по mouseover: Выключен", true);
     else
         useAutoDispell = true;
-        ShowMessage("|cff00ff00Диспел по mouseover: Включен", true);
+        AddonFrame.print("|cff00ff00Диспел по mouseover: Включен", true);
     end
 end
 
@@ -4405,6 +4412,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Послушание" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Послушание)</string>
@@ -4439,12 +4447,14 @@ LeftAlt - Массовое разсеивание]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Свет" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Тьма" ProcNotifyer="true">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Тьма)</string>
@@ -5174,6 +5184,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Кровь" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -5201,6 +5212,7 @@ Right Shift - Кулдауны]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лед" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Frost: Вытягивание чумы (1)</string>
@@ -5232,6 +5244,7 @@ Right Shift - Кулдауны]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Нечестивость" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -5277,10 +5290,10 @@ elseif IsModKeyDown(mkRightShift) then
 elseif IsModKeyDown(mkRightControl) then
     if useAutoDispell then
         useAutoDispell = false;
-        ShowMessage("|cffff0000Автодиспел выключен", true);
+        AddonFrame.print("|cffff0000Автодиспел выключен", true);
     else
         useAutoDispell = true;
-        ShowMessage("|cff00ff00Автодиспел включен", true);
+        AddonFrame.print("|cff00ff00Автодиспел включен", true);
     end
 elseif IsModKeyDown(mkRightAlt)     then
 end
@@ -5537,6 +5550,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Стихии" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация Стихии</string>
@@ -5551,12 +5565,14 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Совершенствование" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Исцеление" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация Стихии</string>
@@ -6001,6 +6017,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Огонь" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация(Огонь)</string>
@@ -6019,6 +6036,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лед" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Лед)</string>
@@ -6034,6 +6052,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Тайная магия" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -6626,6 +6645,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Демонология" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -6643,12 +6663,14 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Разрушение" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Колдовство" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -7024,12 +7046,14 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Ткач туманов" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Хмелевар" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация</string>
@@ -7055,6 +7079,7 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Танцующий с ветром" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue />
         <Notes><![CDATA[]]></Notes>
@@ -7113,26 +7138,26 @@ elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
     if useAutoDispell then
         useAutoDispell = false;
-        ShowMessage("|cffff0000Автодиспел выключен", true);
+        AddonFrame.print("|cffff0000Автодиспел выключен", true);
     else
         useAutoDispell = true;
-        ShowMessage("|cff00ff00Автодиспел включен", true);
+        AddonFrame.print("|cff00ff00Автодиспел включен", true);
     end
 elseif IsModKeyDown(mkRightAlt) then
     if useDamage then
         useDamage = false;
-        ShowMessage("|cffff0000Нанесение урона выключено", true);
+        AddonFrame.print("|cffff0000Нанесение урона выключено", true);
     else
         useDamage = true;
-        ShowMessage("|cff00ff00Нанесение урона включено", true);
+        AddonFrame.print("|cff00ff00Нанесение урона включено", true);
     end
 end
 
@@ -7618,29 +7643,29 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        ShowMessage("|cff00ff00 Одиночная цель", true);
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
     else
         setAoE = true;
-        ShowMessage("|cffff0000 AOE", true);
+        AddonFrame.print("|cffff0000 AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        ShowMessage("|cffff0000Кулдауны выключены", true);
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        ShowMessage("|cff00ff00Кулдауны включены", true);
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
     if isAltMod then
         isAltMod = false;
-        ShowMessage("|cffff0000Используется \'Дикая защита\'", true);
+        AddonFrame.print("|cffff0000Используется \'Дикая защита\'", true);
     else
         isAltMod = true;
-        ShowMessage("|cff00ff00Используется \'Неистовое восстановление\'", true);
+        AddonFrame.print("|cff00ff00Используется \'Неистовое восстановление\'", true);
     end
 end
 
@@ -8340,6 +8365,7 @@ end]]></Lua>
     </AbilityList>
     <RotationList>
       <Rotation Name="Лекарь" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
           <string>Restor: Инициализация</string>
@@ -8374,6 +8400,7 @@ RightControl - Включение/выключение автодиспела
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Страж" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Страж)</string>
@@ -8402,6 +8429,7 @@ RightControl - Включение/выключение автодиспела
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Баланс" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="V" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Баланс)</string>
@@ -8414,6 +8442,7 @@ RightControl - Включение/выключение автодиспела
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Сила зверя" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="C" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (КотЭ)</string>
@@ -8437,6 +8466,7 @@ RightControl - Включыние / Выключение кулдаунов]]></
         <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="N" Modifier="Alt" />
         <AbilityQueue>
           <string>Farm: Инициализация</string>
@@ -8445,8 +8475,10 @@ RightControl - Включыние / Выключение кулдаунов]]></
           <string>Знак дикой природы</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[]]></Lua>
       </Rotation>
       <Rotation Name="Лекарь: Дамаг" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
         <HotKey Key="B" Modifier="Alt" />
         <AbilityQueue>
           <string>Restor: Инициализация</string>
