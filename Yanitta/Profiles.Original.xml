@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.85</Version>
+  <Version>0.0.4.86</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -104,9 +104,8 @@ function CheckAndCastAbility(ability)
 end
 
 function ChangeRotation(rotation, notes)
-    if (not rotation or rotation == CurentRotation) and CurentRotation then
-        CurentRotation = nil;
-        AddonEnabled   = false;
+    if AddonFrame.CurentRotation and (not rotation or rotation == AddonFrame.CurentRotation) then
+        AddonFrame.CurentRotation = nil;
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
         if AddonFrame then
@@ -119,10 +118,9 @@ function ChangeRotation(rotation, notes)
             AddonFrame:RegisterEvent("PLAYER_LOGOUT");
             AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
         end
-        CurentRotation = rotation;
-        AddonEnabled   = true;
+        AddonFrame.CurentRotation = rotation;
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
-        if notes and strtrim(notes) ~= "" then
+        if strtrim(notes) ~= "" then
             print("|cff6f0a9a     "..notes.."|r");
         end
         PlaySound("PAPERDOLLOPEN", "Master");
@@ -165,8 +163,8 @@ function AddonFrame_OnEvent(self, event, ...)
 end
 
 function AddonFrame_OnUpdate(self, elapsed)
-    if type(ABILITY_TABLE) == "table" and GetTime() >= (LastTime or 0) then
-        if AddonEnabled and not UnitIsDeadOrGhost("player") then
+    if type(ABILITY_TABLE) == "table" and GetTime() >= (AddonFrame.LastTime or 0) then
+        if AddonFrame.CurentRotation and not UnitIsDeadOrGhost("player") then
             IS_MOVING = IsMoving();
             for _,ability in ipairs(ABILITY_TABLE) do
                 if CheckAndCastAbility(ability) then
@@ -175,7 +173,7 @@ function AddonFrame_OnUpdate(self, elapsed)
             end
         end
         local delay = minmax((TickDelay or 250), 100, 1000) / 1000;
-        LastTime = GetTime() + delay;
+        AddonFrame.LastTime = GetTime() + delay;
     end
     if (AddonFrame.Duration or 0) < GetTime() then
         AddonFrame.Msg:SetText("");
