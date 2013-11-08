@@ -1,48 +1,23 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.80</Version>
+  <Version>0.0.4.85</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
-  <Core><![CDATA[
-OnEventExtended = nil;
+  <Core><![CDATA[OnEventExtended = nil;
 ABILITY_TABLE   = { };
 LOSS_TABLE      = { };
 ping            = 0;
 LAST_TARGET     = 0;
 
-function GetMainStat()
-    local statVal = 0;
-    for i,stat in ipairs({1,2,4}) do
-        local stat,_,pos,neg = UnitStat("player", stat);
-        statVal = math.max(stat+pos+neg, statVal);
-    end
-    return statVal;
-end
-
-PROC_TABLE = { -- Таблица содержит проки и их значения.
-    ["Main"]         = { Value = 1, Pct = 0, Flag = 0x001, GetStat = GetMainStat },
-    ["AttackPowerM"] = { Value = 1, Pct = 0, Flag = 0x002, GetStat = function() local b,p,n = UnitAttackPower("player");      return max(b+p+n, 0); end },
-    ["AttackPowerR"] = { Value = 1, Pct = 0, Flag = 0x004, GetStat = function() local b,p,n = UnitRangedAttackPower("player");return max(b+p+n, 0); end },
-    ["AttackPowerS"] = { Value = 1, Pct = 0, Flag = 0x008, GetStat = function() return GetAttackPowerForStat(4, select(2, UnitStat("player", 4)));  end },
-    ["MeeleHaste"]   = { Value = 1, Pct = 0, Flag = 0x010, GetStat = GetMeleeHaste  },
-    ["RangedHaste"]  = { Value = 1, Pct = 0, Flag = 0x020, GetStat = GetRangedHaste },
-    ["SpellHaste"]   = { Value = 1, Pct = 0, Flag = 0x040, GetStat = function() return UnitSpellHaste("player") end, },
-    ["Crit"]         = { Value = 1, Pct = 0, Flag = 0x080, GetStat = GetCritChance  },
-    ["Mastery"]      = { Value = 1, Pct = 0, Flag = 0x100, GetStat = GetMastery     },
-};
-
--- Возвращает ограниченное сверху и снизу значение
 function minmax(val, x, y)
     return min(max(val, x), y);
 end
 
 function CheckAndCastAbility(ability)
-    -- Проверка нахождения в бою
     if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
         return;
     end
 
-    -- Имитация задержки на повторное произнесение заклинания
     local recastDelay = 0;
     if ability.SetRecastDelay then
         recastDelay = ping + 300;
@@ -51,29 +26,24 @@ function CheckAndCastAbility(ability)
         end
     end
 
-    -- вычисление задержки от пинга
     local pingin, pingout = select(3, GetNetStats());
     ping = minmax((pingin + pingout) / 1000, 0.05, 0.80);
     local castPing = (ping * 1000) - recastDelay;
 
     if ability.SpellId < 1 then
         return ability.Func(ability);
-    end
-
-    -- возможность использовать заклинание
-    if not IsUsableSpell(ability.SpellId) then
+    elseif not IsUsableSpell(ability.SpellId) then
+        return;
+    elseif ability.IsSpellKnownCheck and not IsSpellKnown(ability.SpellId) then
         return;
     end
 
-    -- Проверка на то, читает ли в этот момент персонаж заклинание (с учетом пинга)
     if not ability.CencelCasting then
         local endTime = select(6, UnitCastingInfo("player")) or 0;
         if (endTime - (GetTime() * 1000)) >= castPing then
             return;
         end
     end
-
-    -- Проверка на то, поддерживает ли в этот момент персонаж заклинание (с учетом пинга)
     if not ability.DropChanel then
         local endTime = select(6, UnitChannelInfo("player")) or 0;
         if (endTime - (GetTime() * 1000)) >= castPing then
@@ -81,32 +51,9 @@ function CheckAndCastAbility(ability)
         end
     end
 
-    -- вычисление кулдаунка заклинания
     local start, duration, enable = GetSpellCooldown(ability.SpellId);
     if enable == 1 and ((duration + start) - GetTime()) > ping then
         return;
-    end
-
-    -- Отслеживание проков.
-    -- Если срабатывает прок, который повышает стат - тогда запишет значение этого стата  и процент прироста,
-    -- а так же поствим флаг прока.
-    if ProcNotifyer then
-        local procFlag = 0;
-        -- заполнение таблицы проков.
-        for key,procRecord in pairs(PROC_TABLE) do
-            local statVal = procRecord.GetStat() or 0;
-            if statVal > procRecord.Value then
-                procRecord.Pct = (statVal-procRecord.Value)*100/procRecord.Value;
-                procFlag = bit.bor(procFlag, procRecord.Flag); -- procFlag |= procRecord.Flag
-            elseif statVal < procRecord.Value then
-                procRecord.Pct = 0;
-            end
-            procRecord.Value = statVal;
-        end
-        -- установка флага прока.
-        for i,ability in ipairs(ABILITY_TABLE) do
-            ability.ProcFlag = bit.bor((ability.ProcFlag or 0), procFlag);
-        end
     end
 
     if (ability.IsMovingCheck == "notmoving"  and IS_MOVING)
@@ -114,39 +61,20 @@ function CheckAndCastAbility(ability)
         return;
     end
 
-    -- Выполняем функцию проверки
-    local mResult = ability.Func(ability);
-    if not mResult then
+    local result = ability.Func(ability);
+    if not result then
         return;
-    end
-    --и если она нам возвращает новую цель, тогда делаем ее присваивание.
-    if type(mResult) == "string" then
-        ability.Target = mResult;
+    elseif type(result) == "string" then
+        ability.Target = result;
     end
 
     local spellInfo = GetSpellInfo(ability.SpellId);
-    if not spellInfo then
-        return;
-    end
-
-    -- Доступность заклинания
-    if ability.IsSpellKnownCheck and not IsSpellKnown(ability.SpellId) then
-        return;
-    end
-
-    -- проверку на доступность цели делаем только для определенных видов целей
     if ability.Target ~= "none" and ability.Target ~= "player" and ability.Target ~= "mouselocation" then
         if not UnitExists(ability.Target) then
             return;
-        end
-
-        if ability.IsAttackedCheck and (UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target)) then
+        elseif ability.IsAttackedCheck and (UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target)) then
             return;
-        end
-
-        -- Досягаемость цели: эта функция работает не для всех заклинаний, поэтому нужна постоянная проверка.
-        -- Если эта функция возвращает nil, тогда проверка не проходит, и надо извращатся.
-        if ability.IsRangeCheck and IsSpellInRange(spellInfo, ability.Target) ~= 1 then
+        elseif ability.IsRangeCheck and IsSpellInRange(spellInfo, ability.Target) ~= 1 then
             return;
         end
     end
@@ -154,7 +82,6 @@ function CheckAndCastAbility(ability)
     if ability.CencelCasting or ability.DropChanel then
         SpellStopCasting();
     end
-
     if ability.Target == "mouselocation" then
         local last = UnitGUID("target");
         CastSpellByName(spellInfo, nil);
@@ -176,16 +103,12 @@ function CheckAndCastAbility(ability)
     end
 end
 
--- Включение/выключение текущей ротации
 function ChangeRotation(rotation, notes)
-    -- Если ротация пустая, или новая ротация такая же как и текущая, тогда выключаем
     if (not rotation or rotation == CurentRotation) and CurentRotation then
         CurentRotation = nil;
         AddonEnabled   = false;
-        -- [красный]Ротация отключена.
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
-        -- При выключении ротации, снимаем регистрацию с событий
         if AddonFrame then
             AddonFrame:UnregisterAllEvents();
         end
@@ -198,7 +121,6 @@ function ChangeRotation(rotation, notes)
         end
         CurentRotation = rotation;
         AddonEnabled   = true;
-        -- [зеленый]Ротация: [фиолетовый]Название ротации [зеленый] - Включена.
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
         if notes and strtrim(notes) ~= "" then
             print("|cff6f0a9a     "..notes.."|r");
@@ -219,10 +141,9 @@ function AddonFrame_OnEvent(self, event, ...)
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
               destGUID,  destName, destFlags,  destFlags2,
               spellId,   spellName,spellSchool, param15 = ...;
-        if (subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player")) then
+        if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
             for i, ability in ipairs(ABILITY_TABLE) do
-                if (spellId == ability.SpellId) and (destGUID == UnitGUID(ability.Target)) then
-                    ability.ProcFlag = 0;
+                if spellId == ability.SpellId and destGUID == UnitGUID(ability.Target) then
                     if ability.SetRecastDelay then
                         ability.LastCastingTime = GetTime();
                     end
@@ -230,7 +151,7 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         elseif subEvent == "SPELL_CAST_FAILED" then
             local failedType = param15;
-            if LAST_TARGET ~= 0 and failedType == SPELL_FAILED_LINE_OF_SIGHT then
+            if failedType == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[LAST_TARGET] = { ctime  = GetTime(), cspell = spellId };
             elseif failedType == SPELL_FAILED_NOT_BEHIND then
                 AddonFrame.LastNotBehindTime = GetTime();
@@ -293,19 +214,6 @@ moving_spell_table = {
     110806, -- Благосклонность предков (Друид: Симбиоз)
     147806, -- Вневременной остров
 };
-
--- Делает проверку есть ли прок.
--- Параметры:
---  procFlag - ability.ProcFlag
---  prockType - Тип стата ("Intellect", "SpellHaste"б и т.п.)
---  pct - Значение показывающее на сколько увеличился стат
-function CheckProc(procFlag, prockType, pct)
-    if bit.band(procFlag, PROC_TABLE[prockType].Flag) ~= 0 then
-        if PROC_TABLE[prockType].Pct > pct then
-            return true;
-        end
-    end
-end
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
@@ -443,13 +351,12 @@ end
 -- Проверка, была ли зажата клавиша модификатор mk*
 function IsModKeyDown(m_key)
     if not GetCurrentKeyBoardFocus() then
-        if     m_key == mkLeftShift    and IsLeftShiftKeyDown()    then return true;  -- 1
-        elseif m_key == mkLeftControl  and IsLeftControlKeyDown()  then return true;  -- 2
-        elseif m_key == mkLeftAlt      and IsLeftAltKeyDown()      then return true;  -- 3
-        elseif m_key == mkRightShift   and IsRightShiftKeyDown()   then return true;  -- 4
-        elseif m_key == mkRightControl and IsRightControlKeyDown() then return true;  -- 5
-        elseif m_key == mkRightAlt     and IsRightAltKeyDown()     then return true;  -- 6
-        end
+        return (m_key == mkLeftShift    and IsLeftShiftKeyDown()   ) or
+               (m_key == mkLeftControl  and IsLeftControlKeyDown() ) or
+               (m_key == mkLeftAlt      and IsLeftAltKeyDown()     ) or
+               (m_key == mkRightShift   and IsRightShiftKeyDown()  ) or
+               (m_key == mkRightAlt     and IsRightAltKeyDown()    ) or
+               (m_key == mkRightControl and IsRightControlKeyDown());
     end
 end
 
@@ -524,22 +431,19 @@ end
 -----------------------------------------------
 
 MAIN_CLASS_SPELL = 0;
-DISPELL_TABLE = {
-    ["PRIEST_HEAL"]     = { "Magic", "Disease", "Curse"  },
-    ["PRIEST_NONE"]     = {          "Disease", "Curse"  },
-    ["DRUID_HEAL"]      = { "Magic", "Curse",   "Poison" },
-    ["DRUID_NONE"]      = {          "Curse",   "Poison" },
-    ["DRUID_SIMBIOS"]   = {          "Disease", "Poison" },
-    ["PALADIN_HEAL"]    = { "Magic", "Disease", "Poison" },
-    ["PALADIN_NONE"]    = {          "Disease", "Poison" },
-    ["MONK_HEAL"]       = { "Magic", "Disease", "Poison" },
-    ["MONK_NONE"]       = {          "Disease", "Poison" },
-    ["SHAMAN_HEAL"]     = { "Magic", "Curse"             },
-    ["SHAMAN_NONE"]     = {          "Curse"             },
-    ["MAGE_NONE"]       = { },
-    ["WARLOCK_NONE"]    = { },
+DISPELL_TABLE = {   --   Магия           Яд               Болезнь           Проклятие
+    PRIEST_HEAL     = { Magic = true, Poison = nil , Disease = true, Curse = true },
+    PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = true },
+    DRUID_HEAL      = { Magic = true, Poison = true, Disease = nil , Curse = true },
+    DRUID_NONE      = { Magic = nil , Poison = true, Disease = nil , Curse = true },
+    DRUID_SIMBIOS   = { Magic = nil , Poison = true, Disease = true, Curse = true },
+    PALADIN_HEAL    = { Magic = true, Poison = true, Disease = true, Curse = nil  },
+    PALADIN_NONE    = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
+    MONK_HEAL       = { Magic = true, Poison = true, Disease = true, Curse = nil  },
+    MONK_NONE       = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
+    SHAMAN_HEAL     = { Magic = true, Poison = nil , Disease = nil , Curse = true },
+    SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
 };
-
 -- Возвращает ID юнита
 function UnitId(unit)
     return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
@@ -626,31 +530,23 @@ function CheckRaidDispellLogic(spellId, member)
 end
 
 -- Возвращает юнита, с которого надо диспелить (с наибольшим количеством стаков)
--- Параметр dispeller_type - Указывает тип диспеллера ("HEAL", "NONE", "SIMBIOS")
--- По умолчанию: "HEAL"
+-- Параметр dispeller_type - Указывает тип диспеллера ( "NONE", "HEAL", "SIMBIOS")
+-- По умолчанию: "NONE"
 -- Возвращает: unit, count или nil - если диспелить нечего.
 function GetDispellInfo(dispeller_type)
     local dispeller = dispeller_type or "NONE";
     local d_class   = select(2, UnitClass("player")) or "";
     local c_rec     = DISPELL_TABLE[d_class.."_"..dispeller];
 
-    if type(c_rec) ~= "table" then
-        return;
-    end
+    if type(c_rec) ~= "table" then return end
 
     local dispellTable   = {};
     for _,member in ipairs(members) do
-        for i = 1, 40 do
-            local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, i);
-            if not name then
-                break;
-            end
-            -- Проверяем можем ли мы диспелить данный тип дебафа + проверяем надо ли диспелить.
-            for _,d_type in ipairs(c_rec) do
-                if d_type == dispelType and not CheckRaidDispellLogic(spellId, member) then
-                    table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
-                    break;
-                end
+        for index = 1, 40 do
+            local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, index);
+            if not name then break end
+            if c_rec[dispelType] and not CheckRaidDispellLogic(spellId, member) then
+                table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
             end
         end
     end
@@ -670,7 +566,7 @@ function FillPartyTables(standartSpellId)
     FORCE_IN_COMBAT  = false;
     MAIN_CLASS_SPELL = standartSpellId;
     LowHP            = { };
-    members          = {{ Unit = "player", IsInMyPaty = true }};
+    members          = { { Unit = "player", IsInMyPaty = true } };
 
     for i = 95, 10, -5 do
         LowHP["H"..i] = 0;
