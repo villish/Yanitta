@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.86</Version>
+  <Version>0.0.4.88</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -441,6 +441,7 @@ DISPELL_TABLE = {   --   Магия           Яд               Болезнь 
     MONK_NONE       = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
     SHAMAN_HEAL     = { Magic = true, Poison = nil , Disease = nil , Curse = true },
     SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
+    MAGE_NONE       = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
 };
 -- Возвращает ID юнита
 function UnitId(unit)
@@ -5849,6 +5850,34 @@ end]]></Lua>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[return true;]]></Lua>
       </Ability>
+      <Ability Name="Чарокрад">
+        <SpellID>30449</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[--return true;]]></Lua>
+      </Ability>
+      <Ability Name="Антимагия">
+        <SpellID>2139</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>true</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[return CheckInterrupt(ability.Target);]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Огонь" ProcNotifyer="false">
@@ -5876,6 +5905,7 @@ end]]></Lua>
         <AbilityQueue>
           <string>Инициализация (Лед)</string>
           <string>Frost: Снежная Буря</string>
+          <string>Антимагия</string>
           <string>Frost: Ледяная преграда</string>
           <string>Frost: Живая бомба</string>
           <string>Frost: Ледяной шар</string>
