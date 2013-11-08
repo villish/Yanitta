@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.88</Version>
+  <Version>0.0.4.89</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -224,7 +224,6 @@ moving_spell_table = {
 --  {...} - перечень бафов
 --  filter - фильтр
 function HasBuff(unit, spellId, filter)
-
     local spell_table = { };
     if type(spellId) == "table" then
         spell_table = spellId;
@@ -279,20 +278,6 @@ function HasDebuff(unit, spellId, filter)
     return nil, 0, 0, 0, 0, 0;
 end
 
-function UnitBuffId(target, spellId, filter)
-    local spellName, spellRank = GetSpellInfo(spellId);
-    if spellName then
-        return UnitBuff(target, spellName, spellRank, fileter);
-    end
-end
-
-function UnitDebuffId(target, spellId, filter)
-    local spellName, spellRank = GetSpellInfo(spellId);
-    if spellName then
-        return UnitDebuff(target, spellName, spellRank, fileter);
-    end
-end
-
 -- Вызвращает время до восстановления заклинания
 -- Параметр: ид заклинания
 function SpellCD(m_spell)
@@ -310,40 +295,28 @@ function IsMoving()
             return;
         end
     end
-
     return GetUnitSpeed("player") ~= 0;
 end
 
 -- Проверка на нахождение персонажа за спиной цели
 function IsNotBehind(sec)
-    local sec = sec or 1;
-    if GetTime() - (AddonFrame.LastNotBehindTime or 0) <= sec then
-        return true;
-    end
+    return GetTime() - (AddonFrame.LastNotBehindTime or 0) <= (sec or 1);
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
 function IsNotLineOfSight(unit,sec)
     local rec = LOSS_TABLE[UnitGUID(unit)];
-    if rec and (GetTime() - rec.ctime) <= (sec or 1) then
-        return true;
-    end
+    return rec and (GetTime() - rec.ctime) <= (sec or 1);
 end
 
 -- возвращает текущее значение здоровья в процентах
 function HealthByPercent(m_target)
-    if UnitExists(m_target) then
-        return 100 * (UnitHealth(m_target) or 1) / (UnitHealthMax(m_target) or 1);
-    end
-    return 0;
+    return UnitExists(m_target) and 100 * (UnitHealth(m_target) or 1) / (UnitHealthMax(m_target) or 1) or 0;
 end
 
 -- возвращает текущее значение ресурса (мана, энергия, фокус, ярость ...) в процентах
 function PowerByPercent(m_target, m_powertype)
-    if UnitExists(m_target) then
-        return 100 * (UnitPower(m_target, m_powertype) or 1) / (UnitPowerMax(m_target, m_powertype) or 1);
-    end
-    return 0;
+    return UnitExists(m_target) and 100 * (UnitPower(m_target, m_powertype) or 1) / (UnitPowerMax(m_target, m_powertype) or 1) or 0;
 end
 
 -- Проверка, была ли зажата клавиша модификатор mk*
