@@ -5878,6 +5878,38 @@ end]]></Lua>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[return CheckInterrupt(ability.Target);]]></Lua>
       </Ability>
+      <Ability Name="Frost: Морозный доспех">
+        <SpellID>7302</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[if not HasBuff("player", 7302) then
+    return true;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Чародейская гениальность">
+        <SpellID>1459</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not HasBuff("player", 1459) then
+    return true;
+end]]></Lua>
+      </Ability>
     </AbilityList>
     <RotationList>
       <Rotation Name="Огонь" ProcNotifyer="false">
@@ -5904,14 +5936,15 @@ end]]></Lua>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
           <string>Инициализация (Лед)</string>
+          <string>Frost: Чародейская гениальность</string>
           <string>Frost: Снежная Буря</string>
           <string>Антимагия</string>
           <string>Frost: Ледяная преграда</string>
           <string>Frost: Живая бомба</string>
-          <string>Frost: Ледяной шар</string>
           <string>Frost: Стрела ледяного огня</string>
           <string>Frost: Ледяное копье</string>
           <string>Frost: Ледяная стрела</string>
+          <string>Frost: Морозный доспех</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
