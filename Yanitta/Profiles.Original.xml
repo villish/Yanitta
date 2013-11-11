@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.104</Version>
+  <Version>0.0.4.110</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -179,7 +179,6 @@ function AddonFrame_OnEvent(self, event, ...)
                 Crit    = GetCritChance(),
                 Mastery = GetMastery()
             };
-            print(subEvent, statTable.Main, statTable.AP);
             for key, procRecord in pairs(PROC_TABLE) do
                 local statVal = statTable[key] or 0;
                 if statVal > procRecord.Value then
@@ -251,6 +250,20 @@ moving_spell_table = {
     110806, -- Благосклонность предков (Друид: Симбиоз)
     147806, -- Вневременной остров
 };
+
+function HasProc(main, ap, haste, crit, mastery)
+    if main > 0        and PROC_TABLE.Main.Pct >= main then
+        return true;
+    elseif ap > 0      and PROC_TABLE.AP.Pct >= ap then
+        return true;
+    elseif haste > 0   and PROC_TABLE.Haste.Pct >= haste then
+        return true;
+    elseif crit > 0    and PROC_TABLE.Crit.Pct >= crit then
+        return true;
+    elseif mastery > 0 and PROC_TABLE.Mastery.Pct >= mastery then
+        return true;
+    end
+end
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
@@ -5785,9 +5798,13 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+        <Lua><![CDATA[if HasProc(10,10,10,0,0) then
+    return true;
+end
+
+if not HasDebuff(ability.Target, 44457, "PLAYER") then
     return IsSpellInRange(GetSpellInfo(116), ability.Target) == 1;
 end]]></Lua>
       </Ability>
@@ -5801,9 +5818,13 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+        <Lua><![CDATA[if HasProc(10,10,10,0,0) then
+    return true;
+end
+
+if not HasDebuff(ability.Target, 44457, "PLAYER") then
     return IsSpellInRange(GetSpellInfo(116), ability.Target) == 1;
 end]]></Lua>
       </Ability>
@@ -5817,9 +5838,13 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+        <Lua><![CDATA[if HasProc(10,10,10,0,0) then
+    return true;
+end
+
+if not HasDebuff(ability.Target, 44457, "PLAYER") then
     return IsSpellInRange(GetSpellInfo(116), ability.Target) == 1;
 end]]></Lua>
       </Ability>
@@ -5964,7 +5989,7 @@ end]]></Lua>
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
       </Rotation>
-      <Rotation Name="Лед" ProcNotifyer="false">
+      <Rotation Name="Лед" ProcNotifyer="true">
         <TickDelay>250</TickDelay>
         <HotKey Key="X" Modifier="Alt" />
         <AbilityQueue>
