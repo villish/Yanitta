@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.88</Version>
+  <Version>0.0.4.95</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -224,7 +224,6 @@ moving_spell_table = {
 --  {...} - перечень бафов
 --  filter - фильтр
 function HasBuff(unit, spellId, filter)
-
     local spell_table = { };
     if type(spellId) == "table" then
         spell_table = spellId;
@@ -279,20 +278,6 @@ function HasDebuff(unit, spellId, filter)
     return nil, 0, 0, 0, 0, 0;
 end
 
-function UnitBuffId(target, spellId, filter)
-    local spellName, spellRank = GetSpellInfo(spellId);
-    if spellName then
-        return UnitBuff(target, spellName, spellRank, fileter);
-    end
-end
-
-function UnitDebuffId(target, spellId, filter)
-    local spellName, spellRank = GetSpellInfo(spellId);
-    if spellName then
-        return UnitDebuff(target, spellName, spellRank, fileter);
-    end
-end
-
 -- Вызвращает время до восстановления заклинания
 -- Параметр: ид заклинания
 function SpellCD(m_spell)
@@ -310,40 +295,28 @@ function IsMoving()
             return;
         end
     end
-
     return GetUnitSpeed("player") ~= 0;
 end
 
 -- Проверка на нахождение персонажа за спиной цели
 function IsNotBehind(sec)
-    local sec = sec or 1;
-    if GetTime() - (AddonFrame.LastNotBehindTime or 0) <= sec then
-        return true;
-    end
+    return GetTime() - (AddonFrame.LastNotBehindTime or 0) <= (sec or 1);
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
 function IsNotLineOfSight(unit,sec)
     local rec = LOSS_TABLE[UnitGUID(unit)];
-    if rec and (GetTime() - rec.ctime) <= (sec or 1) then
-        return true;
-    end
+    return rec and (GetTime() - rec.ctime) <= (sec or 1);
 end
 
 -- возвращает текущее значение здоровья в процентах
 function HealthByPercent(m_target)
-    if UnitExists(m_target) then
-        return 100 * (UnitHealth(m_target) or 1) / (UnitHealthMax(m_target) or 1);
-    end
-    return 0;
+    return UnitExists(m_target) and 100 * (UnitHealth(m_target) or 1) / (UnitHealthMax(m_target) or 1) or 0;
 end
 
 -- возвращает текущее значение ресурса (мана, энергия, фокус, ярость ...) в процентах
 function PowerByPercent(m_target, m_powertype)
-    if UnitExists(m_target) then
-        return 100 * (UnitPower(m_target, m_powertype) or 1) / (UnitPowerMax(m_target, m_powertype) or 1);
-    end
-    return 0;
+    return UnitExists(m_target) and 100 * (UnitPower(m_target, m_powertype) or 1) / (UnitPowerMax(m_target, m_powertype) or 1) or 0;
 end
 
 -- Проверка, была ли зажата клавиша модификатор mk*
@@ -430,8 +403,8 @@ end
 
 MAIN_CLASS_SPELL = 0;
 DISPELL_TABLE = {   --   Магия           Яд               Болезнь           Проклятие
-    PRIEST_HEAL     = { Magic = true, Poison = nil , Disease = true, Curse = true },
-    PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = true },
+    PRIEST_HEAL     = { Magic = true, Poison = nil , Disease = true, Curse = nil  },
+    PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = nil  },
     DRUID_HEAL      = { Magic = true, Poison = true, Disease = nil , Curse = true },
     DRUID_NONE      = { Magic = nil , Poison = true, Disease = nil , Curse = true },
     DRUID_SIMBIOS   = { Magic = nil , Poison = true, Disease = true, Curse = true },
@@ -440,7 +413,7 @@ DISPELL_TABLE = {   --   Магия           Яд               Болезнь 
     MONK_HEAL       = { Magic = true, Poison = true, Disease = true, Curse = nil  },
     MONK_NONE       = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
     SHAMAN_HEAL     = { Magic = true, Poison = nil , Disease = nil , Curse = true },
-    SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
+    SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = nil  },
     MAGE_NONE       = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
 };
 -- Возвращает ID юнита
@@ -488,8 +461,6 @@ function CheckInstanseLogic(member)
     -- Отхил не проходит, надо настакивать щит под дебафом
     -- по этому просто занижаем реальное здоровье.
     if HasDebuff(member.Unit, 142861) then
-        -- возможно есть дебаф, который показывает уровень щита, если этот так,
-        -- надо добавить логику и на него.
         if HasDebuff(member.Unit, 142863) then -- красный
             member.HP = 50;
         elseif HasDebuff(member.Unit, 142864) then -- желтый
@@ -497,7 +468,7 @@ function CheckInstanseLogic(member)
         elseif HasDebuff(member.Unit, 142865) then -- зеленый
             member.HP = 100;
         else -- без щита
-            member.HP = 30;
+            member.HP = min(member.HP, 50);
         end
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
     elseif HasDebuff(member.Unit, 137341) then
@@ -553,7 +524,7 @@ function GetDispellInfo(dispeller_type)
         table.sort(dispellTable, function(A, B)
             return A.Count > B.Count;
         end);
-        return dispellTable[1].Unit, dispellTable[1].Count, dispellTable[1].HP;
+        return dispellTable[1].Unit, dispellTable;
     end
 end
 
@@ -3058,43 +3029,7 @@ LeftAlt - Пауза]]></Notes>
   <Profile Class="Rogue">
     <Lua><![CDATA[invisible     = false;
 setAoE        = false;
-useCooldown   = true;
-
-ALREADY_PICKPOCKETED_TABLE = { };
-
-if type(RFrame) == "Frame" then
-    RFrame:Hide();
-end
-RFrame = CreateFrame("Frame");
-RFrame:RegisterEvent("UI_ERROR_MESSAGE");
-RFrame:RegisterEvent("WORLD_MAP_UPDATE");
-RFrame:SetScript("OnEvent",  function(self, event, ...)
-    if event == "UI_ERROR_MESSAGE" then
-        local msg = ...;
-        if  msg == SPELL_FAILED_TARGET_NO_POCKETS or
-            msg == ERR_ALREADY_PICKPOCKETED then
-            if UnitExists("target") then
-                local guid = UnitGUID("target");
-                ALREADY_PICKPOCKETED_TABLE[guid] = GetTime();
-            end
-        end
-    elseif event == "WORLD_MAP_UPDATE" then
-        ALREADY_PICKPOCKETED_TABLE = { };
-    end
-end);
-RFrame:Show();
-
-function IsPickPocketed(unit)
-    local guid = UnitGUID(unit);
-    if ALREADY_PICKPOCKETED_TABLE then
-        local t = ALREADY_PICKPOCKETED_TABLE[guid] or 0;
-        if t == 0 then
-            return false;
-        elseif (t + 300) < GetTime() then
-            return true;
-        end
-    end
-end]]></Lua>
+useCooldown   = true;]]></Lua>
     <AbilityList>
       <Ability Name="Инициализаця">
         <SpellID>0</SpellID>
@@ -3325,7 +3260,11 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[TargetNearestEnemy();
+        <Lua><![CDATA[if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
+    CastShapeshiftForm(1);
+end
+
+TargetNearestEnemy();
 if not IsPickPocketed("target") and not UnitIsDeadOrGhost("target") then
     return true;
 end]]></Lua>
@@ -3519,7 +3458,30 @@ end]]></Lua>
           <string>Обшаривание карманов</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[ALREADY_PICKPOCKETED_TABLE = { };
+RFrame = CreateFrame("Frame");
+RFrame:RegisterEvent("UI_ERROR_MESSAGE");
+RFrame:RegisterEvent("WORLD_MAP_UPDATE");
+RFrame:SetScript("OnEvent",  function(self, event, ...)
+    if event == "UI_ERROR_MESSAGE" then
+        local msg = ...;
+        if UnitExists("target") and (msg == SPELL_FAILED_TARGET_NO_POCKETS or msg == ERR_ALREADY_PICKPOCKETED) then
+            ALREADY_PICKPOCKETED_TABLE[UnitGUID("target")] = GetTime();
+        end
+    elseif event == "WORLD_MAP_UPDATE" then
+        ALREADY_PICKPOCKETED_TABLE = { };
+    end
+end);
+RFrame:Show();
+
+function IsPickPocketed(unit)
+    if ALREADY_PICKPOCKETED_TABLE then
+        local t = ALREADY_PICKPOCKETED_TABLE[UnitGUID(unit)];
+        if type(t) == "number" and (t + 300) > GetTime() then
+            return true;
+        end
+    end
+end]]></Lua>
       </Rotation>
     </RotationList>
   </Profile>
@@ -4326,9 +4288,9 @@ LeftAlt - Массовое разсеивание]]></Notes>
 useCooldown     = true;
 setAoE          = nil;
 isAltMod        = nil;
-rune_names = { "Blood", "Unholy", "Frost", "Death" };
 
 function FillRunesInfo()
+    local rune_names = { "Blood", "Unholy", "Frost", "Death" };
     runes = {
         Blood  = { Rem = 0, Count = 0 },
         Unholy = { Rem = 0, Count = 0 },
