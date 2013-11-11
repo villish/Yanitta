@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.95</Version>
+  <Version>0.0.4.101</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -8,6 +8,14 @@ ABILITY_TABLE   = { };
 LOSS_TABLE      = { };
 ping            = 0;
 LAST_TARGET     = 0;
+
+PROC_TABLE = { -- Таблица содержит проки и их значения.
+    Main    = { Value = 1, Pct = 0, Flag = 0x01 },
+    AP      = { Value = 1, Pct = 0, Flag = 0x02 },
+    Haste   = { Value = 1, Pct = 0, Flag = 0x04 },
+    Crit    = { Value = 1, Pct = 0, Flag = 0x08 },
+    Mastery = { Value = 1, Pct = 0, Flag = 0x10 },
+};
 
 function minmax(val, x, y)
     return min(max(val, x), y);
@@ -142,17 +150,48 @@ function AddonFrame_OnEvent(self, event, ...)
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
             for i, ability in ipairs(ABILITY_TABLE) do
                 if spellId == ability.SpellId and destGUID == UnitGUID(ability.Target) then
+                    ability.ProcFlag = 0;
                     if ability.SetRecastDelay then
                         ability.LastCastingTime = GetTime();
                     end
                 end
             end
         elseif subEvent == "SPELL_CAST_FAILED" then
-            local failedType = param15;
-            if failedType == SPELL_FAILED_LINE_OF_SIGHT then
+            if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[LAST_TARGET] = { ctime  = GetTime(), cspell = spellId };
-            elseif failedType == SPELL_FAILED_NOT_BEHIND then
+            elseif param15 == SPELL_FAILED_NOT_BEHIND then
                 AddonFrame.LastNotBehindTime = GetTime();
+            end
+        -- todo: фильтр аур, проверить destGUID
+        elseif (subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_AURA_REMOVED") and destGUID == UnitGUID("player") then
+            local procFlag, index, main, stat_indexes = 0, 0, 0, { 1, 2, 4 };
+            for _,stat in ipairs(stat_indexes) do
+                local val = UnitStat("player", stat);
+                if val > main then
+                    main  = val;
+                    index = stat;
+                end
+            end
+            local statTable = {
+                Main    = main,
+                AP      = index == 4 and GetSpellBonusDamage(2)   or UnitAttackPower("player"),
+                Haste   = index == 4 and UnitSpellHaste("player") or GetMeleeHaste(),
+                Crit    = GetCritChance(),
+                Mastery = GetMastery()
+            };
+            print(subEvent, statTable.Main, statTable.AP);
+            for key, procRecord in pairs(PROC_TABLE) do
+                local statVal = statTable[key] or 0;
+                if statVal > procRecord.Value then
+                    procRecord.Pct = (statVal-procRecord.Value)*100/procRecord.Value;
+                    procFlag = bit.bor(procFlag, procRecord.Flag); -- procFlag |= procRecord.Flag
+                elseif statVal < procRecord.Value then
+                    procRecord.Pct = 0;
+                end
+                procRecord.Value = statVal;
+            end
+            for i,ability in ipairs(ABILITY_TABLE) do
+                ability.ProcFlag = bit.bor((ability.ProcFlag or 0), procFlag);
             end
         end
     end
