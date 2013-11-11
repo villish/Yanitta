@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.101</Version>
+  <Version>0.0.4.103</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -5785,10 +5785,42 @@ end]]></Lua>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not HasDebuff("target", 44457, "PLAYER") then
-    return true;
+        <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+    return IsSpellInRange(GetSpellInfo(116), ability.Target) == 1;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Живая бомба (Focus)">
+        <SpellID>44457</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+    return IsSpellInRange(GetSpellInfo(116), ability.Target) == 1;
+end]]></Lua>
+      </Ability>
+      <Ability Name="Frost: Живая бомба (Mouseover)">
+        <SpellID>44457</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotHCD>false</IsNotHCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+    return IsSpellInRange(GetSpellInfo(116), ability.Target) == 1;
 end]]></Lua>
       </Ability>
       <Ability Name="Frost: Ледяной шар">
@@ -5942,6 +5974,8 @@ end]]></Lua>
           <string>Антимагия</string>
           <string>Frost: Ледяная преграда</string>
           <string>Frost: Живая бомба</string>
+          <string>Frost: Живая бомба (Focus)</string>
+          <string>Frost: Живая бомба (Mouseover)</string>
           <string>Frost: Стрела ледяного огня</string>
           <string>Frost: Ледяное копье</string>
           <string>Frost: Ледяная стрела</string>
