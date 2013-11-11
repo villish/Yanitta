@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.103</Version>
+  <Version>0.0.4.104</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -163,7 +163,7 @@ function AddonFrame_OnEvent(self, event, ...)
                 AddonFrame.LastNotBehindTime = GetTime();
             end
         -- todo: фильтр аур, проверить destGUID
-        elseif (subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_AURA_REMOVED") and destGUID == UnitGUID("player") then
+        elseif ProcNotifyer and (subEvent == "SPELL_AURA_APPLIED" or subEvent == "SPELL_AURA_REMOVED") and destGUID == UnitGUID("player") then
             local procFlag, index, main, stat_indexes = 0, 0, 0, { 1, 2, 4 };
             for _,stat in ipairs(stat_indexes) do
                 local val = UnitStat("player", stat);
