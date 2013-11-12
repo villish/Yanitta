@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.110</Version>
+  <Version>0.0.4.115</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -190,7 +190,7 @@ function AddonFrame_OnEvent(self, event, ...)
                 procRecord.Value = statVal;
             end
             for i,ability in ipairs(ABILITY_TABLE) do
-                ability.ProcFlag = bit.bor((ability.ProcFlag or 0), procFlag);
+                ability.ProcFlag = procFlag;
             end
         end
     end
@@ -251,16 +251,17 @@ moving_spell_table = {
     147806, -- Вневременной остров
 };
 
-function HasProc(main, ap, haste, crit, mastery)
-    if main > 0        and PROC_TABLE.Main.Pct >= main then
+function HasProc(procFlag, main, ap, haste, crit, mastery)
+    if     bit.band(procFlag, 0x01) ~= 0 and main > 0    and PROC_TABLE.Main.Pct >= main then
         return true;
-    elseif ap > 0      and PROC_TABLE.AP.Pct >= ap then
+    elseif bit.band(procFlag, 0x02) ~= 0 and ap > 0      and PROC_TABLE.AP.Pct >= ap then
         return true;
-    elseif haste > 0   and PROC_TABLE.Haste.Pct >= haste then
+    elseif bit.band(procFlag, 0x04) ~= 0 and haste > 0   and PROC_TABLE.Haste.Pct >= haste then
+        print("Haste: ", PROC_TABLE.Haste.Pct)
         return true;
-    elseif crit > 0    and PROC_TABLE.Crit.Pct >= crit then
+    elseif bit.band(procFlag, 0x08) ~= 0 and crit > 0    and PROC_TABLE.Crit.Pct >= crit then
         return true;
-    elseif mastery > 0 and PROC_TABLE.Mastery.Pct >= mastery then
+    elseif bit.band(procFlag, 0x10) ~= 0 and mastery > 0 and PROC_TABLE.Mastery.Pct >= mastery then
         return true;
     end
 end
@@ -501,7 +502,7 @@ function ExtendTheHealTable()
         end
         -- отхил дружественной цели по mouseover/target/focus
         InsertNewUnitToHeallersTable("target");
-        --InsertNewUnitToHeallersTable("focus");
+        InsertNewUnitToHeallersTable("focus");
         --InsertNewUnitToHeallersTable("mouseover");
     end
 end
@@ -5800,7 +5801,8 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if HasProc(10,10,10,0,0) then
+        <Lua><![CDATA[if HasProc(ability.ProcFlag, 10,10,10,0,0) then
+    print(ability.ProcFlag)
     return true;
 end
 
@@ -5840,7 +5842,8 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if HasProc(10,10,10,0,0) then
+        <Lua><![CDATA[if HasProc(ability.ProcFlag, 10,10,10,0,0) then
+    print(ability.ProcFlag)
     return true;
 end
 
