@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.125</Version>
+  <Version>0.0.4.126</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -906,14 +906,14 @@ end]]></Lua>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotHCD>true</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if UnitExists(unit) and UnitIsEnemy("player", unit) then
-    local name,_,_,_,_,endTime = UnitCastingInfo(unit);
+        <Lua><![CDATA[if UnitIsEnemy("player", ability.Target) and UnitIsUnit("player", ability.Target.."target") then
+    local name,_,_,_,_,endTime = UnitCastingInfo(ability.Target);
     if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
         local r_table = UnitIsPVP() and reflect_table.PVP or reflect_table.RAIDS;
         for _,spell_id in ipairs(r_table) do
