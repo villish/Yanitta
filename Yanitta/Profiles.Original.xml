@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.126</Version>
+  <Version>0.0.4.129</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -249,6 +249,7 @@ moving_spell_table = {
     79206,  -- Благосклонность предков (Шанам)
     110806, -- Благосклонность предков (Друид: Симбиоз)
     147806, -- Вневременной остров
+    108839, -- Плавучая льдина
 };
 
 function HasProc(procFlag, main, ap, haste, crit, mastery)
@@ -257,7 +258,6 @@ function HasProc(procFlag, main, ap, haste, crit, mastery)
     elseif bit.band(procFlag, 0x02) ~= 0 and ap > 0      and PROC_TABLE.AP.Pct >= ap then
         return true;
     elseif bit.band(procFlag, 0x04) ~= 0 and haste > 0   and PROC_TABLE.Haste.Pct >= haste then
-        print("Haste: ", PROC_TABLE.Haste.Pct)
         return true;
     elseif bit.band(procFlag, 0x08) ~= 0 and crit > 0    and PROC_TABLE.Crit.Pct >= crit then
         return true;
@@ -1049,8 +1049,8 @@ end]]></Lua>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[if UnitIsPVP("player") then
-    if HasFullControl() then
-        return true;
+--    if HasFullControl() then
+--        return true;
     if HasDebuff("player", ccIDs) then
         return true;
     end
@@ -6037,7 +6037,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if HasBuff("player", 112965) then
+        <Lua><![CDATA[if HasBuff("player", 112965) or (IS_MOVING and not HasBuff("player", 108839)) then
     return true;
 end]]></Lua>
       </Ability>
