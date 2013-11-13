@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.133</Version>
+  <Version>0.0.4.134</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -4707,7 +4707,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if not UnitDebuff("target", 59921) then
+        <Lua><![CDATA[if not UnitDebuff("target", 59921) or HasBuff("player", 59052) then
     return true;
 end]]></Lua>
       </Ability>
@@ -4809,22 +4809,6 @@ end]]></Lua>
     return true;
 end]]></Lua>
       </Ability>
-      <Ability Name="Зимний горн">
-        <SpellID>57330</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotHCD>false</IsNotHCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[if UnitPower("player") < 70 then
-    return true;
-end]]></Lua>
-      </Ability>
       <Ability Name="Усиление рунического оружия">
         <SpellID>47568</SpellID>
         <Target>None</Target>
@@ -4853,7 +4837,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HasDebuff("target", 59879, "PLAYER") and HasDebuff("target", 59921, "PLAYER") then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Вспышка болезни (1)">
         <SpellID>77575</SpellID>
@@ -4867,7 +4853,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if not HasDebuff("target", 59879, "PLAYER") and not HasDebuff("target", 59921, "PLAYER") then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Нечестивая порча (1)">
         <SpellID>115989</SpellID>
@@ -4923,7 +4911,10 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[local frost = runes.Frost.Count;
+if frost >= 1 or HasBuff("player", 59052) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Удар чумы">
         <SpellID>45462</SpellID>
@@ -4951,7 +4942,10 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[local frost = runes.Frost.Count;
+if frost >= 1 or HasBuff("player", 59052) then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Уничтожение (1)">
         <SpellID>49020</SpellID>
@@ -4965,7 +4959,18 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[local unholy = runes.Unholy.Count;
+local frost = runes.Frost.Count;
+
+if unholy >= 1 and frost >= 1 then
+    if HasBuff("player", 51124) then
+         return true;
+    elseif unholy >= 2 and frost >= 2 then
+         return true;
+     elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
+         return true;
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Кровоотвод (2)">
         <SpellID>45529</SpellID>
@@ -4993,7 +4998,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if UnitPower("player") >= 35 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Уничтожение (2)">
         <SpellID>49020</SpellID>
@@ -5007,7 +5014,18 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[local unholy = runes.Unholy.Count;
+local frost = runes.Frost.Count;
+
+if unholy >= 1 and frost >= 1 then
+    if HasBuff("player", 51124) then
+         return true;
+    elseif unholy >= 2 and frost >= 2 then
+         return true;
+     elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
+         return true;
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Вытягивание чумы (2)">
         <SpellID>123693</SpellID>
@@ -5021,7 +5039,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HasDebuff("target", 59879, "PLAYER") and HasDebuff("target", 59921, "PLAYER") then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Вспышка болезни (2)">
         <SpellID>77575</SpellID>
@@ -5063,7 +5083,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if UnitPower("player") >= 35 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Зимний горн">
         <SpellID>57330</SpellID>
@@ -5077,7 +5099,7 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[return not HasBuff(57330);]]></Lua>
       </Ability>
       <Ability Name="Frost: Ледяной удар (3)">
         <SpellID>49143</SpellID>
@@ -5091,7 +5113,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if UnitPower("player") >= 35 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Уничтожение (3)">
         <SpellID>49020</SpellID>
@@ -5105,7 +5129,18 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[local unholy = runes.Unholy.Count;
+local frost = runes.Frost.Count;
+
+if unholy >= 1 and frost >= 1 then
+    if HasBuff("player", 51124) then
+         return true;
+    elseif unholy >= 2 and frost >= 2 then
+         return true;
+     elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
+         return true;
+    end
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Усиление рунического оружия">
         <SpellID>47568</SpellID>
@@ -5147,7 +5182,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if UnitPower("player") >= 35 then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Вытягивание чумы (3)">
         <SpellID>123693</SpellID>
@@ -5161,7 +5198,9 @@ end]]></Lua>
         <IsNotHCD>false</IsNotHCD>
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[return true;]]></Lua>
+        <Lua><![CDATA[if HasDebuff("target", 59879, "PLAYER") and HasDebuff("target", 59921, "PLAYER") then
+    return true;
+end]]></Lua>
       </Ability>
       <Ability Name="Frost: Усиление рунического оружия (2)">
         <SpellID>47568</SpellID>
@@ -5211,6 +5250,8 @@ Right Shift - Кулдауны]]></Notes>
         <TickDelay>250</TickDelay>
         <HotKey Key="Z" Modifier="Alt" />
         <AbilityQueue>
+          <string>Инициализация</string>
+          <string>Смерть и разложение</string>
           <string>Frost: Вытягивание чумы (1)</string>
           <string>Frost: Вспышка болезни (1)</string>
           <string>Frost: Нечестивая порча (1)</string>
@@ -5235,6 +5276,8 @@ Right Shift - Кулдауны]]></Notes>
           <string>Frost: Ледяной удар (4)</string>
           <string>Frost: Вытягивание чумы (3)</string>
           <string>Frost: Усиление рунического оружия (2)</string>
+          <string>Ледяное прикосновение</string>
+          <string>Вспышка болезни</string>
         </AbilityQueue>
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
