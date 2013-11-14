@@ -19,7 +19,8 @@ namespace Yanitta
         public static readonly DependencyProperty VersionProperty       = DependencyProperty.Register("Version",    typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty AuthorProperty        = DependencyProperty.Register("Author",     typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty UrlProperty           = DependencyProperty.Register("Url",        typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty ProfileListProperty   = DependencyProperty.Register("ProfileList", typeof(ObservableCollection<Profile>), typeof(ProfileDb));
+        public static readonly DependencyProperty ProfileListProperty   = DependencyProperty.Register("ProfileList",  typeof(ObservableCollection<Profile>),     typeof(ProfileDb));
+        public static readonly DependencyProperty TestListProperty      = DependencyProperty.Register("TestList",     typeof(ObservableCollection<TestElement>), typeof(ProfileDb));
 
         [XmlElement]
         public string Version
@@ -70,6 +71,13 @@ namespace Yanitta
             set { this.Func = value.Value; }
         }
 
+        [XmlElement("Test")]
+        public ObservableCollection<TestElement> TestList
+        {
+            get { return (ObservableCollection<TestElement>)GetValue(TestListProperty); }
+            set { SetValue(TestListProperty, value); }
+        }
+
         [XmlElement("Profile")]
         public ObservableCollection<Profile> ProfileList
         {
@@ -89,6 +97,7 @@ namespace Yanitta
         {
             this.Version     = "0.0.0.1";
             this.ProfileList = new ObservableCollection<Profile>();
+            this.TestList    = new ObservableCollection<TestElement>();
         }
 
         #region Extension

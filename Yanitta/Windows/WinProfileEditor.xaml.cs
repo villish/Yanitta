@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Yanitta.Properties;
+using System.Linq;
+using System.Text;
 
 namespace Yanitta
 {
@@ -36,32 +38,9 @@ namespace Yanitta
             get { return (rotationList != null && rotationList.SelectedValue is Rotation) ? (Rotation)rotationList.SelectedValue : null; }
         }
 
-        private void SetAlavilableAbilityFilter()
+        private TestElement CurrentTest
         {
-            if (listBoxAlavilableAbilitys == null)
-                return;
-            var abilityView = CollectionViewSource.GetDefaultView(listBoxAlavilableAbilitys.ItemsSource);
-            if (abilityView != null && CurrentRotation != null)
-            {
-                abilityView.Filter = new Predicate<object>((raw_ability) =>
-                {
-                    var ability = raw_ability as Ability;
-                    if (ability == null)
-                        return false;
-                    return !CurrentRotation.AbilityQueue.Contains(ability.Name);
-                });
-            }
-        }
-
-        private void MoveRotationAbility(int shift)
-        {
-            var index = rotationListAbilitys.SelectedIndex;
-            if (CurrentRotation != null && index > -1
-                && !(shift == -1 && index == 0)
-                && !(shift == 1  && index == CurrentRotation.AbilityQueue.Count - 1))
-            {
-                CurrentRotation.AbilityQueue.Move(index, index + shift);
-            }
+            get { return (testList != null && testList.SelectedValue is TestElement) ? (TestElement)testList.SelectedValue : null; }
         }
 
         private void MoveAbility(int shift)
@@ -69,72 +48,11 @@ namespace Yanitta
             var index = abilityList.SelectedIndex;
             if (CurrentProfile != null && index > -1
                 && !(shift == -1 && index == 0)
-                && !(shift == 1  && index == CurrentProfile.AbilityList.Count - 1))
+                && !(shift == 1  && index == CurrentRotation.AbilityList.Count - 1))
             {
-                CurrentProfile.AbilityList.Move(index, index + shift);
+                CurrentRotation.AbilityList.Move(index, index + shift);
                 abilityList.ScrollIntoView(this.abilityList.SelectedItem);
             }
-        }
-
-        private void listBoxAlavilableAbilitys_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            bMoveTo_Click_1(null, null);
-        }
-
-        private void rotationListAbilitys_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            bMoveFrom_Click_1(null, null);
-        }
-
-        private void bMoveTo_Click_1(object sender, RoutedEventArgs e)
-        {
-            if (CurrentRotation != null && listBoxAlavilableAbilitys.SelectedValue != null)
-            {
-                var index   = listBoxAlavilableAbilitys.SelectedIndex;
-                var ability = listBoxAlavilableAbilitys.SelectedValue as Ability;
-
-                CurrentRotation.AbilityQueue.Add(ability.Name);
-                SetAlavilableAbilityFilter();
-
-                var count = listBoxAlavilableAbilitys.Items.Count;
-
-                if (count > index)
-                    listBoxAlavilableAbilitys.SelectedIndex = index;
-                else if (count <= index && count > 0)
-                    listBoxAlavilableAbilitys.SelectedIndex = count - 1;
-            }
-        }
-
-        private void bMoveFrom_Click_1(object sender, RoutedEventArgs e)
-        {
-            var index = rotationListAbilitys.SelectedIndex;
-            if (CurrentRotation != null && index > -1)
-            {
-                CurrentRotation.AbilityQueue.RemoveAt(index);
-                SetAlavilableAbilityFilter();
-
-                var count = rotationListAbilitys.Items.Count;
-
-                if (count > index)
-                    rotationListAbilitys.SelectedIndex = index;
-                else if (count <= index && count > 0)
-                    rotationListAbilitys.SelectedIndex = count - 1;
-            }
-        }
-
-        private void bMoveUp_Click_1(object sender, RoutedEventArgs e)
-        {
-            MoveRotationAbility(-1);
-        }
-
-        private void bMoveDown_Click_1(object sender, RoutedEventArgs e)
-        {
-            MoveRotationAbility(1);
-        }
-
-        private void rotationList_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-            SetAlavilableAbilityFilter();
         }
 
         private void InitialiseEmptyProfiles()
@@ -168,35 +86,32 @@ namespace Yanitta
         {
             if (this.CurrentProfile != null)
             {
-                this.CurrentProfile.AbilityList.Add(new Ability());
-                this.abilityList.SelectedIndex = this.CurrentProfile.AbilityList.Count - 1;
+                this.CurrentRotation.AbilityList.Add(new Ability());
+                this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
                 this.tbAbilityName.Focus();
                 this.tbAbilityName.SelectAll();
                 abilityList.ScrollIntoView(this.abilityList.SelectedItem);
             }
-            SetAlavilableAbilityFilter();
         }
 
         private void CommandBinding_Executed_CopyAbility(object sender, ExecutedRoutedEventArgs e)
         {
             if (this.CurrentAbility != null)
             {
-                this.CurrentProfile.AbilityList.Add((Ability)this.CurrentAbility.Clone());
-                this.abilityList.SelectedIndex = this.CurrentProfile.AbilityList.Count - 1;
+                this.CurrentRotation.AbilityList.Add((Ability)this.CurrentAbility.Clone());
+                this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
                 this.tbAbilityName.Focus();
                 this.tbAbilityName.SelectAll();
                 this.abilityList.ScrollIntoView(this.abilityList.SelectedItem);
             }
-            SetAlavilableAbilityFilter();
         }
 
         private void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
         {
             if (this.CurrentAbility != null)
             {
-                this.CurrentProfile.AbilityList.Remove(this.CurrentAbility);
+                this.CurrentRotation.AbilityList.Remove(this.CurrentAbility);
             }
-            SetAlavilableAbilityFilter();
         }
 
         // rotations
@@ -213,7 +128,6 @@ namespace Yanitta
                 this.tbRotationName.SelectAll();
                 this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
             }
-            SetAlavilableAbilityFilter();
         }
 
         private void CommandBinding_Executed_CopyRotation(object sender, ExecutedRoutedEventArgs e)
@@ -226,23 +140,14 @@ namespace Yanitta
                 this.tbRotationName.SelectAll();
                 this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
             }
-            SetAlavilableAbilityFilter();
         }
 
         private void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
         {
             if (this.CurrentRotation != null)
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
-            SetAlavilableAbilityFilter();
         }
 
-        private void CommandBinding_Executed_RefreshRotation(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentProfile != null && this.CurrentRotation != null)
-                for (int i = this.CurrentRotation.AbilityQueue.Count - 1; i >= 0; --i)
-                    if (!this.CurrentProfile.AbilityList.Any(a => a.Name == this.CurrentRotation.AbilityQueue[i]))
-                        this.CurrentRotation.AbilityQueue.RemoveAt(i);
-        }
 
         // other
         private void CommandBinding_Executed_Import(object sender, ExecutedRoutedEventArgs e)
@@ -323,6 +228,90 @@ namespace Yanitta
             this.Close();
         }
 
+        private void CommandBinding_Executed_TestAbility(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            if (CurrentRotation != null)
+            {
+                var spellIdList = CurrentRotation.AbilityList.Select(a => a.SpellID);
+                var spell_table = string.Format(@"local spellList = {{ {0} }};\n", string.Join(", ", spellIdList));
+
+                // todo:
+            }
+        }
+
         #endregion Commands
+
+        private void tbAbilityFilter_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var abilityView = CollectionViewSource.GetDefaultView(abilityList.ItemsSource);
+            if (abilityView != null)
+            {
+                if (string.IsNullOrWhiteSpace(tbAbilityFilter.Text))
+                {
+                    abilityView.Filter = null;
+                }
+                else
+                {
+                    int spellId = 0;
+                    if (int.TryParse(tbAbilityFilter.Text, out spellId))
+                    {
+                        abilityView.Filter = new Predicate<object>((raw_ability) => {
+                            var ability = raw_ability as Ability;
+                            if (ability == null)
+                                return false;
+                            return ability.SpellID == spellId;
+                        });
+                    }
+                    else
+                    {
+                        abilityView.Filter = new Predicate<object>((raw_ability) => {
+                            var ability = raw_ability as Ability;
+                            if (ability == null || string.IsNullOrWhiteSpace(ability.Name))
+                                return false;
+                            return ability.Name.IndexOf(tbAbilityFilter.Text, StringComparison.CurrentCultureIgnoreCase) > -1;
+                        });
+                    }
+                }
+            }
+        }
+
+        private void ButtonTestAdd_Click(object sender, RoutedEventArgs e)
+        {
+            ProfileDb.Instance.TestList.Add(new TestElement());
+        }
+
+        private void ButtonTestCopy_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentTest != null)
+            {
+                ProfileDb.Instance.TestList.Add(new TestElement() {
+                    Name = CurrentTest.Name + "*",
+                    Lua  = CurrentTest.Lua
+                });
+            }
+        }
+
+        private void ButtonTestRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentTest != null)
+            {
+                ProfileDb.Instance.TestList.Remove(CurrentTest);
+            }
+        }
+
+        private void ButtonRunTest_Click(object sender, RoutedEventArgs e)
+        {
+            if (cbProcess.SelectedIndex > -1 && CurrentTest != null)
+            {
+                var mem = (WowMemory)cbProcess.SelectedValue;
+                mem.LuaHook.LuaExecute(CurrentTest.Lua);
+            }
+            else 
+            {
+                MessageBox.Show("Не выбран процесс или тест");
+            }
+        }
     }
 }

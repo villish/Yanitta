@@ -218,17 +218,12 @@ namespace Yanitta
             if (rotation == null)
                 throw new ArgumentNullException("rotation is null");
 
-            var abilityQueue = CurrentProfile[rotation];
-
-            if (abilityQueue == null)
-                throw new Exception("abilityQueue is null");
-
             var builder = new StringBuilder();
 
             builder.AppendLine(ProfileDb.Instance.Core);
             builder.AppendLine(ProfileDb.Instance.Func);
 
-            foreach (var ability in abilityQueue)
+            foreach (var ability in rotation.AbilityList)
             {
                 var ability_code = ability.ToString();
                 builder.Append(ability_code);

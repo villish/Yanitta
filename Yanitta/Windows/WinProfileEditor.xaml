@@ -47,348 +47,307 @@
                     <KeyBinding Command="yanitta:YanittaCommand.AddAbility" Key="Insert" />
                 </TabItem.InputBindings>
                 <TabItem.CommandBindings>
-                    <CommandBinding Command="yanitta:YanittaCommand.AddAbility"    Executed="CommandBinding_Executed_AddAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"   Executed="CommandBinding_Executed_CopyAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility" Executed="CommandBinding_Executed_DeleteAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.AddAbility"     Executed="CommandBinding_Executed_AddAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"    Executed="CommandBinding_Executed_CopyAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility"  Executed="CommandBinding_Executed_DeleteAbility" />
+                    <CommandBinding Command="yanitta:YanittaCommand.AddRotation"    Executed="CommandBinding_Executed_AddRotation" />
+                    <CommandBinding Command="yanitta:YanittaCommand.CopyRotation"   Executed="CommandBinding_Executed_CopyRotation" />
+                    <CommandBinding Command="yanitta:YanittaCommand.DeleteRotation" Executed="CommandBinding_Executed_DeleteRotation" />
                 </TabItem.CommandBindings>
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40" />
-                        <RowDefinition />
-                        <RowDefinition Height="208" />
-                    </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="459" />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="500*"/>
+                        <ColumnDefinition Width="700*"/>
                     </Grid.ColumnDefinitions>
-
-                    <GridSplitter Grid.RowSpan="3" Grid.Column="1" Width="4" HorizontalAlignment="Left" />
-                    <GridSplitter Grid.RowSpan="3" Grid.Column="1" Width="4" HorizontalAlignment="Left" />
-                    <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
-                        <ListView x:Name="abilityList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/AbilityList}">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
-                                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
-
-                                    <GridViewColumn Header="{x:Static yanitta:Localization.Target}" Width="100" x:Name="hTarget">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox Width="{Binding ElementName=hTarget, Path=Width, Converter={StaticResource ResizeConverter}, ConverterParameter=-10}"
-                                                          ItemsSource="{Binding Source={StaticResource TargetValues}}"
-                                                          SelectedValue="{Binding Target}"
-                                                          ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <ComboBox Width="{Binding ElementName=hIsMovingCheck, Path=Width, Converter={StaticResource ResizeConverter}, ConverterParameter=-10}"
-                                                          ItemsSource="{Binding Source={StaticResource MovingValues}}"
-                                                          SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
-                                                    <ComboBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Path=., Converter={StaticResource EnumToStr}}"
-                                                                       ToolTip="{Binding Path=., Converter={StaticResource EnumToStr}, ConverterParameter=ToolTip}"/>
-                                                        </DataTemplate>
-                                                    </ComboBox.ItemTemplate>
-                                                </ComboBox>
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelChanel}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding CancelChannel}" ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelCasting}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding CancelCasting}" ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsRangeCheck}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsRangeCheck}" ToolTip="{x:Static yanitta:Localization.IsRangeCheckToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsAttacedTarget}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsAttacedTarget}" ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsUseIncombat}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsUseIncombat}" ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsSpellKnownCheck}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.SetRecastDelay}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding SetRecastDelay}" ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-
-                                    <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsNotHCD}">
-                                        <GridViewColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <CheckBox IsChecked="{Binding IsNotHCD}" ToolTip="{x:Static yanitta:Localization.IsNotHCDToolTip}" />
-                                            </DataTemplate>
-                                        </GridViewColumn.CellTemplate>
-                                    </GridViewColumn>
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </Grid>
-
-                    <ToolBar Height="40" VerticalAlignment="Top" Grid.RowSpan="2">
-                        <Button x:Name="bAddAbility" Command="yanitta:YanittaCommand.AddAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddAbility}">
-                            <Image Source="/Resources/Add.png" />
-                        </Button>
-                        <Button x:Name="bCopyAbility" Command="yanitta:YanittaCommand.CopyAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyAbility}">
-                            <Image Source="/Resources/Clipboard.png" />
-                        </Button>
-                        <Button x:Name="bDeleteAbility" Command="yanitta:YanittaCommand.DeleteAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
-                            <Image Source="/Resources/Denided.png" />
-                        </Button>
-                        <Separator />
-                        <Button x:Name="bAbMoveUp" Foreground="Transparent" Click="bAbMoveUp_Click_1">
-                            <Image Source="/Resources/Button_Up.png" />
-                        </Button>
-                        <Button x:Name="bAbMoveDown" Foreground="Transparent" Click="bAbMoveDown_Click_1">
-                            <Image Source="/Resources/Button_Down.png" />
-                        </Button>
-                        <Separator />
-                        <Button x:Name="bSaveProfileToFile" Foreground="Transparent" Command="yanitta:YanittaCommand.Export" ToolTip="{x:Static yanitta:Localization.Export}">
-                            <Image Source="/Resources/Export.png" />
-                        </Button>
-                        <Button x:Name="bLoadProfileFromFile" Foreground="Transparent" Command="yanitta:YanittaCommand.Import" ToolTip="{x:Static yanitta:Localization.Import}">
-                            <Image Source="/Resources/Import.png" />
-                        </Button>
-                    </ToolBar>
-                    <Grid Grid.RowSpan="3" Grid.Column="1" Margin="4,0" DataContext="{Binding ProfileList/AbilityList}">
+                    <Grid Grid.Column="0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="200"/>
-                            <RowDefinition Height="250*"/>
+                            <RowDefinition Height="200*"/>
+                            <RowDefinition Height="400*"/>
                         </Grid.RowDefinitions>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100*"/>
-                                <ColumnDefinition Width="100*"/>
-                            </Grid.ColumnDefinitions>
+                        <GridSplitter Height="5" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="25"/>
-                                    <RowDefinition Height="25"/>
-                                    <RowDefinition Height="25"/>
-                                    <RowDefinition Height="25"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,0" Text="{x:Static yanitta:Localization.Spell}" VerticalAlignment="Center"/>
-                                <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static yanitta:Localization.SpellIdToolTip}" TextAlignment="Right" />
-
-                                <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,0" Text="{x:Static yanitta:Localization.Name}" VerticalAlignment="Center"/>
-                                <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Name="tbAbilityName" ToolTip="{x:Static yanitta:Localization.NameToolTip}"/>
-
-                                <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,0" Text="{x:Static yanitta:Localization.Target}" ToolTip="" VerticalAlignment="Center"/>
-                                <ComboBox  Grid.Column="1" Grid.Row="2" Margin="5,0" ItemsSource="{Binding Source={StaticResource TargetValues}}"
-                                                          SelectedValue="{Binding Target}" ToolTip="{x:Static yanitta:Localization.TargetToolTip}"/>
-                                <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,0" Text="{x:Static yanitta:Localization.IsMovingCheck}" ToolTip="" VerticalAlignment="Center"/>
-                                <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
-                                                          SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Path=., Converter={StaticResource EnumToStr}}"
-                                                       ToolTip="{Binding Path=., Converter={StaticResource EnumToStr}, ConverterParameter=ToolTip}"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Grid>
-
-                            <StackPanel Grid.Column="2">
-                                <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"     Content="{x:Static yanitta:Localization.IsUseIncombat}"     ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding IsAttacedTarget}"   Content="{x:Static yanitta:Localization.IsAttacedTarget}"   ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding IsRangeCheck}"      Content="{x:Static yanitta:Localization.IsRangeCheck}"      ToolTip="{x:Static yanitta:Localization.IsRangeCheckToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding IsSpellKnownCheck}" Content="{x:Static yanitta:Localization.IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}"    Content="{x:Static yanitta:Localization.SetRecastDelay}"    ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding IsNotHCD}"          Content="{x:Static yanitta:Localization.IsNotHCD}"          ToolTip="{x:Static yanitta:Localization.IsNotHCDToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"     Content="{x:Static yanitta:Localization.CancelCasting}"     ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
-                                <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"     Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
-                            </StackPanel>
+                        <Grid Grid.Row="0" Margin="0,0,0,5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ToolBar VerticalAlignment="Top">
+                                <Button Command="yanitta:YanittaCommand.AddRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddRotation}">
+                                    <Image Source="/Yanitta;component/Resources/Add.png" />
+                                </Button>
+                                <Button Command="yanitta:YanittaCommand.CopyRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyRotation}">
+                                    <Image Source="/Yanitta;component/Resources/Clipboard.png" />
+                                </Button>
+                                <Button Command="yanitta:YanittaCommand.DeleteRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteRotation}">
+                                    <Image Source="/Yanitta;component/Resources/Denided.png" />
+                                </Button>
+                            </ToolBar>
+                            <ListView x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" Grid.Row="1" Margin="0,0,0,5">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
+                                        <GridViewColumn Width="50" Header="Proc">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding ProcNotifyer}" ToolTip="{x:Static yanitta:Localization.ProcNotifyerToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="30" Header="Control">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding HotKey.Control}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="30" Header="Shift">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding HotKey.Shift}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Width="30" Header="Alt">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding HotKey.Alt}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Key">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox Width="150" SelectedValue="{Binding HotKey.Key}" ItemsSource="{Binding Source={StaticResource KeyValues}}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
                         </Grid>
-                        <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Row="1">
-                            <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                        </Border>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <ToolBar VerticalAlignment="Top" >
+                                <Button x:Name="bAddAbility" Command="yanitta:YanittaCommand.AddAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddAbility}">
+                                    <Image Source="/Yanitta;component/Resources/Add.png" />
+                                </Button>
+                                <Button x:Name="bCopyAbility" Command="yanitta:YanittaCommand.CopyAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyAbility}">
+                                    <Image Source="/Yanitta;component/Resources/Clipboard.png" />
+                                </Button>
+                                <Button x:Name="bDeleteAbility" Command="yanitta:YanittaCommand.DeleteAbility" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
+                                    <Image Source="/Yanitta;component/Resources/Denided.png" />
+                                </Button>
+                                <Separator />
+                                <Button x:Name="bAbMoveUp" Foreground="Transparent" Click="bAbMoveUp_Click_1">
+                                    <Image Source="/Yanitta;component/Resources/Button_Up.png" />
+                                </Button>
+                                <Button x:Name="bAbMoveDown" Foreground="Transparent" Click="bAbMoveDown_Click_1">
+                                    <Image Source="/Yanitta;component/Resources/Button_Down.png" />
+                                </Button>
+                                <Separator />
+                                <Button x:Name="bSaveProfileToFile" Foreground="Transparent" Command="yanitta:YanittaCommand.Export" ToolTip="{x:Static yanitta:Localization.Export}">
+                                    <Image Source="/Yanitta;component/Resources/Export.png" />
+                                </Button>
+                                <Button x:Name="bLoadProfileFromFile" Foreground="Transparent" Command="yanitta:YanittaCommand.Import" ToolTip="{x:Static yanitta:Localization.Import}">
+                                    <Image Source="/Yanitta;component/Resources/Import.png" />
+                                </Button>
+                                <Separator />
+                                <TextBlock Text="Filter: " VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                <TextBox Name="tbAbilityFilter" Width="150" TextChanged="tbAbilityFilter_TextChanged"/>
+                            </ToolBar>
+                            <ListView x:Name="abilityList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/RotationList/AbilityList}" Grid.Row="1">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
+                                        <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
+
+                                        <GridViewColumn Header="{x:Static yanitta:Localization.Target}" Width="100" x:Name="hTarget">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={StaticResource ResizeConverter}, ElementName=hTarget}"
+                                                              ItemsSource="{Binding Source={StaticResource TargetValues}}" SelectedValue="{Binding Target}"
+                                                              ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={StaticResource ResizeConverter}, ElementName=hIsMovingCheck}"
+                                                              ItemsSource="{Binding Source={StaticResource MovingValues}}"
+                                                              SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding ., Converter={StaticResource EnumToStr}}"
+                                                                           ToolTip="{Binding ., ConverterParameter=ToolTip, Converter={StaticResource EnumToStr}}"/>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelChanel}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding CancelChannel}" ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelCasting}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding CancelCasting}" ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsRangeCheck}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsRangeCheck}" ToolTip="{x:Static yanitta:Localization.IsRangeCheckToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsAttacedTarget}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsAttacedTarget}" ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsUseIncombat}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsUseIncombat}" ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsSpellKnownCheck}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.SetRecastDelay}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding SetRecastDelay}" ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsNotHCD}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsNotHCD}" ToolTip="{x:Static yanitta:Localization.IsNotHCDToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </Grid>
+                    <GridSplitter  Grid.Column="1" Width="5" HorizontalAlignment="Left" />
+                    <Grid Grid.Column="1" Margin="5,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="220"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TabControl Grid.Row="2">
+                            <TabItem Header="Ability: Code">
+                                <Border BorderThickness="1" BorderBrush="#FF009600">
+                                    <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Rotation: Code">
+                                <Border BorderThickness="1" BorderBrush="#FF009600">
+                                    <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Rotation: Notes">
+                                <Border BorderThickness="1" BorderBrush="#FF009600">
+                                    <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                </Border>
+                            </TabItem>
+                        </TabControl>
+                        <GroupBox Header="Rotation">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Name: " VerticalAlignment="Center" />
+                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="300" VerticalAlignment="Center" />
+                                <Separator Width="5"  />
+                                <TextBlock Text="TickDelay: " VerticalAlignment="Center" />
+                                <TextBox Text="{Binding ProfileList/RotationList/TickDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Header="Ability" Grid.Row="1">
+                            <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="100*"/>
+                                    <ColumnDefinition Width="100*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="25"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,0" Text="{x:Static yanitta:Localization.Spell}" VerticalAlignment="Center"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static yanitta:Localization.SpellIdToolTip}" TextAlignment="Right" />
+
+                                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,0" Text="{x:Static yanitta:Localization.Name}" VerticalAlignment="Center"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Name="tbAbilityName" ToolTip="{x:Static yanitta:Localization.NameToolTip}"/>
+
+                                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,0" Text="{x:Static yanitta:Localization.Target}" ToolTip="" VerticalAlignment="Center"/>
+                                    <ComboBox  Grid.Column="1" Grid.Row="2" Margin="5,0" ItemsSource="{Binding Source={StaticResource TargetValues}}"
+                                                          SelectedValue="{Binding Target}" ToolTip="{x:Static yanitta:Localization.TargetToolTip}"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,0" Text="{x:Static yanitta:Localization.IsMovingCheck}" ToolTip="" VerticalAlignment="Center"/>
+                                    <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
+                                                          SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Path=., Converter={StaticResource EnumToStr}}"
+                                                       ToolTip="{Binding Path=., Converter={StaticResource EnumToStr}, ConverterParameter=ToolTip}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+
+                                <StackPanel Grid.Column="2">
+                                    <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"     Content="{x:Static yanitta:Localization.IsUseIncombat}"     ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding IsAttacedTarget}"   Content="{x:Static yanitta:Localization.IsAttacedTarget}"   ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding IsRangeCheck}"      Content="{x:Static yanitta:Localization.IsRangeCheck}"      ToolTip="{x:Static yanitta:Localization.IsRangeCheckToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding IsSpellKnownCheck}" Content="{x:Static yanitta:Localization.IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}"    Content="{x:Static yanitta:Localization.SetRecastDelay}"    ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding IsNotHCD}"          Content="{x:Static yanitta:Localization.IsNotHCD}"          ToolTip="{x:Static yanitta:Localization.IsNotHCDToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"     Content="{x:Static yanitta:Localization.CancelCasting}"     ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"     Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="{x:Static yanitta:Localization.RotationList}">
-                <TabItem.InputBindings>
-                    <KeyBinding Command="yanitta:YanittaCommand.AddRotation" Key="Insert" />
-                </TabItem.InputBindings>
-                <TabItem.CommandBindings>
-                    <CommandBinding Command="yanitta:YanittaCommand.AddRotation"      Executed="CommandBinding_Executed_AddRotation" />
-                    <CommandBinding Command="yanitta:YanittaCommand.CopyRotation"     Executed="CommandBinding_Executed_CopyRotation" />
-                    <CommandBinding Command="yanitta:YanittaCommand.DeleteRotation"   Executed="CommandBinding_Executed_DeleteRotation" />
-                    <CommandBinding Command="yanitta:YanittaCommand.RefreshRotation"  Executed="CommandBinding_Executed_RefreshRotation" />
-                </TabItem.CommandBindings>
-                <Grid>
-                    <Grid.Resources>
-                        <CollectionViewSource x:Key="AlavilableAbilityList" Source="{Binding ProfileList/AbilityList}" />
-                    </Grid.Resources>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="400*" />
-                        <ColumnDefinition Width="200*" />
-                        <ColumnDefinition Width="200*" />
-                        <ColumnDefinition Width="7*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40" />
-                        <RowDefinition Height="147*" />
-                        <RowDefinition Height="251*" />
-                    </Grid.RowDefinitions>
 
-                    <ListView Grid.Row="1" Margin="0,0,3,4" x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" SelectionChanged="rotationList_SelectionChanged_1">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
-                                <GridViewColumn Width="50" Header="Proc">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding ProcNotifyer}" ToolTip="{x:Static yanitta:Localization.ProcNotifyerToolTip}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="30" Header="Control">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding HotKey.Control}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="30" Header="Shift">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding HotKey.Shift}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Width="30" Header="Alt">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <CheckBox IsChecked="{Binding HotKey.Alt}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Key">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ComboBox Width="150" SelectedValue="{Binding HotKey.Key}" ItemsSource="{Binding Source={StaticResource KeyValues}}" />
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-                    <ListBox x:Name="listBoxAlavilableAbilitys" Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0,0,3,0"
-                             ItemsSource="{Binding Source={StaticResource AlavilableAbilityList}}"
-                             DisplayMemberPath="Name"
-                             Style="{DynamicResource KamillaStyle}" MouseDoubleClick="listBoxAlavilableAbilitys_MouseDoubleClick" />
-
-                    <ListBox x:Name="rotationListAbilitys" Grid.Row="1" Grid.RowSpan="2" Grid.Column="2" Margin="43,0,0,0"
-                             ItemsSource="{Binding ProfileList/RotationList/AbilityQueue}"
-                             Style="{DynamicResource KamillaStyle}" MouseDoubleClick="rotationListAbilitys_MouseDoubleClick" />
-
-                    <Button x:Name="bMoveTo" Grid.Row="1" Grid.Column="2" Width="34" Height="26" Margin="3,18,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent"
-                            Click="bMoveTo_Click_1">
-                        <Image Source="/Resources/Button_Next.png" />
-                    </Button>
-                    <Button x:Name="bMoveFrom" Grid.Row="1" Grid.Column="2" Width="34" Height="26" Margin="3,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Click="bMoveFrom_Click_1">
-                        <Image Source="/Resources/Button_Back.png" />
-                    </Button>
-                    <Button x:Name="bMoveUp" Grid.Row="1" Grid.Column="2" Width="34" Height="26" Margin="3,82,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Click="bMoveUp_Click_1">
-                        <Image Source="/Resources/Button_Up.png" />
-                    </Button>
-                    <Button x:Name="bMoveDown" Grid.Row="1" Grid.Column="2" Width="34" Height="26" Margin="3,114,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Click="bMoveDown_Click_1">
-                        <Image Source="/Resources/Button_Down.png" />
-                    </Button>
-                    <Button Grid.Row="2" Grid.Column="2" Width="34" Height="26" Margin="3,50,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Command="yanitta:YanittaCommand.RefreshRotation">
-                        <Image Source="/Resources/Refresh.png" />
-                    </Button>
-
-                    <ToolBar Grid.ColumnSpan="1" Height="40" VerticalAlignment="Top">
-                        <Button Command="yanitta:YanittaCommand.AddRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddRotation}">
-                            <Image Source="/Resources/Add.png" />
-                        </Button>
-                        <Button Command="yanitta:YanittaCommand.CopyRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyRotation}">
-                            <Image Source="/Resources/Clipboard.png" />
-                        </Button>
-                        <Button Command="yanitta:YanittaCommand.DeleteRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteRotation}">
-                            <Image Source="/Resources/Denided.png" />
-                        </Button>
-                    </ToolBar>
-
-                    <TabControl Grid.Row="2" Margin="0,28,0,0">
-                        <TabItem Header="{x:Static yanitta:Localization.Rotation_Note}" ToolTip="{x:Static yanitta:Localization.Rotation_Note_ToolTip}">
-                            <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                        </TabItem>
-                        <TabItem Header="{x:Static yanitta:Localization.Rotation_Code}" ToolTip="{x:Static yanitta:Localization.Rotation_Code_ToolTip}">
-                            <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                        </TabItem>
-                    </TabControl>
-                    <Grid Grid.Row="2" Height="23" VerticalAlignment="Top">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="311*"/>
-                            <ColumnDefinition Width="155*"/>
-                            <ColumnDefinition Width="124*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Name="tbRotationName"  Height="23" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                        <TextBlock Grid.Column="1" TextAlignment="Right" Text="{x:Static yanitta:Localization.Rotation_TickDelay}" VerticalAlignment="Center" />
-                        <TextBox Grid.Column="2" Text="{Binding ProfileList/RotationList/TickDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" ToolTip="{x:Static yanitta:Localization.Rotation_TickDelayToolTip}"/>
-                    </Grid>
-                    <Label Grid.Column="1" Width="176" Height="26" Margin="5,1,5,0" HorizontalAlignment="Center" VerticalAlignment="Top" HorizontalContentAlignment="Center"
-                           Content="{x:Static yanitta:Localization.AlavilableAbilitys}" />
-                    <Label Grid.Column="2" Width="168" Height="26" Margin="43,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" HorizontalContentAlignment="Center"
-                           Content="{x:Static yanitta:Localization.CurrentRotation}" />
-                </Grid>
-            </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.BeforeRotationCode}" ToolTip="{x:Static yanitta:Localization.BeforeRotationCodeToolTip}">
                 <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </TabItem>
@@ -414,9 +373,56 @@
                     </StackPanel>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="Tests" Grid.Row="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox Name="testList" Grid.Row="2" ItemsSource="{Binding TestList}" DisplayMemberPath="Name" IsSynchronizedWithCurrentItem="True"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
+                        <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Path=ProcessId, StringFormat={}[{0}]}"/>
+                                        <TextBlock Text="{Binding Path=Name,      StringFormat={} {0}}"/>
+                                        <TextBlock Text="{Binding Path=Class,     StringFormat={} ({0})}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Content="{x:Static yanitta:Localization.CommandRun}" Margin="10,0,0,0" Width="100" Click="ButtonRunTest_Click" />
+                    </StackPanel>
+                    <ToolBar Grid.Row="1">
+                        <Button Foreground="Transparent" Click="ButtonTestAdd_Click">
+                            <Image Source="/Yanitta;component/Resources/Add.png" />
+                        </Button>
+                        <Button Foreground="Transparent" Click="ButtonTestCopy_Click">
+                            <Image Source="/Yanitta;component/Resources/Clipboard.png" />
+                        </Button>
+                        <Button Foreground="Transparent" Click="ButtonTestRemove_Click">
+                            <Image Source="/Yanitta;component/Resources/Denided.png" />
+                        </Button>
+                        <Separator />
+                        <TextBlock Text="Name: " VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding TestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="200" />
+                    </ToolBar>
+                    
+                     <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Column="1" Grid.RowSpan="3">
+                        <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding TestList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    </Border>
+                </Grid>
+            </TabItem>
         </TabControl>
 
-        <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" SelectionChanged="rotationList_SelectionChanged_1" Grid.Row="1">
+        <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="64"

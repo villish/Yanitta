@@ -15,7 +15,6 @@ namespace Yanitta
     public class Profile : DependencyObject
     {
         public static readonly DependencyProperty LuaProperty          = DependencyProperty.Register("Lua",          typeof(string),                         typeof(Profile));
-        public static readonly DependencyProperty AbilityListProperty  = DependencyProperty.Register("AbilityList",  typeof(ObservableCollection<Ability>),  typeof(Profile));
         public static readonly DependencyProperty RotationListProperty = DependencyProperty.Register("RotationList", typeof(ObservableCollection<Rotation>), typeof(Profile));
 
         /// <summary>
@@ -41,15 +40,6 @@ namespace Yanitta
         /// <summary>
         ///
         /// </summary>
-        public ObservableCollection<Ability> AbilityList
-        {
-            get { return (ObservableCollection<Ability>)GetValue(AbilityListProperty); }
-            set { SetValue(AbilityListProperty, value); }
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
         public ObservableCollection<Rotation> RotationList
         {
             get { return (ObservableCollection<Rotation>)GetValue(RotationListProperty); }
@@ -58,27 +48,7 @@ namespace Yanitta
 
         public Profile()
         {
-            AbilityList  = new ObservableCollection<Ability>();
             RotationList = new ObservableCollection<Rotation>();
-        }
-
-        public IEnumerable<Ability> this[Rotation rotation_filter]
-        {
-            get
-            {
-                var rotation = this.RotationList
-                    .Where(n => n.Name == rotation_filter.Name)
-                    .FirstOrDefault();
-
-                foreach (var rotationName in rotation.AbilityQueue)
-                {
-                    foreach (var ability in this.AbilityList)
-                    {
-                        if (ability.Name == rotationName)
-                            yield return ability;
-                    }
-                }
-            }
         }
     }
 }

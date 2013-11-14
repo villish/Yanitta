@@ -13,9 +13,9 @@ namespace Yanitta
     [Serializable]
     public class Rotation : DependencyObject, ICloneable
     {
-        public static readonly DependencyProperty NameProperty   = DependencyProperty.Register("Name",   typeof(string), typeof(Rotation));
-        public static readonly DependencyProperty HotKeyProperty = DependencyProperty.Register("HotKey", typeof(HotKey), typeof(Rotation));
-
+        public static readonly DependencyProperty NameProperty        = DependencyProperty.Register("Name",        typeof(string),                        typeof(Rotation));
+        public static readonly DependencyProperty HotKeyProperty      = DependencyProperty.Register("HotKey",      typeof(HotKey),                        typeof(Rotation));
+        public static readonly DependencyProperty AbilityListProperty = DependencyProperty.Register("AbilityList", typeof(ObservableCollection<Ability>), typeof(Rotation));
         /// <summary>
         /// Наименование ротации
         /// </summary>
@@ -56,19 +56,14 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Ability queue
-        /// </summary>
-        public ObservableCollection<string> AbilityQueue { get; set; }
-
-        /// <summary>
         ///
         /// </summary>
         public Rotation()
         {
-            this.HotKey = new HotKey();
-            this.AbilityQueue = new ObservableCollection<string>();
-            this.Name = "<>";
-            this.TickDelay = 250;
+            this.HotKey         = new HotKey();
+            this.AbilityList    = new ObservableCollection<Ability>();
+            this.Name           = "<>";
+            this.TickDelay      = 250;
         }
 
         /// <summary>
@@ -91,17 +86,29 @@ namespace Yanitta
             set { this.Lua = value.Value; }
         }
 
+        /// <summary>
+        /// Список способностей в порядке их приоритета
+        /// </summary>
+        public ObservableCollection<Ability> AbilityList
+        {
+            get { return (ObservableCollection<Ability>)GetValue(AbilityListProperty); }
+            set { SetValue(AbilityListProperty, value); }
+        }
+
         public object Clone()
         {
-            return new Rotation() {
+            var rotation = new Rotation() {
                 Name         = this.Name + " (1)",
                 Notes        = this.Notes,
                 Lua          = this.Lua,
                 TickDelay    = this.TickDelay,
                 HotKey       = new HotKey(),
-                ProcNotifyer = this.ProcNotifyer,
-                AbilityQueue = new ObservableCollection<string>(this.AbilityQueue)
+                ProcNotifyer = this.ProcNotifyer
             };
+
+            foreach (var ability in this.AbilityList)
+                rotation.AbilityList.Add((Ability)ability.Clone());
+            return rotation;
         }
     }
 }
