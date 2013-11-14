@@ -61,6 +61,33 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Ability.
+        /// </summary>
+        public static string Ability {
+            get {
+                return ResourceManager.GetString("Ability", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ability: Code.
+        /// </summary>
+        public static string Ability_Code {
+            get {
+                return ResourceManager.GetString("Ability_Code", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Filter: .
+        /// </summary>
+        public static string Ability_Filter {
+            get {
+                return ResourceManager.GetString("Ability_Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ability count: .
         /// </summary>
         public static string AbilityCount {
@@ -745,6 +772,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Name: .
+        /// </summary>
+        public static string Rotation_Name {
+            get {
+                return ResourceManager.GetString("Rotation_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Note.
         /// </summary>
         public static string Rotation_Note {
@@ -885,6 +921,24 @@ namespace Yanitta {
         public static string TargetToolTip {
             get {
                 return ResourceManager.GetString("TargetToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Test.
+        /// </summary>
+        public static string Test_Header {
+            get {
+                return ResourceManager.GetString("Test_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Name: .
+        /// </summary>
+        public static string Test_Name {
+            get {
+                return ResourceManager.GetString("Test_Name", resourceCulture);
             }
         }
         

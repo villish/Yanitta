@@ -441,4 +441,22 @@
   <data name="Rotation_TickDelayToolTip" xml:space="preserve">
     <value>Tick delay (ms)</value>
   </data>
+  <data name="Ability" xml:space="preserve">
+    <value>Ability</value>
+  </data>
+  <data name="Ability_Code" xml:space="preserve">
+    <value>Ability: Code</value>
+  </data>
+  <data name="Ability_Filter" xml:space="preserve">
+    <value>Filter: </value>
+  </data>
+  <data name="Rotation_Name" xml:space="preserve">
+    <value>Name: </value>
+  </data>
+  <data name="Test_Header" xml:space="preserve">
+    <value>Test</value>
+  </data>
+  <data name="Test_Name" xml:space="preserve">
+    <value>Name: </value>
+  </data>
 </root>

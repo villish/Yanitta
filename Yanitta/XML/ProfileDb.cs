@@ -97,7 +97,7 @@ namespace Yanitta
         {
             this.Version     = "0.0.0.1";
             this.ProfileList = new ObservableCollection<Profile>();
-            this.WowTestList    = new ObservableCollection<WowTest>();
+            this.WowTestList = new ObservableCollection<WowTest>();
         }
 
         #region Extension

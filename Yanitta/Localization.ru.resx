@@ -425,7 +425,7 @@
     <value>Файл</value>
   </data>
   <data name="Rotation_Code" xml:space="preserve">
-    <value>Kод</value>
+    <value>Ротация: Kод</value>
   </data>
   <data name="Rotation_Code_ToolTip" xml:space="preserve">
     <value>Код который выполняется при старте ротации</value>
@@ -441,5 +441,23 @@
   </data>
   <data name="Rotation_TickDelayToolTip" xml:space="preserve">
     <value>Задержка для тика ротации (мс)</value>
+  </data>
+  <data name="Ability" xml:space="preserve">
+    <value>Способность</value>
+  </data>
+  <data name="Ability_Code" xml:space="preserve">
+    <value>Способность: Код</value>
+  </data>
+  <data name="Ability_Filter" xml:space="preserve">
+    <value>Фильтр: </value>
+  </data>
+  <data name="Rotation_Name" xml:space="preserve">
+    <value>Наименование: </value>
+  </data>
+  <data name="Test_Header" xml:space="preserve">
+    <value>Тесты</value>
+  </data>
+  <data name="Test_Name" xml:space="preserve">
+    <value>Наименование: </value>
   </data>
 </root>

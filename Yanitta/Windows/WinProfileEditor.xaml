@@ -155,7 +155,7 @@
                                     <Image Source="/Yanitta;component/Resources/Import.png" />
                                 </Button>
                                 <Separator />
-                                <TextBlock Text="Filter: " VerticalAlignment="Center" HorizontalAlignment="Left" />
+                                <TextBlock Text="{x:Static yanitta:Localization.Ability_Filter}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 <TextBox Name="tbAbilityFilter" Width="150" TextChanged="tbAbilityFilter_TextChanged"/>
                             </ToolBar>
                             <ListView x:Name="abilityList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/RotationList/AbilityList}" Grid.Row="1">
@@ -267,32 +267,33 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TabControl Grid.Row="2">
-                            <TabItem Header="Ability: Code">
+                            <TabItem Header="{x:Static yanitta:Localization.Ability_Code}">
                                 <Border BorderThickness="1" BorderBrush="#FF009600">
                                     <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </Border>
                             </TabItem>
-                            <TabItem Header="Rotation: Code">
+                            <TabItem Header="{x:Static yanitta:Localization.Rotation_Code}">
                                 <Border BorderThickness="1" BorderBrush="#FF009600">
                                     <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </Border>
                             </TabItem>
-                            <TabItem Header="Rotation: Notes">
+                            <TabItem Header="{x:Static yanitta:Localization.Rotation_Note}">
                                 <Border BorderThickness="1" BorderBrush="#FF009600">
                                     <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </Border>
                             </TabItem>
                         </TabControl>
-                        <GroupBox Header="Rotation">
+                        <GroupBox Header="{x:Static yanitta:Localization.Rotation}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Name: " VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static yanitta:Localization.Rotation_Name}" VerticalAlignment="Center" />
                                 <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="300" VerticalAlignment="Center" />
                                 <Separator Width="5"  />
-                                <TextBlock Text="TickDelay: " VerticalAlignment="Center" />
-                                <TextBox Text="{Binding ProfileList/RotationList/TickDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100" VerticalAlignment="Center" />
+                                <TextBlock Text="{x:Static yanitta:Localization.Rotation_TickDelay}" VerticalAlignment="Center" />
+                                <TextBox Text="{Binding ProfileList/RotationList/TickDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100" VerticalAlignment="Center"
+                                         ToolTip="{x:Static yanitta:Localization.Rotation_TickDelayToolTip}" />
                             </StackPanel>
                         </GroupBox>
-                        <GroupBox Header="Ability" Grid.Row="1">
+                        <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
                             <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="100*"/>
@@ -373,7 +374,7 @@
                     </StackPanel>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Tests" Grid.Row="1">
+            <TabItem Header="{x:Static yanitta:Localization.Test_Header}" Grid.Row="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25"/>
@@ -381,7 +382,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="500"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <ListBox Name="testList" Grid.Row="2" ItemsSource="{Binding WowTestList}" DisplayMemberPath="Name" IsSynchronizedWithCurrentItem="True"/>
@@ -411,8 +412,8 @@
                             <Image Source="/Yanitta;component/Resources/Denided.png" />
                         </Button>
                         <Separator />
-                        <TextBlock Text="Name: " VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding WowTestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="200" />
+                        <TextBlock Text="{x:Static yanitta:Localization.Test_Name}" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding WowTestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="250" />
                     </ToolBar>
                     
                      <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Column="1" Grid.RowSpan="3">
