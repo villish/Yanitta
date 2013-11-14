@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.141</Version>
+  <Version>0.0.4.149</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -657,7 +657,40 @@ function FillPartyTables(standartSpellId)
         members = {{ Unit = "none", Agro = 0, HP = 100, IncHeal = 0 }};
     end
 end]]></Func>
-  <TestList />
+  <WowTestList>
+    <WowTest>
+      <Name>Досягаемость и доступность</Name>
+      <Lua><![CDATA[-- local spellList = { };
+-- Проверка на доступность и досягаемость заклинаний.
+-- Если IsSpellInRange возвращает nil - тогда ошибка.
+if not UnitExists("target") then
+    print("|cfff5360c>> Нет цели, подойдите к манекену и повторите тест!");
+    return;
+end
+for _,spellId in ipairs() do
+    local spellName = GetSpellInfo(spellId);
+    local isRange   = IsSpellInRange(spellName, "target");
+    local isKnow    = IsSpellKnown(spellId);
+    if not spellName then
+        print("|cfff5360c>> Заклинание ID: "..spellName.." не найдено!");
+    else
+        local rErr = nil;
+        local kErr = nil;
+        if isRange == nil then
+            rErr = "IsSpellInRange = error";
+        end
+        if not isKnow then
+            rErr = "IsSpellKnown = error";
+        end
+        if isRange ~= nil and isKnow then
+            print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
+        else
+            print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName.." >> "..(rErr or "").." "..(kErr or ""));
+        end
+    end
+end]]></Lua>
+    </WowTest>
+  </WowTestList>
   <Profile Class="Warrior">
     <Lua><![CDATA[useCooldown = true;
 setAoE      = nil;

@@ -38,9 +38,9 @@ namespace Yanitta
             get { return (rotationList != null && rotationList.SelectedValue is Rotation) ? (Rotation)rotationList.SelectedValue : null; }
         }
 
-        private TestElement CurrentTest
+        private WowTest CurrentTest
         {
-            get { return (testList != null && testList.SelectedValue is TestElement) ? (TestElement)testList.SelectedValue : null; }
+            get { return (testList != null && testList.SelectedValue is WowTest) ? (WowTest)testList.SelectedValue : null; }
         }
 
         private void MoveAbility(int shift)
@@ -279,14 +279,14 @@ namespace Yanitta
 
         private void ButtonTestAdd_Click(object sender, RoutedEventArgs e)
         {
-            ProfileDb.Instance.TestList.Add(new TestElement());
+            ProfileDb.Instance.WowTestList.Add(new WowTest());
         }
 
         private void ButtonTestCopy_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentTest != null)
             {
-                ProfileDb.Instance.TestList.Add(new TestElement() {
+                ProfileDb.Instance.WowTestList.Add(new WowTest() {
                     Name = CurrentTest.Name + "*",
                     Lua  = CurrentTest.Lua
                 });
@@ -297,7 +297,7 @@ namespace Yanitta
         {
             if (CurrentTest != null)
             {
-                ProfileDb.Instance.TestList.Remove(CurrentTest);
+                ProfileDb.Instance.WowTestList.Remove(CurrentTest);
             }
         }
 

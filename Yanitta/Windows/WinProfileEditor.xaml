@@ -384,7 +384,7 @@
                         <ColumnDefinition Width="400"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <ListBox Name="testList" Grid.Row="2" ItemsSource="{Binding TestList}" DisplayMemberPath="Name" IsSynchronizedWithCurrentItem="True"/>
+                    <ListBox Name="testList" Grid.Row="2" ItemsSource="{Binding WowTestList}" DisplayMemberPath="Name" IsSynchronizedWithCurrentItem="True"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
                         <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}">
@@ -412,11 +412,11 @@
                         </Button>
                         <Separator />
                         <TextBlock Text="Name: " VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding TestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="200" />
+                        <TextBox Text="{Binding WowTestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="200" />
                     </ToolBar>
                     
                      <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Column="1" Grid.RowSpan="3">
-                        <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding TestList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                        <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding WowTestList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                     </Border>
                 </Grid>
             </TabItem>
