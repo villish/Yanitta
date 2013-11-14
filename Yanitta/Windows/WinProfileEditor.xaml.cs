@@ -228,19 +228,6 @@ namespace Yanitta
             this.Close();
         }
 
-        private void CommandBinding_Executed_TestAbility(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-
-            if (CurrentRotation != null)
-            {
-                var spellIdList = CurrentRotation.AbilityList.Select(a => a.SpellID);
-                var spell_table = string.Format(@"local spellList = {{ {0} }};\n", string.Join(", ", spellIdList));
-
-                // todo:
-            }
-        }
-
         #endregion Commands
 
         private void tbAbilityFilter_TextChanged(object sender, TextChangedEventArgs e)
@@ -306,7 +293,9 @@ namespace Yanitta
             if (cbProcess.SelectedIndex > -1 && CurrentTest != null)
             {
                 var mem = (WowMemory)cbProcess.SelectedValue;
-                mem.LuaHook.LuaExecute(CurrentTest.Lua);
+                var spellIdList = CurrentRotation.AbilityList.Select(a => a.SpellID);
+                var spell_table = string.Format(@"local spellList = {{ {0} }};\n", string.Join(", ", spellIdList));
+                mem.LuaHook.LuaExecute(spell_table + CurrentTest.Lua);
             }
             else 
             {
