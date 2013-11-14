@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.149</Version>
+  <Version>0.0.4.154</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -667,25 +667,27 @@ if not UnitExists("target") then
     print("|cfff5360c>> Нет цели, подойдите к манекену и повторите тест!");
     return;
 end
-for _,spellId in ipairs() do
-    local spellName = GetSpellInfo(spellId);
-    local isRange   = IsSpellInRange(spellName, "target");
-    local isKnow    = IsSpellKnown(spellId);
-    if not spellName then
-        print("|cfff5360c>> Заклинание ID: "..spellName.." не найдено!");
-    else
-        local rErr = nil;
-        local kErr = nil;
-        if isRange == nil then
-            rErr = "IsSpellInRange = error";
-        end
-        if not isKnow then
-            rErr = "IsSpellKnown = error";
-        end
-        if isRange ~= nil and isKnow then
-            print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
+for _,spellId in ipairs(spellList) do
+    if spellId > 0 then
+        local spellName = GetSpellInfo(spellId);
+        if not spellName then
+            print("|cfff5360c>> Заклинание ID: "..spellId.." не найдено!");
         else
-            print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName.." >> "..(rErr or "").." "..(kErr or ""));
+            local rErr = nil;
+            local kErr = nil;
+            local isRange   = IsSpellInRange(spellName, "target");
+            local isKnow    = IsSpellKnown(spellId);
+            if isRange == nil then
+                rErr = "IsSpellInRange = error";
+            end
+            if not isKnow then
+                rErr = "IsSpellKnown = error";
+            end
+            if isRange ~= nil and isKnow then
+                print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
+            else
+                print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName.." >> "..(rErr or "").." "..(kErr or ""));
+            end
         end
     end
 end]]></Lua>

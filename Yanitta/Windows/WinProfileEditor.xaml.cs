@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Yanitta.Properties;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace Yanitta
 {
@@ -294,8 +295,10 @@ namespace Yanitta
             {
                 var mem = (WowMemory)cbProcess.SelectedValue;
                 var spellIdList = CurrentRotation.AbilityList.Select(a => a.SpellID);
-                var spell_table = string.Format(@"local spellList = {{ {0} }};\n", string.Join(", ", spellIdList));
-                mem.LuaHook.LuaExecute(spell_table + CurrentTest.Lua);
+                var test_code = string.Format(@"local spellList = {{ {0} }};" + Environment.NewLine, string.Join(", ", spellIdList)) + CurrentTest.Lua;
+
+                Debug.WriteLine(test_code);
+                mem.LuaHook.LuaExecute(test_code);
             }
             else 
             {

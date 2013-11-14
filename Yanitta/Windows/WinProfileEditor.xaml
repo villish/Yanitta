@@ -386,7 +386,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <ListBox Name="testList" Grid.Row="2" ItemsSource="{Binding WowTestList}" DisplayMemberPath="Name" IsSynchronizedWithCurrentItem="True"/>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" DataContext="{Binding Source={StaticResource processList}}">
                         <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
                         <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}">
                             <ComboBox.ItemTemplate>
