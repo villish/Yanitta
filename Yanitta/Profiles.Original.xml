@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.154</Version>
+  <Version>0.0.4.155</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -4911,12 +4911,17 @@ end]]></Lua>
 -- 3 - Frost rune
 -- 4 - Death rune
 
-useCooldown     = true;
-setAoE          = nil;
-isAltMod        = nil;
+RUNETYPE_BLOOD     = 1;
+RUNETYPE_CHROMATIC = 2;
+RUNETYPE_FROST     = 3;
+RUNETYPE_DEATH     = 4;
+
+useCooldown        = true;
+setAoE             = nil;
+isAltMod           = nil;
+rune_names = { "Blood", "Unholy", "Frost", "Death" };
 
 function FillRunesInfo()
-    local rune_names = { "Blood", "Unholy", "Frost", "Death" };
     runes = {
         Blood  = { Rem = 0, Count = 0 },
         Unholy = { Rem = 0, Count = 0 },
@@ -4935,6 +4940,19 @@ function FillRunesInfo()
         runes[rune_name].Rem   = (start + duration) - GetTime();
         runes[rune_name].Count = GetRuneCount(slot);
     end    
+end
+
+function GetFreeRuneCountForType(runeType)
+    if not runeType or runeType < 1 or runeType > 4 then
+        return 0;
+    end
+
+    local deathRuneCount = runes.Death.Count;
+    local runeName = rune_names[runeType];
+    --print("GetFreeRuneCountForType: "..runeName..", type: "..runeType);
+    local selRuneCount = runes[runeName].Count;
+
+    return deathRuneCount + selRuneCount;
 end]]></Lua>
     <RotationList>
       <Rotation Name="Кровь" ProcNotifyer="false">
@@ -5373,9 +5391,13 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasDebuff("target", 59879, "PLAYER") and not HasDebuff("target", 59921, "PLAYER") then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
+frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
+
+local hasnodieses = not bloodPlague and not frostFever;
+local almostended = (bloodPlague and bloodPlagueRem <= 2) and (frostFever and frostFeverRem <= 2);
+
+return hasnodieses or almostended;]]></Lua>
           </Ability>
           <Ability Name="Frost: Нечестивая порча (1)">
             <SpellID>115989</SpellID>
@@ -5387,9 +5409,10 @@ end]]></Lua>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
+            <Lua><![CDATA[print("Нечестивая порча");
+return true;]]></Lua>
           </Ability>
           <Ability Name="Frost: Жнец душ">
             <SpellID>130736</SpellID>
@@ -5401,12 +5424,22 @@ end]]></Lua>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
+            <Lua><![CDATA[print("Жнец душ");
+local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+if unholy >= 3 then
+    return false;
+end
+
+local pct = 35;
+if HasBuff("player", 138347) then
+    pct = 45;
+end
+return HealthByPercent("player") <= pct;]]></Lua>
           </Ability>
-          <Ability Name="Frost: Кровоотвод (1)">
-            <SpellID>45529</SpellID>
+          <Ability Name="Frost: Ледяной удар (1)">
+            <SpellID>49143</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -5417,53 +5450,7 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name="Frost: Воющий ветер (1)">
-            <SpellID>49184</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[local frost = runes.Frost.Count;
-if frost >= 1 or HasBuff("player", 59052) then
-    return true;
-end]]></Lua>
-          </Ability>
-          <Ability Name="Frost: Удар чумы">
-            <SpellID>45462</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name="Frost: Воющий ветер (2)">
-            <SpellID>49184</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[local frost = runes.Frost.Count;
-if frost >= 1 or HasBuff("player", 59052) then
+            <Lua><![CDATA[if UnitPower("player") >= 30 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5479,34 +5466,26 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[local unholy = runes.Unholy.Count;
-local frost = runes.Frost.Count;
+            <Lua><![CDATA[local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
 
-if unholy >= 1 and frost >= 1 then
-    if HasBuff("player", 51124) then
-         return true;
-    elseif unholy >= 2 and frost >= 2 then
-         return true;
-     elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
-         return true;
+local reqRuneCount = 2;
+local haveKillingMachine = HasBuff("player", 51124);
+if haveKillingMachine then
+    reqRuneCount = 1;
+end
+
+if unholy >= reqRuneCount and frost >= reqRuneCount then
+    if haveKillingMachine then
+        return true;
+    elseif unholy >= (reqRuneCount + 1) and frost >= (reqRuneCount + 1) then
+        return true;
+    elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
+        return true;
     end
 end]]></Lua>
           </Ability>
-          <Ability Name="Frost: Кровоотвод (2)">
-            <SpellID>45529</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name="Frost: Ледяной удар (1)">
+          <Ability Name="Frost: Ледяной удар (2)">
             <SpellID>49143</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
@@ -5518,7 +5497,24 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitPower("player") >= 35 then
+            <Lua><![CDATA[if UnitPower("player") >= 30 then
+    return true;
+end]]></Lua>
+          </Ability>
+          <Ability Name="Frost: Воющий ветер (1)">
+            <SpellID>49184</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotHCD>false</IsNotHCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+if frost > 3 or HasBuff("player", 59052) then
     return true;
 end]]></Lua>
           </Ability>
@@ -5534,16 +5530,22 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[local unholy = runes.Unholy.Count;
-local frost = runes.Frost.Count;
+            <Lua><![CDATA[local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
 
-if unholy >= 1 and frost >= 1 then
-    if HasBuff("player", 51124) then
-         return true;
-    elseif unholy >= 2 and frost >= 2 then
-         return true;
-     elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
-         return true;
+local reqRuneCount = 2;
+local haveKillingMachine = HasBuff("player", 51124);
+if haveKillingMachine then
+    reqRuneCount = 1;
+end
+
+if unholy >= reqRuneCount and frost >= reqRuneCount then
+    if haveKillingMachine then
+        return true;
+    elseif unholy >= (reqRuneCount + 1) and frost >= (reqRuneCount + 1) then
+        return true;
+    elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
+        return true;
     end
 end]]></Lua>
           </Ability>
@@ -5575,7 +5577,34 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
+            <Lua><![CDATA[bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
+frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
+
+local hasnodieses = not bloodPlague and not frostFever;
+local almostended = (bloodPlague and bloodPlagueRem <= 2) and (frostFever and frostFeverRem <= 2);
+
+return hasnodieses or almostended;]]></Lua>
+          </Ability>
+          <Ability Name="Ледяное прикосновение">
+            <SpellID>45477</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotHCD>false</IsNotHCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+if frost < 3 then
+    return false;
+end
+
+if not UnitDebuff("target", 59921) or HasBuff("player", 59052) then
+    return true;
+end]]></Lua>
           </Ability>
           <Ability Name="Frost: Нечестивая порча (2)">
             <SpellID>115989</SpellID>
@@ -5587,11 +5616,29 @@ end]]></Lua>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotHCD>false</IsNotHCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[print("Нечестивая порча");
+return true;]]></Lua>
+          </Ability>
+          <Ability Name="Frost: Воющий ветер (2)">
+            <SpellID>49184</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
+            <Lua><![CDATA[local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+if frost > 3 or HasBuff("player", 59052) then
+    return true;
+end]]></Lua>
           </Ability>
-          <Ability Name="Frost: Ледяной удар (2)">
+          <Ability Name="Frost: Ледяной удар (3)">
             <SpellID>49143</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
@@ -5621,22 +5668,6 @@ end]]></Lua>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[return not HasBuff(57330);]]></Lua>
           </Ability>
-          <Ability Name="Frost: Ледяной удар (3)">
-            <SpellID>49143</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitPower("player") >= 35 then
-    return true;
-end]]></Lua>
-          </Ability>
           <Ability Name="Frost: Уничтожение (3)">
             <SpellID>49020</SpellID>
             <Target>Target</Target>
@@ -5649,46 +5680,24 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[local unholy = runes.Unholy.Count;
-local frost = runes.Frost.Count;
+            <Lua><![CDATA[local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
 
-if unholy >= 1 and frost >= 1 then
-    if HasBuff("player", 51124) then
-         return true;
-    elseif unholy >= 2 and frost >= 2 then
-         return true;
-     elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
-         return true;
+local reqRuneCount = 2;
+local haveKillingMachine = HasBuff("player", 51124);
+if haveKillingMachine then
+    reqRuneCount = 1;
+end
+
+if unholy >= reqRuneCount and frost >= reqRuneCount then
+    if haveKillingMachine then
+        return true;
+    elseif unholy >= (reqRuneCount + 1) and frost >= (reqRuneCount + 1) then
+        return true;
+    elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
+        return true;
     end
 end]]></Lua>
-          </Ability>
-          <Ability Name="Frost: Усиление рунического оружия">
-            <SpellID>47568</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name="Frost: Кровоотвод (3)">
-            <SpellID>45529</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
           </Ability>
           <Ability Name="Frost: Ледяной удар (4)">
             <SpellID>49143</SpellID>
@@ -5705,6 +5714,26 @@ end]]></Lua>
             <Lua><![CDATA[if UnitPower("player") >= 35 then
     return true;
 end]]></Lua>
+          </Ability>
+          <Ability Name="Frost: Усиление рунического оружия">
+            <SpellID>47568</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotHCD>false</IsNotHCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[local unholy = runes.Unholy.Count;
+local frost = runes.Frost.Count;
+local blood = runes.Blood.Count;
+local death = runes.Death.Count;
+local power = UnitPower("player");
+return unholy == 0 or frost == 0 or blood == 0 or death == 0 or power <= 30;
+]]></Lua>
           </Ability>
           <Ability Name="Frost: Вытягивание чумы (3)">
             <SpellID>123693</SpellID>
@@ -5734,39 +5763,27 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
+            <Lua><![CDATA[local unholy = runes.Unholy.Count;
+local frost = runes.Frost.Count;
+local blood = runes.Blood.Count;
+local death = runes.Death.Count;
+local power = UnitPower("player");
+return unholy == 0 or frost == 0 or blood == 0 or death == 0 or power <= 30;]]></Lua>
           </Ability>
-          <Ability Name="Ледяное прикосновение">
-            <SpellID>45477</SpellID>
+          <Ability Name="Frost: Удар чумы">
+            <SpellID>45462</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not UnitDebuff("target", 59921) or HasBuff("player", 59052) then
-    return true;
-end]]></Lua>
-          </Ability>
-          <Ability Name="Вспышка болезни">
-            <SpellID>77575</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotHCD>false</IsNotHCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("target", 59879, "PLAYER") and not HasBuff("target", 59921, "PLAYER") then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+return unholy >= 4;]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
