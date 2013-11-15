@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.178</Version>
+  <Version>0.0.4.179</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -4782,6 +4782,19 @@ function HaveFullyDepletedRunes()
     end
     
     return unholy == 0 or frost == 0 or blood == 0 or death == 0;
+end
+
+function GetFreeRunes(withDeath)
+    local unholy = runes.Unholy.Count;
+    local frost  = runes.Frost.Count;
+    local blood  = runes.Blood.Count;
+    local death  = runes.Death.Count;
+    
+    if not withDeath or withDeath == 0 then
+        death = 0;
+    end
+    
+    return unholy + frost + blood + death;
 end]]></Lua>
     <RotationList>
       <Rotation Name="Кровь">
@@ -5114,7 +5127,6 @@ end]]></Lua>
         <Notes><![CDATA[-- Лик смерти - кастовать когда более 95 рунической силы
 -- Вскипание крови - кастовать если в списке целей в 10 метрах есть хотя бы 3 цели с
 -- ознобом или кровавой чумой
--- взрыв трупа рядом с основной целью в пределах N метров (зависит от радиуса урона спеллки)
 -- Реализовать талант Кровоотвод
 -- Мор - использовать когда на основной целе есть 2 болезни и есть по меньшей мере 3 цели в 10 метрах от основной]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -5222,7 +5234,9 @@ if HaveFullyDepletedRunes() == 0 then
     return false;
 end
 
-if bloodPlagueRem <= 3 and frostFeverRem <= 3 then
+-- Действие заклинаний скоро кончится или не хватает рун
+local freeRunes = GetFreeRunes(0);
+if freeRunes <= 2 or (bloodPlagueRem <= 3 and frostFeverRem <= 3) then
     return true
 end
 
@@ -5425,7 +5439,9 @@ if HaveFullyDepletedRunes() == 0 then
     return false;
 end
 
-if bloodPlagueRem <= 3 and frostFeverRem <= 3 then
+-- Действие заклинаний скоро кончится или не хватает рун
+local freeRunes = GetFreeRunes(0);
+if freeRunes <= 2 or (bloodPlagueRem <= 3 and frostFeverRem <= 3) then
     return true
 end
 
@@ -5626,7 +5642,9 @@ if HaveFullyDepletedRunes() == 0 then
     return false;
 end
 
-if bloodPlagueRem <= 3 and frostFeverRem <= 3 then
+-- Действие заклинаний скоро кончится или не хватает рун
+local freeRunes = GetFreeRunes(0);
+if freeRunes <= 2 or (bloodPlagueRem <= 3 and frostFeverRem <= 3) then
     return true
 end
 
