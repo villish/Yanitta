@@ -27,18 +27,10 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Установка режима уведомления о проках
-        /// </summary>
-        [XmlAttribute]
-        public bool ProcNotifyer { get; set; }
-
-        /// <summary>
         /// Примечание по ротации
         /// </summary>
         [XmlIgnore]
         public string Notes { get; set; }
-
-        public int TickDelay { get; set; }
 
         /// <summary>
         /// Rotation code
@@ -63,7 +55,6 @@ namespace Yanitta
             this.HotKey         = new HotKey();
             this.AbilityList    = new ObservableCollection<Ability>();
             this.Name           = "<>";
-            this.TickDelay      = 250;
         }
 
         /// <summary>
@@ -101,9 +92,7 @@ namespace Yanitta
                 Name         = this.Name + " (1)",
                 Notes        = this.Notes,
                 Lua          = this.Lua,
-                TickDelay    = this.TickDelay,
                 HotKey       = new HotKey(),
-                ProcNotifyer = this.ProcNotifyer
             };
 
             foreach (var ability in this.AbilityList)

@@ -85,14 +85,7 @@
                             <ListView x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" Grid.Row="1" Margin="0,0,0,5">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
-                                        <GridViewColumn Width="50" Header="Proc">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding ProcNotifyer}" ToolTip="{x:Static yanitta:Localization.ProcNotifyerToolTip}" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
+                                        <GridViewColumn Width="250" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
                                         <GridViewColumn Width="30" Header="Control">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -286,11 +279,7 @@
                         <GroupBox Header="{x:Static yanitta:Localization.Rotation}">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{x:Static yanitta:Localization.Rotation_Name}" VerticalAlignment="Center" />
-                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="300" VerticalAlignment="Center" />
-                                <Separator Width="5"  />
-                                <TextBlock Text="{x:Static yanitta:Localization.Rotation_TickDelay}" VerticalAlignment="Center" />
-                                <TextBox Text="{Binding ProfileList/RotationList/TickDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="100" VerticalAlignment="Center"
-                                         ToolTip="{x:Static yanitta:Localization.Rotation_TickDelayToolTip}" />
+                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="500" VerticalAlignment="Center" />
                             </StackPanel>
                         </GroupBox>
                         <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
