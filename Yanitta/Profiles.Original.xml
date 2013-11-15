@@ -4766,6 +4766,15 @@ function GetFreeRuneCountForType(runeType)
     local selRuneCount = runes[runeName].Count;
 
     return deathRuneCount + selRuneCount;
+end
+
+-- Возможно надо избегать рун смерти
+function HaveFullyDepletedRunes()
+    local unholy = runes.Unholy.Count;
+    local frost = runes.Frost.Count;
+    local blood = runes.Blood.Count;
+    local death = runes.Death.Count;
+    return unholy == 0 or frost == 0 or blood == 0 or death == 0;
 end]]></Lua>
     <RotationList>
       <Rotation Name="Кровь">
@@ -5186,7 +5195,27 @@ playerHP   = HealthByPercent("player");
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HasDebuff("target", 59879, "PLAYER") and HasDebuff("target", 59921, "PLAYER") then
+            <Lua><![CDATA[-- Поглощает 2 болезни и восстанавливает 1 случайную руну ввиде руны смерти
+
+bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
+frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
+
+-- На целе есть 2 болезни
+if not bloodPlague or not frostFever then
+    return false;
+end
+
+-- Одна из рун полностью исчерпана
+if HaveFullyDepletedRunes() == 0 then
+    return false;
+end
+
+if bloodPlagueRem <= 3 and frostFeverRem <= 3 then
+    return true
+end
+
+-- Цель скоро умрет
+if HealthByPercent("target") < 5 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5219,7 +5248,9 @@ return (not bloodPlague or bloodPlagueRem <= 2) and (not frostFever or frostFeve
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
+            <Lua><![CDATA[return true;
+
+-- проверка по кд в 1.5 минуты и наличие хотя бы 3х целей еще по мимо основной]]></Lua>
           </Ability>
           <Ability Name="Жнец душ">
             <SpellID>130736</SpellID>
@@ -5256,7 +5287,7 @@ return HealthByPercent("target") <= pct;]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitPower("player") >= 30 then
+            <Lua><![CDATA[if runes.Power >= 30 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5303,7 +5334,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitPower("player") >= 30 then
+            <Lua><![CDATA[if runes.Power >= 30 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5367,7 +5398,27 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HasDebuff("target", 59879, "PLAYER") and HasDebuff("target", 59921, "PLAYER") then
+            <Lua><![CDATA[-- Поглощает 2 болезни и восстанавливает 1 случайную руну ввиде руны смерти
+
+bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
+frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
+
+-- На целе есть 2 болезни
+if not bloodPlague or not frostFever then
+    return false;
+end
+
+-- Одна из рун полностью исчерпана
+if HaveFullyDepletedRunes() == 0 then
+    return false;
+end
+
+if bloodPlagueRem <= 3 and frostFeverRem <= 3 then
+    return true
+end
+
+-- Цель скоро умрет
+if HealthByPercent("target") < 5 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5452,7 +5503,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitPower("player") >= 35 then
+            <Lua><![CDATA[if runes.Power >= 35 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5513,7 +5564,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitPower("player") >= 35 then
+            <Lua><![CDATA[if runes.Power >= 35 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5533,8 +5584,7 @@ end]]></Lua>
 local frost = runes.Frost.Count;
 local blood = runes.Blood.Count;
 local death = runes.Death.Count;
-local power = UnitPower("player");
-return unholy == 0 or frost == 0 or blood == 0 or death == 0 or power <= 30;
+return unholy == 0 or frost == 0 or blood == 0 or death == 0 or runes.Power <= 30;
 ]]></Lua>
           </Ability>
           <Ability Name="Вытягивание чумы (3)">
@@ -5549,7 +5599,27 @@ return unholy == 0 or frost == 0 or blood == 0 or death == 0 or power <= 30;
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HasDebuff("target", 59879, "PLAYER") and HasDebuff("target", 59921, "PLAYER") then
+            <Lua><![CDATA[-- Поглощает 2 болезни и восстанавливает 1 случайную руну ввиде руны смерти
+
+bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
+frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
+
+-- На целе есть 2 болезни
+if not bloodPlague or not frostFever then
+    return false;
+end
+
+-- Одна из рун полностью исчерпана
+if HaveFullyDepletedRunes() == 0 then
+    return false;
+end
+
+if bloodPlagueRem <= 3 and frostFeverRem <= 3 then
+    return true
+end
+
+-- Цель скоро умрет
+if HealthByPercent("target") < 5 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5569,8 +5639,7 @@ end]]></Lua>
 local frost = runes.Frost.Count;
 local blood = runes.Blood.Count;
 local death = runes.Death.Count;
-local power = UnitPower("player");
-return unholy == 0 or frost == 0 or blood == 0 or death == 0 or power <= 30;]]></Lua>
+return unholy == 0 or frost == 0 or blood == 0 or death == 0 or runes.Power <= 30;]]></Lua>
           </Ability>
           <Ability Name="Удар чумы">
             <SpellID>45462</SpellID>
