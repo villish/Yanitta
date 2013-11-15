@@ -5205,10 +5205,7 @@ end]]></Lua>
             <Lua><![CDATA[bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
 frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
 
-local hasnodieses = not bloodPlague and not frostFever;
-local almostended = (bloodPlague and bloodPlagueRem <= 2) and (frostFever and frostFeverRem <= 2);
-
-return hasnodieses or almostended;]]></Lua>
+return (not bloodPlague or bloodPlagueRem <= 2) and (not frostFever or frostFeverRem <= 2);]]></Lua>
           </Ability>
           <Ability Name="Нечестивая порча (1)">
             <SpellID>115989</SpellID>
@@ -5222,8 +5219,7 @@ return hasnodieses or almostended;]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[print("Нечестивая порча");
-return true;]]></Lua>
+            <Lua><![CDATA[return true;]]></Lua>
           </Ability>
           <Ability Name="Жнец душ">
             <SpellID>130736</SpellID>
@@ -5237,9 +5233,8 @@ return true;]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[print("Жнец душ");
-local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
-if unholy >= 3 then
+            <Lua><![CDATA[local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+if unholy < 3 then
     return false;
 end
 
@@ -5247,7 +5242,7 @@ local pct = 35;
 if HasBuff("player", 138347) then
     pct = 45;
 end
-return HealthByPercent("player") <= pct;]]></Lua>
+return HealthByPercent("target") <= pct;]]></Lua>
           </Ability>
           <Ability Name="Ледяной удар (1)">
             <SpellID>49143</SpellID>
@@ -5391,10 +5386,7 @@ end]]></Lua>
             <Lua><![CDATA[bloodPlague,_,bloodPlagueRem = HasDebuff("target", 59879, "PLAYER");
 frostFever,_,frostFeverRem = HasDebuff("target", 59921, "PLAYER");
 
-local hasnodieses = not bloodPlague and not frostFever;
-local almostended = (bloodPlague and bloodPlagueRem <= 2) and (frostFever and frostFeverRem <= 2);
-
-return hasnodieses or almostended;]]></Lua>
+return (not bloodPlague or bloodPlagueRem <= 2) and (not frostFever or frostFeverRem <= 2);]]></Lua>
           </Ability>
           <Ability Name="Ледяное прикосновение">
             <SpellID>45477</SpellID>
@@ -5429,8 +5421,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[print("Нечестивая порча");
-return true;]]></Lua>
+            <Lua><![CDATA[return true;]]></Lua>
           </Ability>
           <Ability Name="Воющий ветер (2)">
             <SpellID>49184</SpellID>
