@@ -23,6 +23,7 @@ namespace Yanitta
             this.CommandBindings.AddRange(new CommandBinding[] {
                 new CommandBinding(ApplicationCommands.Save,  (o, e) => {
                     Offsets.Default.Save();
+                    Settings.Default.Save();
                     this.Close();
                     e.Handled = true;
                 }),

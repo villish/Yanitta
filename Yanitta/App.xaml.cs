@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
+using S = Yanitta.Properties.Settings;
 
 namespace Yanitta
 {
@@ -24,6 +27,9 @@ namespace Yanitta
         {
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
+
+            if (S.Default.Language != "auto")
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(S.Default.Language);
 
             Console.WriteLine("Yanitta startup!...");
 

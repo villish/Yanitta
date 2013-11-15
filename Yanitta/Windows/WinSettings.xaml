@@ -1,6 +1,7 @@
 ﻿<Window x:Class="Yanitta.WindowSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:settings="clr-namespace:Yanitta.Properties"
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="WindowSettings"
@@ -16,9 +17,17 @@
         <StackPanel Orientation="Horizontal">
             <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
             <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
+            <Separator BorderThickness="1" Margin="10,0,0,0" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Language: " VerticalAlignment="Center"/>
+                <ComboBox SelectedItem="{Binding Language}" Width="100">
+                    <sys:String>auto</sys:String>
+                    <sys:String>en</sys:String>
+                    <sys:String>ru</sys:String>
+                </ComboBox>
+            </StackPanel>
         </StackPanel>
         <Separator />
-
         <StackPanel Orientation="Horizontal">
             <Label Width="100" Content="Process name:" />
             <TextBox Width="350" Text="{Binding ProcessName}" />
