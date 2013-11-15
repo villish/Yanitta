@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.180</Version>
+  <Version>0.0.4.181</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -5130,8 +5130,7 @@ end]]></Lua>
       <Rotation Name="Лед">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[-- Лик смерти - кастовать когда более 95 рунической силы
--- Вскипание крови - кастовать если в списке целей в 10 метрах есть хотя бы 3 цели с
--- ознобом или кровавой чумой
+-- Вскипание крови - кастовать если в списке целей в 10 метрах есть хотя бы 3 цели с ознобом или кровавой чумой
 -- Реализовать талант Кровоотвод
 -- Мор - использовать когда на основной целе есть 2 болезни и есть по меньшей мере 3 цели в 10 метрах от основной]]></Notes>
         <Lua><![CDATA[
@@ -5266,10 +5265,30 @@ playerHP   = HealthByPercent("player");
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
+            <Lua><![CDATA[if not HasBuff("player", 59332) then
+    if SpellCD(77575) > 0 then
+        return false;
+    end
+end
+bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
 frostFever,_,frostFeverRem = HasDebuff("target", DIESE_FROST_FEVER, "PLAYER");
 
 return (not bloodPlague or bloodPlagueRem <= 2) or (not frostFever or frostFeverRem <= 2);]]></Lua>
+          </Ability>
+          <Ability Name="Удар чумы (2)">
+            <SpellID>45462</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+return unholy >= 1 and not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");]]></Lua>
           </Ability>
           <Ability Name="Уничтожение">
             <SpellID>49020</SpellID>
@@ -5302,24 +5321,6 @@ end
 --    end
 --end]]]]></Lua>
           </Ability>
-          <Ability Name="Ледяной удар">
-            <SpellID>49143</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[ability.Procs = { 51124 };
-
-if runes.Power >= 20 then
-    return true;
-end]]></Lua>
-          </Ability>
           <Ability Name="Воющий ветер">
             <SpellID>49184</SpellID>
             <Target>Target</Target>
@@ -5336,6 +5337,24 @@ end]]></Lua>
 
 local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
 if frost >= 2 or HasBuff("player", 59052) then
+    return true;
+end]]></Lua>
+          </Ability>
+          <Ability Name="Ледяной удар">
+            <SpellID>49143</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[ability.Procs = { 51124 };
+
+if runes.Power >= 20 then
     return true;
 end]]></Lua>
           </Ability>
@@ -5451,6 +5470,10 @@ return HaveFullyDepletedRunes() or runes.Power <= 30;
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[ability.Procs = { 59052 };
 
+if HasBuff("player", 59052) then
+    return true;
+end
+
 local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
 
 local reqCount = 2;
@@ -5458,7 +5481,7 @@ if SpellCD(49020) > 1 then
     reqCount = 1;
 end
 
-if frost >= reqCount or HasBuff("player", 59052) then
+if frost >= reqCount then
     return true;
 end]]></Lua>
           </Ability>
@@ -5512,7 +5535,7 @@ local reqCount = 2;
 if SpellCD(49020) > 1 then
     reqCount = 1;
 end
-return unholy >= reqCount;]]></Lua>
+return unholy >= reqCount or not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");]]></Lua>
           </Ability>
           <Ability Name="Вскипание крови ">
             <SpellID>48721</SpellID>
