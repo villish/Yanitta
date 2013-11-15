@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.162</Version>
+  <Version>0.0.4.165</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -6041,14 +6041,17 @@ end]]></Lua>
   </Profile>
   <Profile Class="Mage">
     <Lua><![CDATA[useCooldown  = true;
-setAoE       = nil;
-
-igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
+setAoE       = nil;]]></Lua>
+    <RotationList>
+      <Rotation Name="Огонь" ProcNotifyer="false">
+        <TickDelay>250</TickDelay>
+        <HotKey Key="Z" Modifier="Alt" />
+        <Notes><![CDATA[]]></Notes>
+        <Lua><![CDATA[igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
 pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
 pyroCrit     = false;   -- Было ли заклинание Огненная глыба (11366) критическим
 
 function OnEventExtended (self, event, ...)
---print("AddonFrame_OnEvent")
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
         -- для начала приведу полный список параметров.
         local timestamp, subEvent, hideCaster,
@@ -6068,7 +6071,7 @@ function OnEventExtended (self, event, ...)
         end
 
         if subEvent == "SPELL_DAMAGE" then
-            if UnitName("player") == srcName and destName == UnitName("target") then
+            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
                 -- Огненная глыба
                 if spellId == 11366 then
                     pyroDamage = amount;
@@ -6079,12 +6082,6 @@ function OnEventExtended (self, event, ...)
         end
     end
 end]]></Lua>
-    <RotationList>
-      <Rotation Name="Огонь" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
-        <HotKey Key="Z" Modifier="Alt" />
-        <Notes><![CDATA[]]></Notes>
-        <Lua><![CDATA[]]></Lua>
         <AbilityList>
           <Ability Name="Инициализация">
             <SpellID>0</SpellID>
@@ -6191,7 +6188,7 @@ end]]></Lua>
 local MAX_DOTE_IGNITE = 5000;
 --print(pyroCrit ,igniteDamage)
 if useCooldown and pyroCrit and igniteDamage > MAX_DOTE_IGNITE then
-    if select(3, HasDebuff("target", 12654, "PLAYER")) > 3 then
+    if select(3, HasDebuff(ability.Target, 12654, "PLAYER")) > 3 then
         return true;
     end
 end]]></Lua>
@@ -6208,8 +6205,10 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if isInRange and not HasDebuff("target", 44457, "PLAYER") then
-    return true;
+            <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+    if IsSpellInRange(GetSpellInfo(133), ability.Target) == 1 then
+        return true;
+    end
 end]]></Lua>
           </Ability>
           <Ability Name="Живая бомба (Focus)">
@@ -6224,8 +6223,8 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasDebuff("focus", 44457, "PLAYER") then
-    if IsSpellInRange(GetSpellInfo(133), "focus") == 1 then
+            <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+    if IsSpellInRange(GetSpellInfo(133), ability.Target) == 1 then
         return true;
     end
 end]]></Lua>
@@ -6242,8 +6241,8 @@ end]]></Lua>
             <IsNotHCD>false</IsNotHCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasDebuff("mouseover", 44457, "PLAYER") then
-    if IsSpellInRange(GetSpellInfo(133), "mouseover") == 1 then
+            <Lua><![CDATA[if not HasDebuff(ability.Target, 44457, "PLAYER") then
+    if IsSpellInRange(GetSpellInfo(133), ability.Target) == 1 then
         return true;
     end
 end]]></Lua>
@@ -6282,7 +6281,7 @@ end]]></Lua>
 -- поэтому важно сразу после окончания каста использовать Пламенный взрыв (108853),
 -- чтобы следующий Огненный шар (133) не успел и долететь до цели и сбить бафф, если вдруг не критонет.
 
-if isInRange or HasBuff("player", 48107) then
+if isInRange and HasBuff("player", 48107) then
     return true;
 end]]></Lua>
           </Ability>
