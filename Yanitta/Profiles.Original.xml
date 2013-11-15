@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.170</Version>
+  <Version>0.0.4.176</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -428,12 +428,12 @@ function InsertNewUnitToHeallersTable(unit)
         and UnitCanAssist(unit, "player")
         and IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
         and not IsNotLineOfSight(unit) then
-        for i,member in ipairs(members) do
+        for _,member in ipairs(members) do
             if UnitGUID(member.Unit) == UnitGUID(unit) then
                 return;
             end
         end
-        table.insert(members, { Unit = unit, IsInMyPaty = false });
+        table.insert(members, { Unit = unit, IsInMyParty = false });
     end
 end
 
@@ -537,7 +537,7 @@ function FillPartyTables(standartSpellId)
     FORCE_IN_COMBAT  = false;
     MAIN_CLASS_SPELL = standartSpellId;
     LowHP            = { };
-    members          = { { Unit = "player", IsInMyPaty = true } };
+    members          = { { Unit = "player", IsInMyParty = true } };
 
     for i = 95, 10, -5 do
         LowHP["H"..i] = 0;
@@ -552,12 +552,14 @@ function FillPartyTables(standartSpellId)
 
     for index = 1, GetNumGroupMembers() do
         local unit = prefix..index;
-        if UnitExists(unit) and not UnitIsUnit("player", unit) and UnitIsConnected(unit) then
-            local inRange   = IsSpellInRange(GetSpellInfo(standartSpellId), unit) == 1;
-            local isVisible = not IsNotLineOfSight(unit); -- need testing
-            if inRange and isVisible and not UnitIsDeadOrGhost(unit) and not UnitCanAttack("player", unit) then
-                table.insert(members, { Unit = unit, IsInMyPaty = true });
-            end
+        if UnitExists(unit)
+            and not UnitIsUnit("player", unit)
+            and UnitIsConnected(unit)
+            and not UnitIsEnemy("player", unit)
+            and not UnitIsDeadOrGhost(unit)
+            and IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+            and not IsNotLineOfSight(unit) then
+            table.insert(members, { Unit = unit, IsInMyParty = true });
         end
     end
 
@@ -7414,16 +7416,9 @@ RightControl - Включение/выключение автодиспела
             <Lua><![CDATA[-- модификатор
 if     IsModKeyDown(mkLeftShift) then
     return true;
-elseif IsModKeyDown(mkLeftControl) then
-elseif IsModKeyDown(mkLeftAlt) then
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
+--elseif IsModKeyDown(mkLeftControl) then
+--elseif IsModKeyDown(mkLeftAlt) then
+--elseif IsModKeyDown(mkRightShift) then
 elseif IsModKeyDown(mkRightControl) then
     if useAutoDispell then
         useAutoDispell = false;
@@ -7442,22 +7437,9 @@ elseif IsModKeyDown(mkRightAlt) then
     end
 end
 
-local b_ufs = { 58984, 104270 };
-
--- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted() or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6) or HasBuff("player", b_ufs) or IsStealthed() then
-    return true;
-end
-
--- Если кастуем спокойствие - тогда ничего не делаем
-if UnitChannelInfo("player") then
-    return true;
-end
-
 FillPartyTables(774);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 -- используем аксесуар на ману, только в форме исцеления (0)
@@ -7482,12 +7464,7 @@ if UnitId("boss1") == 71529 and UnitCastingInfo("boss1") then
     if UnitCastingInfo("player") == GetSpellInfo(5185) or UnitCastingInfo("player") == GetSpellInfo(50464) then
         SpellStopCasting()
     end
-end
-
--- прервем чтение покровительства природы, если есть просевшие цели
---if (members[1].HP < 60 or LowHP.H80 > 3) and UnitCastingInfo("player") == GetSpellInfo(50464) then
---    SpellStopCasting();
---end]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Возрождение">
             <SpellID>20484</SpellID>
@@ -7501,7 +7478,23 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
-            <Lua><![CDATA[if UnitIsDeadOrGhost("mouseover") then
+            <Lua><![CDATA[if UnitIsDeadOrGhost(ability.Target) then
+    return true;
+end]]></Lua>
+          </Ability>
+          <Ability Name="Оживление">
+            <SpellID>50769</SpellID>
+            <Target>Mouseover</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[if not UnitAffectingCombat("player") and UnitIsDeadOrGhost(ability.Target) then
     return true;
 end]]></Lua>
           </Ability>
@@ -7517,7 +7510,35 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if IsMouseButtonDown(3) then
+            <Lua><![CDATA[-- Колеcико мышки
+if IsMouseButtonDown(3) then
+    return true;
+end]]></Lua>
+          </Ability>
+          <Ability Name="Пауза">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[local b_ufs = { 58984, 104270 };
+
+-- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
+if IsMounted()
+or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6)
+or HasBuff("player", b_ufs)
+or IsStealthed() then
+    return true;
+end
+
+-- Если кастуем спокойствие - тогда ничего не делаем
+if UnitChannelInfo("player") then
     return true;
 end]]></Lua>
           </Ability>
@@ -7629,7 +7650,10 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if IsModKeyDown(mkLeftControl) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") and not HasBuff("mouseover", 774, "PLAYER") then
+            <Lua><![CDATA[if IsModKeyDown(mkLeftControl)
+and UnitExists("mouseover")
+and UnitCanAssist("player", "mouseover")
+and not HasBuff("mouseover", 774, "PLAYER") then
     return "mouseover";
 end
 
@@ -7682,6 +7706,7 @@ end]]></Lua>
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
         if member.HP < 70 and HasBuff("player", buffs, "PLAYER") then
+            print("|cff00ff00 >> Кастую Быстрое восстановление <<")
             return member.Unit;
         end
     end
@@ -7695,6 +7720,7 @@ elseif LowHP.H80 <= 3 then
                 end
             end
             if count > 2 then
+                print("|cff00ff00 >> Кастую Быстрое восстановление <<")
                 return member.Unit;
             end
         end
@@ -7738,7 +7764,7 @@ if not HasBuff("player", 132158) then
     local harmony = select(3, HasBuff("player", 100977));
     local hp = members[1].HP;
     if hp <= 40 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
-        if GetShapeshiftForm() == 6 or not isMoving then
+        if GetShapeshiftForm() == 6 or not IS_MOVING then
             return members[1].Unit;
         end
     end
@@ -7858,7 +7884,7 @@ end]]></Lua>
             <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
 if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if member.IsInMyPaty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
@@ -7866,22 +7892,6 @@ elseif not UnitAffectingCombat("player") then
     if not HasBuff("player", params_buff) then
         return true;
     end
-end]]></Lua>
-          </Ability>
-          <Ability Name="Оживление">
-            <SpellID>50769</SpellID>
-            <Target>Mouseover</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>NotMoving</IsMovingCheck>
-            <Lua><![CDATA[if not UnitAffectingCombat("player") and UnitIsDeadOrGhost("mouseover") then
-    return true;
 end]]></Lua>
           </Ability>
           <Ability Name="Лунный огонь">
@@ -8308,7 +8318,7 @@ end]]></Lua>
             <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
 if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if member.IsInMyPaty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
@@ -8396,7 +8406,7 @@ end]]></Lua>
             <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
 if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if member.IsInMyPaty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
@@ -8679,7 +8689,7 @@ end]]></Lua>
             <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
 if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if member.IsInMyPaty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
@@ -8769,7 +8779,7 @@ end]]></Lua>
             <Lua><![CDATA[local params_buff = { 1126, 115921, 20217, 90363 };
 if type(members) == "table" and GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if member.IsInMyPaty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
+        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
             return true;
         end
     end
