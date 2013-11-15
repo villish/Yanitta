@@ -425,8 +425,8 @@ end
 function InsertNewUnitToHeallersTable(unit)
     if UnitExists(unit)
         and not UnitIsDeadOrGhost(unit)
-        and UnitCanAssist(unit, "player")
-        and IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+        and     UnitCanAssist(unit, "player")
+        and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
         and not IsNotLineOfSight(unit) then
         for _,member in ipairs(members) do
             if UnitGUID(member.Unit) == UnitGUID(unit) then
@@ -439,20 +439,18 @@ end
 
 -- Исключительные ситуации в рейде, добавление юнитов для дополнительного лечения.
 function ExtendTheHealTable()
-    if type(members) == "table" then
-        -- Норусхен
-        local bossId = UnitId("boss1");
-        -- Если хиллер на испытании, добавляем юнитов для отхила.
-        if bossId == 71475 or bossId == 71479 or bossId == 71480 then
-            InsertNewUnitToHeallersTable("boss1");
-            InsertNewUnitToHeallersTable("boss2");
-            InsertNewUnitToHeallersTable("boss3");
-        end
-        -- отхил дружественной цели по mouseover/target/focus
-        InsertNewUnitToHeallersTable("target");
-        InsertNewUnitToHeallersTable("focus");
-        InsertNewUnitToHeallersTable("mouseover");
+    -- Норусхен
+    local bossId = UnitId("boss1");
+    -- Если хиллер на испытании, добавляем юнитов для отхила.
+    if bossId == 71475 or bossId == 71479 or bossId == 71480 then
+        InsertNewUnitToHeallersTable("boss1");
+        InsertNewUnitToHeallersTable("boss2");
+        InsertNewUnitToHeallersTable("boss3");
     end
+    -- отхил дружественной цели по mouseover/target/focus
+    InsertNewUnitToHeallersTable("target");
+    InsertNewUnitToHeallersTable("focus");
+    InsertNewUnitToHeallersTable("mouseover");
 end
 
 -- в эту функцию добавляем логику по особому поведению в рейдах
@@ -509,7 +507,7 @@ function GetDispellInfo(dispeller_type)
     local d_class   = select(2, UnitClass("player")) or "";
     local c_rec     = DISPELL_TABLE[d_class.."_"..dispeller];
 
-    if type(c_rec) ~= "table" then return end
+    if not c_rec then return end
 
     local dispellTable   = {};
     for _,member in ipairs(members) do
@@ -554,10 +552,10 @@ function FillPartyTables(standartSpellId)
         local unit = prefix..index;
         if UnitExists(unit)
             and not UnitIsUnit("player", unit)
-            and UnitIsConnected(unit)
+            and     UnitIsConnected(unit)
             and not UnitIsEnemy("player", unit)
             and not UnitIsDeadOrGhost(unit)
-            and IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+            and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
             and not IsNotLineOfSight(unit) then
             table.insert(members, { Unit = unit, IsInMyParty = true });
         end
