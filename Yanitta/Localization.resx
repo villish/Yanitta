@@ -270,10 +270,10 @@
   <data name="Export" xml:space="preserve">
     <value>Save the file in the current profile</value>
   </data>
-  <data name="IsNotHCDToolTip" xml:space="preserve">
+  <data name="IsNotGCDToolTip" xml:space="preserve">
     <value>Indicates that the ability has no global cooldown</value>
   </data>
-  <data name="IsNotHCD" xml:space="preserve">
+  <data name="IsNotGCD" xml:space="preserve">
     <value>Without GCD</value>
   </data>
   <data name="CoreHeader" xml:space="preserve">

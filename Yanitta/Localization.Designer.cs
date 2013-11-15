@@ -513,18 +513,18 @@ namespace Yanitta {
         /// <summary>
         ///   Ищет локализованную строку, похожую на Without GCD.
         /// </summary>
-        public static string IsNotHCD {
+        public static string IsNotGCD {
             get {
-                return ResourceManager.GetString("IsNotHCD", resourceCulture);
+                return ResourceManager.GetString("IsNotGCD", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Ищет локализованную строку, похожую на Indicates that the ability has no global cooldown.
         /// </summary>
-        public static string IsNotHCDToolTip {
+        public static string IsNotGCDToolTip {
             get {
-                return ResourceManager.GetString("IsNotHCDToolTip", resourceCulture);
+                return ResourceManager.GetString("IsNotGCDToolTip", resourceCulture);
             }
         }
         

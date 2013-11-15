@@ -270,10 +270,10 @@
   <data name="Export" xml:space="preserve">
     <value>Сохранить текущий профиль в файл</value>
   </data>
-  <data name="IsNotHCDToolTip" xml:space="preserve">
+  <data name="IsNotGCDToolTip" xml:space="preserve">
     <value>Указывает, что данная способность не имеет глобального кулдауна</value>
   </data>
-  <data name="IsNotHCD" xml:space="preserve">
+  <data name="IsNotGCD" xml:space="preserve">
     <value>Без ГКД</value>
   </data>
   <data name="CoreHeader" xml:space="preserve">
