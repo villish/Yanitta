@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.169</Version>
+  <Version>0.0.4.170</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -783,8 +783,7 @@ function FillFurryData()
     bloodthirst_remains = SpellCD(23881);
 end]]></Lua>
     <RotationList>
-      <Rotation Name="Неистовство" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Неистовство">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[
 ]]></Notes>
@@ -1244,8 +1243,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Защита" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Защита">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -1747,8 +1745,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Оружие" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Оружие">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -2123,8 +2120,7 @@ end]]></Lua>
 useCooldown = true;
 setAoE      = nil;]]></Lua>
     <RotationList>
-      <Rotation Name="Защита" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Защита">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -2418,15 +2414,13 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Лекарь" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Лекарь">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Воздаяние" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Воздаяние">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -2703,8 +2697,7 @@ end]]></Lua>
 setAoE      = nil;
 isAltMod    = nil;]]></Lua>
     <RotationList>
-      <Rotation Name="PVE Выживание" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="PVE Выживание">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[LeftShift - Метание огненной ловушки
 LeftControl - включение/выключение AOE
@@ -3098,22 +3091,19 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Повелитель зверей" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Повелитель зверей">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Стрельба" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Стрельба">
         <HotKey Key="V" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="PVE Выживание (прокачка)" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="PVE Выживание (прокачка)">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень
 
@@ -3436,8 +3426,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Farm" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Farm">
         <HotKey Key="B" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -3494,8 +3483,7 @@ end]]></Lua>
 setAoE        = false;
 useCooldown   = true;]]></Lua>
     <RotationList>
-      <Rotation Name="Бой" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Бой">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -3751,8 +3739,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Ликвидация" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Ликвидация">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -3896,15 +3883,13 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Скрытность" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Скрытность">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Фарм ларей" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Фарм ларей">
         <HotKey Key="V" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[ALREADY_PICKPOCKETED_TABLE = { };
@@ -3962,8 +3947,7 @@ end]]></Lua>
 setAoE      = nil;
 useAutoDispell = true;]]></Lua>
     <RotationList>
-      <Rotation Name="Послушание" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Послушание">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[LeftShift - Пауза
 RightAlt - Диспел по mouseover
@@ -4365,15 +4349,13 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Свет" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Свет">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Тьма" ProcNotifyer="true">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Тьма">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -4786,8 +4768,7 @@ function GetFreeRuneCountForType(runeType)
     return deathRuneCount + selRuneCount;
 end]]></Lua>
     <RotationList>
-      <Rotation Name="Кровь" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Кровь">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[Left Shift - Смерть и разложение
 Left Alt - Пауза
@@ -5112,8 +5093,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Лед" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Лед">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -5618,8 +5598,7 @@ return unholy >= 4;]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Нечестивость" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Нечестивость">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -5630,8 +5609,7 @@ return unholy >= 4;]]></Lua>
   <Profile Class="Shaman">
     <Lua><![CDATA[]]></Lua>
     <RotationList>
-      <Rotation Name="Стихии" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Стихии">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -5787,15 +5765,13 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Совершенствование" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Совершенствование">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Исцеление" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Исцеление">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -5990,8 +5966,7 @@ end]]></Lua>
     <Lua><![CDATA[useCooldown  = true;
 setAoE       = nil;]]></Lua>
     <RotationList>
-      <Rotation Name="Огонь" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Огонь">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
@@ -6262,8 +6237,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Лед" ProcNotifyer="true">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Лед">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -6490,8 +6464,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Тайная магия" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Тайная магия">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -6502,8 +6475,7 @@ end]]></Lua>
   <Profile Class="Warlock">
     <Lua><![CDATA[]]></Lua>
     <RotationList>
-      <Rotation Name="Демонология" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Демонология">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -6727,15 +6699,13 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Разрушение" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Разрушение">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Колдовство" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Колдовство">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -7049,15 +7019,13 @@ end]]></Lua>
   <Profile Class="Monk">
     <Lua><![CDATA[useCooldown = true;]]></Lua>
     <RotationList>
-      <Rotation Name="Ткач туманов" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Ткач туманов">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="Хмелевар" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Хмелевар">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -7409,8 +7377,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Танцующий с ветром" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Танцующий с ветром">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -7424,8 +7391,7 @@ setAoE      = nil;
 isCat       = nil;
 useAutoDispell = true;]]></Lua>
     <RotationList>
-      <Rotation Name="Лекарь" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Лекарь">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[LeftShift        - Пауза
 LeftControl    - Установка гриба
@@ -7952,8 +7918,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Страж" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Страж">
         <HotKey Key="X" Modifier="Alt" />
         <Notes><![CDATA[Тест]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -8355,8 +8320,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Баланс" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Баланс">
         <HotKey Key="V" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -8444,8 +8408,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Сила зверя" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Сила зверя">
         <HotKey Key="C" Modifier="Alt" />
         <Notes><![CDATA[LeftControl - Включыние / Выключение AOE
 LeftAlt - Пауза
@@ -8728,8 +8691,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Фарм репы (антипираты)" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Фарм репы">
         <HotKey Key="N" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>
@@ -8819,8 +8781,7 @@ end]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Лекарь: Дамаг" ProcNotifyer="false">
-        <TickDelay>250</TickDelay>
+      <Rotation Name="Лекарь: Дамаг">
         <HotKey Key="B" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
         <Lua><![CDATA[]]></Lua>

@@ -277,10 +277,7 @@
                             </TabItem>
                         </TabControl>
                         <GroupBox Header="{x:Static yanitta:Localization.Rotation}">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static yanitta:Localization.Rotation_Name}" VerticalAlignment="Center" />
-                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="500" VerticalAlignment="Center" />
-                            </StackPanel>
+                            <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Center" />
                         </GroupBox>
                         <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
                             <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
