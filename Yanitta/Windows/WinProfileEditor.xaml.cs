@@ -295,9 +295,10 @@ namespace Yanitta
             {
                 var mem = (WowMemory)cbProcess.SelectedValue;
                 var spellIdList = CurrentRotation.AbilityList.Select(a => a.SpellID);
-                var test_code = string.Format(@"local spellList = {{ {0} }};" + Environment.NewLine, string.Join(", ", spellIdList)) + CurrentTest.Lua;
+                var test_code = string.Format(@"local spellList = {{ {0} }};" + Environment.NewLine,
+                    string.Join(", ", spellIdList)) + CurrentTest.Lua;
 
-                Debug.WriteLine(test_code);
+                System.IO.File.WriteAllText("InjectedLuaCode.lua", test_code);
                 mem.LuaHook.LuaExecute(test_code);
             }
             else 
