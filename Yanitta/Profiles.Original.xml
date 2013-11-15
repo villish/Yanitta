@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.176</Version>
+  <Version>0.0.4.177</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -4751,8 +4751,8 @@ function FillRunesInfo()
         local rune_name = rune_names[runeType];
  
         runes[rune_name].Rem   = (start + duration) - GetTime();
-        runes[rune_name].Count = GetRuneCount(slot);
-    end    
+        runes[rune_name].Count = GetRuneCount(slot) + runes[rune_name].Count;
+    end
 end
 
 function GetFreeRuneCountForType(runeType)
@@ -4762,7 +4762,7 @@ function GetFreeRuneCountForType(runeType)
 
     local deathRuneCount = runes.Death.Count;
     local runeName = rune_names[runeType];
-    --print("GetFreeRuneCountForType: "..runeName..", type: "..runeType);
+
     local selRuneCount = runes[runeName].Count;
 
     return deathRuneCount + selRuneCount;
@@ -4774,6 +4774,12 @@ function HaveFullyDepletedRunes()
     local frost = runes.Frost.Count;
     local blood = runes.Blood.Count;
     local death = runes.Death.Count;
+    
+    -- Frost DK dont have blood runes
+    if GetShapeshiftForm() == 2 then
+        blood = 2; -- disable blood rune
+    end
+    
     return unholy == 0 or frost == 0 or blood == 0 or death == 0;
 end]]></Lua>
     <RotationList>
@@ -5104,7 +5110,11 @@ end]]></Lua>
       </Rotation>
       <Rotation Name="Лед">
         <HotKey Key="Z" Modifier="Alt" />
-        <Notes><![CDATA[]]></Notes>
+        <Notes><![CDATA[-- Лик смерти - кастовать когда более 95 рунической силы
+-- Вскипание крови - кастовать если в списке целей в 10 метрах есть хотя бы 3 цели с
+-- ознобом или кровавой чумой
+-- взрыв трупа рядом с основной целью в пределах N метров (зависит от радиуса урона спеллки)
+-- Реализовать талант Кровоотвод]]></Notes>
         <Lua><![CDATA[]]></Lua>
         <AbilityList>
           <Ability Name="Инициализация">
@@ -5148,8 +5158,8 @@ if IsMounted() then
     return true;
 end
 
--- Перейти в стойку защиты
-if     GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
+-- Смена власти в зависимости от специализации
+if  GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
     CastShapeshiftForm(1); -- blood
 elseif GetSpecialization() == 2 and GetShapeshiftForm() ~= 2 then
     CastShapeshiftForm(2); -- frost
