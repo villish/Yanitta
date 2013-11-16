@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.181</Version>
+  <Version>0.0.4.178</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -4730,6 +4730,8 @@ RUNETYPE_CHROMATIC = 2;
 RUNETYPE_FROST     = 3;
 RUNETYPE_DEATH     = 4;
 
+TOTAL_RUNE_COUNT   = 6;
+
 useCooldown        = true;
 setAoE             = nil;
 isAltMod           = nil;
@@ -4800,6 +4802,10 @@ function GetFreeRunes(withDeath)
     end
     
     return unholy + frost + blood + death;
+end
+
+function HaveRuneAtCooldown()
+    return GetFreeRunes() < TOTAL_RUNE_COUNT;
 end]]></Lua>
     <RotationList>
       <Rotation Name="Кровь">
@@ -5273,7 +5279,7 @@ end
 bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
 frostFever,_,frostFeverRem = HasDebuff("target", DIESE_FROST_FEVER, "PLAYER");
 
-return (not bloodPlague or bloodPlagueRem <= 2) or (not frostFever or frostFeverRem <= 2);]]></Lua>
+return (not bloodPlague or bloodPlagueRem <= 3) or (not frostFever or frostFeverRem <= 3);]]></Lua>
           </Ability>
           <Ability Name="Удар чумы (2)">
             <SpellID>45462</SpellID>
@@ -5335,6 +5341,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[ability.Procs = { 59052 };
 
+--TODO 1 rune
 local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
 if frost >= 2 or HasBuff("player", 59052) then
     return true;
@@ -5357,6 +5364,48 @@ end]]></Lua>
 if runes.Power >= 20 then
     return true;
 end]]></Lua>
+          </Ability>
+          <Ability Name="Лик Смерти">
+            <SpellID>47541</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[-- Сливаем избыток рунической энергии Ликом Смерти
+if runes.Power < 80 then
+    return false;
+end
+
+return SpellCD(49143) > 1;]]></Lua>
+          </Ability>
+          <Ability Name="Кровоотвод">
+            <SpellID>45529</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[if not HaveRuneAtCooldown() then
+    return false;
+end
+
+local bloodCharge,stackCount = HasBuff("player", 114851);
+if not bloodCharge then
+    return false;
+end
+
+return stackCount >= 5;]]></Lua>
           </Ability>
           <Ability Name="Вытягивание чумы">
             <SpellID>123693</SpellID>
@@ -5564,6 +5613,20 @@ return unholy >= reqCount or not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYE
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
+          </Ability>
+          <Ability Name="Use Trinket (1)">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[return UseItemById(77116);]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
