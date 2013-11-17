@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.178</Version>
+  <Version>0.0.4.180</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -7735,8 +7735,8 @@ end]]></Lua>
             <Lua><![CDATA[local buffs = { 774, 8936 };
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
-        if member.HP < 70 and HasBuff("player", buffs, "PLAYER") then
-            print("|cff00ff00 >> Кастую Быстрое восстановление <<")
+        if member.HP < 65 and HasBuff(member.Unit, buffs, "PLAYER") then
+            print("|cff00ff00 >> Кастую Быстрое восстановление <<");
             return member.Unit;
         end
     end
