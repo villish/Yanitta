@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.219</Version>
+  <Version>0.0.4.227</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -337,18 +337,23 @@ function IsModKeyDown(m_key)
     end
 end
 
--- вычисление дистанции между 2 игроками (рейд или группа)
+-- Возвращает дистанцию между двумя игроками
 function GetDistance(unit1, unit2)
+    local left, top, right, bot = select(4, GetAreaMapInfo(GetCurrentMapAreaID()));
     local x1, y1 = GetPlayerMapPosition(unit1);
     local x2, y2 = GetPlayerMapPosition(unit2);
-    return sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000;
+    if left and top and right and bot and x1 and y1 and x2 and y2 then
+        local width, height = (left - top), (right - bot);
+        local vx,vy = (x1 - x2), (y1 - y2);
+        return sqrt(min(vx, width - vx) ^ 2 + min(vy, height - vy) ^ 2);
+    end
 end
 
 -- Проверка, имеется ли у персонажа указанный символ
 function HasGlyph(glyphid)
     for slot = 1, 6 do
         if select(4, GetGlyphSocketInfo(slot)) == glyphid then
-            return true;
+            return slot;
         end
     end
 end
@@ -485,8 +490,10 @@ function DontDislell(spellId, member)
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     elseif spellId == 142913 then
         for i,member2 in ipairs(members) do
-            if not UnitIsUnit("player", member2.Unit) and GetDistance(member.Unit, member2.Unit) < 20 then
-                return true;
+            if not UnitIsUnit("player", member2.Unit) then
+                if (GetDistance(member.Unit, member2.Unit) or 0) < 8 then
+                    return true;
+                end
             end
         end
     end
@@ -7364,7 +7371,7 @@ elseif LowHP.H80 <= 3 then
         if member.HP < 90 and HasBuff(member.Unit, buffs, "PLAYER") then
             local count = 0;
             for _,unit in ipairs(members) do
-                if unit.HP < 90 and GetDistance(unit, member) < 10 then
+                if unit.HP < 90 and (GetDistance(unit, member) or 0xff) < 10 then
                     count = count + 1;
                 end
             end
