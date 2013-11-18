@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.180</Version>
+  <Version>0.0.4.186</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -864,9 +864,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if playerHP <= 80 then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return playerHP <= 80;]]></Lua>
           </Ability>
           <Ability Name="Зуботычина">
             <SpellID>6552</SpellID>
@@ -910,9 +908,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
           </Ability>
           <Ability Name="Сокрушительный Бросок">
             <SpellID>64382</SpellID>
@@ -926,10 +922,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[-- 5 - RightControl
-if IsModKeyDown(5) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return IsModKeyDown(mkRightControl);]]></Lua>
           </Ability>
           <Ability Name="Безразсудство">
             <SpellID>1719</SpellID>
@@ -977,7 +970,13 @@ end]]></Lua>
             <IsNotGCD>true</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if isInMeele and not HasBuff("player", 12880) and not HasBuff("player", 131116) then
+            <Lua><![CDATA[if UnitIsPVP("player") then
+--    if HasFullControl() then
+--        return true;
+    if HasDebuff("player", ccIDs) then
+        return true;
+    end
+if isInMeele and not HasBuff("player", 12880) and not HasBuff("player", 131116) then
     return true;
 end]]></Lua>
           </Ability>
@@ -1053,8 +1052,8 @@ end]]></Lua>
     return true;
 end]]></Lua>
           </Ability>
-          <Ability Name="Кровожадность">
-            <SpellID>23881</SpellID>
+          <Ability Name=" Яростный выпад">
+            <SpellID>85288</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -1063,11 +1062,28 @@ end]]></Lua>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not (targetHP < 20  and HasDebuff("target", 86346, "PLAYER") and rage >= 30) then
+            <Lua><![CDATA[if ragingBlow and (koloss or HasBuff("player", { 12292, 1719 })) then
     return true;
-end]]></Lua>
+elseif koloss_remains >= 6 or RB_Rem <= 6 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Казнь">
+            <SpellID>5308</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[return true;]]></Lua>
           </Ability>
           <Ability Name="Зверский удар (1)">
             <SpellID>100130</SpellID>
@@ -1083,22 +1099,6 @@ end]]></Lua>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if HasBuff("player", 46916) and targetHP >= 20 and SpellCD(23881) > 0 and SpellCD(23881) <= 1 then
     return true;
-end]]></Lua>
-          </Ability>
-          <Ability Name="Пауза">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not (targetHP < 20 and koloss and rage >= 30) and (SpellCD(23881) > 0 and SpellCD(23881) <= 1) then
-    return true
 end]]></Lua>
           </Ability>
           <Ability Name="Удар колосса">
@@ -1131,8 +1131,8 @@ end]]></Lua>
     return true;
 end]]></Lua>
           </Ability>
-          <Ability Name="Казнь">
-            <SpellID>5308</SpellID>
+          <Ability Name="Кровожадность">
+            <SpellID>23881</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -1141,28 +1141,11 @@ end]]></Lua>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name=" Яростный выпад">
-            <SpellID>85288</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ragingBlow and (koloss or HasBuff("player", { 12292, 1719 })) then
+            <Lua><![CDATA[if not (targetHP < 20  and HasDebuff("target", 86346, "PLAYER") and rage >= 30) then
     return true;
-elseif koloss_remains >= 6 or RB_Rem <= 6 then
-    return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Зверский удар (2)">
             <SpellID>100130</SpellID>
@@ -1194,22 +1177,6 @@ end]]></Lua>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[return true;]]></Lua>
           </Ability>
-          <Ability Name="Боевой крик (1)">
-            <SpellID>6673</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if rage < 70 and not koloss then
-    return true;
-end]]></Lua>
-          </Ability>
           <Ability Name="Зверский удар (3)">
             <SpellID>100130</SpellID>
             <Target>Target</Target>
@@ -1226,7 +1193,7 @@ end]]></Lua>
     return true;
 end]]></Lua>
           </Ability>
-          <Ability Name="Боевой крик (2)">
+          <Ability Name="Боевой крик ">
             <SpellID>6673</SpellID>
             <Target>None</Target>
             <CancelChannel>false</CancelChannel>
@@ -1238,9 +1205,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if rage < 70 then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return rage < 70;]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
@@ -1726,7 +1691,7 @@ end]]></Lua>
     if HasDebuff("player", ccIDs) then
         return true;
     end
-elseif rage < 20 and not HasBuff("player", 12880) then
+elseif isInMeele and rage < 20 and not HasBuff("player", 12880) then
     return true;
 end]]></Lua>
           </Ability>
@@ -1912,7 +1877,13 @@ end]]></Lua>
             <IsNotGCD>true</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if isInMeele and not HasBuff("player", 12880) then
+            <Lua><![CDATA[if UnitIsPVP("player") then
+--    if HasFullControl() then
+--        return true;
+    if HasDebuff("player", ccIDs) then
+        return true;
+    end
+elseif isInMeele and rage < 20 and not HasBuff("player", 12880) then
     return true;
 end]]></Lua>
           </Ability>
