@@ -6457,6 +6457,29 @@ end]]></Lua>
     return true;
 end]]></Lua>
           </Ability>
+          <Ability Name="Плавучая льдина">
+            <SpellID>108839</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>Moving</IsMovingCheck>
+            <Lua><![CDATA[if isInRange then
+    local bufs = {
+        44549,  -- Заморозка мозгов
+        108839, -- Плавучая льдина
+        112965, -- Ледяные пальцы
+    };
+    if not HasBuff("player", bufs) then
+        return true;
+    end
+end]]></Lua>
+          </Ability>
           <Ability Name="Ледяная стрела">
             <SpellID>116</SpellID>
             <Target>Target</Target>
