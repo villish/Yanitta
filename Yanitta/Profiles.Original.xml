@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.186</Version>
+  <Version>0.0.4.189</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -5214,7 +5214,7 @@ playerHP   = HealthByPercent("player");
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return SpellCD(46584) <= 0;]]></Lua>
+            <Lua><![CDATA[return true;]]></Lua>
           </Ability>
           <Ability Name="Зимний горн">
             <SpellID>57330</SpellID>
@@ -5228,7 +5228,7 @@ playerHP   = HealthByPercent("player");
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return SpellCD(57330) <= 0;
+            <Lua><![CDATA[return runes.Power < 20;
 --return not HasBuff("player", 57330);]]></Lua>
           </Ability>
           <Ability Name="Вспышка болезни">
