@@ -209,9 +209,10 @@ moving_spell_table = {
     97128,  -- Опаляющее перо (Алисразор)
     79206,  -- Благосклонность предков (Шанам)
     110806, -- Благосклонность предков (Друид: Симбиоз)
-    147802, -- Вневременные потоки (ДК)
-    147806, -- Вневременные потоки
     108839, -- Плавучая льдина
+    --    , -- warlock (?)
+    -- Вневременные потоки
+    147782,147941,147940,147639,147942,147937,147936,147920,147809,147806,147944,147945,147938,147802,
 };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
@@ -243,7 +244,7 @@ function HasBuff(unit, spellId, filter)
             end
         end
     end
-    return nil, 0, 0, 0, 0, 0;
+    return nil, 0, 0, nil, 0, 0;
 end
 
 -- Возвращает, есть ли один из перечисленных дебафов на персонаже
@@ -276,7 +277,7 @@ function HasDebuff(unit, spellId, filter)
             end
         end
     end
-    return nil, 0, 0, 0, 0, 0;
+    return nil, 0, 0, nil, 0, 0;
 end
 
 -- Вызвращает время до восстановления заклинания
@@ -305,7 +306,7 @@ function IsNotBehind(sec)
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
-function IsNotLineOfSight(unit,sec)
+function IsNotLineOfSight(unit, sec)
     local rec = LOSS_TABLE[UnitGUID(unit)];
     return rec and (GetTime() - rec.ctime) <= (sec or 1);
 end
@@ -403,7 +404,7 @@ end
 -----------------------------------------------
 
 MAIN_CLASS_SPELL = 0;
-DISPELL_TABLE = {   --   Магия           Яд               Болезнь           Проклятие
+DISPELL_TABLE = { --    Магия         Яд             Болезнь         Проклятие
     PRIEST_HEAL     = { Magic = true, Poison = nil , Disease = true, Curse = nil  },
     PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = nil  },
     DRUID_HEAL      = { Magic = true, Poison = true, Disease = nil , Curse = true },
