@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.206</Version>
+  <Version>0.0.4.207</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -549,7 +549,7 @@ function FillPartyTables(standartSpellId)
             and     UnitIsConnected(unit)
             and not UnitIsEnemy("player", unit)
             and not UnitIsDeadOrGhost(unit)
-            and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+            and     UnitInRange(unit)
             and not IsNotLineOfSight(unit) then
             table.insert(members, { Unit = unit, IsInMyParty = true });
         end
