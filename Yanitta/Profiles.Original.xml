@@ -4883,8 +4883,7 @@ playerHP   = HealthByPercent("player");
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return runes.Power < 20;
---return not HasBuff("player", 57330);]]></Lua>
+            <Lua><![CDATA[return true; -- всегда кастовать Зимный горн для получения рунической энергии]]></Lua>
           </Ability>
           <Ability Name="Вспышка болезни">
             <SpellID>77575</SpellID>
@@ -4898,17 +4897,12 @@ playerHP   = HealthByPercent("player");
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("player", 59332) then
-    if SpellCD(77575) > 0 then
-        return false;
-    end
-end
-bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
+            <Lua><![CDATA[bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
 frostFever,_,frostFeverRem = HasDebuff("target", DIESE_FROST_FEVER, "PLAYER");
 
 return (not bloodPlague or bloodPlagueRem <= 3) or (not frostFever or frostFeverRem <= 3);]]></Lua>
           </Ability>
-          <Ability Name="Удар чумы (2)">
+          <Ability Name="Удар чумы ">
             <SpellID>45462</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
@@ -4940,19 +4934,7 @@ return unholy >= 1 and not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");]]
 local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
 local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
 
-if unholy >= 1 and frost >= 1 then
-    --if HasBuff("player", 51124) then
-        return true;
-end
---[[if unholy >= reqRuneCount and frost >= reqRuneCount then
---    if haveKillingMachine then
---        return true;
---    elseif unholy >= (reqRuneCount + 1) and frost >= (reqRuneCount + 1) then
---        return true;
---    elseif HasDebuff("target", { 59879, 59921}, "PLAYER") then
---        return true;
---    end
---end]]]]></Lua>
+return unholy >= 1 and frost >= 1;]]></Lua>
           </Ability>
           <Ability Name="Воющий ветер">
             <SpellID>49184</SpellID>
@@ -4999,7 +4981,7 @@ end]]></Lua>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -5018,7 +5000,7 @@ return SpellCD(49143) > 1;]]></Lua>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -5125,11 +5107,7 @@ return HealthByPercent("target") <= pct;]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if SpellCD(47568) > 1 then
-    return false;
-end
-
-return HaveFullyDepletedRunes() or runes.Power <= 30;
+            <Lua><![CDATA[return GetFreeRunes(1) <= 3;
 ]]></Lua>
           </Ability>
           <Ability Name="Воющий ветер (2)">
@@ -5194,7 +5172,7 @@ if frost <= reqCount then
     return false;
 end]]></Lua>
           </Ability>
-          <Ability Name="Удар чумы">
+          <Ability Name="Удар чумы (2)">
             <SpellID>45462</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
@@ -5234,7 +5212,7 @@ return unholy >= reqCount or not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYE
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
@@ -5248,7 +5226,7 @@ return unholy >= reqCount or not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYE
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
