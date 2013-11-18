@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.189</Version>
+  <Version>0.0.4.198</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -3994,7 +3994,6 @@ end
 FillPartyTables(2061);
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving();
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
@@ -4033,9 +4032,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if IsModKeyDown(mkLeftControl) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return IsModKeyDown(mkLeftControl);]]></Lua>
           </Ability>
           <Ability Name="Разсеивание заклинаний (Авто)">
             <SpellID>527</SpellID>
@@ -4141,7 +4138,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if (isMoving and LowHP.H80 > 3) or LowHP.H70 > 3 then
+            <Lua><![CDATA[if LowHP.H70 > 3 then
     return members[1].Unit;
 end]]></Lua>
           </Ability>
@@ -4160,7 +4157,7 @@ end]]></Lua>
             <Lua><![CDATA[-- Ослабленная душа (6788)
 for _,member in ipairs(members) do
     if not HasDebuff(member.Unit, 6788) then
-        if member.Agro > 2 or (isMoving and member.HP < 70) or member.HP < 50 then
+        if member.Agro > 2 or (IS_MOVING and member.HP < 70) or member.HP < 50 then
             return member.Unit;
         end
     end
@@ -4406,8 +4403,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isMoving  = IsMoving();]]></Lua>
+isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;]]></Lua>
           </Ability>
           <Ability Name="Массовое разсеивание">
             <SpellID>32375</SpellID>
@@ -4565,14 +4561,8 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if CheckProc(ability.ProcFlag, "Intellect",  10)
-or CheckProc(ability.ProcFlag, "SpellHaste", 15)
-or CheckProc(ability.ProcFlag, "Mastery",    15) then
-    return true;
-end
-
-local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
-if not name or rem < 2 or isMoving then
+            <Lua><![CDATA[local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
+if not name or rem < 2 or IS_MOVING then
     return true;
 end]]></Lua>
           </Ability>
@@ -4588,14 +4578,8 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if CheckProc(ability.ProcFlag, "Intellect",  10)
-or CheckProc(ability.ProcFlag, "SpellHaste", 15)
-or CheckProc(ability.ProcFlag, "Mastery",    15) then
-    return true;
-end
-
-local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
-if not name or rem < 2 or isMoving then
+            <Lua><![CDATA[local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
+if not name or rem < 2 or IS_MOVING then
     return true;
 end]]></Lua>
           </Ability>
@@ -4611,14 +4595,8 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if CheckProc(ability.ProcFlag, "Intellect",  10)
-or CheckProc(ability.ProcFlag, "SpellHaste", 15)
-or CheckProc(ability.ProcFlag, "Mastery",    15) then
-    return true;
-end
-
-local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
-if not name or rem < 2 or isMoving then
+            <Lua><![CDATA[local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
+if not name or rem < 2 or IS_MOVING then
     return true;
 end]]></Lua>
           </Ability>
@@ -4634,12 +4612,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not isMoving then
-    if CheckProc(ability.ProcFlag, "Intellect",  10)
-    or CheckProc(ability.ProcFlag, "SpellHaste", 15)
-    or CheckProc(ability.ProcFlag, "Mastery",    15) then
-        return true;
-    end
+            <Lua><![CDATA[if not IS_MOVING then
     local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
     if not name or rem < 2 then
         return true;
@@ -4658,12 +4631,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not isMoving then
-    if CheckProc(ability.ProcFlag, "Intellect",  10)
-    or CheckProc(ability.ProcFlag, "SpellHaste", 15)
-    or CheckProc(ability.ProcFlag, "Mastery",    15) then
-        return true;
-    end
+            <Lua><![CDATA[if not IS_MOVING then
     local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
     if not name or rem < 2 then
         return true;
@@ -4682,12 +4650,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not isMoving then
-    if CheckProc(ability.ProcFlag, "Intellect",  10)
-    or CheckProc(ability.ProcFlag, "SpellHaste", 15)
-    or CheckProc(ability.ProcFlag, "Mastery",    15) then
-        return true;
-    end
+            <Lua><![CDATA[if not IS_MOVING then
     local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
     if not name or rem < 2 then
         return true;
@@ -5740,7 +5703,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if (select(2, HasBuff("player", 324)) or 0) == 7 then
+            <Lua><![CDATA[if (select(2, HasBuff("player", 324)) or 0) > 6 then
     return true;
 end]]></Lua>
           </Ability>
@@ -6067,7 +6030,6 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
-isMoving  = IsMoving();
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
@@ -6110,9 +6072,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
           </Ability>
           <Ability Name="Возгорание">
             <SpellID>11129</SpellID>
@@ -6308,7 +6268,6 @@ if IsMounted() or HasBuff("player", 87959) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(116), "target") == 1;
-isMoving  = IsMoving();
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
@@ -6327,9 +6286,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("player", 1459) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return not HasBuff("player", 1459);]]></Lua>
           </Ability>
           <Ability Name="Снежная Буря">
             <SpellID>10</SpellID>
@@ -6343,9 +6300,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if IsModKeyDown(mkLeftShift) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
           </Ability>
           <Ability Name="Антимагия">
             <SpellID>2139</SpellID>
@@ -6368,14 +6323,12 @@ end]]></Lua>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("player", 11426) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return not HasBuff("player", 11426);]]></Lua>
           </Ability>
           <Ability Name="Живая бомба">
             <SpellID>44457</SpellID>
@@ -6437,9 +6390,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HasBuff("player", 44549) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return HasBuff("player", 44549);]]></Lua>
           </Ability>
           <Ability Name="Ледяное копье">
             <SpellID>30455</SpellID>
@@ -6506,9 +6457,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("player", 7302) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return not HasBuff("player", 7302);]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
@@ -6565,7 +6514,6 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-isMoving  = IsMoving();
 
 if IsMounted() then
     return true;
@@ -6639,7 +6587,7 @@ end]]></Lua>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
-    if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+    if select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
         return true;
     end
 end
@@ -6658,7 +6606,7 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
-    if ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
+    if select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
         return true;
     end
 end
@@ -6677,7 +6625,7 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if GetShapeshiftForm() ~= 1 then
-    if ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
+    if select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
         return true;
     end
 end
@@ -6795,7 +6743,6 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-isMoving  = IsMoving();
 
 if IsMounted() then
     return true;
@@ -6844,7 +6791,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if power2 > 0 and not HasDebuff("target", 48181, "PLAYER") then
+            <Lua><![CDATA[if power2 > 0 and not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
     return true;
 end]]></Lua>
           </Ability>
@@ -6860,10 +6807,9 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 980, "PLAYER")) < 2 then
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Агония (Focus)">
             <SpellID>980</SpellID>
@@ -6877,10 +6823,9 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 980, "PLAYER")) < 2 then
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Агония (Mouseover)">
             <SpellID>980</SpellID>
@@ -6894,10 +6839,9 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 980, "PLAYER")) < 2 then
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Порча (Target)">
             <SpellID>172</SpellID>
@@ -6911,10 +6855,9 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Порча (Focus)">
             <SpellID>172</SpellID>
@@ -6928,10 +6871,9 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Порча (Mouseover)">
             <SpellID>172</SpellID>
@@ -6945,10 +6887,9 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
-end
-]]></Lua>
+end]]></Lua>
           </Ability>
           <Ability Name="Нестабильное колдовство (Target)">
             <SpellID>30108</SpellID>
@@ -6961,8 +6902,8 @@ end
             <SetRecastDelay>true</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("target", 30108, "PLAYER")) < 2 then
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
           </Ability>
@@ -6977,8 +6918,8 @@ end]]></Lua>
             <SetRecastDelay>true</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("focus", 30108, "PLAYER")) < 2 then
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
           </Ability>
@@ -6993,8 +6934,8 @@ end]]></Lua>
             <SetRecastDelay>true</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if ability.HasProc or select(3, HasDebuff("mouseover", 30108, "PLAYER")) < 2 then
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
           </Ability>
@@ -7010,7 +6951,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HealthByPercent("target") <= 20 then
+            <Lua><![CDATA[if HealthByPercent(ability.Target) <= 20 then
     return true;
 end]]></Lua>
           </Ability>
@@ -7026,7 +6967,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HealthByPercent("target") > 20 then
+            <Lua><![CDATA[if HealthByPercent(ability.Target) > 20 then
     return true;
 end]]></Lua>
           </Ability>
@@ -7041,8 +6982,8 @@ end]]></Lua>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return isMoving;]]></Lua>
+            <IsMovingCheck>Moving</IsMovingCheck>
+            <Lua><![CDATA[return true;]]></Lua>
           </Ability>
           <Ability Name="Узы тьмы">
             <SpellID>109773</SpellID>
