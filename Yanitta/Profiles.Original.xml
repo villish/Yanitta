@@ -35,6 +35,10 @@ function CheckAndCastAbility(ability)
     elseif not IsUsableSpell(ability.SpellId) then
         return;
     elseif ability.IsSpellKnownCheck and not IsSpellKnown(ability.SpellId) then
+        -- 2013.11.18
+        -- Возможно лучше использовать IsPlayerSpell(spellID) и без проверки
+        -- но сначала проверить заклинания петов (влияет ли на нах данная функция)
+        -- Если все будет хорошо, тогда можно будет убрать из интерфейса опцию проверки доступности
         return;
     end
 
@@ -636,6 +640,23 @@ for _,spellId in ipairs(spellList) do
                 print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
             else
                 print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName.." >> "..(rErr or "").." "..(kErr or ""));
+            end
+        end
+    end
+end]]></Lua>
+    </WowTest>
+    <WowTest>
+      <Name>Доступность (IsPlayerSpell)</Name>
+      <Lua><![CDATA[-- local spellList = { };
+for _,spellId in ipairs(spellList) do
+    if spellId ~= 0 then
+        local spellName = GetSpellInfo(spellId);
+        local isKnown = IsPlayerSpell(spellId);
+        if spellName then
+            if isKnown then
+                print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
+            else
+                print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName;
             end
         end
     end
