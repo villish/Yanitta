@@ -16,18 +16,6 @@
   <WowApi ImageType="Field" Name="pet">
     <Description><![CDATA[player - Питомец персонажа]]></Description>
   </WowApi>
-
-  <WowApi ImageType="ExtensionMethod" Name="CheckProc">
-    <Description>
-      <![CDATA[  (procFlag, prockType, pct)
--- Делает проверку есть ли прок.
--- Параметры:
---  procFlag - ability.ProcFlag
---  prockType - Тип стата ("Intellect", "SpellHaste", и т.п.)
---  pct - Значение показывающее на сколько увеличился стат
-  ]]>
-    </Description>
-  </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="HasBuff">
     <Description>
       <![CDATA[  HasBuff(...)
@@ -60,73 +48,9 @@
   ]]>
     </Description>
   </WowApi>
-  <WowApi ImageType="ExtensionMethod" Name="UnitBuffId">
-    <Description>
-      <![CDATA[name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitBuffId("unit", spellId, "FILTER")
-Параметры:
-  unit - Юнит, с которого надо получить информацию ("player", "target", "focus", "mouseover", "pet", ...)
-  spellId - Ид заклинания
-  filter - Фильтр (CANCELABLE - Возможность отменить, NOT_CANCELABLE - Не возможно отменить, PLAYER - Наложенное персонажем, RAID - Належенное членом пати/рейда)
-Возвращает информацию о бафах на юните:
-  name - Имя бафа
-  rank - Ранг (не используется)
-  icon - Иконка заклинания
-  count - Количество стаков бафа (если бафф не стакается тогда 0)
-  dispelType - Тип диспела (Curse, Disease, Magic, Poison)
-  duration - Продолжительность действия в секундах (0 - если юнит далеко или в другой фазе)
-  expires - Время наложения (0 - если юнит далеко или в другой фазе)
-  caster - Тот, кто наложил Ауру
-  isStealable - 1 if the aura can be transferred to a player using the Spellsteal spell; otherwise nil
-  shouldConsolidate - 1 if the aura is eligible for the 'consolidated' aura display in the default UI.
-  spellID - Id Заклинания
-  canApplyAura - 1 if the player can apply the aura (not necessarily if the player did apply the aura, just if the player can apply the aura).
-  isBossDebuff - 1 if the aura was cast by a boss.
-  value1 - Value of variable effect 1 of the aura. (HoTs, resource-capturing trinkets, etc.)
-  value2 - Value of variable effect 2 of the aura. (HoTs, resource-capturing trinkets, etc.)
-  value3 - Value of variable effect 3 of the aura. (HoTs, resource-capturing trinkets, etc.)
-  ]]></Description>
-  </WowApi>
-  <WowApi ImageType="ExtensionMethod" Name="UnitDebuffId">
-    <Description>
-      <![CDATA[name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3 = UnitBuffId("unit", spellId, "FILTER")
-Параметры:
-  unit - Юнит, с которого надо получить информацию ("player", "target", "focus", "mouseover", "pet", ...)
-  spellId - Ид заклинания
-  filter - Фильтр (CANCELABLE - Возможность отменить, NOT_CANCELABLE - Не возможно отменить, PLAYER - Наложенное персонажем, RAID - Належенное членом пати/рейда)
-Возвращает информацию о бафах на юните:
-  name - Имя дебафа
-  rank - Ранг (не используется)
-  icon - Иконка заклинания
-  count - Количество стаков дебафа (если дебафф не стакается тогда 0)
-  dispelType - Тип диспела (Curse, Disease, Magic, Poison)
-  duration - Продолжительность действия в секундах (0 - если юнит далеко или в другой фазе)
-  expires - Время наложения (0 - если юнит далеко или в другой фазе)
-  caster - Тот, кто наложил Ауру
-  isStealable - 1 if the aura can be transferred to a player using the Spellsteal spell; otherwise nil
-  shouldConsolidate - 1 if the aura is eligible for the 'consolidated' aura display in the default UI.
-  spellID - Id Заклинания
-  canApplyAura - 1 if the player can apply the aura (not necessarily if the player did apply the aura, just if the player can apply the aura).
-  isBossDebuff - 1 if the aura was cast by a boss.
-  value1 - Value of variable effect 1 of the aura. (HoTs, resource-capturing trinkets, etc.)
-  value2 - Value of variable effect 2 of the aura. (HoTs, resource-capturing trinkets, etc.)
-  value3 - Value of variable effect 3 of the aura. (HoTs, resource-capturing trinkets, etc.)
-    ]]></Description>
-  </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="SpellCD">
     <Description><![CDATA[  SpellCD(spellId)
 Возвращает время до восстановления заклинания.]]></Description>
-  </WowApi>
-  <WowApi ImageType="ExtensionMethod" Name="CastSpellEx">
-    <Description>
-    <![CDATA[  CastSpellEx(spellId, ["unit"])
-Начинает чтение заклинания, если пройдена проверка]]></Description>
-  </WowApi>
-  <WowApi ImageType="ExtensionMethod" Name="IsMoving">
-    <Description>
-      <![CDATA[  IsMoving(sec)
--- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
--- на пример: Опаляющее перо (Алисразор), Благосклонность предков (Шаман)]]>
-    </Description>
   </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="HealthByPercent">
     <Description>
@@ -301,5 +225,8 @@ INVSLOT_*
   </WowApi>
   <WowApi RawData="0" ImageType="EnumValue" Name="useCooldown">
     <Description><![CDATA[Использование кулдаунов]]></Description>
+  </WowApi>
+  <WowApi RawData="0" ImageType="EnumValue" Name="IS_MOVING">
+    <Description><![CDATA[Движение персонажа]]></Description>
   </WowApi>
 </ArrayOfWowApi>

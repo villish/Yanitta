@@ -233,11 +233,7 @@
     <Keywords color="WowFunctions">
       <Word>HasBuff</Word>
       <Word>HasDebuff</Word>
-      <Word>UnitBuffId</Word>
-      <Word>UnitDebuffId</Word>
       <Word>SpellCD</Word>
-      <Word>CastSpellEx</Word>
-      <Word>IsMoving</Word>
       <Word>HealthByPercent</Word>
       <Word>PowerByPercent</Word>
       <Word>IsModKeyDown</Word>
@@ -250,14 +246,11 @@
       <Word>ExtendTheHealTable</Word>
       <Word>CheckInstanseLogic</Word>
       <Word>ValidDispellForClass</Word>
-      <Word>CheckRaidDispellLogic</Word>
+      <Word>DontDislell</Word>
       <Word>GetDispellInfo</Word>
       <Word>FillPartyTables</Word>
-      <Word>CheckDistance</Word>
-      <Word>CheckDistance2</Word>
       <Word>IsNotBehind</Word>
       <Word>IsNotLineOfSight</Word>
-      <Word>CheckProc</Word>
     </Keywords>
 
     <Keywords color="WowFunctions">
@@ -3045,6 +3038,7 @@
       <Word>ABILITY_TABLE</Word>
       <Word>LOSS_TABLE</Word>
       <Word>LAST_TARGET</Word>
+      <Word>IS_MOVING</Word>
       <Word>LowHP</Word>
       <Word>members</Word>
       <Word>moving_spell_table</Word>
