@@ -6061,7 +6061,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return HasBuff("player", 44549);]]></Lua>
+            <Lua><![CDATA[return HasBuff("player", 44549) ~= nil;]]></Lua>
           </Ability>
           <Ability Name="Ледяное копье">
             <SpellID>30455</SpellID>
