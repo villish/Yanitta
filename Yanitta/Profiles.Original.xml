@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.210</Version>
+  <Version>0.0.4.219</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -420,7 +420,7 @@ function InsertNewUnitToHeallersTable(unit)
     if UnitExists(unit)
         and not UnitIsDeadOrGhost(unit)
         and     UnitCanAssist(unit, "player")
-        and     UnitInRange(unit)
+        and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
         and not IsNotLineOfSight(unit) then
         for _,member in ipairs(members) do
             if UnitGUID(member.Unit) == UnitGUID(unit) then
@@ -485,7 +485,7 @@ function DontDislell(spellId, member)
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     elseif spellId == 142913 then
         for i,member2 in ipairs(members) do
-            if GetDistance(member.Unit, member2.Unit) < 10 then
+            if not UnitIsUnit("player", member2.Unit) and GetDistance(member.Unit, member2.Unit) < 20 then
                 return true;
             end
         end
