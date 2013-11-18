@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.198</Version>
+  <Version>0.0.4.206</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -344,18 +344,6 @@ function GetDistance(unit1, unit2)
     return sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000;
 end
 
--- Проверяет растояние между 2мя игроками по их координатам
-function CheckDistance(x1, x2, y2, y2, distance)
-    return (sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000) <= distance;
-end
-
--- Проверяет растояние между 2мя игроками
-function CheckDistance2(unit1, unit2, distance)
-    local x1, y1 = GetPlayerMapPosition(unit1);
-    local x2, y2 = GetPlayerMapPosition(unit2);
-    return (sqrt(((x1 - x2) ^ 2) + ((y1 - y2) ^ 2)) * 2000) <= distance;
-end
-
 -- Проверка, имеется ли у персонажа указанный символ
 function HasGlyph(glyphid)
     for slot = 1, 6 do
@@ -482,7 +470,7 @@ function CheckInstanseLogic(member)
 end
 
 -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
-function CheckRaidDispellLogic(spellId, member)
+function DontDislell(spellId, member)
     -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
     -- После "Освобождения" Дар титанов больше не кидается, поэтому диспелим по КД
     if spellId == 144351 then
@@ -497,7 +485,7 @@ function CheckRaidDispellLogic(spellId, member)
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
     elseif spellId == 142913 then
         for i,member2 in ipairs(members) do
-            if CheckDistance2(member.Unit, member2.Unit, 9) then
+            if GetDistance(member.Unit, member2.Unit) < 10 then
                 return true;
             end
         end
@@ -520,7 +508,7 @@ function GetDispellInfo(dispeller_type)
         for index = 1, 40 do
             local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, index);
             if not name then break end
-            if c_rec[dispelType] and not CheckRaidDispellLogic(spellId, member) then
+            if c_rec[dispelType] and not DontDislell(spellId, member) then
                 table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
             end
         end
@@ -3556,8 +3544,8 @@ end]]></Lua>
             <SetRecastDelay>true</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not (UnitAffectingCombat("player") or HasBuff("player", 2823) or IsMoving()) then
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[if not (UnitAffectingCombat("player") or HasBuff("player", 2823)) then
     return true;
 end]]></Lua>
           </Ability>
@@ -3812,8 +3800,8 @@ end]]></Lua>
             <SetRecastDelay>true</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not (UnitAffectingCombat("player") or HasBuff("player", 2823) or IsMoving()) then
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[if not (UnitAffectingCombat("player") or HasBuff("player", 2823)) then
     return true;
 end]]></Lua>
           </Ability>
@@ -7692,7 +7680,7 @@ end]]></Lua>
             <Lua><![CDATA[local buffs = { 774, 8936 };
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
-        if member.HP < 65 and HasBuff(member.Unit, buffs, "PLAYER") then
+        if member.HP < 70 and HasBuff(member.Unit, buffs, "PLAYER") then
             print("|cff00ff00 >> Кастую Быстрое восстановление <<");
             return member.Unit;
         end
@@ -7702,7 +7690,7 @@ elseif LowHP.H80 <= 3 then
         if member.HP < 90 and HasBuff(member.Unit, buffs, "PLAYER") then
             local count = 0;
             for _,unit in ipairs(members) do
-                if unit.HP < 90 and CheckDistance(unit.X, unit.Y, member.X, member.Y, 9) then
+                if unit.HP < 90 and GetDistance(unit, member) < 10 then
                     count = count + 1;
                 end
             end
