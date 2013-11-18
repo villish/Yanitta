@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.207</Version>
+  <Version>0.0.4.209</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -2795,9 +2795,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("player", 77769) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return not HasBuff("player", 77769);]]></Lua>
           </Ability>
           <Ability Name="Взрывная ловушка">
             <SpellID>82939</SpellID>
@@ -2959,7 +2957,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not setAoE and not HasDebuff("target", 118253, "PLAYER") then
+            <Lua><![CDATA[if not setAoE and not HasDebuff(ability.Target, 118253, "PLAYER") then
     return true;
 end]]></Lua>
           </Ability>
@@ -3085,329 +3083,6 @@ end]]></Lua>
         <Lua><![CDATA[]]></Lua>
         <AbilityList />
       </Rotation>
-      <Rotation Name="PVE Выживание (прокачка)">
-        <HotKey Key="Z" Modifier="Alt" />
-        <Notes><![CDATA[Постепенно надо добавлять способности, либо же сделать проверку на уровень
-
-LeftControl - включение/выключение AOE
-RightControl - Метание замораживающей ловушки
-LeftAlt - Пауза]]></Notes>
-        <Lua><![CDATA[]]></Lua>
-        <AbilityList>
-          <Ability Name="Инициализация">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>true</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[-- модификатор
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        AddonFrame.print("|cff00ff00 Одиночная цель", true);
-    else
-        setAoE = true;
-        AddonFrame.print("|cffff0000 AOE", true);
-    end
-elseif IsModKeyDown(mkLeftAlt) then
-    StopAttack();
-    PetStopAttack();
-    -- перейдем в аспект ястребя
-    if GetShapeshiftForm() ~= 1 then
-        CastShapeshiftForm(1);
-    end
-    return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
-end
-
--- если в комуфляже или притворились мертвыми или "Слился с тенью"
-if HasBuff("player", { 5384, 51755, 58984 }) then
-    return true;
-end
-
-unitFocus = UnitPower("player");
-
--- При проке "На изготовку" прерываем чтение "Выстрел кобры"
-if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
-    if HasBuff("player", 56453) then
-        SpellStopCasting();
-    end
-end]]></Lua>
-          </Ability>
-          <Ability Name="Взрывная ловушка">
-            <SpellID>82939</SpellID>
-            <Target>MouseLocation</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return IsModKeyDown(mkLeftShift);]]></Lua>
-          </Ability>
-          <Ability Name="Ледяная ловушка">
-            <SpellID>82941</SpellID>
-            <Target>MouseLocation</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return IsModKeyDown(mkRightAlt);]]></Lua>
-          </Ability>
-          <Ability Name="Замораживающая ловушка">
-            <SpellID>60192</SpellID>
-            <Target>MouseLocation</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return IsModKeyDown(mkRightControl);]]></Lua>
-          </Ability>
-          <Ability Name="Триньки/перчатки">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[-- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
-    return true;
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-if useCooldown then
-    UseItemBySlot(INVSLOT_HAND);
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET2);
-end]]></Lua>
-          </Ability>
-          <Ability Name="Дух ястреба">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitAffectingCombat("player") or IsMounted() then
-    if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
-        CastShapeshiftForm(1);
-        return true;
-    end
-end]]></Lua>
-          </Ability>
-          <Ability Name="Дух гепарда">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not UnitAffectingCombat("player") and not IsMounted() then
-    if GetShapeshiftForm() ~= 2 and GetShapeshiftFormCooldown(2) == 0 then
-        CastShapeshiftForm(2);
-        return true;
-    end
-end]]></Lua>
-          </Ability>
-          <Ability Name="Лечение питомца">
-            <SpellID>136</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[local pethp = HealthByPercent("pet");
-if pethp ~= 0 and pethp < 75 then
-    if not HasBuff("pet", 136) then
-        return true;
-    end
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Разрывной выстрел">
-            <SpellID>53301</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name="Убийственный выстрел">
-            <SpellID>53351</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if UnitLevel("player") >= 35 then
-    return true;
-end]]></Lua>
-          </Ability>
-          <Ability Name="Черная стрела">
-            <SpellID>3674</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return not setAoE;]]></Lua>
-          </Ability>
-          <Ability Name="Залп">
-            <SpellID>2643</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return setAoE;]]></Lua>
-          </Ability>
-          <Ability Name="Укус змеи">
-            <SpellID>1978</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not setAoE and not HasDebuff("target", 118253, "PLAYER") then
-    return true;
-end]]></Lua>
-          </Ability>
-          <Ability Name="Чародейский выстрел">
-            <SpellID>3044</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not setAoE and unitFocus > 35 then
-    if UnitLevel("player") < 90 then
-        return true;
-    else
-        local cd1 = SpellCD(131894);
-        local cd2 = SpellCD(3674);
-        if cd1 > 1 and cd2 > 1 then
-            return true;
-        end
-    end
-end]]></Lua>
-          </Ability>
-          <Ability Name="Верный выстрел">
-            <SpellID>56641</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[return true;]]></Lua>
-          </Ability>
-          <Ability Name="Метание ловушки">
-            <SpellID>77769</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if not HasBuff("player", 77769) then
-    return true;
-end]]></Lua>
-          </Ability>
-        </AbilityList>
-      </Rotation>
       <Rotation Name="Farm">
         <HotKey Key="B" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
@@ -3427,7 +3102,6 @@ end]]></Lua>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[-- 64399 Боевой штандарт координации
 UseItemById(64399);
-
 TargetNearestEnemy();
 if UnitExists("target") and not UnitIsDeadOrGhost("target") then
     if IsSpellInRange(GetSpellInfo(3044), "target") == 1 then
