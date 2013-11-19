@@ -61,8 +61,8 @@
                     </Grid.ColumnDefinitions>
                     <Grid Grid.Column="0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="200*"/>
-                            <RowDefinition Height="400*"/>
+                            <RowDefinition Height="29*"/>
+                            <RowDefinition Height="71*"/>
                         </Grid.RowDefinitions>
                         <GridSplitter Height="5" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" />
 
@@ -401,8 +401,8 @@
                         <TextBlock Text="{x:Static yanitta:Localization.Test_Name}" VerticalAlignment="Center"/>
                         <TextBox Text="{Binding WowTestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="250" />
                     </ToolBar>
-                    
-                     <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Column="1" Grid.RowSpan="3">
+
+                    <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Column="1" Grid.RowSpan="3">
                         <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding WowTestList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                     </Border>
                 </Grid>
