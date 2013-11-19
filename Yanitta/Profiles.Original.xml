@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.234</Version>
+  <Version>0.0.4.240</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -34,11 +34,7 @@ function CheckAndCastAbility(ability)
         return ability.Func(ability);
     elseif not IsUsableSpell(ability.SpellId) then
         return;
-    elseif ability.IsSpellKnownCheck and not IsSpellKnown(ability.SpellId) then
-        -- 2013.11.18
-        -- Возможно лучше использовать IsPlayerSpell(spellID) и без проверки
-        -- но сначала проверить заклинания петов (влияет ли на нах данная функция)
-        -- Если все будет хорошо, тогда можно будет убрать из интерфейса опцию проверки доступности
+    elseif not (IsSpellKnown(ability.SpellId, true) or IsPlayerSpell(ability.SpellId)) then
         return;
     end
 
