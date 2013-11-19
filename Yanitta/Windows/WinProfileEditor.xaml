@@ -446,7 +446,7 @@
             <TextBlock Text="{Binding ProfileList/Class, Converter={StaticResource EnumToStr}}" Width="100"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.AbilityCount}"/>
-            <TextBlock Text="{Binding ProfileList/AbilityList, Converter={StaticResource CollectionToCount}}" Width="30"/>
+            <TextBlock Text="{Binding ProfileList/RotationList/AbilityList, Converter={StaticResource CollectionToCount}}" Width="30"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.RotationCount}"/>
             <TextBlock Text="{Binding ProfileList/RotationList, Converter={StaticResource CollectionToCount}}" Width="30"/>

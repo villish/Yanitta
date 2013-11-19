@@ -246,7 +246,7 @@
       <Word>ExtendTheHealTable</Word>
       <Word>CheckInstanseLogic</Word>
       <Word>ValidDispellForClass</Word>
-      <Word>DontDislell</Word>
+      <Word>DontDispell</Word>
       <Word>GetDispellInfo</Word>
       <Word>FillPartyTables</Word>
       <Word>IsNotBehind</Word>

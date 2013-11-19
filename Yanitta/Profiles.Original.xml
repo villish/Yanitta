@@ -477,7 +477,7 @@ function CheckInstanseLogic(member)
 end
 
 -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
-function DontDislell(spellId, member)
+function DontDispell(spellId, member)
     -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
     -- После "Освобождения" Дар титанов больше не кидается, поэтому диспелим по КД
     if spellId == 144351 then
@@ -517,7 +517,7 @@ function GetDispellInfo(dispeller_type)
         for index = 1, 40 do
             local name,_,_,count,dispelType,duration,expires,_,_,_,spellId = UnitDebuff(member.Unit, index);
             if not name then break end
-            if c_rec[dispelType] and not DontDislell(spellId, member) then
+            if c_rec[dispelType] and not DontDispell(spellId, member) then
                 table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
             end
         end
