@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.232</Version>
+  <Version>0.0.4.233</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -7078,24 +7078,6 @@ FillPartyTables(774);
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
--- используем аксесуар на ману, только в форме исцеления (0)
-if myMana < 80 and GetShapeshiftForm() == 0 then
-    UseItemBySlot(INVSLOT_TRINKET2);
-end
-
-if myMana < 90 and GetShapeshiftForm() == 0 then
-    UseItemBySlot(INVSLOT_TRINKET1);
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-if LowHP.H70 > 3 and UnitAffectingCombat("player") then
-    UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
-end
-
 if UnitId("boss1") == 71529 and UnitCastingInfo("boss1") then
     if UnitCastingInfo("player") == GetSpellInfo(5185) or UnitCastingInfo("player") == GetSpellInfo(50464) then
         SpellStopCasting()
@@ -7114,9 +7096,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
-            <Lua><![CDATA[if UnitIsDeadOrGhost(ability.Target) then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return UnitIsDeadOrGhost(ability.Target);]]></Lua>
           </Ability>
           <Ability Name="Оживление">
             <SpellID>50769</SpellID>
@@ -7147,9 +7127,7 @@ end]]></Lua>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[-- Колеcико мышки
-if IsMouseButtonDown(3) then
-    return true;
-end]]></Lua>
+return IsMouseButtonDown(3);]]></Lua>
           </Ability>
           <Ability Name="Пауза">
             <SpellID>0</SpellID>
@@ -7176,6 +7154,24 @@ end
 -- Если кастуем спокойствие - тогда ничего не делаем
 if UnitChannelInfo("player") then
     return true;
+end
+
+-- используем аксесуар на ману, только в форме исцеления (0)
+if myMana < 80 and GetShapeshiftForm() == 0 then
+    UseItemBySlot(INVSLOT_TRINKET2);
+end
+
+if myMana < 90 and GetShapeshiftForm() == 0 then
+    UseItemBySlot(INVSLOT_TRINKET1);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
+if LowHP.H70 > 3 and UnitAffectingCombat("player") then
+    UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end]]></Lua>
           </Ability>
           <Ability Name="Природный целитель">
