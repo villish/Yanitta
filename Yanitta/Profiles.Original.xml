@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.243</Version>
+  <Version>0.0.4.247</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -605,9 +605,9 @@ function FillPartyTables(standartSpellId)
 end]]></Func>
   <WowTestList>
     <WowTest>
-      <Name>Досягаемость и доступность</Name>
+      <Name>Досягаемость</Name>
       <Lua><![CDATA[-- local spellList = { };
--- Проверка на доступность и досягаемость заклинаний.
+-- Проверка на досягаемость заклинаний.
 -- Если IsSpellInRange возвращает nil - тогда ошибка.
 if not UnitExists("target") then
     print("|cfff5360c>> Нет цели, подойдите к манекену и повторите тест!");
@@ -619,38 +619,10 @@ for _,spellId in ipairs(spellList) do
         if not spellName then
             print("|cfff5360c>> Заклинание ID: "..spellId.." не найдено!");
         else
-            local rErr = nil;
-            local kErr = nil;
-            local isRange   = IsSpellInRange(spellName, "target");
-            local isKnow    = IsSpellKnown(spellId);
-            if isRange == nil then
-                rErr = "IsSpellInRange = error";
-            end
-            if not isKnow then
-                rErr = "IsSpellKnown = error";
-            end
-            if isRange ~= nil and isKnow then
-                print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
-            else
-                print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName.." >> "..(rErr or "").." "..(kErr or ""));
-            end
-        end
-    end
-end]]></Lua>
-    </WowTest>
-    <WowTest>
-      <Name>Доступность (IsPlayerSpell)</Name>
-      <Lua><![CDATA[-- local spellList = { };
-for _,spellId in ipairs(spellList) do
-    if spellId ~= 0 then
-        local spellName = GetSpellInfo(spellId);
-        local isKnown = IsPlayerSpell(spellId);
-        if spellName then
-            if isKnown then
-                print("|cff15bd05>> Заклинание ["..spellId.."] - "..spellName.." >> Проверки пройдены!");
-            else
-                print("|cfff5360c>> Ошибка: ["..spellId.."] - "..spellName;
-            end
+            local msg = IsSpellInRange(spellName, "target") ~= nil
+                  and "|cff15bd05 Дистанция вычисляется!"
+                  or  "|cfff5360c Дистанция не вычисляется!!!";
+            print("|cff6f0a9a>> ["..spellId.."] - "..spellName.." >> |r"..msg);
         end
     end
 end]]></Lua>
