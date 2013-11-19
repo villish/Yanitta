@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.233</Version>
+  <Version>0.0.4.234</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -7075,14 +7075,7 @@ end
 
 FillPartyTables(774);
 
-isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-myMana    = PowerByPercent("player", SPELL_POWER_MANA);
-
-if UnitId("boss1") == 71529 and UnitCastingInfo("boss1") then
-    if UnitCastingInfo("player") == GetSpellInfo(5185) or UnitCastingInfo("player") == GetSpellInfo(50464) then
-        SpellStopCasting()
-    end
-end]]></Lua>
+myMana = PowerByPercent("player", SPELL_POWER_MANA);]]></Lua>
           </Ability>
           <Ability Name="Возрождение">
             <SpellID>20484</SpellID>
@@ -7218,7 +7211,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if myMana <= 75 and (GetShapeshiftForm() == 0 or GetShapeshiftForm() == 6) then
+            <Lua><![CDATA[if PowerByPercent("player", SPELL_POWER_MANA) <= 75 and (GetShapeshiftForm() == 0 or GetShapeshiftForm() == 6) then
     return true;
 end]]></Lua>
           </Ability>
@@ -7250,9 +7243,7 @@ end]]></Lua>
             <IsNotGCD>true</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if HealthByPercent("player") < 40 then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return HealthByPercent("player") < 40;]]></Lua>
           </Ability>
           <Ability Name="Буйный рост">
             <SpellID>48438</SpellID>
@@ -7335,6 +7326,7 @@ end]]></Lua>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[local buffs = { 774, 8936 };
+
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
         if member.HP < 70 and HasBuff(member.Unit, buffs, "PLAYER") then
@@ -7371,9 +7363,7 @@ end]]></Lua>
             <IsNotGCD>true</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if members[1].HP < 35 then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return members[1].HP < 35;]]></Lua>
           </Ability>
           <Ability Name="Восстановление">
             <SpellID>8936</SpellID>
@@ -7538,7 +7528,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[if useDamage and myMana > 40 and select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
+            <Lua><![CDATA[if useDamage and select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
     return true;
 end]]></Lua>
           </Ability>
@@ -7554,9 +7544,7 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
-            <Lua><![CDATA[if useDamage and myMana > 40 then
-    return true;
-end]]></Lua>
+            <Lua><![CDATA[return useDamage;]]></Lua>
           </Ability>
         </AbilityList>
       </Rotation>
