@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.242</Version>
+  <Version>0.0.4.243</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -439,7 +439,7 @@ function ExtendTheHealTable()
     -- Норусхен
     local bossId = UnitId("boss1");
     -- Если хиллер на испытании, добавляем юнитов для отхила.
-    if bossId == 71475 or bossId == 71479 or bossId == 71480 then
+    if bossId == 71995 or bossId == 71996 or bossId == 72000 then
         InsertNewUnitToHeallersTable("boss1");
         InsertNewUnitToHeallersTable("boss2");
         InsertNewUnitToHeallersTable("boss3");
