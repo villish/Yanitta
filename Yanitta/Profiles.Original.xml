@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.247</Version>
+  <Version>0.0.4.252</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -5893,6 +5893,28 @@ isInRange = IsSpellInRange(GetSpellInfo(116), "target") == 1;
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
+end]]></Lua>
+          </Ability>
+          <Ability Name="Замедленное падение">
+            <SpellID>130</SpellID>
+            <Target>Player</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[-- надо тестировать
+if not IsFalling() then
+    falingStartTime = 0;
+elseif IsFalling() and (falingStartTime or 0) == 0 then
+    falingStartTime = GetTime();
+elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 130) then
+    falingStartTime = 0;
+    return true;
 end]]></Lua>
           </Ability>
           <Ability Name="Чародейская гениальность">
