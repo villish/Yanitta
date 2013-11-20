@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.4</Version>
+  <Version>0.0.5.5</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -378,6 +378,11 @@ function UseItemById(itemId)
     end
 end
 
+-- Возвращает ID юнита
+function UnitId(unit)
+    return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
+end
+
 -- Проверяет, надо ли сбивать заклинание текущему юниту.
 function CheckInterrupt(unit, sec)
     -- чтение заклинания прерываем только перед окончанием каста.
@@ -429,15 +434,12 @@ DISPELL_TABLE = { --    Магия         Яд             Болезнь      
     SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = nil  },
     MAGE_NONE       = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
 };
--- Возвращает ID юнита
-function UnitId(unit)
-    return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
-end
 
 -- Добавляет в таблицу "members" указанного юнита, при этом делая проверки (возможность лечить)
 function InsertNewUnitToHeallersTable(unit)
     if UnitExists(unit)
         and not UnitIsDeadOrGhost(unit)
+        and not UnitIsCorpse(unit)
         and     UnitCanAssist(unit, "player")
         and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
         and not IsNotLineOfSight(unit) then
@@ -448,22 +450,6 @@ function InsertNewUnitToHeallersTable(unit)
         end
         table.insert(members, { Unit = unit, IsInMyParty = false });
     end
-end
-
--- Исключительные ситуации в рейде, добавление юнитов для дополнительного лечения.
-function ExtendTheHealTable()
-    -- Норусхен
-    local bossId = UnitId("boss1");
-    -- Если хиллер на испытании, добавляем юнитов для отхила.
-    if bossId == 71995 or bossId == 71996 or bossId == 72000 then
-        InsertNewUnitToHeallersTable("boss1");
-        InsertNewUnitToHeallersTable("boss2");
-        InsertNewUnitToHeallersTable("boss3");
-    end
-    -- отхил дружественной цели по mouseover/target/focus
-    InsertNewUnitToHeallersTable("target");
-    InsertNewUnitToHeallersTable("focus");
-    InsertNewUnitToHeallersTable("mouseover");
 end
 
 -- в эту функцию добавляем логику по особому поведению в рейдах
@@ -537,7 +523,7 @@ function GetDispellInfo(dispeller_type)
             end
         end
     end
-    if #dispellTable > 0 then
+    if #dispellTable > 1 then
         table.sort(dispellTable, function(A, B)
             return A.Count > B.Count;
         end);
@@ -569,6 +555,7 @@ function FillPartyTables(standartSpellId)
     for index = 1, GetNumGroupMembers() do
         local unit = prefix..index;
         if UnitExists(unit)
+            and not UnitIsCorpse(unit)
             and not UnitIsUnit("player", unit)
             and     UnitIsConnected(unit)
             and not UnitIsEnemy("player", unit)
@@ -579,7 +566,10 @@ function FillPartyTables(standartSpellId)
         end
     end
 
-    ExtendTheHealTable();
+    -- отхил дружественной цели по mouseover/target/focus
+    InsertNewUnitToHeallersTable("target");
+    InsertNewUnitToHeallersTable("focus");
+    InsertNewUnitToHeallersTable("mouseover");
 
     -- Обновляем статы игроков из пати/рейда
     for index = #members, 1, -1 do
@@ -7127,7 +7117,8 @@ myMana = PowerByPercent("player", SPELL_POWER_MANA);]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
-            <Lua><![CDATA[if not UnitAffectingCombat("player") and UnitIsDeadOrGhost(ability.Target) then
+            <Lua><![CDATA[if not UnitAffectingCombat("player")
+    and (UnitIsDeadOrGhost(ability.Target) or UnitIsCorpse(ability.Target)) then
     return true;
 end]]></Lua>
           </Ability>
