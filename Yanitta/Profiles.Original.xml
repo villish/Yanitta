@@ -2837,8 +2837,10 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[-- test
-return CheckEnrage(ability.Target);]]></Lua>
+            <Lua><![CDATA[if CheckEnrage(ability.Target) then
+    print("|cff15bd05>> Снимаю исступление!");
+    return true;
+end]]></Lua>
           </Ability>
           <Ability Name="Лечение питомца">
             <SpellID>136</SpellID>
@@ -7272,8 +7274,10 @@ end]]></Lua>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[-- test
-return CheckEnrage(ability.Target);]]></Lua>
+            <Lua><![CDATA[if CheckEnrage(ability.Target) then
+    print("|cff15bd05>> Снимаю исступление!");
+    return true;
+end]]></Lua>
           </Ability>
           <Ability Name="Буйный рост">
             <SpellID>48438</SpellID>
