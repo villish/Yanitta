@@ -390,6 +390,15 @@ function CheckInterrupt(unit)
         -- канальное заклинание прерываем сразу.
         local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
         if name and not (notInterruptible or isTrade) then
+-- Проверяет наличие исступления.
+function CheckEnrage(unit)
+    for i = 1, 40 do
+        local name,_,_,_,dispelType = UnitBuff(unit, i);
+        if not name then
+            return;
+        elseif dispelType == "" then -- ???
+            -- почему-то енрага отображается как пустая строка
+            -- надо тестировать
             return true;
         end
     end
@@ -2819,6 +2828,21 @@ end]]></Lua>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[return IsModKeyDown(mkRightControl);]]></Lua>
+          </Ability>
+          <Ability Name="Усмиряющий выстрел">
+            <SpellID>19801</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[-- test
+return CheckEnrage(ability.Target);]]></Lua>
           </Ability>
           <Ability Name="Лечение питомца">
             <SpellID>136</SpellID>
@@ -7238,6 +7262,21 @@ end]]></Lua>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[return HealthByPercent("player") < 40;]]></Lua>
+          </Ability>
+          <Ability Name="Умиротворение">
+            <SpellID>2908</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[-- test
+return CheckEnrage(ability.Target);]]></Lua>
           </Ability>
           <Ability Name="Буйный рост">
             <SpellID>48438</SpellID>
