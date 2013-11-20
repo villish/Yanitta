@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.4.252</Version>
+  <Version>0.0.5.2</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -343,8 +343,9 @@ function GetDistance(unit1, unit2)
     if a1 and b1 and c1 and d1 then
         local x1, y1 = GetPlayerMapPosition(unit1);
         local x2, y2 = GetPlayerMapPosition(unit2);
-        local dX, dY = (x1 - x2) * abs(c1-a1), (y1 - y2) * abs(d1-b1);
-        return sqrt(dX^2 + dY^2);
+        local dX = ((x1 - x2) * abs(c1 - a1)) ^ 2;
+        local dY = ((y1 - y2) * abs(d1 - b1)) ^ 2;
+        return sqrt(dX + dY);
     end
 end
 
@@ -378,18 +379,21 @@ function UseItemById(itemId)
 end
 
 -- Проверяет, надо ли сбивать заклинание текущему юниту.
-function CheckInterrupt(unit)
-    if UnitExists(unit) then
-        -- чтение заклинания прерываем только перед окончанием каста.
-        local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
-        if name and not (notInterruptible or isTrade) then
-            if (((endTime / 1000) - GetTime()) - ping) <= 1 then
-                return true;
-            end
+function CheckInterrupt(unit, sec)
+    -- чтение заклинания прерываем только перед окончанием каста.
+    local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
+    if name and not (notInterruptible or isTrade) then
+        if (((endTime / 1000) - GetTime()) - ping) <= (sec or 1) then
+            return true;
         end
-        -- канальное заклинание прерываем сразу.
-        local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
-        if name and not (notInterruptible or isTrade) then
+    end
+    -- канальное заклинание прерываем сразу.
+    local name,_,_,_,_,_,isTrade,notInterruptible = UnitChannelInfo(unit);
+    if name and not (notInterruptible or isTrade) then
+        return true;
+    end
+end
+
 -- Проверяет наличие исступления.
 function CheckEnrage(unit)
     for i = 1, 40 do
