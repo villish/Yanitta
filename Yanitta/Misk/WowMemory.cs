@@ -232,7 +232,7 @@ namespace Yanitta
             builder.AppendLine(CurrentProfile.Lua);
             builder.AppendLine(rotation.Lua);
 
-            builder.AppendFormatLine(@"DebugEnabled = {0};", Settings.Default.DebugMode.ToString().ToLower());
+            builder.AppendFormatLine(@"DebugMode = {0};", Settings.Default.DebugMode.ToString().ToLower());
             // Запуск ротации
             builder.AppendFormatLine(@"ChangeRotation(""{0}"", [[{1}]]);", rotation.Name, rotation.Notes);
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.5</Version>
+  <Version>0.0.5.7</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -11,6 +11,13 @@ LAST_TARGET     = 0;
 
 function minmax(val, x, y)
     return min(max(val, x), y);
+end
+
+function printd(...)
+    local m = string.match(..., "^debug:+");
+    if not m or (m and DebugMode) then
+        print(...);
+    end
 end
 
 function CheckAndCastAbility(ability)
@@ -7275,7 +7282,7 @@ end]]></Lua>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if CheckEnrage(ability.Target) then
-    print("|cff15bd05>> Снимаю исступление!");
+    printd("debug:|cff15bd05>> Снимаю исступление!");
     return true;
 end]]></Lua>
           </Ability>
@@ -7364,7 +7371,7 @@ end]]></Lua>
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
         if member.HP < 70 and HasBuff(member.Unit, buffs, "PLAYER") then
-            print("|cff00ff00 >> Кастую Быстрое восстановление <<");
+            printd("debug:|cff00ff00 >> Кастую Быстрое восстановление <<");
             return member.Unit;
         end
     end
@@ -7378,7 +7385,7 @@ elseif LowHP.H80 <= 3 then
                 end
             end
             if count > 2 then
-                print("|cff00ff00 >> Кастую Быстрое восстановление <<")
+                printd("debug:|cff00ff00 >> Кастую Быстрое восстановление <<");
                 return member.Unit;
             end
         end
