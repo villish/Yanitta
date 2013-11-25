@@ -50,5 +50,13 @@ namespace Yanitta
         {
             RotationList = new ObservableCollection<Rotation>();
         }
+
+        public void UnregisterAllHotKeys()
+        {
+            this.RotationList.ForEach((rotation) => {
+                if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
+                    rotation.HotKey.Unregister();
+            });
+        }
     }
 }

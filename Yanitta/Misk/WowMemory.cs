@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -64,7 +65,6 @@ namespace Yanitta
         public bool          IsDisposed { get; private set; }
 
         private DispatcherTimer mTimer;
-        private bool IsFocus;
         private DateTime LastAction = DateTime.Now;
 
 #if TRACE
@@ -141,18 +141,33 @@ namespace Yanitta
                 }
                 else
                 {
+                    if (CurrentProfile != null)
+                        CurrentProfile.UnregisterAllHotKeys();
                     this.Class = (WowClass)(byte)0;
                     this.Name = "";
-                    this.CurrentProfile = null;
+                    CurrentProfile = null;
                 }
-
-                GameFocusChanged();
             }
 
-            if (this.Memory.IsFocusWindow != this.IsFocus)
+            if (Memory.IsFocusWindow)
             {
-                this.IsFocus = this.Memory.IsFocusWindow;
-                this.GameFocusChanged();
+                foreach (var process in MainWindow.ProcessList.Where(p => p != this))
+                    process.CurrentProfile.UnregisterAllHotKeys();
+
+                CurrentProfile.RotationList.ForEach((rotation) => {
+                    if (!rotation.HotKey.IsRegistered)
+                    {
+                        rotation.HotKey.SetHandler(rotation, HotKeyPressed);
+                        try
+                        {
+                            rotation.HotKey.Register();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("HotKey Error: " + ex.Message);
+                        }
+                    }
+                });
             }
 
             // anti afk bot
@@ -181,33 +196,6 @@ namespace Yanitta
             }
 
             e.Handled = true;
-        }
-
-        private void GameFocusChanged()
-        {
-            Debug.WriteLine("IsFocus: " + this.IsFocus);
-            try
-            {
-                // main
-                ProfileDb.Instance.Exec((profile, rotation) => rotation.HotKey.Unregister());
-
-                if (this.IsFocus)
-                {
-                    // main
-                    ProfileDb.Instance.Exec((profile, rotation) => {
-                        if (profile.Class == Class)
-                        {
-                            rotation.HotKey.SetHandler(rotation, HotKeyPressed);
-                            rotation.HotKey.Register();
-                            Debug.WriteLine("Registered HotKey: " + rotation.HotKey);
-                        }
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("HotKey Error: {0}", ex.Message);
-            }
         }
 
         private void ExecuteProfile(Rotation rotation)
@@ -281,6 +269,8 @@ namespace Yanitta
                 this.mTimer.Stop();
                 this.mTimer.IsEnabled = false;
             }
+
+            CurrentProfile.RotationList.ForEach(x => x.HotKey.Unregister());
 
             if (this.Memory != null && !this.Memory.Process.HasExited)
             {
