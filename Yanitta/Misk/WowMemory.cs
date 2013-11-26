@@ -169,6 +169,10 @@ namespace Yanitta
                     }
                 });
             }
+            else if (CurrentProfile != null)
+            {
+                CurrentProfile.RotationList.ForEach(x => x.HotKey.Unregister());
+            }
 
             // anti afk bot
             if (Settings.Default.AniAFK && this.IsInGame && LastAction < DateTime.Now)
@@ -207,14 +211,12 @@ namespace Yanitta
                 throw new ArgumentNullException("rotation is null");
 
             var builder = new StringBuilder();
-
-            builder.AppendLine(ProfileDb.Instance.Core);
-            builder.AppendLine(ProfileDb.Instance.Func);
+            builder.AppendLine(ProfileDb.Instance.Lua);
 
             foreach (var ability in rotation.AbilityList)
             {
                 var ability_code = ability.ToString();
-                builder.Append(ability_code);
+                builder.AppendLine(ability_code);
             }
 
             builder.AppendLine(CurrentProfile.Lua);
@@ -257,7 +259,7 @@ namespace Yanitta
 @"if type(ChangeRotation) == ""function"" then
      ChangeRotation();
  end
- AbilityTable = nil;";
+ ABILITY_TABLE = { };";
 
         private void Dispose(bool disposing)
         {

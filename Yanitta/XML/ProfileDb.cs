@@ -14,8 +14,7 @@ namespace Yanitta
     [Serializable]
     public class ProfileDb : DependencyObject
     {
-        public static readonly DependencyProperty CoreProperty          = DependencyProperty.Register("Core",        typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty FuncProperty          = DependencyProperty.Register("Func",        typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty LuaProperty           = DependencyProperty.Register("Lua",         typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty VersionProperty       = DependencyProperty.Register("Version",     typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty AuthorProperty        = DependencyProperty.Register("Author",      typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty UrlProperty           = DependencyProperty.Register("Url",         typeof(string), typeof(ProfileDb));
@@ -44,31 +43,17 @@ namespace Yanitta
         }
 
         [XmlIgnore]
-        public string Core
+        public string Lua
         {
-            get { return (string)GetValue(CoreProperty); }
-            set { SetValue(CoreProperty, value); }
+            get { return (string)GetValue(LuaProperty); }
+            set { SetValue(LuaProperty, value); }
         }
 
-        [XmlElement("Core")]
-        public XmlCDataSection _core
+        [XmlElement("Lua")]
+        public XmlCDataSection _lua
         {
-            get { return new XmlDocument().CreateCDataSection(this.Core ?? ""); }
-            set { this.Core = value.Value; }
-        }
-
-        [XmlIgnore]
-        public string Func
-        {
-            get { return (string)GetValue(FuncProperty); }
-            set { SetValue(FuncProperty, value); }
-        }
-
-        [XmlElement("Func")]
-        public XmlCDataSection _func
-        {
-            get { return new XmlDocument().CreateCDataSection(this.Func ?? ""); }
-            set { this.Func = value.Value; }
+            get { return new XmlDocument().CreateCDataSection(this.Lua ?? ""); }
+            set { this.Lua = value.Value; }
         }
 
         [XmlArray]
@@ -122,8 +107,7 @@ namespace Yanitta
         {
             this.Version    = temp.Version;
             this.Author     = temp.Author;
-            this.Core       = temp.Core;
-            this.Func       = temp.Func;
+            this.Lua       = temp.Lua;
             this.Url        = temp.Url;
             this.ProfileList = temp.ProfileList;
             this.WowTestList = temp.WowTestList;
