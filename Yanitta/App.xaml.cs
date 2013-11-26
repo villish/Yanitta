@@ -39,6 +39,8 @@ namespace Yanitta
             var fileName = Yanitta.Properties.Settings.Default.ProfilesFileName;
             if (File.Exists(fileName))
                 File.Copy(fileName, fileName + ".bak", true);
+            else if (File.Exists("Profiles.Original.xml"))
+                File.Copy("Profiles.Original.xml", fileName, true);
 
             Console.WriteLine(MemoryModule.ProcessMemory.FasmVersion);
 
