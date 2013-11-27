@@ -33,8 +33,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return new XmlDocument().CreateCDataSection(this.Lua ?? ""); }
-            set { this.Lua = value.Value; }
+            get { return this.Lua.CreateCDataSection(); }
+            set { this.Lua = value.GetTrimValue(); }
         }
 
         /// <summary>

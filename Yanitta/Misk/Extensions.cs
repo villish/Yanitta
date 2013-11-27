@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 namespace Yanitta
 {
@@ -24,6 +25,20 @@ namespace Yanitta
                 builder.AppendLine(format);
             else
                 builder.AppendFormat(CultureInfo.InvariantCulture, format, args).AppendLine();
+        }
+
+        public static string GetTrimValue(this XmlCDataSection cdataSection)
+        {
+            if (cdataSection == null || string.IsNullOrWhiteSpace(cdataSection.Value))
+                return string.Empty;
+            return cdataSection.Value.Trim();
+        }
+
+        public static XmlCDataSection CreateCDataSection(this string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                return null;
+            return new XmlDocument().CreateCDataSection("\n" + content + "\n");
         }
 
         public static IEnumerable<string> RandomizeASM(IEnumerable<string> ASM_Code)
