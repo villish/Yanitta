@@ -36,6 +36,7 @@ namespace ICSharpCode.AvalonEdit
         private FoldingManager foldingManager;
         private AbstractFoldingStrategy foldingStrategy = new RegexFoldingStrategy();
         private DispatcherTimer foldingUpdateTimer;
+        private Style mToolTipStype;
 
         #region Constructors
 
@@ -72,6 +73,12 @@ namespace ICSharpCode.AvalonEdit
 
             this.TextArea.TextEntering += TextEditorTextAreaTextEntering;
             this.TextArea.PreviewKeyDown += TextArea_PreviewKeyDown;
+
+            this.TextArea.TextView.MouseHover += TextViewMouseHover;
+            this.TextArea.TextView.MouseHoverStopped += TextViewMouseHoverStopped;
+
+            #warning hack
+            this.mToolTipStype = (Style)Application.Current.MainWindow.Style.Resources[typeof(ToolTip)];
         }
 
         /// <summary>
@@ -107,12 +114,6 @@ namespace ICSharpCode.AvalonEdit
                 mIntelliSeinceWindow.Close();
                 mIntelliSeinceWindow = null;
             }
-
-            if (mToolTip != null)
-            {
-                mToolTip.IsOpen = false;
-                mToolTip = null;
-            }
         }
 
         #endregion Constructors
@@ -134,6 +135,37 @@ namespace ICSharpCode.AvalonEdit
                 e.Handled = true;
             }
         }
+
+        #region ToolTip
+        private void TextViewMouseHoverStopped(object sender, MouseEventArgs e)
+        {
+            if (mToolTip != null && mToolTip.IsOpen)
+                mToolTip.IsOpen = false;
+        }
+
+        private void TextViewMouseHover(object sender, MouseEventArgs e)
+        {
+            TextViewPosition? position = this.TextArea.TextView.GetPosition(
+                                        e.GetPosition(this.TextArea.TextView)
+                                        + this.TextArea.TextView.ScrollOffset
+                                        );
+            if (position == null)
+                return;
+
+            int offset = this.Document.GetOffset(position.Value.Location);
+            var hovered_word = GetWord(offset);
+            if (hovered_word == null)
+                return;
+            var keyWordInfo = IntelliSienceManager.IntelliSienceCollection.FirstOrDefault(n => n.Name == hovered_word);
+            if (mToolTip != null)
+                mToolTip.IsOpen = false;
+            if (keyWordInfo != null)
+            {
+                mToolTip = new ToolTip() { Content = keyWordInfo.ToString(), IsOpen = true };
+                mToolTip.SetValue(System.Windows.Controls.ToolTip.StyleProperty, mToolTipStype);
+            }
+        }
+        #endregion
 
         #region Document property
 
@@ -1234,6 +1266,28 @@ namespace ICSharpCode.AvalonEdit
 
         #region Code Completion
 
+        private string GetWord(int offset)
+        {
+            int start = 0, len = 0;
+            for (start = offset - 1; start >= 0; start--)
+            {
+                var c = this.Text[start];
+                if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
+                {
+                    ++start;
+                    break;
+                }
+            }
+            for (int j = start; j < this.Text.Length; ++j, ++len)
+            {
+                var c = this.Text[j];
+                if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
+                    break;
+            }
+            var word = this.Text.Substring(start, len);
+            return string.IsNullOrWhiteSpace(word) ? null : word.Trim();
+        }
+
         public int StartCurrentWord
         {
             get
@@ -1312,53 +1366,9 @@ namespace ICSharpCode.AvalonEdit
                     }
                 }
             }
-            if (e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
-            {
-                if (e.Key == Key.D0) // )
-                {
-                    if (mToolTip != null)
-                    {
-                        mToolTip.IsOpen = false;
-                        mToolTip = null;
-                    }
-                }
-                if (e.Key == Key.D9) // (
-                {
-                    if (mToolTip != null)
-                    {
-                        mToolTip.IsOpen = false;
-                        mToolTip = null;
-                    }
-
-                    var keyWordInfo = IntelliSienceManager.IntelliSienceCollection.FirstOrDefault(n => n.Name == CurrentWord);
-                    if (keyWordInfo == null)
-                        return;
-
-                    mToolTip = new ToolTip();
-                    mToolTip.Content = keyWordInfo.ToString();
-                    mToolTip.IsOpen = true;
-                }
-            }
-            if (e.Key == Key.F1) // help
-            {
-                var s = textArea.Options.IndentationSize;
-                if (mToolTip != null)
-                {
-                    mToolTip.IsOpen = false;
-                    mToolTip = null;
-                }
-
-                var keyWordInfo = IntelliSienceManager.IntelliSienceCollection.FirstOrDefault(n => n.Name == CurrentWord);
-                if (keyWordInfo == null)
-                    return;
-
-                mToolTip = new ToolTip();
-                mToolTip.Content = keyWordInfo.ToString();
-                mToolTip.IsOpen = true;
-            }
             if (e.Key == Key.Escape) // cencel
             {
-                if (mToolTip != null)
+                if (mToolTip != null && mToolTip.IsOpen)
                 {
                     mToolTip.IsOpen = false;
                     mToolTip = null;

@@ -33,8 +33,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return new XmlDocument().CreateCDataSection(this.Lua ?? ""); }
-            set { this.Lua = value.Value; }
+            get { return this.Lua.CreateCDataSection(); }
+            set { this.Lua = value.GetTrimValue(); }
         }
 
         /// <summary>
@@ -49,6 +49,14 @@ namespace Yanitta
         public Profile()
         {
             RotationList = new ObservableCollection<Rotation>();
+        }
+
+        public void UnregisterAllHotKeys()
+        {
+            this.RotationList.ForEach((rotation) => {
+                if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
+                    rotation.HotKey.Unregister();
+            });
         }
     }
 }

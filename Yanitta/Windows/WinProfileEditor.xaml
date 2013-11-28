@@ -339,10 +339,7 @@
                 <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.CoreHeader}" ToolTip="{x:Static yanitta:Localization.CoreHeaderToolTip}">
-                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Core, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-            </TabItem>
-            <TabItem Header="{x:Static yanitta:Localization.GlobalFunk}" ToolTip="{x:Static yanitta:Localization.GlobalFunkToolTip}">
-                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Func, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
             </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.ProfileInfo}">
                 <StackPanel>

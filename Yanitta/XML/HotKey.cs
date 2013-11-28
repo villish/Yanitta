@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Xml.Serialization;
@@ -99,6 +100,8 @@ namespace System.Windows.Input
 
             if (!this.IsRegistered)
                 throw new ApplicationException("HotKey (" + this + ") already in use");
+
+            Debug.WriteLine("Registered HotKey: " + this);
         }
 
         /// <summary>
