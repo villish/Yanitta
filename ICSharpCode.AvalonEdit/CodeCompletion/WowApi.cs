@@ -118,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
                 }
             }
 
-            return content.ToString();
+            return content.ToString().Trim();
         }
     }
 
