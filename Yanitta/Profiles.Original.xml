@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.14</Version>
+  <Version>0.0.5.15</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -545,8 +545,11 @@ function ChangeRotation(rotation, notes)
         end
         AddonFrame.CurentRotation = rotation;
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
-        if strtrim(notes) ~= "" then
-            print("|cff6f0a9a     "..notes.."|r");
+        local notes = strtrim(notes or '');
+        if notes ~= "" then
+            for _,line in ipairs({strsplit('\n', notes)}) do
+                print("|cff6f0a9a"..line.."|r");
+            end
         end
         PlaySound("PAPERDOLLOPEN", "Master");
     end
