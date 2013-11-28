@@ -48,6 +48,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             this.MinHeight = 15;
             this.MinWidth = 30;
 
+            #warning hack
+            this.Style = (Style)Application.Current.Resources.MergedDictionaries[0]["KamillaStyle"];
+
             toolTip.PlacementTarget = this;
             toolTip.Placement = PlacementMode.Right;
             toolTip.Closed += toolTip_Closed;
