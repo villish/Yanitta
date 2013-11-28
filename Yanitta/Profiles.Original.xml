@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.5</Version>
+  <Version>0.0.5.17</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Core><![CDATA[OnEventExtended = nil;
@@ -401,14 +401,16 @@ end
 
 -- Проверяет наличие исступления.
 function CheckEnrage(unit)
-    for i = 1, 40 do
-        local name,_,_,_,dispelType = UnitBuff(unit, i);
-        if not name then
-            return;
-        elseif dispelType == "" then -- ???
-            -- почему-то енрага отображается как пустая строка
-            -- надо тестировать
-            return true;
+    if UnitCanAttack("player", unit) then
+        for i = 1, 40 do
+            local name,_,_,_,dispelType = UnitBuff(unit, i);
+            if not name then
+                return;
+            elseif dispelType == "" then -- ???
+                -- почему-то енрага отображается как пустая строка
+                -- надо тестировать
+                return true;
+            end
         end
     end
 end
@@ -481,7 +483,7 @@ function DontDispell(debuffId, member)
     if debuffId == 144351 then
         if not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30 then
             -- Если на нас много порчи - не диспелим
-            if UnitPower("player", SPELL_POWER_ALTERNATE_POWER) > 75 then
+            if UnitPower("player", SPELL_POWER_ALTERNATE_POWER) > 50 then
                 return true;
             end
         end
@@ -499,6 +501,8 @@ function DontDispell(debuffId, member)
                 end
             end
         end
+    elseif debuffId == 149207 then
+        return true;
     end
 end
 
@@ -972,7 +976,7 @@ end]]></Lua>
     if HasDebuff("player", ccIDs) then
         return true;
     end
-if isInMeele and not HasBuff("player", 12880) and not HasBuff("player", 131116) then
+elseif isInMeele and not HasBuff("player", 12880) and not HasBuff("player", 131116) then
     return true;
 end]]></Lua>
           </Ability>
@@ -1810,6 +1814,46 @@ end]]></Lua>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[return CheckInterrupt("target");]]></Lua>
+          </Ability>
+          <Ability Name="Отражение заклинания">
+            <SpellID>23920</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[if UnitIsEnemy("player", ability.Target) and UnitIsUnit("player", ability.Target.."target") then
+    local name,_,_,_,_,endTime = UnitCastingInfo(ability.Target);
+    if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
+        local r_table = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
+        for _,spell_id in ipairs(r_table) do
+            if name == GetSpellInfo(spell_id) then
+                return true;
+            end
+        end
+    end
+end]]></Lua>
+          </Ability>
+          <Ability Name="Подрезать сухожилья">
+            <SpellID>1715</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[if UnitIsPlayer(ability.Target) and not HasDebuff(ability.Target, 1715) then
+    return true;
+end]]></Lua>
           </Ability>
           <Ability Name="Разрушительный крик">
             <SpellID>102060</SpellID>
@@ -6671,7 +6715,7 @@ end]]></Lua>
     </RotationList>
   </Profile>
   <Profile Class="Monk">
-    <Lua><![CDATA[useCooldown = true;]]></Lua>
+    <Lua><![CDATA[]]></Lua>
     <RotationList>
       <Rotation Name="Ткач туманов">
         <HotKey Key="X" Modifier="Alt" />
@@ -6682,7 +6726,7 @@ end]]></Lua>
       <Rotation Name="Хмелевар">
         <HotKey Key="Z" Modifier="Alt" />
         <Notes><![CDATA[]]></Notes>
-        <Lua><![CDATA[]]></Lua>
+        <Lua><![CDATA[useCooldown = true;]]></Lua>
         <AbilityList>
           <Ability Name="Инициализация">
             <SpellID>0</SpellID>
@@ -6845,7 +6889,7 @@ if chi > 0 and HasDebuff("player", 124273) then
 end]]></Lua>
           </Ability>
           <Ability Name="Защита">
-            <SpellID>123402</SpellID>
+            <SpellID>115295</SpellID>
             <Target>Player</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -6889,8 +6933,10 @@ end]]></Lua>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if isInMeele and setAoE and chi > 2 then
-    --                Хмельная дымка                                Пламенное дыхание
-    if HasDebuff("target", 123727, "PLAYER") and not HasDebuff("target", 123725, "PLAYER") then
+    -- Хмельная дымка             
+    if HasDebuff("target", 123727, "PLAYER")
+    -- Пламенное дыхание
+    and not HasDebuff("target", 123725, "PLAYER") then
         return true;
     end
 end]]></Lua>
@@ -6924,7 +6970,8 @@ end]]></Lua>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if isInMeele and setAoE and chi > 2 then
-    if HasDebuff("target", 123727, "PLAYER") and not HasDebuff("target", 123725, "PLAYER") then
+    if HasDebuff("target", 123727, "PLAYER")
+    and not HasDebuff("target", 123725, "PLAYER") then
         return false;
     end
 end
@@ -7293,6 +7340,27 @@ end]]></Lua>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[if LowHP.H80 > 3 then
     return members[1].Unit;
+end]]></Lua>
+          </Ability>
+          <Ability Name="Целительное прикосновение (Сет)">
+            <SpellID>5185</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[if members[1].HP <= 80 then
+    local count = select(2, HasBuff("player", 144871));
+    if count > 4 and IS_MOVING then
+        return members[1].Unit;
+    elseif count > 2 and not IS_MOVING then
+        return members[1].Unit;
+    end
 end]]></Lua>
           </Ability>
           <Ability Name="Омоложение (Сильный Урон)">
