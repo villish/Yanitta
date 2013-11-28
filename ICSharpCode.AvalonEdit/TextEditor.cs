@@ -1269,6 +1269,9 @@ namespace ICSharpCode.AvalonEdit
 
         private string GetWord(int offset)
         {
+            if (offset < 0)
+                return null;
+
             int start = 0, len = 0;
             for (start = offset - 1; start >= 0; start--)
             {
