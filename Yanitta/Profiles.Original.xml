@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.15</Version>
+  <Version>0.0.5.19</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -1248,6 +1248,31 @@ if (koloss and targetHP >= 20) or (koloss_remains >= 1 and rage >= 80 and target
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Командирский крик">
+            <SpellID>469</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+local ap_buffs = {
+    6673,   -- Боевой крик (Воин)
+    57330,  -- Зимний горн (Рыцарь смерти)
+    19506   -- Аура меткого выстрела (Охотник)
+};
+if rage < 70 then
+    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Боевой крик ">
             <SpellID>6673</SpellID>
             <Target>None</Target>
@@ -1740,24 +1765,6 @@ if not HasDebuff("target", 115798) then
 end
 ]]></Lua>
           </Ability>
-          <Ability Name="Боевой крик">
-            <SpellID>6673</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if rage < 70 and not hasAPbuff then
-    return true;
-end
-]]></Lua>
-          </Ability>
           <Ability Name="Командирский крик">
             <SpellID>469</SpellID>
             <Target>None</Target>
@@ -1771,7 +1778,32 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if rage < 70 and hasAPbuff then
+local ap_buffs = {
+    6673,   -- Боевой крик (Воин)
+    57330,  -- Зимний горн (Рыцарь смерти)
+    19506   -- Аура меткого выстрела (Охотник)
+};
+if rage < 70 and not koloss then
+    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Боевой крик">
+            <SpellID>6673</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if rage < 70 then
     return true;
 end
 ]]></Lua>
@@ -2145,7 +2177,7 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if  (rage >= 10 and targetHP >= 20 or HasBuff("player", 29725)) then
+if rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
     return true;
 end
 ]]></Lua>
@@ -2199,10 +2231,35 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if rage >=25 then
+if rage > 35 then
     if setAoE and (kolossRem > 0 or HasBuff("player", 12328)) then -- Размашистые удары
         return true;
     elseif not setAoE and (kolossRem > 0 and select(3, HasBuff("player", 60503)) < 3) and targetHP >= 20 then -- Вкус крови
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Командирский крик">
+            <SpellID>6673</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+local ap_buffs = {
+    6673,   -- Боевой крик (Воин)
+    57330,  -- Зимний горн (Рыцарь смерти)
+    19506   -- Аура меткого выстрела (Охотник)
+};
+if rage < 70 then
+    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
         return true;
     end
 end
@@ -2221,7 +2278,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if rage < 70 and not koloss then
+if rage < 70 then
     return true;
 end
 ]]></Lua>
