@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.20</Version>
+  <Version>0.0.5.36</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -675,95 +675,93 @@ koloss_remains      = 0;
 bloodthirst_remains = 0;
 
 ccIDs = {
-    108194,		-- Asphyxiate
-    115001,		-- Remorseless Winter
-    91800,		-- Gnaw
-    91797,		-- Monstrous Blow (Dark Transformation)
-    102795,		-- Bear Hug
-    33786,		-- Cyclone
-    99,			-- Disorienting Roar
-    2637,		-- Hibernate
-    22570,		-- Maim
-    5211,		-- Mighty Bash
-    9005,		-- Pounce
-    110698,		-- Hammer of Justice
-    113004,		-- Intimidating Roar
-    113056,		-- Intimidating Roar
-    117526,		-- Binding Shot
-    3355,		-- Freezing Trap
-    1513,		-- Scare Beast
-    19503,		-- Scatter Shot
-    19386,		-- Wyvern Sting
-    90337,		-- Bad Manner
-    24394,		-- Intimidation
-    50519,		-- Sonic Blast
-    56626,		-- Sting
-    118271,		-- Combustion Impact
-    44572,		-- Deep Freeze
-    31661,		-- Dragon's Breath
-    118,		-- Polymorph
-    61305,		-- Polymorph: Black Cat
-    28272,		-- Polymorph: Pig
-    61721,		-- Polymorph: Rabbit
-    61780,		-- Polymorph: Turkey
-    28271,		-- Polymorph: Turtle
-    82691,		-- Ring of Frost
-    123393,		-- Breath of Fire
-    126451,		-- Clash
-    122242,		-- Clash
-    119392,		-- Charging Ox Wave
-    119381,		-- Leg Sweep
-    115078,		-- Paralysis
-    105421,		-- Blinding Light
-    115752,		-- Blinding Light
-    105593,		-- Fist of Justice
-    853,		-- Hammer of Justice
-    119072,		-- Holy Wrath
-    20066,		-- Repentance
-    10326,		-- Turn Evil
-    113506,		-- Cyclone
-    605,		-- Dominate Mind
-    64044,		-- Psychic Horror
-    8122,		-- Psychic Scream
-    113792,		-- Psychic Terror
-    9484,		-- Shackle Undead
-    87204,		-- Sin and Punishment
-    2094,		-- Blind
-    1833,		-- Cheap Shot
-    1776,		-- Gouge
-    408,		-- Kidney Shot
-    113953,		-- Paralysis
-    6770,		-- Sap
-    76780,		-- Bind Elemental
-    77505,		-- Earthquake
-    51514,		-- Hex
-    118905,		-- Static Charge
-    118345,		-- Pulverize
-    710,		-- Banish
-    54786,		-- Demonic Leap
-    5782,		-- Fear
-    118699,		-- Fear
-    5484,		-- Howl of Terror
-    6789,		-- Mortal Coil
-    30283,		-- Shadowfury
-    104045,		-- Sleep
-    89766,		-- Axe Toss
-    115268,		-- Mesmerize
-    6358,		-- Seduction
-    7922,		-- Charge Stun
-    118895,		-- Dragon Roar
-    5246,		-- Intimidating Shout
-    20511,		-- Intimidating Shout
-    132168,		-- Shockwave
-    105771,		-- Warbringer
-    107079,		-- Quaking Palm
-    13327,		-- Reckless Charge
-    20549		-- War Stomp
+    108194,     -- Асфиксия
+    115001,     -- Беспощадность зимы
+    91800,      -- Отгрызть
+    91797,      -- Чудовищный удар
+    102795,     -- Медвежьи объятия
+    33786,      -- Смерч
+    99,         -- Дезориентирующий рык
+    22570,      -- Калечение
+    5211,       -- Mighty Bash
+    9005,       -- Pounce
+    110698,     -- Hammer of Justice
+    113004,     -- Intimidating Roar
+    113056,     -- Intimidating Roar
+    117526,     -- Binding Shot
+    3355,       -- Freezing Trap
+    1513,       -- Scare Beast
+    19503,      -- Scatter Shot
+    19386,      -- Wyvern Sting
+    90337,      -- Bad Manner
+    24394,      -- Intimidation
+    50519,      -- Sonic Blast
+    56626,      -- Sting
+    118271,     -- Combustion Impact
+    44572,      -- Deep Freeze
+    31661,      -- Dragon's Breath
+    118,        -- Polymorph
+    61305,      -- Polymorph: Black Cat
+    28272,      -- Polymorph: Pig
+    61721,      -- Polymorph: Rabbit
+    61780,      -- Polymorph: Turkey
+    28271,      -- Polymorph: Turtle
+    82691,      -- Ring of Frost
+    123393,     -- Breath of Fire
+    126451,     -- Clash
+    122242,     -- Clash
+    119392,     -- Charging Ox Wave
+    119381,     -- Leg Sweep
+    115078,     -- Paralysis
+    105421,     -- Blinding Light
+    115752,     -- Blinding Light
+    105593,     -- Fist of Justice
+    853,        -- Hammer of Justice
+    119072,     -- Holy Wrath
+    20066,      -- Repentance
+    10326,      -- Turn Evil
+    113506,     -- Cyclone
+    605,        -- Dominate Mind
+    64044,      -- Psychic Horror
+    8122,       -- Psychic Scream
+    113792,     -- Psychic Terror
+    9484,       -- Shackle Undead
+    87204,      -- Sin and Punishment
+    2094,       -- Blind
+    1833,       -- Cheap Shot
+    1776,       -- Gouge
+    408,        -- Kidney Shot
+    113953,     -- Paralysis
+    6770,       -- Sap
+    76780,      -- Bind Elemental
+    77505,      -- Earthquake
+    51514,      -- Hex
+    118905,     -- Static Charge
+    118345,     -- Pulverize
+    710,        -- Banish
+    54786,      -- Demonic Leap
+    5782,       -- Fear
+    118699,     -- Fear
+    5484,       -- Howl of Terror
+    6789,       -- Mortal Coil
+    30283,      -- Shadowfury
+    104045,     -- Sleep
+    89766,      -- Axe Toss
+    115268,     -- Mesmerize
+    6358,       -- Seduction
+    7922,       -- Рывок и оглушение
+    5246,       -- Устрашающий крик (Воин)
+    20511,      -- Устрашающий крик
+    132168,     -- Ударная волна
+    105771,     -- Вестник войны
+    107079,     -- Сотрясающая ладонь
+    13327,      -- Безрассудный рывок
+    20549       -- Громовая поступь
 };
 
 reflect_table = {
     PVP = {
-        33786,	-- DRUID (Cyclone)
+        33786,  -- DRUID (Cyclone)
         28272,  -- MAGE (All Polymorphs / Frost Bomb / Arcane Blast)
         118,
         61305,
@@ -772,11 +770,11 @@ reflect_table = {
         28271,
         113092,
         30451,
-        20066,	-- PALADIN (Repentance)
-        605,	-- PRIEST (Mind Control)
-        51514,	-- SHAMAN (Hex)
-        51505,	-- SHAMAN (Lava Burst)
-        5782,	-- WARLOCK (Fear / Chaos Bolt)
+        20066,  -- PALADIN (Repentance)
+        605,    -- PRIEST (Mind Control)
+        51514,  -- SHAMAN (Hex)
+        51505,  -- SHAMAN (Lava Burst)
+        5782,   -- WARLOCK (Fear / Chaos Bolt)
         118699,
         116858
     },
@@ -797,9 +795,30 @@ function FillFurryData()
     targetHP   = HealthByPercent("target");
 
     -- кулдаун колосса
-    koloss_remains = SpellCD(86346);    
+    koloss_remains = SpellCD(86346);
     -- кулдаун кровожадности
     bloodthirst_remains = SpellCD(23881);
+end
+
+function NeedReflect(unit)
+    if UnitIsEnemy("player", unit) and UnitIsUnit("player", unit.."target") then
+        local name,_,_,_,_,endTime = UnitCastingInfo(ability.Target);
+        if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
+            local r_table = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
+            for _,spell_id in ipairs(r_table) do
+                if name == GetSpellInfo(spell_id) then
+                    return true;
+                end
+            end
+        end
+    end
+end
+
+function NeedMassReflect(unit)
+    local reflect_buff = { 23920, 114028 };
+    if not HasBuff("player", reflect_buff) or SpellCD(23920) > 0 then
+        return NeedReflect(unit);
+    end
 end
 ]]></Lua>
     <RotationList>
@@ -1570,6 +1589,26 @@ if IsModKeyDown(5) then
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Кровавая баня">
+            <SpellID>12292</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if useCooldown and isInMeele and agroStatus > 2 then
+    if UnitHealth(ability.Target) > (UnitHealthMax("player") * 3) then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Мощный удар щитом">
             <SpellID>23922</SpellID>
             <Target>Target</Target>
@@ -1619,17 +1658,25 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if UnitIsEnemy("player", ability.Target) and UnitIsUnit("player", ability.Target.."target") then
-    local name,_,_,_,_,endTime = UnitCastingInfo(ability.Target);
-    if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
-        local r_table = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
-        for _,spell_id in ipairs(r_table) do
-            if name == GetSpellInfo(spell_id) then
-                return true;
-            end
-        end
-    end
-end
+-- Код профиля
+return NeedReflect(ability.Target);
+]]></Lua>
+          </Ability>
+          <Ability Name="Массовое отражение заклинаний">
+            <SpellID>114028</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- Код профиля
+return NeedMassReflect(ability.Target);
 ]]></Lua>
           </Ability>
           <Ability Name="Подрезать сухожилья">
@@ -1975,17 +2022,25 @@ return CheckInterrupt("target");
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if UnitIsEnemy("player", ability.Target) and UnitIsUnit("player", ability.Target.."target") then
-    local name,_,_,_,_,endTime = UnitCastingInfo(ability.Target);
-    if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
-        local r_table = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
-        for _,spell_id in ipairs(r_table) do
-            if name == GetSpellInfo(spell_id) then
-                return true;
-            end
-        end
-    end
-end
+-- Код профиля
+return NeedReflect(ability.Target);
+]]></Lua>
+          </Ability>
+          <Ability Name="Массовое отражение заклинаний">
+            <SpellID>114028</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- Код профиля
+return NeedMassReflect(ability.Target);
 ]]></Lua>
           </Ability>
           <Ability Name="Подрезать сухожилья">
@@ -2055,9 +2110,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if isInMeele and useCooldown and HasDebuff("target", 86346, "PLAYER") then
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET2);
+if isInMeele and useCooldown and (koloss_cd < 2 or kolossRem > 4) then
     return true;
 end
 ]]></Lua>
