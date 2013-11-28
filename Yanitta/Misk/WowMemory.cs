@@ -154,20 +154,24 @@ namespace Yanitta
                 foreach (var process in MainWindow.ProcessList.Where(p => p != this))
                     process.CurrentProfile.UnregisterAllHotKeys();
 
-                CurrentProfile.RotationList.ForEach((rotation) => {
-                    if (!rotation.HotKey.IsRegistered)
+                if (CurrentProfile != null)
+                {
+                    CurrentProfile.RotationList.ForEach((rotation) =>
                     {
-                        rotation.HotKey.SetHandler(rotation, HotKeyPressed);
-                        try
+                        if (!rotation.HotKey.IsRegistered)
                         {
-                            rotation.HotKey.Register();
+                            rotation.HotKey.SetHandler(rotation, HotKeyPressed);
+                            try
+                            {
+                                rotation.HotKey.Register();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("HotKey Error: " + ex.Message);
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("HotKey Error: " + ex.Message);
-                        }
-                    }
-                });
+                    });
+                }
             }
             else if (CurrentProfile != null)
             {

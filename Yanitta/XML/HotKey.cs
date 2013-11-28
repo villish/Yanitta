@@ -110,7 +110,10 @@ namespace System.Windows.Input
         public void Unregister()
         {
             if (this.m_HandleSource != null && !this.m_HandleSource.IsDisposed && !this.IsEmpty)
+            {
+                Debug.WriteLine("Unregister HotKey: " + this);
                 apiUnregisterHotKey(this.m_HandleSource.Handle, this.RawHotKey);
+            }
 
             this.IsRegistered = false;
         }
