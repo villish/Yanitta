@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.56</Version>
+  <Version>0.0.5.60</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -7213,7 +7213,7 @@ end
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
+            <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>true</IsAttacedTarget>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
@@ -7374,11 +7374,11 @@ end
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>Moving</IsMovingCheck>
+            <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if isInRange then
     -- Если нету бафа обратного потока
-    if not HasBuff("player", 17896) then
+    if not HasBuff("player", 177828) then
         return true;
     end
 end
