@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.41</Version>
+  <Version>0.0.5.56</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -7106,6 +7106,9 @@ end
       </Rotation>
       <Rotation Name="Разрушение">
         <HotKey Key="Z" Modifier="Alt" />
+        <Lua><![CDATA[
+useChaosBold = true;
+]]></Lua>
         <AbilityList>
           <Ability Name="Инициализация">
             <SpellID>0</SpellID>
@@ -7189,6 +7192,40 @@ if IsModKeyDown(mkLeftShift) then
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Черная душа: Изменчивость">
+            <SpellID>113858</SpellID>
+            <Target>Player</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[
+-- todo
+]]></Lua>
+          </Ability>
+          <Ability Name="Огонь и сера">
+            <SpellID>108683</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if isInRange and HasBuff("player", 104232) then
+    return true;
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Жертвенный огонь">
             <SpellID>348</SpellID>
             <Target>Target</Target>
@@ -7256,8 +7293,10 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if not HasDebuff(ability.Target, 80240, "player") then
-    return true;
+if not UnitIsUnit(ability.Target, "target") then
+    if not HasDebuff(ability.Target, 80240, "player") then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -7274,7 +7313,27 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if not HasDebuff(ability.Target, 80240, "player") then
+if not (UnitIsUnit(ability.Target, "target") or UnitIsUnit(ability.Target, "focus")) then
+    if not HasDebuff(ability.Target, 80240, "player") then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Ожоги тьмы">
+            <SpellID>17877</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if power2 > 0 and HealthByPercent(ability.Target) < 20 then
     return true;
 end
 ]]></Lua>
@@ -7283,7 +7342,7 @@ end
             <SpellID>116858</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
+            <CancelCasting>true</CancelCasting>
             <IsRangeCheck>true</IsRangeCheck>
             <IsAttacedTarget>true</IsAttacedTarget>
             <IsUseIncombat>true</IsUseIncombat>
@@ -7293,7 +7352,14 @@ end
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
 if useChaosBold and power2 > 0 then
-    return true;
+    -- Если нету бафа Обратоного потока
+    local buffs = {
+        117896, -- Обратный поток
+        108683, -- Огонь и сера
+    };
+    if not HasBuff("player", buffs) then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -7311,7 +7377,10 @@ end
             <IsMovingCheck>Moving</IsMovingCheck>
             <Lua><![CDATA[
 if isInRange then
-    return true;
+    -- Если нету бафа обратного потока
+    if not HasBuff("player", 17896) then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
