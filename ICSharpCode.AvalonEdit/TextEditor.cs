@@ -1269,7 +1269,7 @@ namespace ICSharpCode.AvalonEdit
 
         private string GetWord(int offset)
         {
-            if (offset < 0)
+            if (offset < 0 || offset >= this.Text.Length)
                 return null;
 
             int start = 0, len = 0;

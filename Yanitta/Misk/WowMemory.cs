@@ -276,7 +276,8 @@ namespace Yanitta
                 this.mTimer.IsEnabled = false;
             }
 
-            CurrentProfile.RotationList.ForEach(x => x.HotKey.Unregister());
+            if (CurrentProfile != null)
+                CurrentProfile.RotationList.ForEach(x => x.HotKey.Unregister());
 
             if (this.Memory != null && !this.Memory.Process.HasExited)
             {
