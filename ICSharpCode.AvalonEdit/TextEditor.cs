@@ -158,12 +158,15 @@ namespace ICSharpCode.AvalonEdit
             if (hovered_word == null)
                 return;
             var keyWordInfo = IntelliSienceManager.IntelliSienceCollection.FirstOrDefault(n => n.Name == hovered_word);
-            if (mToolTip != null)
+            if (mToolTip != null && mToolTip.IsOpen)
                 mToolTip.IsOpen = false;
             if (keyWordInfo != null)
             {
-                mToolTip = new ToolTip() { Content = keyWordInfo.ToString(), IsOpen = true };
-                mToolTip.SetValue(System.Windows.Controls.ToolTip.StyleProperty, mToolTipStype);
+                mToolTip = new ToolTip() {
+                    Content = keyWordInfo.ToString(),
+                    IsOpen = true,
+                    Style = mToolTipStype
+                };
             }
         }
         #endregion

@@ -63,8 +63,8 @@ namespace Yanitta
         [XmlElement("Notes")]
         public XmlCDataSection _rotationNotes
         {
-            get { return this.Lua.CreateCDataSection(); }
-            set { this.Lua = value.GetTrimValue(); }
+            get { return this.Notes.CreateCDataSection(); }
+            set { this.Notes = value.GetTrimValue(); }
         }
 
         /// <summary>
