@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.60</Version>
+  <Version>0.0.5.67</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -1113,7 +1113,7 @@ if (setAoE or 0) == 2 and ((targetHP >= 20 and ( HasDebuff("target", 86346, "PLA
 end
 ]]></Lua>
           </Ability>
-          <Ability Name=" Яростный выпад">
+          <Ability Name="Яростный выпад">
             <SpellID>85288</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
@@ -7192,6 +7192,24 @@ if IsModKeyDown(mkLeftShift) then
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Ожоги тьмы">
+            <SpellID>17877</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>true</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if power2 > 0 and HealthByPercent(ability.Target) < 20 then
+    return true;
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Черная душа: Изменчивость">
             <SpellID>113858</SpellID>
             <Target>Player</Target>
@@ -7317,24 +7335,6 @@ if not (UnitIsUnit(ability.Target, "target") or UnitIsUnit(ability.Target, "focu
     if not HasDebuff(ability.Target, 80240, "player") then
         return true;
     end
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Ожоги тьмы">
-            <SpellID>17877</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if power2 > 0 and HealthByPercent(ability.Target) < 20 then
-    return true;
 end
 ]]></Lua>
           </Ability>
@@ -8304,6 +8304,11 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
+if IsMouseButtonDown(5) then
+    if UnitExists("mouseover") then
+        return "mouseover";
+    end
+end
 if useAutoDispell then
     return GetDispellInfo("HEAL");
 end
@@ -8566,7 +8571,7 @@ return members[1].HP < 35;
             <Lua><![CDATA[
 -- 132158 Природная стремительность
 if not HasBuff("player", 132158) then
-    if IsMouseButtonDown(5) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") then
+    if IsMouseButtonDown(4) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") then
         return "mouseover";
     end
     local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
