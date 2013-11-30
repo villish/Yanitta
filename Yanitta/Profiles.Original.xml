@@ -5323,35 +5323,6 @@ end
       </Rotation>
       <Rotation Name="Лед">
         <HotKey Key="Z" Modifier="Alt" />
-        <Notes><![CDATA[
-function OnEventExtended (self, event, ...)
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        -- для начала приведу полный список параметров.
-        local timestamp, subEvent, hideCaster,
-              sourceGUID,srcName,  sourceFlags,sourceFlags2,
-              destGUID,  destName, destFlags,  destFlags2,
-        -- Добавочные переменные
-              spellId,   spellName,spellSchool,auraType = ...;
-
-        if subEvent == "SPELL_AURA_APPLIED" then
-            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("player") then -- e.g talent proc
-                for _,ability in ipairs(ABILITY_TABLE) do
-                    if ability.Procs then
-                        for _,spellIdInList in ipairs(ability.Procs) do
-                            if spellIdInList == spellId then 
-                                if nil then
-                                --if CheckAndCastAbility(ability) then
-                                    break;
-                                end                            
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-end
-]]></Notes>
         <Lua><![CDATA[
 function OnEventExtended (self, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -5513,7 +5484,7 @@ return (not bloodPlague or bloodPlagueRem <= 1) or (not frostFever or frostFever
 ]]></Lua>
           </Ability>
           <Ability Name="Жнец душ">
-            <SpellID>130736</SpellID>
+            <SpellID>130735</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
