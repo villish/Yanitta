@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.67</Version>
+  <Version>0.0.5.75</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -802,13 +802,16 @@ end
 
 function NeedReflect(unit)
     if UnitIsEnemy("player", unit) and UnitIsUnit("player", unit.."target") then
-        local name,_,_,_,_,endTime = UnitCastingInfo(ability.Target);
+        local name,_,_,_,_,endTime = UnitCastingInfo(unit);
         if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
-            local r_table = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
-            for _,spell_id in ipairs(r_table) do
-                if name == GetSpellInfo(spell_id) then
-                    return true;
+            if UnitIsPVP("player") then
+                for _,spell_id in ipairs(reflect_table.PVP) do
+                    if name == GetSpellInfo(spell_id) then
+                        return true;
+                    end
                 end
+            else
+                return true;
             end
         end
     end
@@ -1993,6 +1996,24 @@ if IsModKeyDown(mkLeftShift) then
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Победный раж">
+            <SpellID>34428</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if playerHP <= 80 then
+    return true;
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Зуботычина">
             <SpellID>6552</SpellID>
             <Target>Target</Target>
@@ -2075,24 +2096,6 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if isInMeele and SpellCD(6552) > 0 and CheckInterrupt("target") then
-    return true;
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Победный раж">
-            <SpellID>34428</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if playerHP <= 80 then
     return true;
 end
 ]]></Lua>
@@ -7239,7 +7242,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if isInRange and HasBuff("player", 104232) then
+if isInRange and power2 > 0 and HasBuff("player", 104232) then
     return true;
 end
 ]]></Lua>
@@ -7257,7 +7260,11 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if isInRange and select(3, HasDebuff(ability.Target, 348, "PLAYER"))<2 then
+local debuffs = {
+    348,
+    108686
+};
+if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<2 then
     return true;
 end
 ]]></Lua>
@@ -7275,7 +7282,11 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if isInRange and select(3, HasDebuff(ability.Target, 348, "PLAYER"))<2 then
+local debuffs = {
+    348,
+    108686
+};
+if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<2 then
     return true;
 end
 ]]></Lua>
@@ -7293,7 +7304,11 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if isInRange and select(3, HasDebuff(ability.Target, 348, "PLAYER"))<2 then
+local debuffs = {
+    348,
+    108686
+};
+if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<2 then
     return true;
 end
 ]]></Lua>
@@ -8345,7 +8360,8 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if PowerByPercent("player", SPELL_POWER_MANA) <= 75 and (GetShapeshiftForm() == 0 or GetShapeshiftForm() == 6) then
+if PowerByPercent("player", SPELL_POWER_MANA) <= 70
+    and (GetShapeshiftForm() == 0 or GetShapeshiftForm() == 6) then
     return true;
 end
 ]]></Lua>
