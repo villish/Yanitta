@@ -5522,7 +5522,7 @@ return HealthByPercent("target") <= pct;
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-if frost >= 1 or HasBuff("player", 59052) then
+if frost >= 2 or HasBuff("player", 59052) then
     return true;
 end
 ]]></Lua>
@@ -5801,7 +5801,7 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return GetRunesAtCooldownCount() > 5;
+return GetRunesAtCooldownCount() >= 5;
 ]]></Lua>
           </Ability>
           <Ability Name="Смерть и разложение">
