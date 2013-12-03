@@ -5,9 +5,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Yanitta.Properties;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
 
 namespace Yanitta
 {
@@ -149,56 +146,6 @@ namespace Yanitta
                    this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (this.CurrentRotation != null && result == MessageBoxResult.Yes)
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
-        }
-
-
-        // other
-        private void CommandBinding_Executed_Import(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (this.CurrentProfile != null)
-            {
-                var dialog = new Microsoft.Win32.OpenFileDialog();
-                dialog.Filter = "Profile file (*.xmlp)|*.xmlp|All Files (*.*)|*.*";
-                if (dialog.ShowDialog() == true)
-                {
-                    try
-                    {
-                        var profile = new XmlManager(dialog.FileName).Load<Profile>();
-                        for (int i = 0; i < ProfileDb.Instance.ProfileList.Count; ++i)
-                        {
-                            if (ProfileDb.Instance.ProfileList[i].Class == profile.Class)
-                            {
-                                ProfileDb.Instance.ProfileList[i] = profile;
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-            }
-        }
-
-        private void CommandBinding_Executed_Export(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (this.CurrentProfile != null)
-            {
-                var dialog = new Microsoft.Win32.SaveFileDialog();
-                dialog.Filter = "Profile file (*.xmlp)|*.xmlp|All Files (*.*)|*.*";
-                dialog.FileName = string.Format("{0}_profile.xmlp", this.CurrentProfile.Class);
-                if (dialog.ShowDialog() == true)
-                {
-                    try
-                    {
-                        new XmlManager(dialog.FileName).Save<Profile>(this.CurrentProfile);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-            }
         }
 
         private void CommandBinding_Executed_Update(object sender, ExecutedRoutedEventArgs e)

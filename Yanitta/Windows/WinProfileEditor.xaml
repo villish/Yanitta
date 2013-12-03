@@ -22,10 +22,6 @@
     <Window.CommandBindings>
         <CommandBinding Command="Close" Executed="CommandBinding_Executed_Close" />
         <CommandBinding Command="Save"  Executed="CommandBinding_Executed_Save" />
-
-        <CommandBinding Command="yanitta:YanittaCommand.Import"  Executed="CommandBinding_Executed_Import" />
-        <CommandBinding Command="yanitta:YanittaCommand.Export"  Executed="CommandBinding_Executed_Export" />
-
         <CommandBinding Command="yanitta:YanittaCommand.Update"  Executed="CommandBinding_Executed_Update" />
         <CommandBinding Command="yanitta:YanittaCommand.Reload"  Executed="CommandBinding_Executed_Reload" />
     </Window.CommandBindings>
@@ -139,13 +135,6 @@
                                 </Button>
                                 <Button x:Name="bAbMoveDown" Foreground="Transparent" Click="bAbMoveDown_Click_1">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
-                                </Button>
-                                <Separator />
-                                <Button x:Name="bSaveProfileToFile" Foreground="Transparent" Command="yanitta:YanittaCommand.Export" ToolTip="{x:Static yanitta:Localization.Export}">
-                                    <Image Source="/Yanitta;component/Resources/Export.png" />
-                                </Button>
-                                <Button x:Name="bLoadProfileFromFile" Foreground="Transparent" Command="yanitta:YanittaCommand.Import" ToolTip="{x:Static yanitta:Localization.Import}">
-                                    <Image Source="/Yanitta;component/Resources/Import.png" />
                                 </Button>
                                 <Separator />
                                 <TextBlock Text="{x:Static yanitta:Localization.Ability_Filter}" VerticalAlignment="Center" HorizontalAlignment="Left" />
