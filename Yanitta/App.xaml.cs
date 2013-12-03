@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using S = Yanitta.Properties.Settings;
+using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -28,15 +28,15 @@ namespace Yanitta
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
 
-            if (S.Default.Language != "auto")
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(S.Default.Language);
+            if (Settings.Default.Language != "auto")
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
 
             Console.WriteLine("Yanitta startup!...");
 
             if (!File.Exists("FASM.DLL"))
                 throw new FileNotFoundException("Not found", "FASM.DLL");
 
-            var fileName = Yanitta.Properties.Settings.Default.ProfilesFileName;
+            var fileName = Settings.Default.ProfilesFileName;
             if (File.Exists(fileName))
                 File.Copy(fileName, fileName + ".bak", true);
             else if (File.Exists("Profiles.Original.xml"))
