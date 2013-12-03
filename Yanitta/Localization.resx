@@ -153,9 +153,6 @@
   <data name="CopyAbility" xml:space="preserve">
     <value>Copy current ability</value>
   </data>
-  <data name="CopyProfile" xml:space="preserve">
-    <value>Copy current profile</value>
-  </data>
   <data name="CopyRotation" xml:space="preserve">
     <value>Copy current rotation</value>
   </data>
@@ -167,9 +164,6 @@
   </data>
   <data name="DeleteAbility" xml:space="preserve">
     <value>Drop current ability</value>
-  </data>
-  <data name="DeleteProfile" xml:space="preserve">
-    <value>Drop current profile</value>
   </data>
   <data name="DeleteRotation" xml:space="preserve">
     <value>Drop current rotation</value>
@@ -264,12 +258,6 @@
   <data name="SetRecastDelayToolTip" xml:space="preserve">
     <value>The delay in the next utterance of this spell</value>
   </data>
-  <data name="Import" xml:space="preserve">
-    <value>Upload a profile from a file</value>
-  </data>
-  <data name="Export" xml:space="preserve">
-    <value>Save the file in the current profile</value>
-  </data>
   <data name="IsNotGCDToolTip" xml:space="preserve">
     <value>Indicates that the ability has no global cooldown</value>
   </data>
@@ -296,9 +284,6 @@
   </data>
   <data name="CloseToolTip" xml:space="preserve">
     <value>Close window</value>
-  </data>
-  <data name="LoadAbilityList" xml:space="preserve">
-    <value>Download the file from the list of abilities</value>
   </data>
   <data name="Update" xml:space="preserve">
     <value>Check update</value>
@@ -347,9 +332,6 @@
   </data>
   <data name="WowClass_Druid" xml:space="preserve">
     <value>Druid</value>
-  </data>
-  <data name="ProcNotifyerToolTip" xml:space="preserve">
-    <value>Use a notice of proс</value>
   </data>
   <data name="IsSpellKnownCheck" xml:space="preserve">
     <value>Is spell known</value>

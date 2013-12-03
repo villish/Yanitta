@@ -304,15 +304,6 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Copy current profile.
-        /// </summary>
-        public static string CopyProfile {
-            get {
-                return ResourceManager.GetString("CopyProfile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy current rotation.
         /// </summary>
         public static string CopyRotation {
@@ -376,15 +367,6 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Drop current profile.
-        /// </summary>
-        public static string DeleteProfile {
-            get {
-                return ResourceManager.GetString("DeleteProfile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Drop current rotation.
         /// </summary>
         public static string DeleteRotation {
@@ -399,15 +381,6 @@ namespace Yanitta {
         public static string EditorTitle {
             get {
                 return ResourceManager.GetString("EditorTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Save the file in the current profile.
-        /// </summary>
-        public static string Export {
-            get {
-                return ResourceManager.GetString("Export", resourceCulture);
             }
         }
         
@@ -462,15 +435,6 @@ namespace Yanitta {
         public static string HotKey {
             get {
                 return ResourceManager.GetString("HotKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Upload a profile from a file.
-        /// </summary>
-        public static string Import {
-            get {
-                return ResourceManager.GetString("Import", resourceCulture);
             }
         }
         
@@ -583,15 +547,6 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Download the file from the list of abilities.
-        /// </summary>
-        public static string LoadAbilityList {
-            get {
-                return ResourceManager.GetString("LoadAbilityList", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Minimise.
         /// </summary>
         public static string Minimise {
@@ -696,15 +651,6 @@ namespace Yanitta {
         public static string ProcessName {
             get {
                 return ResourceManager.GetString("ProcessName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Use a notice of proс.
-        /// </summary>
-        public static string ProcNotifyerToolTip {
-            get {
-                return ResourceManager.GetString("ProcNotifyerToolTip", resourceCulture);
             }
         }
         
