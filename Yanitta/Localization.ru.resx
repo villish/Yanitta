@@ -460,4 +460,10 @@
   <data name="Test_Name" xml:space="preserve">
     <value>Наименование: </value>
   </data>
+  <data name="AbilityDelQuestion" xml:space="preserve">
+    <value>Вы действительно хотите удалить текущую способность?</value>
+  </data>
+  <data name="RotationDelQuestion" xml:space="preserve">
+    <value>Вы действительно хотите удалить текущую ротацию?</value>
+  </data>
 </root>

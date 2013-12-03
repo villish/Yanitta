@@ -109,10 +109,10 @@ namespace Yanitta
 
         private void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentAbility != null)
-            {
+            var result = MessageBox.Show(Localization.AbilityDelQuestion,
+                this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (this.CurrentAbility != null && result == MessageBoxResult.Yes)
                 this.CurrentRotation.AbilityList.Remove(this.CurrentAbility);
-            }
         }
 
         // rotations
@@ -145,7 +145,9 @@ namespace Yanitta
 
         private void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentRotation != null)
+            var result = MessageBox.Show(Localization.RotationDelQuestion,
+                   this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (this.CurrentRotation != null && result == MessageBoxResult.Yes)
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
         }
 

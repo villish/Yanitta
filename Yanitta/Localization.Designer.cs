@@ -97,6 +97,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Do you really want to delete the current ability?.
+        /// </summary>
+        public static string AbilityDelQuestion {
+            get {
+                return ResourceManager.GetString("AbilityDelQuestion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Ability list.
         /// </summary>
         public static string AbilityList {
@@ -822,6 +831,15 @@ namespace Yanitta {
         public static string RotationCount {
             get {
                 return ResourceManager.GetString("RotationCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Do you really want to delete the current rotation?.
+        /// </summary>
+        public static string RotationDelQuestion {
+            get {
+                return ResourceManager.GetString("RotationDelQuestion", resourceCulture);
             }
         }
         
