@@ -24,6 +24,7 @@
         FocusTarget,
         Pet,
         Player,
+        Vehicle,
         Mouseover,
         MouseLocation
     }
