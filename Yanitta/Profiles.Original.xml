@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.75</Version>
+  <Version>0.0.5.81</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -5860,6 +5860,36 @@ return UseItemById(77116);
         <HotKey Key="C" Modifier="Alt" />
         <AbilityList />
       </Rotation>
+      <Rotation Name="Лед (2)">
+        <HotKey Key="V" Modifier="Alt" />
+        <Notes><![CDATA[
+actions.single_target=plague_leech,if=talent.plague_leech.enabled&((dot.blood_plague.remains<1|dot.frost_fever.remains<1))
+actions.single_target+=/outbreak,if=!dot.frost_fever.ticking|!dot.blood_plague.ticking
+actions.single_target+=/unholy_blight,if=talent.unholy_blight.enabled&((!dot.frost_fever.ticking|!dot.blood_plague.ticking))
+actions.single_target+=/soul_reaper,if=target.health.pct-3*(target.health.pct%target.time_to_die)<=35
+actions.single_target+=/blood_tap,if=talent.blood_tap.enabled&((target.health.pct-3*(target.health.pct%target.time_to_die)<=35&cooldown.soul_reaper.remains=0))
+actions.single_target+=/howling_blast,if=!dot.frost_fever.ticking
+actions.single_target+=/plague_strike,if=!dot.blood_plague.ticking
+actions.single_target+=/howling_blast,if=buff.rime.react
+actions.single_target+=/obliterate,if=buff.killing_machine.react
+actions.single_target+=/blood_tap,if=talent.blood_tap.enabled&buff.killing_machine.react
+actions.single_target+=/blood_tap,if=talent.blood_tap.enabled&(buff.blood_charge.stack>10&runic_power>76)
+actions.single_target+=/frost_strike,if=runic_power>76
+actions.single_target+=/obliterate,if=blood=2|frost=2|unholy=2
+actions.single_target+=/plague_leech,if=talent.plague_leech.enabled&((dot.blood_plague.remains<3|dot.frost_fever.remains<3))
+actions.single_target+=/outbreak,if=dot.frost_fever.remains<3|dot.blood_plague.remains<3
+actions.single_target+=/unholy_blight,if=talent.unholy_blight.enabled&((dot.frost_fever.remains<3|dot.blood_plague.remains<3))
+actions.single_target+=/frost_strike,if=talent.runic_empowerment.enabled&(frost=0|unholy=0|blood=0)
+actions.single_target+=/frost_strike,if=talent.blood_tap.enabled&buff.blood_charge.stack<=10
+actions.single_target+=/horn_of_winter
+actions.single_target+=/obliterate
+actions.single_target+=/blood_tap,if=talent.blood_tap.enabled&(buff.blood_charge.stack>10&runic_power>=20)
+actions.single_target+=/frost_strike
+actions.single_target+=/plague_leech,if=talent.plague_leech.enabled
+actions.single_target+=/empower_rune_weapon
+]]></Notes>
+        <AbilityList />
+      </Rotation>
     </RotationList>
   </Profile>
   <Profile Class="Shaman">
@@ -8013,6 +8043,24 @@ if setAoE and chi >= 2 then
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Удар кружкой">
+            <SpellID>121253</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if chi < (2 + additionalChi) then
+    return true;
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Танцующий журавль">
             <SpellID>101546</SpellID>
             <Target>None</Target>
@@ -8033,24 +8081,6 @@ if isInMeele and setAoE and chi > 2 then
     end
 end
 if setAoE and isInMeele and energy >= 40 then
-    return true;
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Удар кружкой">
-            <SpellID>121253</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if chi < (2 + additionalChi) then
     return true;
 end
 ]]></Lua>
@@ -8397,7 +8427,13 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return HealthByPercent("player") < 40;
+local debuff,_,rem = HasDebuff("player", 144330);
+-- Переписать: используя обобщение с другими ротациями.
+if HealthByPercent("player") < 25 then
+    return true;
+elseif debuff and rem < 4 then
+    return true;
+end
 ]]></Lua>
           </Ability>
           <Ability Name="Умиротворение">
