@@ -44,12 +44,24 @@ namespace Yanitta
         private void MoveAbility(int shift)
         {
             var index = abilityList.SelectedIndex;
-            if (CurrentProfile != null && index > -1
+            if (CurrentRotation != null && index > -1
                 && !(shift == -1 && index == 0)
                 && !(shift == 1  && index == CurrentRotation.AbilityList.Count - 1))
             {
                 CurrentRotation.AbilityList.Move(index, index + shift);
                 abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            }
+        }
+
+        private void MoveRotation(int shift)
+        {
+            var index = rotationList.SelectedIndex;
+            if (CurrentProfile != null && index > -1
+                && !(shift == -1 && index == 0)
+                && !(shift == 1 && index == CurrentProfile.RotationList.Count - 1))
+            {
+                CurrentProfile.RotationList.Move(index, index + shift);
+                rotationList.ScrollIntoView(this.rotationList.SelectedItem);
             }
         }
 
@@ -70,6 +82,16 @@ namespace Yanitta
         private void bAbMoveDown_Click_1(object sender, RoutedEventArgs e)
         {
             MoveAbility(1);
+        }
+
+        private void bRotMoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            MoveRotation(-1);
+        }
+
+        private void bRotMoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            MoveRotation(1);
         }
 
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)

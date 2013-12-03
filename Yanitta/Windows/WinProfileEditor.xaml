@@ -77,6 +77,13 @@
                                 <Button Command="yanitta:YanittaCommand.DeleteRotation" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteRotation}">
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
+                                <Separator />
+                                <Button x:Name="bRotMoveUp" Foreground="Transparent" Click="bRotMoveUp_Click">
+                                    <Image Source="/Yanitta;component/Resources/Button_Up.png" />
+                                </Button>
+                                <Button x:Name="bRotMoveDown" Foreground="Transparent" Click="bRotMoveDown_Click">
+                                    <Image Source="/Yanitta;component/Resources/Button_Down.png" />
+                                </Button>
                             </ToolBar>
                             <ListView x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" Grid.Row="1" Margin="0,0,0,5">
                                 <ListView.View>
