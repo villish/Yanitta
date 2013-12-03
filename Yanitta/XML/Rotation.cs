@@ -54,7 +54,7 @@ namespace Yanitta
         {
             this.HotKey         = new HotKey();
             this.AbilityList    = new ObservableCollection<Ability>();
-            this.Name           = "<>";
+            this.Name           = "none";
         }
 
         /// <summary>

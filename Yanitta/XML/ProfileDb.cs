@@ -105,10 +105,10 @@ namespace Yanitta
 
         public void Update(ProfileDb temp)
         {
-            this.Version    = temp.Version;
-            this.Author     = temp.Author;
-            this.Lua       = temp.Lua;
-            this.Url        = temp.Url;
+            this.Version     = temp.Version;
+            this.Author      = temp.Author;
+            this.Lua         = temp.Lua;
+            this.Url         = temp.Url;
             this.ProfileList = temp.ProfileList;
             this.WowTestList = temp.WowTestList;
         }

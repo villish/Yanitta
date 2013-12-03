@@ -12,9 +12,7 @@ namespace Yanitta
     public class Ability : ICloneable
     {
         /// <summary>
-        /// Имя способности, желательно полное соответствие с названием заклинания.
-        /// Если есть модификатор цели, пишем его.
-        /// Например: Огненный столб, Слово Тьмы: Боль (Target), Слово Тьмы: Боль (Mouseover)
+        /// Наименование способности.
         /// </summary>
         [XmlAttribute]
         public string Name                 { get; set; }
