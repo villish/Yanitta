@@ -3981,32 +3981,6 @@ end
       </Rotation>
       <Rotation Name="Фарм ларей">
         <HotKey Key="V" Modifier="Alt" />
-        <Notes><![CDATA[
-ALREADY_PICKPOCKETED_TABLE = { };
-RFrame = CreateFrame("Frame");
-RFrame:RegisterEvent("UI_ERROR_MESSAGE");
-RFrame:RegisterEvent("WORLD_MAP_UPDATE");
-RFrame:SetScript("OnEvent",  function(self, event, ...)
-    if event == "UI_ERROR_MESSAGE" then
-        local msg = ...;
-        if UnitExists("target") and (msg == SPELL_FAILED_TARGET_NO_POCKETS or msg == ERR_ALREADY_PICKPOCKETED) then
-            ALREADY_PICKPOCKETED_TABLE[UnitGUID("target")] = GetTime();
-        end
-    elseif event == "WORLD_MAP_UPDATE" then
-        ALREADY_PICKPOCKETED_TABLE = { };
-    end
-end);
-RFrame:Show();
-
-function IsPickPocketed(unit)
-    if ALREADY_PICKPOCKETED_TABLE then
-        local t = ALREADY_PICKPOCKETED_TABLE[UnitGUID(unit)];
-        if type(t) == "number" and (t + 300) > GetTime() then
-            return true;
-        end
-    end
-end
-]]></Notes>
         <Lua><![CDATA[
 ALREADY_PICKPOCKETED_TABLE = { };
 RFrame = CreateFrame("Frame");
@@ -6741,43 +6715,6 @@ setAoE       = nil;
     <RotationList>
       <Rotation Name="Огонь">
         <HotKey Key="Z" Modifier="Alt" />
-        <Notes><![CDATA[
-igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
-pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
-pyroCrit     = false;   -- Было ли заклинание Огненная глыба (11366) критическим
-
-function OnEventExtended (self, event, ...)
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        -- для начала приведу полный список параметров.
-        local timestamp, subEvent, hideCaster,
-              sourceGUID,srcName,  sourceFlags,sourceFlags2,
-              destGUID,  destName, destFlags,  destFlags2,
-              spellId,   spellName,spellSchool,amount,      overkill,school,
-              resisted,  blocked,  absorbed,   critical,    glancing,crushing = ...;
-
-        if subEvent == "SPELL_PERIODIC_DAMAGE" then
-            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
-                -- Воспламенение
-                if spellId == 12654 then
-                    igniteDamage = amount;
-                    --print("Тик: Воспламенение (12654) - "..tostring(amount));
-                end
-            end
-        end
-
-        if subEvent == "SPELL_DAMAGE" then
-            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
-                -- Огненная глыба
-                if spellId == 11366 then
-                    pyroDamage = amount;
-                    pyroCrit   = critical;
-                    --print("Урон: "..tostring(critical).." Огненная глыба (11366) - "..tostring(amount));
-                end
-            end
-        end
-    end
-end
-]]></Notes>
         <Lua><![CDATA[
 igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
 pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
