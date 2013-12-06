@@ -4868,6 +4868,11 @@ rune_names = { "Blood", "Unholy", "Frost", "Death" };
 DIESES_BLOOD_PLAGUE       = 55078;
 DIESES_FROST_FEVER         = 55095;
 
+function FillDiesesInfo(ability)
+    blood_plague,_,blood_plague_rem = HasDebuff(ability.Target, DIESES_BLOOD_PLAGUE, "PLAYER");-- Кровавая чума
+    frost_fever, _,frost_fever_rem  = HasDebuff(ability.Target, DIESES_FROST_FEVER, "PLAYER");-- Озноб
+end
+
 function FillRunesInfo()
     runes = {
         Blood  = { Rem = 0, Count = 0 },
@@ -4895,6 +4900,10 @@ function GetFreeRuneCountForType(runeType)
     end
     
     FillRunesInfo();
+    
+    if runeType == RUNETYPE_DEATH then
+        return runes.Death.Count;
+    end
 
     local deathRuneCount = runes.Death.Count;
     local runeName = rune_names[runeType];
@@ -4904,8 +4913,10 @@ function GetFreeRuneCountForType(runeType)
     return deathRuneCount + selRuneCount;
 end
 
--- Возможно надо избегать рун смерти
 function HaveFullyDepletedRunes()
+    
+    FillRunesInfo();
+
     local unholy = runes.Unholy.Count;
     local frost  = runes.Frost.Count;
     local blood  = runes.Blood.Count;
@@ -4919,7 +4930,27 @@ function HaveFullyDepletedRunes()
     return unholy == 0 or frost == 0 or blood == 0 or death == 0;
 end
 
+function HaveFullyRunes()
+    
+    FillRunesInfo();
+
+    local unholy = runes.Unholy.Count;
+    local frost  = runes.Frost.Count;
+    local blood  = runes.Blood.Count;
+    local death  = runes.Death.Count;
+    
+    -- Frost DK dont have blood runes
+    if GetShapeshiftForm() == 2 then
+        blood = 0; -- disable blood rune calc
+    end
+
+    return unholy == 2 or frost == 2 or blood == 2 or death == 2;
+end
+
 function GetRunesCount()
+    
+    FillRunesInfo();
+
     local unholy = runes.Unholy.Count;
     local frost  = runes.Frost.Count;
     local blood  = runes.Blood.Count;
@@ -5857,14 +5888,12 @@ if GetSpecialization() == 2 and GetShapeshiftForm() ~= 2 then
 end
 
 FillRunesInfo();
+FillDiesesInfo(ability);
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
-
-blood_plague,_,blood_plague_rem = HasDebuff(ability.Target, 59879, "PLAYER");-- Кровавая чума
-frost_fever, _,frost_fever_rem  = HasDebuff(ability.Target, 59921, "PLAYER");-- Озноб
 
 isInMeele  = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
 agroStatus = UnitThreatSituation("player");
@@ -5901,6 +5930,16 @@ return IsModKeyDown(mkLeftShift);
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=talent.plague_leech.enabled&((dot.blood_plague.remains<1|dot.frost_fever.remains<1))
+
+FillDiesesInfo(ability);
+if not blood_plague and not frost_fever then
+    return false;
+end
+
+if not HaveFullyDepletedRunes() then
+    return false;
+end
+
 if blood_plague_rem < 1 or frost_fever_rem < 1 then
     return true;
 end
@@ -5920,6 +5959,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=!dot.frost_fever.ticking|!dot.blood_plague.ticking
+FillDiesesInfo(ability);
 if not (blood_plague and frost_fever) then
     return true;
 end
@@ -5939,6 +5979,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=talent.unholy_blight.enabled&((!dot.frost_fever.ticking|!dot.blood_plague.ticking))
+FillDiesesInfo(ability);
 if not (blood_plague and frost_fever) then
     return true;
 end
@@ -5961,7 +6002,7 @@ end
 local modifier = 3;
 if IsInRaid() then
     modifier = 10;
-elseif IsInParty() then
+elseif GetNumGroupMembers() > 0 then
     modifier = 5;
 end
 if (UnitHealth("target") or 0) > (UnitHealth("player") * modifier) then
@@ -5982,11 +6023,19 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
+if select(2, HasBuff("player", 114851)) < 5 then
+    return false;
+end
+
+if not HaveFullyDepletedRunes() then
+    return false;
+end
+
 -- if=talent.blood_tap.enabled&((target.health.pct-3*(target.health.pct%target.time_to_die)<=35&cooldown.soul_reaper.remains=0))
 local modifier = 3;
 if IsInRaid() then
     modifier = 10;
-elseif IsInParty() then
+elseif GetNumGroupMembers() > 0 then
     modifier = 5;
 end
 if (UnitHealth("target") or 0) > (UnitHealth("player") * modifier) then
@@ -6010,7 +6059,8 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=!dot.frost_fever.ticking
-if not HasDebuff(ability.Target, 59921, "PLAYER") then
+FillDiesesInfo(ability);
+if not frost_fever or GetFreeRuneCountForType(RUNETYPE_FROST) == 1 then
     return true;
 end
 ]]></Lua>
@@ -6029,7 +6079,8 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- !dot.blood_plague.ticking
-if not HasDebuff(ability.Target, 59879, "PLAYER") then
+FillDiesesInfo(ability);
+if not blood_plague then
     return true;
 end
 ]]></Lua>
@@ -6089,8 +6140,13 @@ end
             <Lua><![CDATA[
 -- if=talent.blood_tap.enabled&buff.killing_machine.react
 -- if=talent.blood_tap.enabled&(buff.blood_charge.stack>10&runic_power>76)
+
+if not HaveFullyDepletedRunes() then
+    return false;
+end
+
 if HasBuff("player", 51124) then
-    return true;
+    return select(2, HasBuff("player", 114851)) >= 5;
 elseif runes.Power > 76 and select(2, HasBuff("player", 114851)) > 10 then
     return true;
 end
@@ -6129,9 +6185,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=blood=2|frost=2|unholy=2
-if runes.Blood.Count  == 2
-or runes.Frost.Count  == 2
-or runes.Unholy.Count == 2 then
+if HaveFullyRunes() then
     return true;
 end
 ]]></Lua>
@@ -6150,6 +6204,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=talent.plague_leech.enabled&((dot.blood_plague.remains<3|dot.frost_fever.remains<3))
+FillDiesesInfo(ability);
 if blood_plague_rem < 3 or frost_fever_rem < 3 then
     return true;
 end
@@ -6169,6 +6224,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=dot.frost_fever.remains<3|dot.blood_plague.remains<3
+FillDiesesInfo(ability);
 if blood_plague_rem < 3 or frost_fever_rem < 3 then
     return true;
 end
@@ -6188,6 +6244,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=talent.unholy_blight.enabled&((dot.frost_fever.remains<3|dot.blood_plague.remains<3))
+FillDiesesInfo(ability);
 if blood_plague_rem < 3 or frost_fever_rem < 3 then
     return true;
 end
@@ -6207,9 +6264,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=talent.runic_empowerment.enabled&(frost=0|unholy=0|blood=0)
-if runes.Frost.Count  == 0
-or runes.Unholy.Count == 0
-or runes.Blood.Count  == 0 then
+if not HaveFullyDepletedRunes() then
     if IsPlayerSpell(81229) then
         return true;
     end
@@ -6268,6 +6323,11 @@ return true;
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- if=talent.blood_tap.enabled&(buff.blood_charge.stack>10&runic_power>=20)
+
+if not HaveFullyDepletedRunes() then
+    return false;
+end
+
 if runes.Power >= 20 then
     -- Заряд крови
     if select(2, HasBuff("player", 114851)) > 10 then
@@ -6321,7 +6381,64 @@ return true;
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return true;
+return GetRunesAtCooldownCount() >= 5;
+]]></Lua>
+          </Ability>
+          <Ability Name="(Слив рун льдя 1) Воющий ветер ">
+            <SpellID>49184</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- if not unholy runes and frost runes = 1
+if GetFreeRuneCountForType(RUNETYPE_FROST) == 1 and GetFreeRuneCountForType(RUNETYPE_CHROMATIC) < 1 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="(Слив рун льдя 2) Воющий ветер ">
+            <SpellID>49184</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- if not unholy runes and frost runes = 1
+if GetFreeRuneCountForType(RUNETYPE_FROST) == 1 and GetFreeRuneCountForType(RUNETYPE_CHROMATIC) > 1 and SpellCD(49020) > 1 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="(Слив рун нечестивости 1) Удар смерти">
+            <SpellID>45462</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- !dot.blood_plague.ticking
+if GetFreeRuneCountForType(RUNETYPE_CHROMATIC) == 1 and GetFreeRuneCountForType(RUNETYPE_FROST) < 1 then
+    return true;
+end
 ]]></Lua>
           </Ability>
         </AbilityList>
