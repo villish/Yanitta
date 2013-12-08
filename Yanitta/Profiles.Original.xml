@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.94</Version>
+  <Version>0.0.5.98</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -873,7 +873,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -1365,7 +1365,7 @@ elseif IsModKeyDown(mkRightAlt)     then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -1956,7 +1956,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -2439,7 +2439,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -2767,7 +2767,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -3198,6 +3198,36 @@ return IsModKeyDown(mkRightAlt);
 return IsModKeyDown(mkRightControl);
 ]]></Lua>
           </Ability>
+          <Ability Name="Триньки/перчатки">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() or IsStealthed() then
+    return true;
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
+if useCooldown then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Усмиряющий выстрел">
             <SpellID>19801</SpellID>
             <Target>Target</Target>
@@ -3235,36 +3265,6 @@ if pethp ~= 0 and pethp < 75 then
     if not HasBuff("pet", 136) then
         return true;
     end
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Триньки/перчатки">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
-    return true;
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-if useCooldown then
-    UseItemBySlot(INVSLOT_HAND);
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET2);
 end
 ]]></Lua>
           </Ability>
@@ -3593,7 +3593,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -4109,7 +4109,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
+if IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -8389,20 +8389,20 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
+        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        print("|cffff0000 >> AOE");
+        AddonFrame.print("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(3) then
     return true;
 elseif IsModKeyDown(4) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(5) then
 elseif IsModKeyDown(6) then
@@ -8881,13 +8881,9 @@ return IsMouseButtonDown(3);
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-local b_ufs = { 58984, 104270 };
-
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted()
-or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6)
-or HasBuff("player", b_ufs)
-or IsStealthed() then
+if IsMounted() or IsStealthed() 
+    or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6) then
     return true;
 end
 
@@ -9433,7 +9429,7 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если персонаж на маунте, или в инвизе или не в форме медведа или кота
-if IsMounted() or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1) or HasBuff("player", { 5215, 58984 }) then
+if IsMounted() or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1) or IsStealthed() then
     return true;
 end
 
@@ -9649,7 +9645,7 @@ if UnitPower("player") > 70 then
         return true;
     end
 end
-if agroStatus == 0 then
+if true or agroStatus == 0 then
     return true;
 end
 ]]></Lua>
