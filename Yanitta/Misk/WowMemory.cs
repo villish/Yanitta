@@ -141,10 +141,9 @@ namespace Yanitta
                 }
                 else
                 {
-                    if (CurrentProfile != null)
-                        CurrentProfile.UnregisterAllHotKeys();
-                    this.Class = (WowClass)(byte)0;
-                    this.Name = "";
+                    this.UnregisterAllHotKeys();
+                    this.Class     = (WowClass)(byte)0;
+                    this.Name      = "";
                     CurrentProfile = null;
                 }
             }
@@ -152,7 +151,7 @@ namespace Yanitta
             if (Memory.IsFocusWindow)
             {
                 foreach (var process in MainWindow.ProcessList.Where(p => p != this))
-                    process.CurrentProfile.UnregisterAllHotKeys();
+                    process.UnregisterAllHotKeys();
 
                 if (CurrentProfile != null)
                 {
@@ -175,7 +174,7 @@ namespace Yanitta
             }
             else if (CurrentProfile != null)
             {
-                CurrentProfile.RotationList.ForEach(x => x.HotKey.Unregister());
+                this.UnregisterAllHotKeys();
             }
 
             // anti afk bot
@@ -245,6 +244,17 @@ namespace Yanitta
             return string.Format("[{0}] {1} ({2})", this.ProcessId, this.Name, this.Class);
         }
 
+        public void UnregisterAllHotKeys()
+        {
+            if (this.CurrentProfile != null && this.CurrentProfile.RotationList != null)
+            {
+                this.CurrentProfile.RotationList.ForEach((rotation) => {
+                    if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
+                        rotation.HotKey.Unregister();
+                });
+            }
+        }
+
         ~WowMemory()
         {
             Dispose(false);
@@ -276,8 +286,7 @@ namespace Yanitta
                 this.mTimer.IsEnabled = false;
             }
 
-            if (CurrentProfile != null)
-                CurrentProfile.RotationList.ForEach(x => x.HotKey.Unregister());
+            this.UnregisterAllHotKeys();
 
             if (this.Memory != null && !this.Memory.Process.HasExited)
             {

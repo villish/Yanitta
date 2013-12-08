@@ -3981,32 +3981,6 @@ end
       </Rotation>
       <Rotation Name="Фарм ларей">
         <HotKey Key="V" Modifier="Alt" />
-        <Notes><![CDATA[
-ALREADY_PICKPOCKETED_TABLE = { };
-RFrame = CreateFrame("Frame");
-RFrame:RegisterEvent("UI_ERROR_MESSAGE");
-RFrame:RegisterEvent("WORLD_MAP_UPDATE");
-RFrame:SetScript("OnEvent",  function(self, event, ...)
-    if event == "UI_ERROR_MESSAGE" then
-        local msg = ...;
-        if UnitExists("target") and (msg == SPELL_FAILED_TARGET_NO_POCKETS or msg == ERR_ALREADY_PICKPOCKETED) then
-            ALREADY_PICKPOCKETED_TABLE[UnitGUID("target")] = GetTime();
-        end
-    elseif event == "WORLD_MAP_UPDATE" then
-        ALREADY_PICKPOCKETED_TABLE = { };
-    end
-end);
-RFrame:Show();
-
-function IsPickPocketed(unit)
-    if ALREADY_PICKPOCKETED_TABLE then
-        local t = ALREADY_PICKPOCKETED_TABLE[UnitGUID(unit)];
-        if type(t) == "number" and (t + 300) > GetTime() then
-            return true;
-        end
-    end
-end
-]]></Notes>
         <Lua><![CDATA[
 ALREADY_PICKPOCKETED_TABLE = { };
 RFrame = CreateFrame("Frame");
@@ -6858,43 +6832,6 @@ setAoE       = nil;
     <RotationList>
       <Rotation Name="Огонь">
         <HotKey Key="Z" Modifier="Alt" />
-        <Notes><![CDATA[
-igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
-pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
-pyroCrit     = false;   -- Было ли заклинание Огненная глыба (11366) критическим
-
-function OnEventExtended (self, event, ...)
-    if event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        -- для начала приведу полный список параметров.
-        local timestamp, subEvent, hideCaster,
-              sourceGUID,srcName,  sourceFlags,sourceFlags2,
-              destGUID,  destName, destFlags,  destFlags2,
-              spellId,   spellName,spellSchool,amount,      overkill,school,
-              resisted,  blocked,  absorbed,   critical,    glancing,crushing = ...;
-
-        if subEvent == "SPELL_PERIODIC_DAMAGE" then
-            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
-                -- Воспламенение
-                if spellId == 12654 then
-                    igniteDamage = amount;
-                    --print("Тик: Воспламенение (12654) - "..tostring(amount));
-                end
-            end
-        end
-
-        if subEvent == "SPELL_DAMAGE" then
-            if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
-                -- Огненная глыба
-                if spellId == 11366 then
-                    pyroDamage = amount;
-                    pyroCrit   = critical;
-                    --print("Урон: "..tostring(critical).." Огненная глыба (11366) - "..tostring(amount));
-                end
-            end
-        end
-    end
-end
-]]></Notes>
         <Lua><![CDATA[
 igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
 pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
@@ -8759,7 +8696,109 @@ end
       </Rotation>
       <Rotation Name="Танцующий с ветром">
         <HotKey Key="C" Modifier="Alt" />
-        <AbilityList />
+        <Notes><![CDATA[
+actions+=/chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
+actions+=/virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
+actions+=/chi_brew,if=talent.chi_brew.enabled&chi<=2&(trinket.proc.agility.react|(charges=1&recharge_time<=10)|charges=2|target.time_to_die<charges*10)
+actions+=/tiger_palm,if=buff.tiger_power.remains<=3
+actions+=/tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack=20
+actions+=/tigereye_brew,if=buff.tigereye_brew_use.down&trinket.proc.agility.react
+actions+=/tigereye_brew,if=buff.tigereye_brew_use.down&chi>=2&(trinket.proc.agility.react|buff.tigereye_brew.stack>=15|target.time_to_die<40)&debuff.rising_sun_kick.up&buff.tiger_power.up
+actions+=/energizing_brew,if=energy.time_to_max>5
+actions+=/rising_sun_kick,if=debuff.rising_sun_kick.down
+actions+=/tiger_palm,if=buff.tiger_power.down&debuff.rising_sun_kick.remains>1&energy.time_to_max>1
+actions+=/invoke_xuen,if=talent.invoke_xuen.enabled
+actions+=/run_action_list,name=aoe,if=active_enemies>=3
+actions+=/run_action_list,name=single_target,if=active_enemies<3
+
+actions.aoe=rushing_jade_wind,if=talent.rushing_jade_wind.enabled
+actions.aoe+=/zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking
+actions.aoe+=/chi_wave,if=talent.chi_wave.enabled
+actions.aoe+=/chi_burst,if=talent.chi_burst.enabled
+actions.aoe+=/rising_sun_kick,if=chi=chi.max
+actions.aoe+=/spinning_crane_kick,if=!talent.rushing_jade_wind.enabled
+
+actions.single_target=rising_sun_kick
+actions.single_target+=/fists_of_fury,if=buff.energizing_brew.down&energy.time_to_max>4&buff.tiger_power.remains>4
+actions.single_target+=/chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
+actions.single_target+=/chi_burst,if=talent.chi_burst.enabled&energy.time_to_max>2
+actions.single_target+=/zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&energy.time_to_max>2&!dot.zen_sphere.ticking
+actions.single_target+=/blackout_kick,if=buff.combo_breaker_bok.react
+actions.single_target+=/tiger_palm,if=buff.combo_breaker_tp.react&(buff.combo_breaker_tp.remains<=2|energy.time_to_max>=2)
+actions.single_target+=/jab,if=chi.max-chi>=2
+actions.single_target+=/blackout_kick,if=energy+energy.regen*cooldown.rising_sun_kick.remains>=40
+]]></Notes>
+        <AbilityList>
+          <Ability Name="Инициализация">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+energy = UnitPower("player");     -- energy
+chi    = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
+]]></Lua>
+          </Ability>
+          <Ability Name="Смертельное касание">
+            <SpellID>115080</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Будоражащий отвар">
+            <SpellID>115288</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if energi < 40 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Лапа тигра">
+            <SpellID>100787</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if chi > 0
+]]></Lua>
+          </Ability>
+        </AbilityList>
       </Rotation>
     </RotationList>
   </Profile>
