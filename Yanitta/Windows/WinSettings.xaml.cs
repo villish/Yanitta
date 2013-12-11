@@ -76,7 +76,8 @@ namespace Yanitta
                 var serializer = new XmlSerializer(typeof(Offsets));
                 using (var stream = response.GetResponseStream())
                 {
-                    Offsets.Default = (Offsets)serializer.Deserialize(response.GetResponseStream());
+                    var offsets = (Offsets)serializer.Deserialize(response.GetResponseStream());
+                    Extensions.CopyProperies(offsets, Offsets.Default);
                 }
             }
         }

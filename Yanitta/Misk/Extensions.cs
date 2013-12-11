@@ -41,6 +41,27 @@ namespace Yanitta
             return new XmlDocument().CreateCDataSection("\n" + content + "\n");
         }
 
+        public static void CopyProperies(object src, object dst)
+        {
+            if (src == null || dst == null)
+                throw new ArgumentNullException();
+            var typesrc = src.GetType();
+            var typedst = dst.GetType();
+            if (typesrc != typedst)
+                throw new Exception();
+            var flag = System.Reflection.BindingFlags.Public
+                     | System.Reflection.BindingFlags.Instance
+                     | System.Reflection.BindingFlags.DeclaredOnly
+                ;
+
+            foreach (var srcprop in typesrc.GetProperties(flag))
+            {
+                var dstprop = typedst.GetProperty(srcprop.Name);
+                var val = srcprop.GetValue(src, null);
+                dstprop.SetValue(dst, val, null);
+            }
+        }
+
         public static IEnumerable<string> RandomizeASM(IEnumerable<string> ASM_Code)
         {
             if (ASM_Code == null || ASM_Code.Count() == 0)
