@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -150,8 +150,7 @@ namespace Yanitta
 
             if (Memory.IsFocusWindow)
             {
-                foreach (var process in MainWindow.ProcessList.Where(p => p != this))
-                    process.UnregisterAllHotKeys();
+                MainWindow.ProcessList.Where(p => p != this).ForEach(p => p.UnregisterAllHotKeys());
 
                 if (CurrentProfile != null)
                 {

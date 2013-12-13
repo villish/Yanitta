@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -7,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Win32;
 using Yanitta.Properties;
 
 namespace Yanitta
