@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <Offsets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Build>17538</Build>
-  <PlayerName>15344584</PlayerName>
-  <PlayerClass>15344965</PlayerClass>
-  <IsInGame>13908686</IsInGame>
-  <FrameScript_ExecuteBuffer>326124</FrameScript_ExecuteBuffer>
-  <FrameScript_GetLocalizedText>4235009</FrameScript_GetLocalizedText>
-  <ClntObjMgrGetActivePlayerObj>20058</ClntObjMgrGetActivePlayerObj>
+  <Build>17688</Build>
+  <PlayerName>15464008</PlayerName>
+  <PlayerClass>15464389</PlayerClass>
+  <IsInGame>14027534</IsInGame>
+  <FrameScript_ExecuteBuffer>328604</FrameScript_ExecuteBuffer>
+  <FrameScript_GetLocalizedText>4273247</FrameScript_GetLocalizedText>
+  <ClntObjMgrGetActivePlayerObj>20027</ClntObjMgrGetActivePlayerObj>
 </Offsets>

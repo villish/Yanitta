@@ -1285,6 +1285,8 @@ namespace ICSharpCode.AvalonEdit
                     break;
                 }
             }
+            if (start < 0)
+                return null;
             for (int j = start; j < this.Text.Length; ++j, ++len)
             {
                 var c = this.Text[j];

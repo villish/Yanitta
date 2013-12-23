@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.98</Version>
+  <Version>0.0.5.113</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -282,6 +282,11 @@ function CheckInstanseLogic(member)
         else -- без щита
             member.HP = min(member.HP, 50);
         end
+    -- Престол гроз: Тортос (Кристальная оболочка)
+    elseif HasDebuff(member.Unit, 137633) then
+        if not HasDebuff(member.Unit, 140701) then
+            member.HP = min(member.HP, 50);
+        end 
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
     elseif HasDebuff(member.Unit, 137341) then
         member.DontHeal = true;
@@ -5155,7 +5160,7 @@ return useCooldown;
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if not HasBuff("target", 59879, "PLAYER") and not HasBuff("target", 59921, "PLAYER") then
+if not HasDebuff("target", 59879, "PLAYER") and not HasDebuff("target", 59921, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -5264,7 +5269,7 @@ return true;
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if isInMeele and runes.Blood.Count > 0 or HasBuff("player", 81141) then
+if setAoE and isInMeele and runes.Blood.Count > 0 or HasBuff("player", 81141) then
     return true;
 end
 ]]></Lua>
@@ -7806,6 +7811,9 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
+if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
+    return;
+end
 local debuffs = {
     348,
     108686
@@ -7828,6 +7836,9 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
+if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
+    return;
+end
 local debuffs = {
     348,
     108686
@@ -7850,6 +7861,9 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
+if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
+    return;
+end
 local debuffs = {
     348,
     108686
@@ -7912,7 +7926,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if useChaosBold and power2 > 0 then
+if useChaosBold and power2 > 0 and UnitHealth(ability.Target) > UnitHealthMax("player") then
     -- Если нету бафа Обратоного потока
     local buffs = {
         117896, -- Обратный поток
@@ -8828,6 +8842,12 @@ useAutoDispell = true;
             <Lua><![CDATA[
 -- модификатор
 if     IsModKeyDown(mkLeftShift) then
+    for index=1,5 do 
+    	if not IsRaidMarkerActive(index) then
+    		PlaceRaidMarker(index);
+    		break;
+    	end
+    end
     return true;
 --elseif IsModKeyDown(mkLeftControl) then
 --elseif IsModKeyDown(mkLeftAlt) then
@@ -9477,7 +9497,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-agroStatus = UnitThreatSituation("player");
+agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;
@@ -9512,8 +9532,12 @@ return CheckInterrupt("target");
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if not isCat and playerHP < 80 and UnitPower("player") > 55 then
-    return true;
+if not isCat then
+    if playerHP < 80 and UnitPower("player") > 55 then
+        return true;
+    elseif playerHP < 50 and UnitPower("player") > 35 then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -9679,12 +9703,12 @@ if isCat then
     return false;
 end
 
-if UnitPower("player") > 70 then
+if playerHP > 80 then
     if HasBuff("player", 135288) then
         return true;
     end
 end
-if true or agroStatus == 0 then
+if agroStatus < 3 then
     return true;
 end
 ]]></Lua>
