@@ -477,7 +477,7 @@ function CheckAndCastAbility(ability)
     end
 
     local castPing = (ping * 1000) - recastDelay;
-    if not ability.CencelCasting then
+    if not ability.CancelCasting then
         local endTime = select(6, UnitCastingInfo("player")) or 0;
         if (endTime - (GetTime() * 1000)) >= castPing then
             return;
