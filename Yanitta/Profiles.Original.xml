@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.131</Version>
+  <Version>0.0.5.148</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -3094,6 +3094,14 @@ if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
     if HasBuff("player", 56453) then
         SpellStopCasting();
     end
+end
+
+-- Установка пета в указанную позицию
+if IsMouseButtonDown(4) then
+    PetMoveTo();
+    CameraOrSelectOrMoveStart();
+    CameraOrSelectOrMoveStop();
+    PetMoveTo();
 end
 ]]></Lua>
           </Ability>
@@ -7419,6 +7427,9 @@ return not HasBuff("player", 7302);
     </RotationList>
   </Profile>
   <Profile Class="Warlock">
+    <Lua><![CDATA[
+useCooldown = true;
+]]></Lua>
     <RotationList>
       <Rotation Name="Демонология">
         <HotKey Key="X" Modifier="Alt" />
@@ -7693,10 +7704,10 @@ elseif IsModKeyDown(mkLeftAlt) then
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        AddonFrame.print("|cffff0000Кулдауны выключены", 1);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        AddonFrame.print("|cff00ff00Кулдауны включены", 1);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt) then
@@ -7724,19 +7735,51 @@ end
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
+
+FireAndBrimstone = HasBuff("player", 108683);
+
+-- Установка пета в указанную позицию
+if IsMouseButtonDown(4) then
+    PetMoveTo();
+    CameraOrSelectOrMoveStart();
+    CameraOrSelectOrMoveStop();
+    PetMoveTo();
+end
+
+------------------------------------------------
+--    CD
+------------------------------------------------
+
+-- Копим угли
+if SpellCD(113858) < (40 - (power2 * 10)) then
+    useChaosBold = false;
+end
+
+-- Сливаем угли
+if HasBuff("player", 113858) then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_HAND);
+    useChaosBold = true;
+end
+
+if not useCooldown then
+    useChaosBold = true;
+end
+
 ]]></Lua>
           </Ability>
           <Ability Name="Неистовство тьмы">
             <SpellID>30283</SpellID>
             <Target>MouseLocation</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
+            <CancelChannel>true</CancelChannel>
+            <CancelCasting>true</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
             <IsUseIncombat>false</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if IsMouseButtonDown(3) then
@@ -7764,6 +7807,26 @@ if IsModKeyDown(mkLeftShift) then
 end
 ]]></Lua>
           </Ability>
+          <Ability Name="Проклятие стихий">
+            <SpellID>1490</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if UnitHealth(ability.Target) > (UnitHealthMax("player")*2) then
+    if not HasDebuff(ability.Target, 1490, "PLAYER") then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
           <Ability Name="Ожоги тьмы">
             <SpellID>17877</SpellID>
             <Target>Target</Target>
@@ -7777,14 +7840,14 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if power2 > 0 and HealthByPercent(ability.Target) < 20 then
+if power2 > 0 and useChaosBold and HealthByPercent(ability.Target) < 20 then
     return true;
 end
 ]]></Lua>
           </Ability>
           <Ability Name="Черная душа: Изменчивость">
             <SpellID>113858</SpellID>
-            <Target>Player</Target>
+            <Target>None</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
@@ -7796,6 +7859,24 @@ end
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
 if isInRange and useCooldown and power2 > 3 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Завеса сумерек">
+            <SpellID>6229</SpellID>
+            <Target>Player</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if not HasBuff("player", 6229) then
     return true;
 end
 ]]></Lua>
@@ -7917,11 +7998,16 @@ end
 if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
     return;
 end
+
+if FireAndBrimstone and power2 < 1 then
+    return;
+end
+
 local debuffs = {
     348,
     108686
 };
-if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<2 then
+if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<3 then
     return true;
 end
 ]]></Lua>
@@ -7942,11 +8028,16 @@ end
 if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
     return;
 end
+
+if FireAndBrimstone and power2 < 1 then
+    return;
+end
+
 local debuffs = {
     348,
     108686
 };
-if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<2 then
+if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<3 then
     return true;
 end
 ]]></Lua>
@@ -7967,11 +8058,16 @@ end
 if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
     return;
 end
+
+if FireAndBrimstone and power2 < 1 then
+    return;
+end
+
 local debuffs = {
     348,
     108686
 };
-if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<2 then
+if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<3 then
     return true;
 end
 ]]></Lua>
@@ -8014,6 +8110,10 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
+if FireAndBrimstone and power2 < 1 then
+    return false;
+end
+
 if isInRange then
     -- Если нету бафа обратного потока
     if not HasBuff("player", 177828) then
@@ -8058,29 +8158,6 @@ if PowerByPercent("player") > 30 then
         return true;
     end
 end
-]]></Lua>
-          </Ability>
-          <Ability Name="ability_name">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
---TargetUnit("Испуган");
---if UnitExists("target") then
---    InteractUnit("target");
---end
---TargetUnit("Перепуг");
---if UnitExists("target") then
---    InteractUnit("target");
---end
 ]]></Lua>
           </Ability>
         </AbilityList>
