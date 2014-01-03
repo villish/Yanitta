@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.148</Version>
+  <Version>0.0.5.149</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -7182,6 +7182,16 @@ isInRange = IsSpellInRange(GetSpellInfo(116), "target") == 1;
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
+end
+
+-- Холод элементаля (33395)
+if IsMouseButtonDown(4) then
+    if SpellCD(33395) == 0 then
+        CastSpellByID(33395);
+        CameraOrSelectOrMoveStart();
+        CameraOrSelectOrMoveStop();
+        CastSpellByID(33395);
+    end
 end
 ]]></Lua>
           </Ability>
