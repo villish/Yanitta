@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.149</Version>
+  <Version>0.0.5.157</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -461,13 +461,16 @@ function CheckAndCastAbility(ability)
         end
     end
 
+    local spellInfo = GetSpellInfo(ability.SpellId);
+
     if ability.SpellId < 1 then
         return ability.Func(ability);
     elseif not IsUsableSpell(ability.SpellId) then
         return;
     elseif ability.IsSpellKnownCheck
         and not (IsPlayerSpell(ability.SpellId)
-            or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)) then
+            or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)
+            or GetSpellBookItemInfo(spellInfo)) then
         return;
     end
 
@@ -502,13 +505,12 @@ function CheckAndCastAbility(ability)
         ability.Target = result;
     end
 
-    local spellInfo = GetSpellInfo(ability.SpellId);
     if ability.Target ~= "none" and ability.Target ~= "player" and ability.Target ~= "mouselocation" then
         if not UnitExists(ability.Target) then
             return;
         elseif ability.IsAttackedCheck and (UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target)) then
             return;
-        elseif ability.IsRangeCheck and IsSpellInRange(spellInfo, ability.Target) ~= 1 then
+        elseif ability.IsRangeCheck and SpellHasRange(spellInfo) and IsSpellInRange(spellInfo, ability.Target) ~= 1 then
             return;
         end
     end
@@ -7301,7 +7303,7 @@ if not HasDebuff(ability.Target, 44457, "PLAYER") then
 end
 ]]></Lua>
           </Ability>
-          <Ability Name="Живая бомба (Focus)">
+          <Ability Name="Живая бомба">
             <SpellID>44457</SpellID>
             <Target>Focus</Target>
             <CancelChannel>false</CancelChannel>
@@ -7319,7 +7321,7 @@ if not HasDebuff(ability.Target, 44457, "PLAYER") then
 end
 ]]></Lua>
           </Ability>
-          <Ability Name="Живая бомба (Mouseover)">
+          <Ability Name="Живая бомба">
             <SpellID>44457</SpellID>
             <Target>Mouseover</Target>
             <CancelChannel>false</CancelChannel>
@@ -7439,6 +7441,57 @@ return not HasBuff("player", 7302);
   <Profile Class="Warlock">
     <Lua><![CDATA[
 useCooldown = true;
+
+function QuestCore()
+    
+    if IsModKeyDown(mkRightAlt) then
+        RunMacroText("/tar Властитель преисподней");
+        RunMacroText("/cast Порабощение демона");
+        return true;
+    end
+    
+    --if UnitName("pet") == "Властитель преисподней" then
+        
+        if HealthByPercent("player") < 60 then
+            -- Пламенное дыхание Скверны
+            if SpellCD(138813) == 0 then
+                CastSpellByName(GetSpellInfo(138813), "player");
+            end
+        end
+        
+        -- катаклизм
+        if UnitCastingInfo("focus") == GetSpellInfo(138564) then
+            -- рывок
+            if SpellCD(138796) == 0 then
+                CastSpellByName(GetSpellInfo(138796), "focus");
+            end
+        end
+        
+        -- Стрела хаоса
+        if UnitCastingInfo("focus") == GetSpellInfo(138559) then
+            -- Демонический круг: Телепортация
+            if SpellCD(48020) == 0 then
+                SpellStopCasting();
+                CastSpellByName(GetSpellInfo(48020));
+            end
+        end
+    --else
+    --    if UnitExists("Властитель преисподней") then
+    --        TargetUnit("Властитель преисподней");
+    --        if UnitName("target") == "Властитель преисподней" then
+    --            CastSpellByName(GetSpellInfo(1098), "target");
+    --        end
+    --    end    
+    --end  
+
+    
+    if UnitName("mouseover") == "Владыка судеб" then
+        if not HasDebuff("mouseover", 710) then
+            CastSpellByName("Изгнание", "mouseover");
+        end
+    end
+    
+end
 ]]></Lua>
     <RotationList>
       <Rotation Name="Демонология">
@@ -7777,6 +7830,8 @@ if not useCooldown then
     useChaosBold = true;
 end
 
+-- quest
+return QuestCore();
 ]]></Lua>
           </Ability>
           <Ability Name="Неистовство тьмы">
@@ -7794,6 +7849,27 @@ end
             <Lua><![CDATA[
 if IsMouseButtonDown(3) then
     return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Удар кнутом">
+            <SpellID>119909</SpellID>
+            <Target>MouseLocation</Target>
+            <CancelChannel>true</CancelChannel>
+            <CancelCasting>true</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if IsMouseButtonDown(3) then
+    local cd = SpellCD(30283);
+    if cd > 0 and cd < 28 then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -7815,6 +7891,38 @@ if IsModKeyDown(mkLeftShift) then
         return true;
     end
 end
+]]></Lua>
+          </Ability>
+          <Ability Name="Запрет чар">
+            <SpellID>119910</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>true</CancelChannel>
+            <CancelCasting>true</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+return CheckInterrupt(ability.Target);
+]]></Lua>
+          </Ability>
+          <Ability Name="Запрет чар">
+            <SpellID>132409</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>true</CancelChannel>
+            <CancelCasting>true</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>true</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+return CheckInterrupt(ability.Target);
 ]]></Lua>
           </Ability>
           <Ability Name="Проклятие стихий">
