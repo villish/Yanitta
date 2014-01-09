@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.157</Version>
+  <Version>0.0.5.162</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -7443,13 +7443,13 @@ return not HasBuff("player", 7302);
 useCooldown = true;
 
 function QuestCore()
-    
+
     if IsModKeyDown(mkRightAlt) then
         RunMacroText("/tar Властитель преисподней");
         RunMacroText("/cast Порабощение демона");
         return true;
     end
-    
+
     --if UnitName("pet") == "Властитель преисподней" then
         
         if HealthByPercent("player") < 60 then
@@ -7458,7 +7458,7 @@ function QuestCore()
                 CastSpellByName(GetSpellInfo(138813), "player");
             end
         end
-        
+
         -- катаклизм
         if UnitCastingInfo("focus") == GetSpellInfo(138564) then
             -- рывок
@@ -7466,7 +7466,7 @@ function QuestCore()
                 CastSpellByName(GetSpellInfo(138796), "focus");
             end
         end
-        
+
         -- Стрела хаоса
         if UnitCastingInfo("focus") == GetSpellInfo(138559) then
             -- Демонический круг: Телепортация
@@ -7481,16 +7481,16 @@ function QuestCore()
     --        if UnitName("target") == "Властитель преисподней" then
     --            CastSpellByName(GetSpellInfo(1098), "target");
     --        end
-    --    end    
-    --end  
+    --    end
+    --end
 
-    
+
     if UnitName("mouseover") == "Владыка судеб" then
         if not HasDebuff("mouseover", 710) then
             CastSpellByName("Изгнание", "mouseover");
         end
     end
-    
+
 end
 ]]></Lua>
     <RotationList>
@@ -7777,61 +7777,6 @@ elseif IsModKeyDown(mkRightAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-
-if IsMounted() then
-    return true;
-end
-
-power2 = 0;
-if GetSpecialization() == 1 then     -- aflyction
-    power2 = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
-elseif GetSpecialization() == 2 then -- demonology
-    power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
-    if power2 < 100 or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
-        CancelShapeshiftForm();
-    end
-elseif GetSpecialization() == 3 then -- dectruction
-    power2 = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-FireAndBrimstone = HasBuff("player", 108683);
-
--- Установка пета в указанную позицию
-if IsMouseButtonDown(4) then
-    PetMoveTo();
-    CameraOrSelectOrMoveStart();
-    CameraOrSelectOrMoveStop();
-    PetMoveTo();
-end
-
-------------------------------------------------
---    CD
-------------------------------------------------
-
--- Копим угли
-if SpellCD(113858) < (40 - (power2 * 10)) then
-    useChaosBold = false;
-end
-
--- Сливаем угли
-if HasBuff("player", 113858) then
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_HAND);
-    useChaosBold = true;
-end
-
-if not useCooldown then
-    useChaosBold = true;
-end
-
--- quest
-return QuestCore();
 ]]></Lua>
           </Ability>
           <Ability Name="Неистовство тьмы">
@@ -7871,6 +7816,62 @@ if IsMouseButtonDown(3) then
         return true;
     end
 end
+]]></Lua>
+          </Ability>
+          <Ability Name="Пауза">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if IsMounted() then
+    return true;
+end
+
+power2           = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
+FireAndBrimstone = HasBuff("player", 108683); -- огонь и сера
+ChaosCount       = select(2, HasBuff("player", 80240));-- хаос
+RainOfFire       = HasBuff("player", 104232); -- огненный ливень
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
+-- Установка пета в указанную позицию
+if IsMouseButtonDown(4) then
+    PetMoveTo();
+    CameraOrSelectOrMoveStart();
+    CameraOrSelectOrMoveStop();
+    PetMoveTo();
+end
+
+------------------------------------------------
+--    CD
+------------------------------------------------
+
+-- Копим угли
+if useCooldown and SpellCD(113858) < (40 - (power2 * 10)) then
+    useChaosBold = false;
+end
+
+-- Сливаем угли
+if useCooldown and HasBuff("player", 113858) then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_HAND);
+    useChaosBold = true;
+end
+
+-- quest
+--return QuestCore();
 ]]></Lua>
           </Ability>
           <Ability Name="Огненный ливень">
@@ -7999,24 +8000,6 @@ if not HasBuff("player", 6229) then
 end
 ]]></Lua>
           </Ability>
-          <Ability Name="Испепеление">
-            <SpellID>29722</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>Moving</IsMovingCheck>
-            <Lua><![CDATA[
-if IsPlayerSpell(137587) then
-    return isInRange;
-end
-]]></Lua>
-          </Ability>
           <Ability Name="Хаос">
             <SpellID>80240</SpellID>
             <Target>Focus</Target>
@@ -8028,13 +8011,15 @@ end
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
+            <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if power2 > 0 and UnitExists("target") and not UnitIsUnit(ability.Target, "target") 
-    and UnitIsEnemy("target", "player") then
-    local buffs = { 104232, 108683 };
-    if not HasDebuff(ability.Target, 80240, "PLAYER") and not HasBuff("player", buffs) then
-        return true;
+if power2 > 0 and not RainOfFire and not FireAndBrimstone and ChaosCount == 0 then
+    if UnitExists("target")
+        and not UnitIsUnit(ability.Target, "target")
+        and UnitIsEnemy("target", "player") then
+        if not HasDebuff(ability.Target, 80240, "PLAYER") then
+            return true;
+        end
     end
 end
 ]]></Lua>
@@ -8050,34 +8035,15 @@ end
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if power2 > 0 and UnitExists("target") and 
-    not (UnitIsUnit(ability.Target, "target") or UnitIsUnit(ability.Target, "focus"))
-    and UnitIsEnemy("target", "player") then
-    local buffs = { 104232, 108683 };
-    if not HasDebuff(ability.Target, 80240, "PLAYER") and not HasBuff("player", buffs) then
-        return true;
-    end
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Стрела хаоса">
-            <SpellID>116858</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>true</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if useChaosBold and power2 > 0 then
-    if select(2, HasBuff("player", 80240)) > 2 then
-        return true;
+if power2 > 0 and not RainOfFire and not FireAndBrimstone and ChaosCount == 0 then
+    if UnitExists("target")
+        and not (UnitIsUnit(ability.Target, "target") or UnitIsUnit(ability.Target, "focus"))
+        and UnitIsEnemy("target", "player") then
+        if not HasDebuff(ability.Target, 80240, "PLAYER") then
+            return true;
+        end
     end
 end
 ]]></Lua>
@@ -8095,8 +8061,32 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if isInRange and power2 > 0 and HasBuff("player", 104232) then
+if isInRange and HasBuff("player", 104232) then
     return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Жертвенный огонь (AOE)">
+            <SpellID>108686</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>true</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[
+if UnitHealth(ability.Target) < UnitHealthMax("player") then
+    return;
+end
+
+if FireAndBrimstone and power2 > 0 and isInRange and ChaosCount < 3 then
+    if select(3, HasDebuff(ability.Target, 108686, "PLAYER")) < 3 then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -8117,16 +8107,10 @@ if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
     return;
 end
 
-if FireAndBrimstone and power2 < 1 then
-    return;
-end
-
-local debuffs = {
-    348,
-    108686
-};
-if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<3 then
-    return true;
+if not FireAndBrimstone and isInRange and ChaosCount < 3 then
+    if select(3, HasDebuff(ability.Target, 348, "PLAYER")) < 3 then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -8147,16 +8131,10 @@ if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
     return;
 end
 
-if FireAndBrimstone and power2 < 1 then
-    return;
-end
-
-local debuffs = {
-    348,
-    108686
-};
-if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<3 then
-    return true;
+if not FireAndBrimstone and isInRange and ChaosCount < 3 then
+    if select(3, HasDebuff(ability.Target, 348, "PLAYER")) < 3 then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -8177,16 +8155,10 @@ if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
     return;
 end
 
-if FireAndBrimstone and power2 < 1 then
-    return;
-end
-
-local debuffs = {
-    348,
-    108686
-};
-if isInRange and select(3, HasDebuff(ability.Target, debuffs, "PLAYER"))<3 then
-    return true;
+if not FireAndBrimstone and isInRange and ChaosCount < 3 then
+    if select(3, HasDebuff(ability.Target, 348, "PLAYER")) < 3 then
+        return true;
+    end
 end
 ]]></Lua>
           </Ability>
@@ -8203,15 +8175,8 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if useChaosBold and power2 > 0 and UnitHealth(ability.Target) > UnitHealthMax("player") then
-    -- Если нету бафа Обратоного потока
-    local buffs = {
-        --117896, -- Обратный поток
-        108683, -- Огонь и сера
-    };
-    if not HasBuff("player", buffs) then
-        return true;
-    end
+if useChaosBold and power2 > 0 and not FireAndBrimstone then
+    return true;
 end
 ]]></Lua>
           </Ability>
@@ -8228,14 +8193,12 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if FireAndBrimstone and power2 < 1 then
-    return false;
-end
-
-if isInRange then
+if isInRange and ChaosCount < 3 then
     -- Если нету бафа обратного потока
     if not HasBuff("player", 177828) then
-        if select(2, HasBuff("player", 80240)) < 3 then
+        if FireAndBrimstone then
+            return power2 > 1;
+        else
             return true;
         end
     end
@@ -8253,9 +8216,11 @@ end
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return isInRange;
+if IS_MOVING or IsPlayerSpell(137587) then
+    return isInRange;
+end
 ]]></Lua>
           </Ability>
           <Ability Name="Пламя скверны">
