@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.167</Version>
+  <Version>0.0.5.178</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -10857,9 +10857,9 @@ return true;
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
---if UnitName("pet") ~= "Небесный коготь Драконьего Покоя" then
---    return true;
---end
+if not UnitHasVehicleUI("player") then
+    return true;
+end
 
 if IsModKeyDown(mkLeftAlt) then
     return true;
@@ -10867,7 +10867,7 @@ end
 ]]></Lua>
           </Ability>
           <Ability Name="Дыхание жизни">
-            <SpellID>57143</SpellID>
+            <SpellID>0</SpellID>
             <Target>Pet</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -10879,15 +10879,17 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if HealthByPercent("pet") < 40 and not HasBuff("pet", 57143) then
-    if select(2, HasBuff("pet", 57090)) > 3 then
-        return true;
+if GetPetActionCooldown(4) == 0 then
+    if HealthByPercent("vehicle") < 40 and not HasBuff("player", 57143) then
+        if select(2, HasBuff("player", 57090)) > 3 then
+            CastPetAction(4);
+        end
     end
 end
 ]]></Lua>
           </Ability>
           <Ability Name="Реанимация">
-            <SpellID>57090</SpellID>
+            <SpellID>0</SpellID>
             <Target>Pet</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -10899,27 +10901,29 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if     HealthByPercent("pet") < 90 then
-    if select(2, HasBuff("pet", 57090)) < 1 then
-        return true;
-    end
-elseif HealthByPercent("pet") < 70 then
-    if select(2, HasBuff("pet", 57090)) < 2 then
-        return true;
-    end
-elseif HealthByPercent("pet") < 50 then
-    if select(2, HasBuff("pet", 57090)) < 3 then
-        return true;
-    end
-elseif HealthByPercent("pet") < 30 then
-    if select(2, HasBuff("pet", 57090)) < 4 then
-        return true;
+if GetPetActionCooldown(3) == 0 then
+    if     HealthByPercent("vehicle") < 90 then
+        if select(2, HasBuff("player", 57090)) < 1 then
+            CastPetAction(3);
+        end
+    elseif HealthByPercent("vehicle") < 70 then
+        if select(2, HasBuff("player", 57090)) < 2 then
+            CastPetAction(3);
+        end
+    elseif HealthByPercent("vehicle") < 50 then
+        if select(2, HasBuff("player", 57090)) < 3 then
+            CastPetAction(3);
+        end
+    elseif HealthByPercent("vehicle") < 30 then
+        if select(2, HasBuff("player", 57090)) < 4 then
+            CastPetAction(3);
+        end
     end
 end
 ]]></Lua>
           </Ability>
           <Ability Name="Окутать пламенем">
-            <SpellID>56092</SpellID>
+            <SpellID>0</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
@@ -10931,25 +10935,140 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if GetComboPoints("pet") > 2 then
-    return true;
+if UnitExists("target") and UnitIsEnemy("player", "target")
+    and GetPetActionCooldown(2) == 0 and GetComboPoints("vehicle") > 2 then
+    CastPetAction(2, ability.Target);
 end
 ]]></Lua>
           </Ability>
           <Ability Name="Пламенный шип">
-            <SpellID>56091</SpellID>
+            <SpellID>0</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
+            <IsRangeCheck>false</IsRangeCheck>
             <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
+            <IsUseIncombat>false</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return true;
+if UnitExists("target") and UnitIsEnemy("player", "target")
+    and GetPetActionCooldown(1) == 0 then
+    CastPetAction(1, ability.Target);
+end
+]]></Lua>
+          </Ability>
+        </AbilityList>
+      </Rotation>
+      <Rotation Name="Серебряный авангард (Турнир)">
+        <HotKey Key="Z" Modifier="Alt Shift" />
+        <AbilityList>
+          <Ability Name="Инициализация">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if not UnitHasVehicleUI("player") then
+    return true;
+end
+
+if IsModKeyDown(mkLeftAlt) then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Защита">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if GetPetActionCooldown(4) == 0 then
+    local col, rem = select(2, HasBuff("player", 62552));
+    if col < 3 or rem < 5 then
+        CastPetAction(4);
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Удар по щиту">
+            <SpellID>0</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- как-то определть дистанцию до цели
+if UnitExists("target") and UnitIsEnemy("player", "target")
+    and GetPetActionCooldown(2) == 0 then
+    if select(2, HasBuff("target", 62719)) > 1 then
+        CastPetAction(2);
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Рывок">
+            <SpellID>0</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+-- как-то определть дистанцию до цели
+if UnitExists("target") and UnitIsEnemy("player", "target")
+    and GetPetActionCooldown(3) == 0 then
+    if select(2, HasBuff("target", 62719)) <= 1 then
+        CastPetAction(3);
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Выпад">
+            <SpellID>0</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if UnitExists("target") and UnitIsEnemy("player", "target")
+    and GetPetActionCooldown(1) == 0 then
+    CastPetAction(1);
+end
 ]]></Lua>
           </Ability>
         </AbilityList>
