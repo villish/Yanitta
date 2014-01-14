@@ -36,7 +36,7 @@
         <Button Content="X" Width="22" Height="24" Margin="702,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Close" ToolTip="{x:Static yanitta:Localization.Close}" />
         <Button Content="_" Width="22" Height="24" Margin="680,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Redo"  ToolTip="{x:Static yanitta:Localization.Minimise}" />
 
-        <TreeView HorizontalAlignment="Left" Height="395" Margin="37,126,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
+        <TreeView HorizontalAlignment="Left" Height="301" Margin="37,119,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                     <Setter Property="IsExpanded" Value="True"/>
@@ -68,6 +68,22 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
+
+        <ListBox Margin="37,420,35,76" ItemsSource="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=DefaultProfile.RotationList}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border BorderThickness="1" BorderBrush="#FF00AA00">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Name}" Width="200" FontSize="15"/>
+                            <CheckBox IsChecked="{Binding HotKey.Control}" VerticalAlignment="Center" Content="Control" Width="75" FontSize="15"/>
+                            <CheckBox IsChecked="{Binding HotKey.Shift}"   VerticalAlignment="Center" Content="Shift"   Width="60" FontSize="15"/>
+                            <CheckBox IsChecked="{Binding HotKey.Alt}"     VerticalAlignment="Center" Content="Alt"     Width="50" FontSize="15"/>
+                            <ComboBox Width="100" SelectedValue="{Binding HotKey.Key}" ItemsSource="{Binding Source={StaticResource KeyValues}}"  VerticalAlignment="Center" FontSize="15"/>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
         <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico" />
     </Grid>

@@ -139,9 +139,13 @@ namespace Yanitta
         {
             if (this.CurrentProfile != null)
             {
+                var mod = ModifierKeys.Alt | (CurrentProfile.Class == WowClass.None
+                    ? ModifierKeys.Shift
+                    : ModifierKeys.None);
+
                 var rotation = new Rotation();
                 if (CurrentProfile.RotationList.Count < Keys.Length)
-                    rotation.HotKey = new HotKey(Keys[CurrentProfile.RotationList.Count], ModifierKeys.Alt);
+                    rotation.HotKey = new HotKey(Keys[CurrentProfile.RotationList.Count], mod);
                 this.CurrentProfile.RotationList.Add(rotation);
                 this.rotationList.SelectedIndex = this.CurrentProfile.RotationList.Count - 1;
                 this.tbRotationName.Focus();

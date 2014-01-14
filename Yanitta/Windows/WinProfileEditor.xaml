@@ -17,13 +17,20 @@
     <Window.InputBindings>
         <KeyBinding Command="Save"  Key="S"  Modifiers="Control" />
         <KeyBinding Command="Close" Key="F4" Modifiers="Alt" />
+        <KeyBinding Command="yanitta:YanittaCommand.AddAbility" Key="Insert" />
     </Window.InputBindings>
 
     <Window.CommandBindings>
-        <CommandBinding Command="Close" Executed="CommandBinding_Executed_Close" />
-        <CommandBinding Command="Save"  Executed="CommandBinding_Executed_Save" />
-        <CommandBinding Command="yanitta:YanittaCommand.Update"  Executed="CommandBinding_Executed_Update" />
-        <CommandBinding Command="yanitta:YanittaCommand.Reload"  Executed="CommandBinding_Executed_Reload" />
+        <CommandBinding Command="Close"                                 Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="Save"                                  Executed="CommandBinding_Executed_Save" />
+        <CommandBinding Command="yanitta:YanittaCommand.Update"         Executed="CommandBinding_Executed_Update" />
+        <CommandBinding Command="yanitta:YanittaCommand.Reload"         Executed="CommandBinding_Executed_Reload" />
+        <CommandBinding Command="yanitta:YanittaCommand.AddAbility"     Executed="CommandBinding_Executed_AddAbility" />
+        <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"    Executed="CommandBinding_Executed_CopyAbility" />
+        <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility"  Executed="CommandBinding_Executed_DeleteAbility" />
+        <CommandBinding Command="yanitta:YanittaCommand.AddRotation"    Executed="CommandBinding_Executed_AddRotation" />
+        <CommandBinding Command="yanitta:YanittaCommand.CopyRotation"   Executed="CommandBinding_Executed_CopyRotation" />
+        <CommandBinding Command="yanitta:YanittaCommand.DeleteRotation" Executed="CommandBinding_Executed_DeleteRotation" />
     </Window.CommandBindings>
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
@@ -39,17 +46,6 @@
 
         <TabControl Grid.Column="1" Grid.Row="1">
             <TabItem Header="{x:Static yanitta:Localization.AbilityList}">
-                <TabItem.InputBindings>
-                    <KeyBinding Command="yanitta:YanittaCommand.AddAbility" Key="Insert" />
-                </TabItem.InputBindings>
-                <TabItem.CommandBindings>
-                    <CommandBinding Command="yanitta:YanittaCommand.AddAbility"     Executed="CommandBinding_Executed_AddAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.CopyAbility"    Executed="CommandBinding_Executed_CopyAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.DeleteAbility"  Executed="CommandBinding_Executed_DeleteAbility" />
-                    <CommandBinding Command="yanitta:YanittaCommand.AddRotation"    Executed="CommandBinding_Executed_AddRotation" />
-                    <CommandBinding Command="yanitta:YanittaCommand.CopyRotation"   Executed="CommandBinding_Executed_CopyRotation" />
-                    <CommandBinding Command="yanitta:YanittaCommand.DeleteRotation" Executed="CommandBinding_Executed_DeleteRotation" />
-                </TabItem.CommandBindings>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="500*"/>

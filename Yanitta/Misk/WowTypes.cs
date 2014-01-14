@@ -2,6 +2,7 @@
 {
     public enum WowClass : byte
     {
+        None        = 0x00,
         Warrior     = 0x01,
         Paladin     = 0x02,
         Hunter      = 0x03,

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.164</Version>
+  <Version>0.0.5.167</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -8577,119 +8577,6 @@ end
           </Ability>
         </AbilityList>
       </Rotation>
-      <Rotation Name="Малигос">
-        <HotKey Key="V" Modifier="Alt" />
-        <AbilityList>
-          <Ability Name="Инициализация">
-            <SpellID>0</SpellID>
-            <Target>None</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
---if UnitName("pet") ~= "Небесный коготь Драконьего Покоя" then
---    return true;
---end
-
-if IsModKeyDown(mkLeftAlt) then
-    return true;
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Дыхание жизни">
-            <SpellID>57143</SpellID>
-            <Target>Pet</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if HealthByPercent("pet") < 40 and not HasBuff("pet", 57143) then
-    if select(2, HasBuff("pet", 57090)) > 3 then
-        return true;
-    end
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Реанимация">
-            <SpellID>57090</SpellID>
-            <Target>Pet</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if     HealthByPercent("pet") < 90 then
-    if select(2, HasBuff("pet", 57090)) < 1 then
-        return true;
-    end
-elseif HealthByPercent("pet") < 70 then
-    if select(2, HasBuff("pet", 57090)) < 2 then
-        return true;
-    end
-elseif HealthByPercent("pet") < 50 then
-    if select(2, HasBuff("pet", 57090)) < 3 then
-        return true;
-    end
-elseif HealthByPercent("pet") < 30 then
-    if select(2, HasBuff("pet", 57090)) < 4 then
-        return true;
-    end
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Окутать пламенем">
-            <SpellID>56092</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if GetComboPoints("pet") > 2 then
-    return true;
-end
-]]></Lua>
-          </Ability>
-          <Ability Name="Пламенный шип">
-            <SpellID>56091</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-return true;
-]]></Lua>
-          </Ability>
-        </AbilityList>
-      </Rotation>
     </RotationList>
   </Profile>
   <Profile Class="Monk">
@@ -10944,6 +10831,123 @@ end
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[
+return true;
+]]></Lua>
+          </Ability>
+        </AbilityList>
+      </Rotation>
+    </RotationList>
+  </Profile>
+  <Profile Class="None">
+    <RotationList>
+      <Rotation Name="Малигос">
+        <HotKey Key="M" Modifier="Alt Shift" />
+        <AbilityList>
+          <Ability Name="Инициализация">
+            <SpellID>0</SpellID>
+            <Target>None</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>false</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+--if UnitName("pet") ~= "Небесный коготь Драконьего Покоя" then
+--    return true;
+--end
+
+if IsModKeyDown(mkLeftAlt) then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Дыхание жизни">
+            <SpellID>57143</SpellID>
+            <Target>Pet</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if HealthByPercent("pet") < 40 and not HasBuff("pet", 57143) then
+    if select(2, HasBuff("pet", 57090)) > 3 then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Реанимация">
+            <SpellID>57090</SpellID>
+            <Target>Pet</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>false</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if     HealthByPercent("pet") < 90 then
+    if select(2, HasBuff("pet", 57090)) < 1 then
+        return true;
+    end
+elseif HealthByPercent("pet") < 70 then
+    if select(2, HasBuff("pet", 57090)) < 2 then
+        return true;
+    end
+elseif HealthByPercent("pet") < 50 then
+    if select(2, HasBuff("pet", 57090)) < 3 then
+        return true;
+    end
+elseif HealthByPercent("pet") < 30 then
+    if select(2, HasBuff("pet", 57090)) < 4 then
+        return true;
+    end
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Окутать пламенем">
+            <SpellID>56092</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if GetComboPoints("pet") > 2 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Пламенный шип">
+            <SpellID>56091</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 return true;
 ]]></Lua>

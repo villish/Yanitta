@@ -170,6 +170,25 @@ namespace Yanitta
                         }
                     });
                 }
+
+                if (ProfileDb.Instance.DefaultProfile != null)
+                {
+                    ProfileDb.Instance.DefaultProfile.RotationList.ForEach((rotation) =>
+                    {
+                        if (!rotation.HotKey.IsRegistered)
+                        {
+                            rotation.HotKey.SetHandler(rotation, HotKeyPressed);
+                            try
+                            {
+                                rotation.HotKey.Register();
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("HotKey Error: " + ex.Message);
+                            }
+                        }
+                    });
+                }
             }
             else if (CurrentProfile != null)
             {
@@ -248,6 +267,15 @@ namespace Yanitta
             if (this.CurrentProfile != null && this.CurrentProfile.RotationList != null)
             {
                 this.CurrentProfile.RotationList.ForEach((rotation) => {
+                    if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
+                        rotation.HotKey.Unregister();
+                });
+            }
+
+            if (ProfileDb.Instance.DefaultProfile != null && ProfileDb.Instance.DefaultProfile.RotationList != null)
+            {
+                ProfileDb.Instance.DefaultProfile.RotationList.ForEach((rotation) =>
+                {
                     if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
                         rotation.HotKey.Unregister();
                 });

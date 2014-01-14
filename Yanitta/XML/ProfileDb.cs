@@ -14,12 +14,13 @@ namespace Yanitta
     [Serializable]
     public class ProfileDb : DependencyObject
     {
-        public static readonly DependencyProperty LuaProperty           = DependencyProperty.Register("Lua",         typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty VersionProperty       = DependencyProperty.Register("Version",     typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty AuthorProperty        = DependencyProperty.Register("Author",      typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty UrlProperty           = DependencyProperty.Register("Url",         typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty ProfileListProperty   = DependencyProperty.Register("ProfileList", typeof(ObservableCollection<Profile>), typeof(ProfileDb));
-        public static readonly DependencyProperty WowTestListProperty   = DependencyProperty.Register("WowTestList", typeof(ObservableCollection<WowTest>), typeof(ProfileDb));
+        public static readonly DependencyProperty LuaProperty            = DependencyProperty.Register("Lua",            typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty VersionProperty        = DependencyProperty.Register("Version",        typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty AuthorProperty         = DependencyProperty.Register("Author",         typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty UrlProperty            = DependencyProperty.Register("Url",            typeof(string), typeof(ProfileDb));
+        public static readonly DependencyProperty ProfileListProperty    = DependencyProperty.Register("ProfileList",    typeof(ObservableCollection<Profile>), typeof(ProfileDb));
+        public static readonly DependencyProperty WowTestListProperty    = DependencyProperty.Register("WowTestList",    typeof(ObservableCollection<WowTest>), typeof(ProfileDb));
+        public static readonly DependencyProperty DefaultProfileProperty = DependencyProperty.Register("DefaultProfile", typeof(Profile), typeof(ProfileDb));
 
         [XmlElement]
         public string Version
@@ -70,6 +71,13 @@ namespace Yanitta
             set { SetValue(ProfileListProperty, value); }
         }
 
+        [XmlIgnore]
+        public Profile DefaultProfile
+        {
+            get { return (Profile)GetValue(DefaultProfileProperty); }
+            private set { SetValue(DefaultProfileProperty, value);  }
+        }
+
         public static ProfileDb Instance { get; private set; }
 
         static ProfileDb()
@@ -111,6 +119,7 @@ namespace Yanitta
             this.Url         = temp.Url;
             this.ProfileList = temp.ProfileList;
             this.WowTestList = temp.WowTestList;
+            this.DefaultProfile = temp[WowClass.None];
         }
 
         public void Load(string fileName)
