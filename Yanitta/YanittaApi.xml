@@ -14,7 +14,10 @@
     <Description><![CDATA[mouseover - Юнит под указателем мыши]]></Description>
   </WowApi>
   <WowApi ImageType="Field" Name="pet">
-    <Description><![CDATA[player - Питомец персонажа]]></Description>
+    <Description><![CDATA[pet - Питомец персонажа]]></Description>
+  </WowApi>
+  <WowApi ImageType="Field" Name="vehicle">
+    <Description><![CDATA[vehicle - Транспорт]]></Description>
   </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="HasBuff">
     <Description>
