@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.178</Version>
+  <Version>0.0.5.179</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -10868,7 +10868,7 @@ end
           </Ability>
           <Ability Name="Дыхание жизни">
             <SpellID>0</SpellID>
-            <Target>Pet</Target>
+            <Target>None</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
@@ -10880,7 +10880,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if GetPetActionCooldown(4) == 0 then
-    if HealthByPercent("vehicle") < 40 and not HasBuff("player", 57143) then
+    if HealthByPercent("vehicle") < 40 and not HasBuff("vehicle", 57143) then
         if select(2, HasBuff("player", 57090)) > 3 then
             CastPetAction(4);
         end
@@ -10890,7 +10890,7 @@ end
           </Ability>
           <Ability Name="Реанимация">
             <SpellID>0</SpellID>
-            <Target>Pet</Target>
+            <Target>None</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
@@ -10903,19 +10903,19 @@ end
             <Lua><![CDATA[
 if GetPetActionCooldown(3) == 0 then
     if     HealthByPercent("vehicle") < 90 then
-        if select(2, HasBuff("player", 57090)) < 1 then
+        if select(2, HasBuff("vehicle", 57090)) < 1 then
             CastPetAction(3);
         end
     elseif HealthByPercent("vehicle") < 70 then
-        if select(2, HasBuff("player", 57090)) < 2 then
+        if select(2, HasBuff("vehicle", 57090)) < 2 then
             CastPetAction(3);
         end
     elseif HealthByPercent("vehicle") < 50 then
-        if select(2, HasBuff("player", 57090)) < 3 then
+        if select(2, HasBuff("vehicle", 57090)) < 3 then
             CastPetAction(3);
         end
     elseif HealthByPercent("vehicle") < 30 then
-        if select(2, HasBuff("player", 57090)) < 4 then
+        if select(2, HasBuff("vehicle", 57090)) < 4 then
             CastPetAction(3);
         end
     end
@@ -10955,7 +10955,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if UnitExists("target") and UnitIsEnemy("player", "target")
-    and GetPetActionCooldown(1) == 0 then
+    and GetPetActionCooldown(1) == 0 and GetComboPoints("vehicle") < 3 then
     CastPetAction(1, ability.Target);
 end
 ]]></Lua>
@@ -11001,7 +11001,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if GetPetActionCooldown(4) == 0 then
-    local col, rem = select(2, HasBuff("player", 62552));
+    local col, rem = select(2, HasBuff("vehicle", 62552));
     if col < 3 or rem < 5 then
         CastPetAction(4);
     end
