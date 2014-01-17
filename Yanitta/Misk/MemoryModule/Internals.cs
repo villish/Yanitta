@@ -43,6 +43,21 @@ namespace MemoryModule
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool CloseHandle(SafeProcessHandle hObject);
 
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int GetSecurityInfo(IntPtr handle, int ObjectType, int SecurityInfo,
+            out IntPtr pSidOwner,
+            out IntPtr pSidGroup,
+            out IntPtr pDacl,
+            out IntPtr pSacl,
+            out IntPtr pSecurityDescriptor);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int SetSecurityInfo(SafeProcessHandle handle, int ObjectType, int SecurityInfo,
+            out IntPtr pSidOwner,
+            out IntPtr pSidGroup,
+            out IntPtr pDacl,
+            out IntPtr pSacl);
+
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
 
@@ -61,7 +76,9 @@ namespace MemoryModule
         DupHandle           = 0x00000040,
         SetInformation      = 0x00000200,
         QueryInformation    = 0x00000400,
+        LazyOpen            = 0x0000043A,
         Synchronize         = 0x00100000,
+        WriteDAC            = 0x00040000,
         All                 = 0x001F0FFF,
     }
 

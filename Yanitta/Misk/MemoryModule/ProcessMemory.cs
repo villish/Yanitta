@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace MemoryModule
 {
@@ -92,22 +93,51 @@ namespace MemoryModule
         /// <param name="DebugPrivileges"></param>
         /// <param name="UseBaseAddress"></param>
         public ProcessMemory(Process process)
+            : this(process, false)
+        {
+        }
+
+        public ProcessMemory(Process process, bool noFullAccess)
         {
             if (process == null)
                 throw new ArgumentNullException("process", "Process exists");
 
             this.Process = process;
 
-            Process.EnterDebugMode();
-
             this.Process.EnableRaisingEvents = true;
 
-            this.Handle = Internals.OpenProcess(ProcessAccess.All, false, Process.Id);
+            Process.EnterDebugMode();
+            this.Handle       = Internals.OpenProcess(ProcessAccess.All, false, this.Process.Id);
+            this.ThreadHandle = Internals.OpenThread(ThreadAccess.All,   false, this.MainThread.Id);
+
+            if (this.Handle.IsInvalid && noFullAccess)
+            {
+                if (Marshal.GetLastWin32Error() == 5) // ERROR_ACCESS_DENIED
+                {
+                    IntPtr SidOwner;
+                    IntPtr SidGroup;
+                    IntPtr Dacl;
+                    IntPtr Sacl;
+                    IntPtr securityDescriptor;
+
+                    var error = Internals.GetSecurityInfo(Process.GetCurrentProcess().Handle, 0x6, 0x4, out SidOwner, out SidGroup, out Dacl, out Sacl, out securityDescriptor);
+                    if (error != 0)
+                        throw new Exception("Can't get injector's security secriptor, ErrorCode " + Marshal.GetLastWin32Error());
+
+                    this.Handle = Internals.OpenProcess(ProcessAccess.WriteDAC, false, this.Process.Id);
+                    if (this.Handle.IsInvalid)
+                        throw new Exception("Process open is failed with only WRITE_DAC access, ErrorCode " + Marshal.GetLastWin32Error());
+
+                    error = Internals.SetSecurityInfo(this.Handle, 0x6, 0x20000004, out SidOwner, out SidGroup, out Dacl, out Sacl);
+                    if (error != 0)
+                        throw new Exception("Can't override client's DACL, ErrorCode " + Marshal.GetLastWin32Error());
+
+                    this.Handle = Internals.OpenProcess(ProcessAccess.All, false, this.Process.Id);
+                }
+            }
 
             if (this.Handle.IsInvalid)
                 throw new Win32Exception();
-
-            this.ThreadHandle = Internals.OpenThread(ThreadAccess.All, false, this.MainThread.Id);
 
             if (this.ThreadHandle.IsInvalid)
                 throw new Win32Exception();
