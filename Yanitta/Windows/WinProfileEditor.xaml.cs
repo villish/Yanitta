@@ -36,11 +36,6 @@ namespace Yanitta
             get { return (rotationList != null && rotationList.SelectedValue is Rotation) ? (Rotation)rotationList.SelectedValue : null; }
         }
 
-        private WowTest CurrentTest
-        {
-            get { return (testList != null && testList.SelectedValue is WowTest) ? (WowTest)testList.SelectedValue : null; }
-        }
-
         private void MoveAbility(int shift)
         {
             var index = abilityList.SelectedIndex;
@@ -237,48 +232,6 @@ namespace Yanitta
                         });
                     }
                 }
-            }
-        }
-
-        private void ButtonTestAdd_Click(object sender, RoutedEventArgs e)
-        {
-            ProfileDb.Instance.WowTestList.Add(new WowTest());
-        }
-
-        private void ButtonTestCopy_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentTest != null)
-            {
-                ProfileDb.Instance.WowTestList.Add(new WowTest() {
-                    Name = CurrentTest.Name + "*",
-                    Lua  = CurrentTest.Lua
-                });
-            }
-        }
-
-        private void ButtonTestRemove_Click(object sender, RoutedEventArgs e)
-        {
-            if (CurrentTest != null)
-            {
-                ProfileDb.Instance.WowTestList.Remove(CurrentTest);
-            }
-        }
-
-        private void ButtonRunTest_Click(object sender, RoutedEventArgs e)
-        {
-            if (cbProcess.SelectedIndex > -1 && CurrentTest != null)
-            {
-                var mem = (WowMemory)cbProcess.SelectedValue;
-                var spellIdList = CurrentRotation.AbilityList.Select(a => a.SpellID);
-                var test_code = string.Format(@"local spellList = {{ {0} }};" + Environment.NewLine,
-                    string.Join(", ", spellIdList)) + CurrentTest.Lua;
-
-                System.IO.File.WriteAllText("InjectedLuaCode.lua", test_code);
-                mem.LuaHook.LuaExecute(test_code);
-            }
-            else 
-            {
-                MessageBox.Show("Не выбран процесс или тест");
             }
         }
     }

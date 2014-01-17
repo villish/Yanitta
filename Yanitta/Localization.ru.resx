@@ -436,12 +436,6 @@
   <data name="Rotation_Name" xml:space="preserve">
     <value>Наименование: </value>
   </data>
-  <data name="Test_Header" xml:space="preserve">
-    <value>Тесты</value>
-  </data>
-  <data name="Test_Name" xml:space="preserve">
-    <value>Наименование: </value>
-  </data>
   <data name="AbilityDelQuestion" xml:space="preserve">
     <value>Вы действительно хотите удалить текущую способность?</value>
   </data>

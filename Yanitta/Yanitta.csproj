@@ -143,7 +143,6 @@
     <Compile Include="Misk\WowMemory.cs" />
     <Compile Include="XML\ProfileDb.cs" />
     <Compile Include="XML\Rotation.cs" />
-    <Compile Include="XML\TestElement.cs" />
     <Compile Include="XML\XmlManager.cs" />
     <Page Include="Themes\KamillaStyle.xaml">
       <SubType>Designer</SubType>

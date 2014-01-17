@@ -19,7 +19,6 @@ namespace Yanitta
         public static readonly DependencyProperty AuthorProperty         = DependencyProperty.Register("Author",         typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty UrlProperty            = DependencyProperty.Register("Url",            typeof(string), typeof(ProfileDb));
         public static readonly DependencyProperty ProfileListProperty    = DependencyProperty.Register("ProfileList",    typeof(ObservableCollection<Profile>), typeof(ProfileDb));
-        public static readonly DependencyProperty WowTestListProperty    = DependencyProperty.Register("WowTestList",    typeof(ObservableCollection<WowTest>), typeof(ProfileDb));
         public static readonly DependencyProperty DefaultProfileProperty = DependencyProperty.Register("DefaultProfile", typeof(Profile), typeof(ProfileDb));
 
         [XmlElement]
@@ -57,13 +56,6 @@ namespace Yanitta
             set { this.Lua = value.GetTrimValue(); }
         }
 
-        [XmlArray]
-        public ObservableCollection<WowTest> WowTestList
-        {
-            get { return (ObservableCollection<WowTest>)GetValue(WowTestListProperty); }
-            set { SetValue(WowTestListProperty, value); }
-        }
-
         [XmlElement("Profile")]
         public ObservableCollection<Profile> ProfileList
         {
@@ -90,7 +82,6 @@ namespace Yanitta
         {
             this.Version     = "0.0.0.1";
             this.ProfileList = new ObservableCollection<Profile>();
-            this.WowTestList = new ObservableCollection<WowTest>();
         }
 
         #region Extension
@@ -118,7 +109,6 @@ namespace Yanitta
             this.Lua         = temp.Lua;
             this.Url         = temp.Url;
             this.ProfileList = temp.ProfileList;
-            this.WowTestList = temp.WowTestList;
             this.DefaultProfile = temp[WowClass.None];
         }
 

@@ -638,33 +638,6 @@ if not AddonFrame then
     AddonFrame:Show();
 end
 ]]></Lua>
-  <WowTestList>
-    <WowTest>
-      <Name>Досягаемость</Name>
-      <Lua><![CDATA[
--- local spellList = { };
--- Проверка на досягаемость заклинаний.
--- Если IsSpellInRange возвращает nil - тогда ошибка.
-if not UnitExists("target") then
-    print("|cfff5360c>> Нет цели, подойдите к манекену и повторите тест!");
-    return;
-end
-for _,spellId in ipairs(spellList) do
-    if spellId > 0 then
-        local spellName = GetSpellInfo(spellId);
-        if not spellName then
-            print("|cfff5360c>> Заклинание ID: "..spellId.." не найдено!");
-        else
-            local msg = IsSpellInRange(spellName, "target") ~= nil
-                  and "|cff15bd05 Дистанция вычисляется!"
-                  or  "|cfff5360c Дистанция не вычисляется!!!";
-            print("|cff6f0a9a>> ["..spellId.."] - "..spellName.." >> |r"..msg);
-        end
-    end
-end
-]]></Lua>
-    </WowTest>
-  </WowTestList>
   <Profile Class="Warrior">
     <Lua><![CDATA[
 useCooldown = true;

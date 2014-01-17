@@ -349,53 +349,6 @@
                     </StackPanel>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="{x:Static yanitta:Localization.Test_Header}" Grid.Row="1">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="25"/>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="500"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <ListBox Name="testList" Grid.Row="2" ItemsSource="{Binding WowTestList}" DisplayMemberPath="Name" IsSynchronizedWithCurrentItem="True"/>
-                    <StackPanel Orientation="Horizontal" DataContext="{Binding Source={StaticResource processList}}">
-                        <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
-                        <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Path=ProcessId, StringFormat={}[{0}]}"/>
-                                        <TextBlock Text="{Binding Path=Name,      StringFormat={} {0}}"/>
-                                        <TextBlock Text="{Binding Path=Class,     StringFormat={} ({0})}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <Button Content="{x:Static yanitta:Localization.CommandRun}" Margin="10,0,0,0" Width="100" Click="ButtonRunTest_Click" />
-                    </StackPanel>
-                    <ToolBar Grid.Row="1">
-                        <Button Foreground="Transparent" Click="ButtonTestAdd_Click">
-                            <Image Source="/Yanitta;component/Resources/Add.png" />
-                        </Button>
-                        <Button Foreground="Transparent" Click="ButtonTestCopy_Click">
-                            <Image Source="/Yanitta;component/Resources/Clipboard.png" />
-                        </Button>
-                        <Button Foreground="Transparent" Click="ButtonTestRemove_Click">
-                            <Image Source="/Yanitta;component/Resources/Denided.png" />
-                        </Button>
-                        <Separator />
-                        <TextBlock Text="{x:Static yanitta:Localization.Test_Name}" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding WowTestList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="250" />
-                    </ToolBar>
-
-                    <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Column="1" Grid.RowSpan="3">
-                        <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding WowTestList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                    </Border>
-                </Grid>
-            </TabItem>
         </TabControl>
 
         <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1">

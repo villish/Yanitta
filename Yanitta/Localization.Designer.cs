@@ -888,25 +888,6 @@ namespace Yanitta {
             }
         }
         
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Test.
-        /// </summary>
-        public static string Test_Header {
-            get {
-                return ResourceManager.GetString("Test_Header", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Name: .
-        /// </summary>
-        public static string Test_Name {
-            get {
-                return ResourceManager.GetString("Test_Name", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Yanitta.
         /// </summary>
         public static string Title {

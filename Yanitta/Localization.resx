@@ -435,12 +435,6 @@
   <data name="Rotation_Name" xml:space="preserve">
     <value>Name: </value>
   </data>
-  <data name="Test_Header" xml:space="preserve">
-    <value>Test</value>
-  </data>
-  <data name="Test_Name" xml:space="preserve">
-    <value>Name: </value>
-  </data>
   <data name="AbilityDelQuestion" xml:space="preserve">
     <value>Do you really want to delete the current ability?</value>
   </data>
