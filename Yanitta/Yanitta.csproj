@@ -115,6 +115,7 @@
     <Compile Include="Misk\MemoryModule\SafeProcessHandle.cs" />
     <Compile Include="Misk\MemoryModule\StructHelper.cs" />
     <Compile Include="Misk\ProcessList.cs" />
+    <Compile Include="Themes\KamillaStyle.cs" />
     <Compile Include="XML\Offsets.cs" />
     <Compile Include="XML\HotKey.cs" />
     <Compile Include="Localization.Designer.cs">

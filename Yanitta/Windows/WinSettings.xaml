@@ -6,10 +6,10 @@
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="WindowSettings"
         Width="470"
-        Height="390"
+        Height="400"
         FontFamily="../Resources/#MORPHEUS"
         ShowInTaskbar="False"
-        Style="{DynamicResource KamillaStyle}"
+        Style="{DynamicResource KamillaStyleWindow}"
         Icon="/Yanitta;component/Resources/Background_Downloader.png"
         ResizeMode="NoResize">
 

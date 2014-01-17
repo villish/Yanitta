@@ -25,7 +25,7 @@
         <CommandBinding Command="yanitta:YanittaCommand.OpenSettings" Executed="CommandBinding_Executed_ShowSettingWindow" />
     </Window.CommandBindings>
 
-    <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyle}">
+    <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyleControls}">
         <Image Width="730" MouseDown="Image_MouseDown" Source="../Resources/wow_fon.png" />
         <Image Width="750" MouseDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
 
