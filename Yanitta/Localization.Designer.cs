@@ -888,6 +888,7 @@ namespace Yanitta {
             }
         }
         
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Yanitta.
         /// </summary>
         public static string Title {
