@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.194</Version>
+  <Version>0.0.5.203</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -6442,29 +6442,22 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
+        AddonFrame.print("|cff00ff00 Одиночная цель", 1);
     else
         setAoE = true;
-        print("|cffff0000 >> AOE");
+        AddonFrame.print("|cffff0000 AOE", 1);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        AddonFrame.print("|cffff0000Кулдауны выключены", 1);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        AddonFrame.print("|cff00ff00Кулдауны включены", 1);
     end
 elseif IsModKeyDown(mkRightControl) then
-    if useAutoDispell then
-        useAutoDispell = false;
-        AddonFrame.print("|cffff0000Автодиспел выключен", true);
-    else
-        useAutoDispell = true;
-        AddonFrame.print("|cff00ff00Автодиспел включен", true);
-    end
 elseif IsModKeyDown(mkRightAlt)     then
 end
 
@@ -6478,7 +6471,9 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-FillPartyTables(331);
+isInRange = IsSpellInRange(GetSpellInfo(403), "target") == 1;
+
+--FillPartyTables(331);
 ]]></Lua>
           </Ability>
           <Ability Name="Исцеляющий всплеск">
@@ -6507,16 +6502,86 @@ end
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if not setAoE and isInRange and UnitExists("target") and not GetTotemInfo(1) then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Огненный шок">
+            <SpellID>8050</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if not GetTotemInfo(1) then
+if select(3, HasDebuff(ability.Target, 8050, "PLAYER")) <= 3 then
     return true;
 end
+]]></Lua>
+          </Ability>
+          <Ability Name="Огненный шок">
+            <SpellID>8050</SpellID>
+            <Target>Focus</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff(ability.Target, 8050, "PLAYER")) <= 3 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Огненный шок">
+            <SpellID>8050</SpellID>
+            <Target>Mouseover</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff(ability.Target, 8050, "PLAYER")) <= 3 then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Выброс лавы">
+            <SpellID>51505</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+return true;
 ]]></Lua>
           </Ability>
           <Ability Name="Земной шок">
@@ -6551,24 +6616,6 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 return setAoE;
-]]></Lua>
-          </Ability>
-          <Ability Name="Огненный шок">
-            <SpellID>8050</SpellID>
-            <Target>Target</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>true</IsRangeCheck>
-            <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>true</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-if not HasDebuff("target", 8050, "PLAYER") then
-    return true;
-end
 ]]></Lua>
           </Ability>
           <Ability Name="Молния">
