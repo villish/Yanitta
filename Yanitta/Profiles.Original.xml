@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.193</Version>
+  <Version>0.0.5.194</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
 OnEventExtended = nil;
 ABILITY_TABLE   = { };
 LOSS_TABLE      = { };
-ping            = 0;
 LAST_TARGET     = 0;
 
 -- Константы горячих клавиш
@@ -200,7 +199,7 @@ function CheckInterrupt(unit, sec)
     -- чтение заклинания прерываем только перед окончанием каста.
     local name,_,_,_,startTime,endTime,isTrade,_,notInterruptible = UnitCastingInfo(unit);
     if name and not (notInterruptible or isTrade) then
-        if (((endTime / 1000) - GetTime()) - ping) <= (sec or 1) then
+        if (((endTime / 1000) - GetTime()) - AddonFrame.ping) <= (sec or 1) then
             return true;
         end
     end
@@ -455,7 +454,7 @@ function CheckAndCastAbility(ability)
 
     local recastDelay = 0;
     if ability.SetRecastDelay then
-        recastDelay = ping + 300;
+        recastDelay = AddonFrame.ping + 300;
         if (GetTime() - ability.LastCastingTime) < 1 then
             return;
         end
@@ -475,11 +474,11 @@ function CheckAndCastAbility(ability)
     end
 
     local start, duration, enable = GetSpellCooldown(ability.SpellId);
-    if enable == 1 and ((duration + start) - GetTime()) > ping then
+    if enable == 1 and ((duration + start) - GetTime()) > AddonFrame.ping then
         return;
     end
 
-    local castPing = (ping * 1000) - recastDelay;
+    local castPing = (AddonFrame.ping * 1000) - recastDelay;
     if not ability.CancelCasting then
         local endTime = select(6, UnitCastingInfo("player")) or 0;
         if (endTime - (GetTime() * 1000)) >= castPing then
@@ -604,15 +603,14 @@ function AddonFrame_OnUpdate(self, elapsed)
     if type(ABILITY_TABLE) == "table" and GetTime() >= (AddonFrame.LastTime or 0) then
         if AddonFrame.CurentRotation and not UnitIsDeadOrGhost("player") then
             IS_MOVING = IsMoving();
-            ping = select(4, GetNetStats()) / 1000;
+            AddonFrame.ping = select(4, GetNetStats()) / 1000;
             for _,ability in ipairs(ABILITY_TABLE) do
                 if CheckAndCastAbility(ability) then
                     break;
                 end
             end
         end
-        local delay = minmax((TickDelay or 250), 100, 1000) / 1000;
-        AddonFrame.LastTime = GetTime() + delay;
+        AddonFrame.LastTime = GetTime() + 0.2;
     end
     if (AddonFrame.Duration or 0) < GetTime() then
         AddonFrame.Msg:SetText("");
@@ -781,7 +779,7 @@ end
 function NeedReflect(unit)
     if UnitIsEnemy("player", unit) and UnitIsUnit("player", unit.."target") then
         local name,_,_,_,_,endTime = UnitCastingInfo(unit);
-        if name and (((endTime / 1000) - GetTime()) - ping) <= 2 then
+        if name and (((endTime / 1000) - GetTime()) - AddonFrame.ping) <= 2 then
             if UnitIsPVP("player") then
                 for _,spell_id in ipairs(reflect_table.PVP) do
                     if name == GetSpellInfo(spell_id) then
