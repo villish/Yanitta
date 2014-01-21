@@ -789,7 +789,11 @@ function NeedReflect(unit)
                     end
                 end
             else
-                return true;
+                for _,spell_id in ipairs(reflect_table.RAIDS) do
+                    if name == GetSpellInfo(spell_id) then
+                        return true;
+                    end
+                end
             end
         end
     end
