@@ -8021,7 +8021,7 @@ end
           </Ability>
           <Ability Name="Огонь и сера">
             <SpellID>108683</SpellID>
-            <Target>Target</Target>
+            <Target>None</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>false</IsRangeCheck>
@@ -8032,7 +8032,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-if isInRange and HasBuff("player", 104232) then
+if isInRange and power2 > 0 and HasBuff("player", 104232) then
     return true;
 end
 ]]></Lua>
@@ -8047,14 +8047,15 @@ end
             <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>true</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
 if UnitHealth(ability.Target) < UnitHealthMax("player") then
     return;
 end
 
-if FireAndBrimstone and power2 > 0 and isInRange and ChaosCount < 3 then
+if FireAndBrimstone and power2 > 0 and isInRange and ChaosCount < 3
+    and IsSpellKnown(108683) then
     if select(3, HasDebuff(ability.Target, 108686, "PLAYER")) < 3 then
         return true;
     end
@@ -8074,7 +8075,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
+if UnitHealth(ability.Target) < UnitHealthMax("player") then
     return;
 end
 
@@ -8098,7 +8099,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
+if UnitHealth(ability.Target) < UnitHealthMax("player") then
     return;
 end
 
@@ -8122,7 +8123,7 @@ end
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-if (UnitHealth(ability.Target) < UnitHealthMax("player")) then
+if UnitHealth(ability.Target) < UnitHealthMax("player") then
     return;
 end
 
@@ -8166,7 +8167,7 @@ end
             <Lua><![CDATA[
 if isInRange and ChaosCount < 3 then
     -- Если нету бафа обратного потока
-    if not HasBuff("player", 177828) then
+    if not HasBuff("player", 117828) then
         if FireAndBrimstone then
             return power2 > 1;
         else
