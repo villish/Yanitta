@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.203</Version>
+  <Version>0.0.5.205</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -6854,9 +6854,8 @@ setAoE       = nil;
       <Rotation Name="Огонь">
         <HotKey Key="Z" Modifier="Alt" />
         <Lua><![CDATA[
-igniteDamage = 0;       -- Урон от тика доты Воспламенение (12654)
-pyroDamage   = 0;       -- Урон от заклинания Огненная глыба (11366)
-pyroCrit     = false;   -- Было ли заклинание Огненная глыба (11366) критическим
+igniteDamage = 0;     -- Урон от тика доты Воспламенение (12654)
+pyroCrit     = nil;   -- Было ли заклинание Огненная глыба (11366) критическим
 
 function OnEventExtended (self, event, ...)
     if event == "COMBAT_LOG_EVENT_UNFILTERED" then
@@ -6881,9 +6880,10 @@ function OnEventExtended (self, event, ...)
             if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
                 -- Огненная глыба
                 if spellId == 11366 then
-                    pyroDamage = amount;
-                    pyroCrit   = critical;
-                    --print("Урон: "..tostring(critical).." Огненная глыба (11366) - "..tostring(amount));
+                    pyroCrit = critical;
+                    if critical then
+                        print("|cff00ff00 Крит: Огненная глыба (11366) - "..tostring(amount));
+                    end
                 end
             end
         end
@@ -6991,14 +6991,8 @@ return IsModKeyDown(mkLeftShift);
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
--- Будем тестировать, позже.
--- это пробная версия.
-
--- Надо в ручную определить это значение.
--- вычислением пиковой/средней величины.
-local MAX_DOTE_IGNITE = 5000;
---print(pyroCrit ,igniteDamage)
-if useCooldown and pyroCrit and igniteDamage > MAX_DOTE_IGNITE then
+-- Так же важно использовать возгорание под прок тринек
+if useCooldown and pyroCrit and (igniteDamage or 0) > 5000 then
     if select(3, HasDebuff(ability.Target, 12654, "PLAYER")) > 3 then
         return true;
     end
@@ -7069,7 +7063,7 @@ end
             <SpellID>11366</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
+            <CancelCasting>true</CancelCasting>
             <IsRangeCheck>true</IsRangeCheck>
             <IsAttacedTarget>true</IsAttacedTarget>
             <IsUseIncombat>true</IsUseIncombat>
@@ -7097,11 +7091,6 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
--- При крите огненного шара и получения баффа Разогрев (48107) делаем каст Пламенный взрыв (108853).
--- Скорее всего вы увидите каст бафф разогрева после того как начнете следующий каст Огненного шара (133),
--- поэтому важно сразу после окончания каста использовать Пламенный взрыв (108853),
--- чтобы следующий Огненный шар (133) не успел и долететь до цели и сбить бафф, если вдруг не критонет.
-
 if isInRange and HasBuff("player", 48107) then
     return true;
 end
