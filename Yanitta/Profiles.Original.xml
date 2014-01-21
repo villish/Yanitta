@@ -23,9 +23,6 @@ moving_spell_table = {
     79206,  -- Благосклонность предков (Шанам)
     110806, -- Благосклонность предков (Друид: Симбиоз)
     108839, -- Плавучая льдина
-    --    , -- warlock (?)
-    -- Вневременные потоки
-    147782,147941,147940,147639,147942,147937,147936,147920,147809,147806,147944,147945,147938,147802,
 };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
@@ -52,7 +49,7 @@ function HasBuff(unit, spellId, filter)
             -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
             local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitBuff(unit, spellName, spellRank, filter);
             if name then
-                local rem = min(max((expires or 0) - GetTime(), 0), 0xffff);
+                local rem = min(max((expires or 0) - (GetTime() - (AddonFrame.ping or 0)), 0), 0xffff);
                 return name, count, rem, value1, value2, value3;
             end
         end
@@ -84,7 +81,7 @@ function HasDebuff(unit, spellId, filter)
             -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
             local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitDebuff(unit, spellName, spellRank, filter);
             if name then
-                local rem = min(max((expires or 0) - GetTime(), 0), 0xffff);
+                local rem = min(max((expires or 0) - (GetTime() - (AddonFrame.ping or 0)), 0), 0xffff);
                 return name, count, rem, value1, value2, value3;
             end
         end
@@ -97,7 +94,7 @@ end
 function SpellCD(m_spell)
     local start, duration = GetSpellCooldown(m_spell);
     local cooldown = duration + start - GetTime();
-    return cooldown > 0 and cooldown or 0;
+    return cooldown > 0 and cooldown - (AddonFrame.ping or 0) or 0;
 end
 
 -- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
@@ -217,9 +214,8 @@ function CheckEnrage(unit)
             local name,_,_,_,dispelType = UnitBuff(unit, i);
             if not name then
                 return;
-            elseif dispelType == "" then -- ???
-                -- почему-то енрага отображается как пустая строка
-                -- надо тестировать
+            -- Исступление отображается как пустая строка
+            elseif dispelType == "" then
                 return true;
             end
         end
@@ -333,7 +329,7 @@ function GetDispellInfo(dispeller_type)
 
     if not c_rec then return end
 
-    local dispellTable   = {};
+    local dispellTable = { };
     for _,member in ipairs(members) do
         for index = 1, 40 do
             local name,_,_,count,dispelType,duration,expires,_,_,_,debuffId = UnitDebuff(member.Unit, index);
