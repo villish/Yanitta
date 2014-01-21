@@ -52,7 +52,7 @@ function HasBuff(unit, spellId, filter)
             -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
             local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitBuff(unit, spellName, spellRank, filter);
             if name then
-                local rem = minmax((expires or 0) - GetTime(), 0, 0xffff);
+                local rem = min(max((expires or 0) - GetTime(), 0), 0xffff);
                 return name, count, rem, value1, value2, value3;
             end
         end
@@ -84,7 +84,7 @@ function HasDebuff(unit, spellId, filter)
             -- name, rank, icon, count, dispelType, duration, expires, caster, isStealable, shouldConsolidate, spellID, canApplyAura, isBossDebuff, value1, value2, value3
             local name,_,_,count,_,_,expires,_,_,_,_,_,_,value1,value2,value3 = UnitDebuff(unit, spellName, spellRank, filter);
             if name then
-                local rem = minmax((expires or 0) - GetTime(), 0, 0xffff);
+                local rem = min(max((expires or 0) - GetTime(), 0), 0xffff);
                 return name, count, rem, value1, value2, value3;
             end
         end
@@ -436,16 +436,6 @@ end
 ---------------------------------------
 --              CORE                 --
 ---------------------------------------
-function minmax(val, x, y)
-    return min(max(val, x), y);
-end
-
-function printd(...)
-    local m = string.match(..., "^debug:+");
-    if not m or (m and DebugMode) then
-        print(...);
-    end
-end
 
 function CheckAndCastAbility(ability)
     if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
@@ -9326,7 +9316,7 @@ end
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
 if CheckEnrage(ability.Target) then
-    printd("debug:|cff15bd05>> Снимаю исступление!");
+    print("|cff15bd05>> Снимаю исступление!");
     return true;
 end
 ]]></Lua>
@@ -9446,7 +9436,7 @@ local buffs = { 774, 8936 };
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
         if member.HP < 70 and HasBuff(member.Unit, buffs, "PLAYER") then
-            printd("debug:|cff00ff00 >> Кастую Быстрое восстановление <<");
+            print("|cff00ff00 >> Кастую Быстрое восстановление <<");
             return member.Unit;
         end
     end
@@ -9460,7 +9450,7 @@ elseif LowHP.H80 <= 3 then
                 end
             end
             if count > 2 then
-                printd("debug:|cff00ff00 >> Кастую Быстрое восстановление <<");
+                print("|cff00ff00 >> Кастую Быстрое восстановление <<");
                 return member.Unit;
             end
         end
