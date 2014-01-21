@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.179</Version>
+  <Version>0.0.5.193</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -10939,7 +10939,7 @@ end
         </AbilityList>
       </Rotation>
       <Rotation Name="Серебряный авангард (Турнир)">
-        <HotKey Key="Z" Modifier="Alt Shift" />
+        <HotKey Key="T" Modifier="Alt Shift" />
         <AbilityList>
           <Ability Name="Инициализация">
             <SpellID>0</SpellID>
