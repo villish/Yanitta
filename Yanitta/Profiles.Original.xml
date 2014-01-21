@@ -604,9 +604,7 @@ function AddonFrame_OnUpdate(self, elapsed)
     if type(ABILITY_TABLE) == "table" and GetTime() >= (AddonFrame.LastTime or 0) then
         if AddonFrame.CurentRotation and not UnitIsDeadOrGhost("player") then
             IS_MOVING = IsMoving();
-            local pingin, pingout = select(3, GetNetStats());
-            ping = minmax((pingin + pingout) / 1000, 0.05, 0.80);
-
+            ping = select(4, GetNetStats()) / 1000;
             for _,ability in ipairs(ABILITY_TABLE) do
                 if CheckAndCastAbility(ability) then
                     break;
