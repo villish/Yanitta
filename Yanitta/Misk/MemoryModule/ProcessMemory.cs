@@ -107,8 +107,17 @@ namespace MemoryModule
             this.Process.EnableRaisingEvents = true;
 
             Process.EnterDebugMode();
-            this.Handle       = Internals.OpenProcess(ProcessAccess.All, false, this.Process.Id);
-            this.ThreadHandle = Internals.OpenThread(ThreadAccess.All,   false, this.MainThread.Id);
+            this.Handle = Internals.OpenProcess(
+                ProcessAccess.QueryInformation |
+                ProcessAccess.VMOperation |
+                ProcessAccess.VMRead |
+                ProcessAccess.VMWrite,
+                false, this.Process.Id);
+
+            this.ThreadHandle = Internals.OpenThread(
+                ThreadAccess.SuspendResume |
+                ThreadAccess.QueryInformation,
+                false, this.MainThread.Id);
 
             if (this.Handle.IsInvalid && noFullAccess)
             {

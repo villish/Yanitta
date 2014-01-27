@@ -13,9 +13,7 @@ namespace Yanitta
         private IntPtr mCodeCavePtr;
         private IntPtr mDetourPtr;
         private IntPtr mDetour;
-        private IntPtr mClientObjectManager;
 
-        private byte[] CltObjMrgSeach          = new byte[] { 0xE8, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x00, 0x00, 0x68, 0x00, 0x00, 0x00, 0x00, 0x6A, 0x00, 0x00, 0x00, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x83, 0xC4, 0x14 };
         private byte[] OverwrittenBytes        = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00 };
         private byte[] OverwrittenBytesPattern = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00, 0x83, 0x7D, 0x14, 0x00, 0x56, 0x8B, 0x75 };
 
@@ -25,23 +23,17 @@ namespace Yanitta
         {
             if (memory == null || !memory.IsOpened)
                 throw new ArgumentNullException();
-
-            this.mClientObjectManager = (IntPtr)Offsets.Default.ClntObjMgrGetActivePlayerObj;
             this.Memory = memory;
         }
 
         public void Apply()
         {
-            if (this.mDetour == IntPtr.Zero || this.mClientObjectManager == IntPtr.Zero)
+            if (this.mDetour == IntPtr.Zero)
             {
-                this.mDetour              = this.Memory.Find(this.OverwrittenBytesPattern);
-                this.mClientObjectManager = this.Memory.Find(this.CltObjMrgSeach, "x????x????x????x???x????xxx");
+                this.mDetour = this.Memory.Find(this.OverwrittenBytesPattern);
 
                 if (this.mDetour == IntPtr.Zero)
                     throw new NullReferenceException("mDetour not found");
-
-                if (this.mClientObjectManager == IntPtr.Zero)
-                    throw new NullReferenceException("mClientObjectManager not found");
             }
 
             this.Memory.Suspend();
@@ -90,21 +82,17 @@ namespace Yanitta
             }
         }
 
-        public string LuaExecute(string sCommand, bool simple = true, string value = "nil")
+        public void LuaExecute(string sCommand, bool simple = true)
         {
             if (!this.IsApplied)
                 this.Apply();
 
-            var commandAdr   = this.Memory.WriteCString(sCommand);
-            var argumentsAdr = this.Memory.WriteCString(value);
-
-            var resultAdr    = this.Memory.Alloc(0x0004);
-            var injAddress   = this.Memory.Alloc(0x4096);
+            var commandAdr = this.Memory.WriteCString(sCommand);
+            var injAddress = this.Memory.Alloc(0x100);
 
             #region ASM_x32
 
-            var asm = new string[]
-            {
+            var asm = new string[] {
                 "mov   eax, " + commandAdr,
                 "push  0",
                 "push  eax",
@@ -112,16 +100,6 @@ namespace Yanitta
                 "mov   eax, " + this.Memory.Rebase(Offsets.Default.FrameScript_ExecuteBuffer),
                 "call  eax",
                 "add   esp, 0xC",
-                "call  " + mClientObjectManager,//Settings.Default.ClntObjMgrGetActivePlayer,
-                "test  eax, eax",
-                "je    @out",
-                "mov   ecx, eax",
-                "push  -1",
-                "mov   edx, " + argumentsAdr,
-                "push  edx",
-                "call  " + this.Memory.Rebase(Offsets.Default.FrameScript_GetLocalizedText),
-                "mov   [" + resultAdr + "], eax",
-                "@out:",
                 "retn"
              };
 
@@ -132,8 +110,7 @@ namespace Yanitta
             this.Memory.Write<IntPtr>(this.mCodeCavePtr, injAddress);
 
             int tickCount = Environment.TickCount;
-            int res;
-            while ((res = this.Memory.Read<int>(mCodeCavePtr)) != 0)
+            while ((this.Memory.Read<int>(mCodeCavePtr)) != 0)
             {
                 if ((tickCount + 0xBB8) < Environment.TickCount)
                 {
@@ -143,29 +120,15 @@ namespace Yanitta
                 Thread.Sleep(15);
             }
 
-            var result = this.Memory.Read<IntPtr>(resultAdr);
-
-            var resStr = "";
-            if (result != IntPtr.Zero)
-            {
-                this.Memory.ReadString(result);
-            }
             this.Memory.Free(commandAdr);
-            this.Memory.Free(argumentsAdr);
-            this.Memory.Free(resultAdr);
             this.Memory.Free(injAddress);
 
             if (simple)
                 this.Restore();
-
-            return resStr;
         }
 
         private void Inject(IEnumerable<string> ASM_Code, IntPtr address, bool randomize = true)
         {
-            //if (randomize)
-            //    ASM_Code = Extensions.RandomizeASM(ASM_Code);
-
             try
             {
                 this.Memory.Inject(ASM_Code, address);
@@ -197,7 +160,6 @@ namespace Yanitta
                 if (this.Memory.IsOpened)
                     this.Restore();
 
-                this.mClientObjectManager = IntPtr.Zero;
                 this.mCodeCavePtr = IntPtr.Zero;
                 this.mDetourPtr = IntPtr.Zero;
                 this.mDetour = IntPtr.Zero;
