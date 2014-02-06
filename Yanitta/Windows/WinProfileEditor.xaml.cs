@@ -234,5 +234,44 @@ namespace Yanitta
                 }
             }
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (System.IO.Directory.Exists("Profiles"))
+                System.IO.Directory.Delete("Profiles");
+
+            System.IO.Directory.CreateDirectory("Profiles");
+
+            foreach (var profile in ProfileDb.Instance.ProfileList)
+            {
+                if (!System.IO.Directory.Exists("Profiles\\" + profile.Class))
+                    System.IO.Directory.CreateDirectory("Profiles\\" + profile.Class);
+
+                foreach (var rotation in profile.RotationList)
+                {
+                    using (var stream = System.IO.File.CreateText(("Profiles\\" + profile.Class + "\\" + rotation.Name + ".lua").Replace(':', '_')))
+                    {
+                        stream.WriteLine("if not ROTATIONS then ROTATIONS = { } end");
+                        stream.WriteLine("local rotation = {");
+                        stream.WriteLine("    Class = \"{0}\",", profile.Class.ToString().ToUpper());
+                        stream.WriteLine("    Spec  = 0,");
+                        stream.WriteLine("    Name  = \"{0}\",", rotation.Name);
+                        stream.WriteLine("    List  = { }");
+                        stream.WriteLine("};");
+                        stream.WriteLine("table.insert(ROTATIONS, rotation);");
+                        stream.WriteLine("local ABILITY_TABLE = rotation.List;");
+
+                        foreach (var ability in rotation.AbilityList)
+                        {
+                            stream.WriteLine(ability.ToString());
+                        }
+
+                        stream.Flush();
+                    }
+                }
+            }
+
+            MessageBox.Show("Done!");
+        }
     }
 }
