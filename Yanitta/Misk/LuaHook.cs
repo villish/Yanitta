@@ -1,9 +1,8 @@
-﻿using MemoryModule;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
+using MemoryModule;
+using MemoryModule.DirecX;
 
 namespace Yanitta
 {
@@ -12,10 +11,9 @@ namespace Yanitta
         private bool IsApplied;
         private IntPtr mCodeCavePtr;
         private IntPtr mDetourPtr;
-        private IntPtr mDetour;
+        private Dirext3D DirectX;
 
-        private byte[] OverwrittenBytes        = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00 };
-        private byte[] OverwrittenBytesPattern = new byte[] { 0x55, 0x8B, 0xEC, 0x81, 0xEC, 0x94, 0x00, 0x00, 0x00, 0x83, 0x7D, 0x14, 0x00, 0x56, 0x8B, 0x75 };
+        private byte[] OverwrittenBytes;
 
         private ProcessMemory Memory;
 
@@ -28,25 +26,19 @@ namespace Yanitta
 
         public void Apply()
         {
-            if (this.mDetour == IntPtr.Zero)
-            {
-                this.mDetour = this.Memory.Find(this.OverwrittenBytesPattern);
-
-                if (this.mDetour == IntPtr.Zero)
-                    throw new NullReferenceException("mDetour not found");
-            }
+            var directX  = new Dirext3D(this.Memory.Process);
+            if (directX.HookPtr == IntPtr.Zero)
+                throw new Exception("Can't find detour address");
 
             this.Memory.Suspend();
 
-            this.Restore();
-
-            this.mDetourPtr   = this.Memory.Alloc(0x256);
-            this.mCodeCavePtr = this.Memory.Write<IntPtr>(IntPtr.Zero);
+            this.OverwrittenBytes = this.Memory.ReadBytes(directX.HookPtr, 6);
+            this.mDetourPtr       = this.Memory.Alloc(0x256);
+            this.mCodeCavePtr     = this.Memory.Write<IntPtr>(IntPtr.Zero);
 
             #region ASM_x32
 
-            var asm = new string[]
-            {
+            var asm = new [] {
                 "pushfd",
                 "pushad",
                 "mov  eax, [" + this.mCodeCavePtr + "]",
@@ -59,17 +51,16 @@ namespace Yanitta
                 "@out:",
                 "popad",
                 "popfd",
-                "jmp " + (this.mDetour + this.OverwrittenBytes.Length)
+                "jmp " + (this.DirectX.HookPtr + this.OverwrittenBytes.Length)
             };
 
             #endregion ASM_x32
 
             this.Memory.WriteBytes(this.mDetourPtr, this.OverwrittenBytes);
             this.Inject(asm, this.mDetourPtr + this.OverwrittenBytes.Length);
-            this.Inject(new[] { "jmp " + this.mDetourPtr }, this.mDetour, false);
+            this.Inject(new[] { "jmp " + this.mDetourPtr }, this.DirectX.HookPtr, false);
 
             this.Memory.Resume();
-
             this.IsApplied = true;
         }
 
@@ -77,7 +68,7 @@ namespace Yanitta
         {
             if (this.IsApplied)
             {
-                this.Memory.WriteBytes(this.mDetour, this.OverwrittenBytes);
+                this.Memory.WriteBytes(this.DirectX.HookPtr, this.OverwrittenBytes);
                 this.IsApplied = false;
             }
         }
@@ -88,18 +79,17 @@ namespace Yanitta
                 this.Apply();
 
             var commandAdr = this.Memory.WriteCString(sCommand);
-            var injAddress = this.Memory.Alloc(0x100);
+            var pathAdr    = this.Memory.WriteCString("Teldrasil.lua");
+            var injAddress = this.Memory.Alloc(0x200);
 
             #region ASM_x32
 
-            var asm = new string[] {
-                "mov   eax, " + commandAdr,
-                "push  0",
-                "push  eax",
-                "push  eax",
-                "mov   eax, " + this.Memory.Rebase(Offsets.Default.FrameScript_ExecuteBuffer),
-                "call  eax",
-                "add   esp, 0xC",
+            var asm = new List<string> {
+                "push 0",
+                "push " + pathAdr,
+                "push " + commandAdr,
+                "call " + this.Memory.Rebase(Offsets.Default.FrameScript_ExecuteBuffer),
+                "add  esp, 0xC",
                 "retn"
              };
 
@@ -131,7 +121,8 @@ namespace Yanitta
         {
             try
             {
-                this.Memory.Inject(ASM_Code, address);
+                var asm = randomize ? Extensions.RandomizeASM(ASM_Code) : ASM_Code;
+                this.Memory.Inject(asm, address);
             }
             catch (Exception ex)
             {
@@ -162,7 +153,7 @@ namespace Yanitta
 
                 this.mCodeCavePtr = IntPtr.Zero;
                 this.mDetourPtr = IntPtr.Zero;
-                this.mDetour = IntPtr.Zero;
+                this.DirectX = null;
             }
         }
     }

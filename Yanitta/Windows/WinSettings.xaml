@@ -39,11 +39,6 @@
         </StackPanel>
 
         <Separator />
-        <StackPanel Orientation="Horizontal">
-            <Label Content="Update Url PQR:" Width="100" />
-            <TextBox Width="310" Text="{Binding UpdateOffsetURLPQR}" />
-            <Button Command="Find" Content="Update" CommandParameter="PQR"/>
-        </StackPanel>
 
         <StackPanel Orientation="Horizontal">
             <Label Content="Update Url Repo:" Width="100" />
@@ -70,16 +65,8 @@
                 <TextBox Width="250" TextAlignment="Right" Text="{Binding IsInGame, Converter={StaticResource integerConverter}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="FrameScript_ExecuteBuffer" />
+                <Label Width="200" Content="ExecuteBuffer" />
                 <TextBox Width="250" TextAlignment="Right" Text="{Binding FrameScript_ExecuteBuffer, Converter={StaticResource integerConverter}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="FrameScript_GetLocalizedText" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding FrameScript_GetLocalizedText, Converter={StaticResource integerConverter}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="ClntObjMgrGetActivePlayerObj" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding ClntObjMgrGetActivePlayerObj, Converter={StaticResource integerConverter}}" />
             </StackPanel>
         </StackPanel>
 

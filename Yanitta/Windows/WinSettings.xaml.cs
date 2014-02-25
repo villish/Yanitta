@@ -45,10 +45,7 @@ namespace Yanitta
                     Cursor = Cursors.Wait;
                     try
                     {
-                        if (e.Parameter.ToString() == "PQR")
-                            this.LoadOffsetsPQR();
-                        else if (e.Parameter.ToString() == "Repo")
-                            this.LoadOffsetsRepo();
+                        this.LoadOffsetsRepo();
                     }
                     catch(Exception ex)
                     {
@@ -78,64 +75,6 @@ namespace Yanitta
                 {
                     var offsets = (Offsets)serializer.Deserialize(response.GetResponseStream());
                     Extensions.CopyProperies(offsets, Offsets.Default);
-                }
-            }
-        }
-
-        private void LoadOffsetsPQR()
-        {
-            var address = string.Empty;
-
-            using (var response = (HttpWebResponse)WebRequest.Create(Settings.Default.UpdateOffsetURLPQR + "/offsets.txt").GetResponse())
-            {
-                using (var reader = new StreamReader(response.GetResponseStream()))
-                {
-                    var content = reader.ReadToEnd();
-                    address = content.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(address))
-                throw new Exception("Нет данных для загрузки");
-
-            Func<XmlReader, int> read = (reader) =>
-            {
-                var str = reader.ReadString();
-                if (string.IsNullOrWhiteSpace(str))
-                    return 0;
-
-                int result = 0;
-                if (str.StartsWith("0x"))
-                    int.TryParse(str.Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier, null, out result);
-                else
-                    int.TryParse(str, out result);
-
-                return result;
-            };
-
-            var request = WebRequest.Create(Settings.Default.UpdateOffsetURLPQR + '/' + address);
-
-            using (var response = (HttpWebResponse)request.GetResponse())
-            {
-                using (var reader = XmlReader.Create(response.GetResponseStream()))
-                {
-                    while (reader.Read())
-                    {
-                        if (reader.IsStartElement())
-                        {
-                            switch (reader.Name)
-                            {
-                                case "CurrentWoWVersion":           Offsets.Default.Build                           = read(reader); break;
-                                case "PlayerName":                  Offsets.Default.PlayerName                      = read(reader); break;
-                                case "PlayerClass":                 Offsets.Default.PlayerClass                     = read(reader); break;
-                                case "GameState":                   Offsets.Default.IsInGame                        = read(reader); break;
-                                case "Lua_DoStringAddress":         Offsets.Default.FrameScript_ExecuteBuffer       = read(reader); break;
-                                case "Lua_GetLocalizedTextAddress": Offsets.Default.FrameScript_GetLocalizedText    = read(reader); break;
-                                case "ClntObjMgrGetActivePlayerObjAddress": Offsets.Default.ClntObjMgrGetActivePlayerObj = read(reader); break;
-                                default: reader.Read(); break;
-                            }
-                        }
-                    }
                 }
             }
         }

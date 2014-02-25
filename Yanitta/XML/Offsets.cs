@@ -13,8 +13,6 @@ namespace Yanitta
         public static readonly DependencyProperty PlayerClassProperty                   = DependencyProperty.Register("PlayerClass",                    typeof(long), typeof(Offsets));
         public static readonly DependencyProperty IsInGameProperty                      = DependencyProperty.Register("IsInGame",                       typeof(long), typeof(Offsets));
         public static readonly DependencyProperty FrameScript_ExecuteBufferProperty     = DependencyProperty.Register("FrameScript_ExecuteBuffer",      typeof(long), typeof(Offsets));
-        public static readonly DependencyProperty FrameScript_GetLocalizedTextProperty  = DependencyProperty.Register("FrameScript_GetLocalizedText",   typeof(long), typeof(Offsets));
-        public static readonly DependencyProperty ClntObjMgrGetActivePlayerObjProperty  = DependencyProperty.Register("ClntObjMgrGetActivePlayerObj",   typeof(long), typeof(Offsets));
         private const string fileName = "offsets.xml";
 
         [XmlElement]
@@ -50,20 +48,6 @@ namespace Yanitta
         {
             get { return (long)GetValue(FrameScript_ExecuteBufferProperty); }
             set { SetValue(FrameScript_ExecuteBufferProperty, value); }
-        }
-
-        [XmlElement]
-        public long FrameScript_GetLocalizedText
-        {
-            get { return (long)GetValue(FrameScript_GetLocalizedTextProperty); }
-            set { SetValue(FrameScript_GetLocalizedTextProperty, value); }
-        }
-
-        [XmlElement]
-        public long ClntObjMgrGetActivePlayerObj
-        {
-            get { return (long)GetValue(ClntObjMgrGetActivePlayerObjProperty); }
-            set { SetValue(ClntObjMgrGetActivePlayerObjProperty, value); }
         }
 
         static Offsets()

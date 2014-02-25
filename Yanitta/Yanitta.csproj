@@ -99,6 +99,10 @@
     <Compile Include="Misk\Converters\StringToIntConverter.cs" />
     <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
     <Compile Include="Misk\LuaHook.cs" />
+    <Compile Include="Misk\MemoryModule\DirectX\D3D11Device.cs" />
+    <Compile Include="Misk\MemoryModule\DirectX\D3D9Device.cs" />
+    <Compile Include="Misk\MemoryModule\DirectX\D3DDevice.cs" />
+    <Compile Include="Misk\MemoryModule\DirectX\Dirext3D.cs" />
     <Compile Include="Misk\MemoryModule\FASM\FasmCondition.cs" />
     <Compile Include="Misk\MemoryModule\FASM\FasmError.cs" />
     <Compile Include="Misk\MemoryModule\FASM\FasmLineHeader.cs" />
