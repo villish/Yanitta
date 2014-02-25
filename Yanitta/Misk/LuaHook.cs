@@ -9,12 +9,12 @@ namespace Yanitta
     public class LuaHook : IDisposable
     {
         private bool IsApplied;
+
         private IntPtr mCodeCavePtr;
         private IntPtr mDetourPtr;
-        private Dirext3D DirectX;
 
         private byte[] OverwrittenBytes;
-
+        private Dirext3D DirectX;
         private ProcessMemory Memory;
 
         public LuaHook(ProcessMemory memory)
@@ -26,13 +26,13 @@ namespace Yanitta
 
         public void Apply()
         {
-            var directX  = new Dirext3D(this.Memory.Process);
-            if (directX.HookPtr == IntPtr.Zero)
+            this.DirectX  = new Dirext3D(this.Memory.Process);
+            if (this.DirectX.HookPtr == IntPtr.Zero)
                 throw new Exception("Can't find detour address");
 
             this.Memory.Suspend();
 
-            this.OverwrittenBytes = this.Memory.ReadBytes(directX.HookPtr, 6);
+            this.OverwrittenBytes = this.Memory.ReadBytes(this.DirectX.HookPtr, 6);
             this.mDetourPtr       = this.Memory.Alloc(0x256);
             this.mCodeCavePtr     = this.Memory.Write<IntPtr>(IntPtr.Zero);
 
@@ -48,7 +48,7 @@ namespace Yanitta
                 "mov  eax, "  + this.mCodeCavePtr,
                 "xor  edx,   edx",
                 "mov  [eax], edx",
-                "@out:",
+            "@out:",
                 "popad",
                 "popfd",
                 "jmp " + (this.DirectX.HookPtr + this.OverwrittenBytes.Length)
@@ -121,8 +121,12 @@ namespace Yanitta
         {
             try
             {
+#if !DEBUG
                 var asm = randomize ? Extensions.RandomizeASM(ASM_Code) : ASM_Code;
                 this.Memory.Inject(asm, address);
+#else
+                this.Memory.Inject(ASM_Code, address);
+#endif
             }
             catch (Exception ex)
             {
