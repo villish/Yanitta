@@ -78,7 +78,7 @@ namespace ICSharpCode.AvalonEdit
             this.TextArea.TextView.MouseHoverStopped += TextViewMouseHoverStopped;
 
             #warning hack
-            var style = (Style)Application.Current.Resources.MergedDictionaries[0]["KamillaStyleControls"];
+            var style = (Style)Application.Current.Resources.MergedDictionaries[0]["KamillaStyle"];
             this.mToolTipStype = (Style)style.Resources[typeof(ToolTip)];
         }
 

@@ -6,7 +6,7 @@
     xmlns:yanitta="clr-namespace:Yanitta"
     PreviewKeyDown="Window_PreviewKeyDown_1"
     Title="{x:Static yanitta:Localization.CodeExequteTitle}" Height="321" Width="435"
-    Style="{DynamicResource KamillaStyleWindow}"
+    Style="{DynamicResource KamillaStyle}"
     FontFamily="../Resources/#MORPHEUS"
     Icon="/Yanitta;component/Resources/PTR_client.png">
     <Window.CommandBindings>

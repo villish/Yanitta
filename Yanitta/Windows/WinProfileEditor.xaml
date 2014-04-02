@@ -10,7 +10,7 @@
         Width="1280"
         Height="900"
         FontFamily="../Resources/#MORPHEUS"
-        Style="{DynamicResource KamillaStyleWindow}"
+        Style="{DynamicResource KamillaStyle}"
         Closing="Window_Closing_1"
         Icon="/Yanitta;component/Resources/BNUpdate.png">
 
