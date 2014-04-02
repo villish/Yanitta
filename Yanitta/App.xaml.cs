@@ -33,16 +33,11 @@ namespace Yanitta
 
             Console.WriteLine("Yanitta startup!...");
 
-            if (!File.Exists("FASM.DLL"))
-                throw new FileNotFoundException("Not found", "FASM.DLL");
-
             var fileName = Settings.Default.ProfilesFileName;
             if (File.Exists(fileName))
                 File.Copy(fileName, fileName + ".bak", true);
             else if (File.Exists("Profiles.Original.xml"))
                 File.Copy("Profiles.Original.xml", fileName, true);
-
-            Console.WriteLine(MemoryModule.ProcessMemory.FasmVersion);
 
             base.OnStartup(e);
         }
