@@ -191,13 +191,11 @@ namespace Yanitta
             // pushfd (stored flags)
             bytes.Add(0x9C);
 
-            int argsize = 0;
             // pushed to the stack function arguments
             for (int i = funcArgs.Length - 1; i >= 0; --i)
             {
                 if (funcArgs[i] == 0)
                 {
-                    argsize += 4;
                     // push 0
                     bytes.Add(0x6A);
                     bytes.Add(0x00);
