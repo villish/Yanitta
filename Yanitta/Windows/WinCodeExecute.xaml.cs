@@ -26,7 +26,7 @@ namespace Yanitta.Windows
                 var process = cbProcess.SelectedValue as WowMemory;
                 if (process != null)
                 {
-                    process.LuaHook.LuaExecute(code);
+                    process.LuaExecute(code);
                 }
                 else
                 {

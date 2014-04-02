@@ -6,7 +6,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
-using MemoryModule;
 using Yanitta.Properties;
 
 namespace Yanitta
@@ -61,7 +60,6 @@ namespace Yanitta
         }
 
         public ProcessMemory Memory     { get; private set; }
-        public LuaHook       LuaHook    { get; private set; }
         public bool          IsDisposed { get; private set; }
 
         private DispatcherTimer mTimer;
@@ -92,9 +90,7 @@ namespace Yanitta
 
             int build = this.Memory.Process.MainModule.FileVersionInfo.FilePrivatePart;
             if (build != Offsets.Default.Build)
-                throw new Exception(string.Format("Current build [{0}] WoW is not supported [{0}]", build, Offsets.Default.Build));
-
-            this.LuaHook = new LuaHook(this.Memory);
+                throw new Exception(string.Format("Current build [{0}] WoW is not supported [{1}]", build, Offsets.Default.Build));
 
             this.mTimer = new DispatcherTimer();
             this.mTimer.Interval = TimeSpan.FromMilliseconds(500);
@@ -126,7 +122,7 @@ namespace Yanitta
             if (!CheckProcess())
                 return;
 
-            var isInGame = this.Memory.Read<bool>((IntPtr)Offsets.Default.IsInGame, true);
+            var isInGame = this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.IsInGame)) != 0;
             if (isInGame != this.IsInGame)
             {
                 this.IsInGame = isInGame;
@@ -135,8 +131,8 @@ namespace Yanitta
 
                 if (this.IsInGame)
                 {
-                    this.Class = this.Memory.Read<WowClass>((IntPtr)Offsets.Default.PlayerClass, true);
-                    this.Name  = this.Memory.ReadString((IntPtr)Offsets.Default.PlayerName, true);
+                    this.Class = (WowClass)this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.PlayerClass));
+                    this.Name  = this.Memory.ReadString(Memory.Rebase((IntPtr)Offsets.Default.PlayerName));
                     this.CurrentProfile = ProfileDb.Instance[this.Class];
                 }
                 else
@@ -252,9 +248,28 @@ namespace Yanitta
             System.IO.File.WriteAllText("InjectedLuaCode.lua", code);
 
 #if !TRACE
-            this.LuaHook.LuaExecute(code);
+            this.LuaExecute(code);
 #endif
             //this.LuaExecute("print('Hello wow!');", true);
+        }
+
+        public void LuaExecute(string command)
+        {
+            var bytes = Encoding.UTF8.GetBytes(command + '\0');
+            var code  = this.Memory.Write(bytes);
+            var path  = this.Memory.WriteCString("profile.lua");
+            var len   = bytes.Length - 1;
+            try
+            {
+                this.Memory.Call(new IntPtr(Offsets.Default.ExecuteBuffer),
+                    code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            this.Memory.Free(code);
+            this.Memory.Free(path);
         }
 
         public override string ToString()
@@ -317,11 +332,10 @@ namespace Yanitta
 
             if (this.Memory != null && !this.Memory.Process.HasExited)
             {
-                if (this.IsInGame && this.Memory.IsOpened)
+                if (this.IsInGame && this.Memory != null)
                 {
-                    this.LuaHook.LuaExecute(StopCode);
+                    this.LuaExecute(StopCode);
                 }
-                this.Memory.Dispose();
             }
             this.Memory     = null;
             this.IsDisposed = true;

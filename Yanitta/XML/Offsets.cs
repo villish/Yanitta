@@ -8,11 +8,12 @@ namespace Yanitta
     [Serializable]
     public class Offsets : DependencyObject
     {
-        public static readonly DependencyProperty BuildProperty                         = DependencyProperty.Register("Build",                          typeof(int),  typeof(Offsets));
-        public static readonly DependencyProperty PlayerNameProperty                    = DependencyProperty.Register("PlayerName",                     typeof(long), typeof(Offsets));
-        public static readonly DependencyProperty PlayerClassProperty                   = DependencyProperty.Register("PlayerClass",                    typeof(long), typeof(Offsets));
-        public static readonly DependencyProperty IsInGameProperty                      = DependencyProperty.Register("IsInGame",                       typeof(long), typeof(Offsets));
-        public static readonly DependencyProperty FrameScript_ExecuteBufferProperty     = DependencyProperty.Register("FrameScript_ExecuteBuffer",      typeof(long), typeof(Offsets));
+        public static readonly DependencyProperty BuildProperty           = DependencyProperty.Register("Build",           typeof(int),  typeof(Offsets));
+        public static readonly DependencyProperty PlayerNameProperty      = DependencyProperty.Register("PlayerName",      typeof(long), typeof(Offsets));
+        public static readonly DependencyProperty PlayerClassProperty     = DependencyProperty.Register("PlayerClass",     typeof(long), typeof(Offsets));
+        public static readonly DependencyProperty IsInGameProperty        = DependencyProperty.Register("IsInGame",        typeof(long), typeof(Offsets));
+        public static readonly DependencyProperty ExecuteBufferProperty   = DependencyProperty.Register("ExecuteBuffer",   typeof(long), typeof(Offsets));
+        public static readonly DependencyProperty InjectedAddressProperty = DependencyProperty.Register("InjectedAddress", typeof(long), typeof(Offsets));
         private const string fileName = "offsets.xml";
 
         [XmlElement]
@@ -44,10 +45,17 @@ namespace Yanitta
         }
 
         [XmlElement]
-        public long FrameScript_ExecuteBuffer
+        public long ExecuteBuffer
         {
-            get { return (long)GetValue(FrameScript_ExecuteBufferProperty); }
-            set { SetValue(FrameScript_ExecuteBufferProperty, value); }
+            get { return (long)GetValue(ExecuteBufferProperty); }
+            set { SetValue(ExecuteBufferProperty, value); }
+        }
+
+        [XmlElement]
+        public long InjectedAddress
+        {
+            get { return (long)GetValue(InjectedAddressProperty); }
+            set { SetValue(InjectedAddressProperty, value); }
         }
 
         static Offsets()

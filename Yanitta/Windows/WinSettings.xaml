@@ -66,7 +66,11 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="ExecuteBuffer" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding FrameScript_ExecuteBuffer, Converter={StaticResource integerConverter}}" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding ExecuteBuffer, Converter={StaticResource integerConverter}}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label Width="200" Content="Injected address" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding InjectedAddress, Converter={StaticResource integerConverter}}" />
             </StackPanel>
         </StackPanel>
 
