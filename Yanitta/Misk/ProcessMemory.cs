@@ -21,9 +21,9 @@ namespace Yanitta
         [DllImport("kernel32", SetLastError = true)]
         static extern bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, MemoryProtection flNewProtect, out MemoryProtection lpflOldProtect);
         [DllImport("kernel32", SetLastError = true)]
-        private static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, IntPtr nSize, IntPtr lpNumberOfBytesWritten);
+        private static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, IntPtr lpNumberOfBytesWritten);
         [DllImport("kernel32", SetLastError = true)]
-        private static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, IntPtr dwSize, IntPtr lpNumberOfBytesRead);
+        private static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, IntPtr lpNumberOfBytesRead);
         [DllImport("kernel32", SetLastError = true)]
         public static extern uint SuspendThread(IntPtr thandle);
         [DllImport("kernel32", SetLastError = true)]
@@ -69,7 +69,7 @@ namespace Yanitta
         public unsafe byte[] ReadBytes(IntPtr address, int count)
         {
             var bytes = new byte[count];
-            if(!ReadProcessMemory(this.Process.Handle, address, bytes, new IntPtr(count), IntPtr.Zero))
+            if(!ReadProcessMemory(this.Process.Handle, address, bytes, count, IntPtr.Zero))
                 throw new Win32Exception();
             return bytes;
         }
@@ -77,7 +77,7 @@ namespace Yanitta
         public unsafe T Read<T>(IntPtr address) where T : struct
         {
             var result = new byte[Marshal.SizeOf(typeof(T))];
-            ReadProcessMemory(this.Process.Handle, address, result, new IntPtr(result.Length), IntPtr.Zero);
+            ReadProcessMemory(this.Process.Handle, address, result, result.Length, IntPtr.Zero);
             var handle = GCHandle.Alloc(result, GCHandleType.Pinned);
             T returnObject = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
             handle.Free();
@@ -87,7 +87,7 @@ namespace Yanitta
         public string ReadString(IntPtr addess, int length = 100)
         {
             var result = new byte[length];
-            if (!ReadProcessMemory(this.Process.Handle, addess, result, new IntPtr(length), IntPtr.Zero))
+            if (!ReadProcessMemory(this.Process.Handle, addess, result, length, IntPtr.Zero))
                 throw new Win32Exception();
             return Encoding.UTF8.GetString(result.TakeWhile(ret => ret != 0).ToArray());
         }
@@ -103,7 +103,7 @@ namespace Yanitta
             {
                 Marshal.StructureToPtr(value, hObj, false);
                 Marshal.Copy(hObj, buffer, 0, buffer.Length);
-                if (!WriteProcessMemory(this.Process.Handle, address, buffer, new IntPtr(buffer.Length), IntPtr.Zero))
+                if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                     throw new Win32Exception();
             }
             catch
@@ -126,7 +126,7 @@ namespace Yanitta
             {
                 Marshal.StructureToPtr(value, hObj, false);
                 Marshal.Copy(hObj, buffer, 0, buffer.Length);
-                if (!WriteProcessMemory(this.Process.Handle, address, buffer, new IntPtr(buffer.Length), IntPtr.Zero))
+                if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                     throw new Win32Exception();
             }
             finally
@@ -146,14 +146,14 @@ namespace Yanitta
 
         public void Write(IntPtr address, byte[] buffer)
         {
-            if (!WriteProcessMemory(this.Process.Handle, address, buffer, new IntPtr(buffer.Length), IntPtr.Zero))
+            if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
         }
 
         public void WriteCString(IntPtr address, string str)
         {
             var buffer = Encoding.UTF8.GetBytes(str + '\0');
-            if (!WriteProcessMemory(this.Process.Handle, address, buffer, new IntPtr(buffer.Length), IntPtr.Zero))
+            if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
         }
 
@@ -161,7 +161,7 @@ namespace Yanitta
         {
             var buffer = Encoding.UTF8.GetBytes(str + '\0');
             var address = Alloc(buffer.Length);
-            if (!WriteProcessMemory(this.Process.Handle, address, buffer, new IntPtr(buffer.Length), IntPtr.Zero))
+            if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
             return address;
         }
