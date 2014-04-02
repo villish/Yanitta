@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <Offsets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Build>17930</Build>
-  <PlayerName>15479168</PlayerName>
-  <PlayerClass>15479561</PlayerClass>
-  <IsInGame>14042662</IsInGame>
-  <FrameScript_ExecuteBuffer>326976</FrameScript_ExecuteBuffer>
+  <Build>18019</Build>
+  <PlayerName>15483264</PlayerName>
+  <PlayerClass>15483657</PlayerClass>
+  <IsInGame>14046758</IsInGame>
+  <ExecuteBuffer>327693</ExecuteBuffer>
+  <InjectedAddress>332167</InjectedAddress>
 </Offsets>
