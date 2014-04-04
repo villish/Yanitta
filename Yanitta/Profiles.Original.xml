@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.205</Version>
+  <Version>0.0.5.214</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -10166,39 +10166,191 @@ end
             <IsSpellKnownCheck>false</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return true;
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        print("|cff00ff00 >> Одиночная цель");
+    else
+        setAoE = true;
+        print("|cffff0000 >> AOE");
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        print("|cffff0000Кулдауны выключены");
+    else
+        useCooldown = true;
+        print("|cff00ff00Кулдауны включены");
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() or IsStealthed() then
+    return true;
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
 ]]></Lua>
           </Ability>
           <Ability Name="Лунный огонь">
-            <SpellID>0</SpellID>
+            <SpellID>8921</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return true;
+if select(3, HasDebuff("target", 8921)) < 3 then
+    return true;
+end
+
+if IS_MOVING and GetEclipseDirection() == "sun" then
+    return not HasBuff("player", 93400);
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Лунный огонь">
+            <SpellID>8921</SpellID>
+            <Target>Focus</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff("focus", 8921)) < 3 then
+    return true;
+end
+
+if IS_MOVING and GetEclipseDirection() == "sun" then
+    return not HasBuff("player", 93400);
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Лунный огонь">
+            <SpellID>8921</SpellID>
+            <Target>Mouseover</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff("mouseover", 8921)) < 3 then
+    return true;
+end
+
+if IS_MOVING and GetEclipseDirection() == "sun" then
+    return not HasBuff("player", 93400);
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Солнечный огонь">
+            <SpellID>93402</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff("target", 93402)) < 3 then
+    return true;
+end
+
+if IS_MOVING and GetEclipseDirection() == "moon" then
+    return not HasBuff("player", 93400);
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Солнечный огонь">
+            <SpellID>93402</SpellID>
+            <Target>Focus</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff("focus", 93402)) < 3 then
+    return true;
+end
+
+if IS_MOVING and GetEclipseDirection() == "moon" then
+    return not HasBuff("player", 93400);
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Солнечный огонь">
+            <SpellID>93402</SpellID>
+            <Target>Mouseover</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>None</IsMovingCheck>
+            <Lua><![CDATA[
+if select(3, HasDebuff("mouseover", 93402)) < 3 then
+    return true;
+end
+
+if IS_MOVING and GetEclipseDirection() == "moon" then
+    return not HasBuff("player", 93400);
+end
 ]]></Lua>
           </Ability>
           <Ability Name="Звездный поток">
-            <SpellID>0</SpellID>
+            <SpellID>78674</SpellID>
             <Target>Target</Target>
             <CancelChannel>false</CancelChannel>
             <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
             <IsMovingCheck>None</IsMovingCheck>
             <Lua><![CDATA[
-return true;
+if IS_MOVING and HasBuff("player", 93400) then
+    return true;
+elseif not IS_MOVING then
+    return true;
+end
+
 ]]></Lua>
           </Ability>
           <Ability Name="Гнев">
@@ -10208,39 +10360,32 @@ return true;
             <CancelCasting>false</CancelCasting>
             <IsRangeCheck>true</IsRangeCheck>
             <IsAttacedTarget>true</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
-            <SetRecastDelay>false</SetRecastDelay>
-            <IsNotGCD>false</IsNotGCD>
-            <IsSpellKnownCheck>false</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
-            <Lua><![CDATA[
-return true;
-]]></Lua>
-          </Ability>
-          <Ability Name="Знак дикой природы">
-            <SpellID>1126</SpellID>
-            <Target>Player</Target>
-            <CancelChannel>false</CancelChannel>
-            <CancelCasting>false</CancelCasting>
-            <IsRangeCheck>false</IsRangeCheck>
-            <IsAttacedTarget>false</IsAttacedTarget>
-            <IsUseIncombat>false</IsUseIncombat>
+            <IsUseIncombat>true</IsUseIncombat>
             <SetRecastDelay>false</SetRecastDelay>
             <IsNotGCD>false</IsNotGCD>
             <IsSpellKnownCheck>true</IsSpellKnownCheck>
-            <IsMovingCheck>None</IsMovingCheck>
+            <IsMovingCheck>NotMoving</IsMovingCheck>
             <Lua><![CDATA[
-local params_buff = { 1126, 115921, 20217, 90363 };
-if type(members) == "table" and GetShapeshiftForm() == 0 then
-    for _,member in ipairs(members) do
-        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
-            return true;
-        end
-    end
-elseif not UnitAffectingCombat("player") then
-    if not HasBuff("player", params_buff) then
-        return true;
-    end
+if GetEclipseDirection() == "moon" then
+    return true;
+end
+]]></Lua>
+          </Ability>
+          <Ability Name="Звездный огонь">
+            <SpellID>2912</SpellID>
+            <Target>Target</Target>
+            <CancelChannel>false</CancelChannel>
+            <CancelCasting>false</CancelCasting>
+            <IsRangeCheck>true</IsRangeCheck>
+            <IsAttacedTarget>true</IsAttacedTarget>
+            <IsUseIncombat>true</IsUseIncombat>
+            <SetRecastDelay>false</SetRecastDelay>
+            <IsNotGCD>false</IsNotGCD>
+            <IsSpellKnownCheck>true</IsSpellKnownCheck>
+            <IsMovingCheck>NotMoving</IsMovingCheck>
+            <Lua><![CDATA[
+if GetEclipseDirection() == "sun" then
+    return true;
 end
 ]]></Lua>
           </Ability>
