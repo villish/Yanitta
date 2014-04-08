@@ -70,7 +70,7 @@ namespace Yanitta
 
         public void Save()
         {
-            new XmlManager(fileName).Save<Offsets>(this);
+            new XmlManager(fileName).Save(this);
         }
     }
 }

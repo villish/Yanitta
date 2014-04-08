@@ -17,13 +17,8 @@ namespace Yanitta
             this.refreshTimer = new DispatcherTimer();
             this.refreshTimer.Interval = TimeSpan.FromSeconds(1);
             this.refreshTimer.Tick += (o, e) => CheckProcess();
-#if !TRACE
             this.refreshTimer.IsEnabled = true;
             this.refreshTimer.Start();
-#else
-            foreach (WowClass wclass in Enum.GetValues(typeof(WowClass)))
-                this.Add(new WowMemory(wclass, wclass.ToString(), 0, ((byte)wclass == 1)));
-#endif
         }
 
         private void CheckProcess()

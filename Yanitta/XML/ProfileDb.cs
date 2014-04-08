@@ -142,7 +142,7 @@ namespace Yanitta
                 {
                     if (incVersion)
                         IncVersion();
-                    new XmlManager(fileName).Save<ProfileDb>(ProfileDb.Instance);
+                    new XmlManager(fileName).Save(ProfileDb.Instance);
                     Console.WriteLine("Profiles Saved!");
                 }
             }

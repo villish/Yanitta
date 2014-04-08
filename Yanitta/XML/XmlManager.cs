@@ -39,7 +39,7 @@ namespace Yanitta
             }
         }
 
-        public void Save<T>(object obj) where T : class
+        public void Save<T>(T obj) where T : class
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");

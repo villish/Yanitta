@@ -52,9 +52,9 @@ namespace Yanitta
         /// </summary>
         public Rotation()
         {
-            this.HotKey         = new HotKey();
-            this.AbilityList    = new ObservableCollection<Ability>();
-            this.Name           = "none";
+            this.HotKey      = new HotKey();
+            this.AbilityList = new ObservableCollection<Ability>();
+            this.Name        = "none";
         }
 
         /// <summary>

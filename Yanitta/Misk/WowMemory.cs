@@ -23,16 +23,12 @@ namespace Yanitta
 
         public int ProcessId
         {
-#if !TRACE
             get
             {
                 if (this.Memory == null)
                     return 0;
                 return this.Memory.Process.Id;
             }
-#else
-            get; private set;
-#endif
         }
 
         public Profile CurrentProfile
@@ -64,25 +60,6 @@ namespace Yanitta
 
         private DispatcherTimer mTimer;
         private DateTime LastAction = DateTime.Now;
-
-#if TRACE
-
-        public WowMemory(WowClass wowClass, string name, int pid, bool isfocus = true)
-        {
-            ProcessId = pid;
-            IsInGame  = isfocus;
-            IsFocus   = isfocus;
-            if (IsFocus)
-            {
-                Class = wowClass;
-                Name  = name;
-
-                SetValue(CurrentProfileProperty, ProfileDb.Instance[this.Class]);
-                GameFocusChanged();
-            }
-        }
-
-#endif
 
         public WowMemory(Process process)
         {
