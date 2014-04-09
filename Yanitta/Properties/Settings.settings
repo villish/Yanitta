@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ProfilesFileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Profiles.xml</Value>
+      <Value Profile="(Default)">..\..\Yanitta\Profiles.Original.xml</Value>
     </Setting>
     <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

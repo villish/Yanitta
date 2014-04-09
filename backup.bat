@@ -2,11 +2,6 @@
 Title=Yanitta Project
 color 1A
 
-ECHO Copy profiles...
-copy /Y bin\Debug\Profiles.xml Yanitta\Profiles.Original.xml
-copy /Y doc\readme.docx bin\Debug\readme.docx
-ECHO Done
-
 ECHO Clenuaps...
 
 RD /Q /S .\Yanitta\obj
@@ -27,7 +22,7 @@ DEL /F /Q /S ..\YanittaBin.rar
 ECHO Done
 
 ECHO Create arhive...
-"c:\Program Files (x86)\WinRAR\WinRAR.exe" a -t -r -ed ..\Dropbox\yanitta\Yanitta.rar ..\Yanitta\*.*
+"c:\Program Files (x86)\WinRAR\WinRAR.exe" a -t -r -ed ..\Yanitta.rar ..\Yanitta\*.*
 ECHO Done
 
 PAUSE
