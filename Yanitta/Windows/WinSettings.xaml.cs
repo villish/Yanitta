@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Input;
-using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.Win32;
 using Yanitta.Properties;
@@ -45,7 +42,15 @@ namespace Yanitta
                     Cursor = Cursors.Wait;
                     try
                     {
-                        this.LoadOffsetsRepo();
+                        using (var response = WebRequest.Create(Settings.Default.UpdateOffset).GetResponse())
+                        {
+                            var serializer = new XmlSerializer(typeof(Offsets));
+                            using (var stream = response.GetResponseStream())
+                            {
+                                var offsets = (Offsets)serializer.Deserialize(response.GetResponseStream());
+                                Extensions.CopyProperies(offsets, Offsets.Default);
+                            }
+                        }
                     }
                     catch(Exception ex)
                     {
@@ -58,25 +63,6 @@ namespace Yanitta
                     Cursor = Cursors.Arrow;
                 })
             });
-
-            this.InputBindings.AddRange(new InputBinding[] {
-                new KeyBinding(ApplicationCommands.Save,  Key.S,  ModifierKeys.Control),
-                new KeyBinding(ApplicationCommands.Close, Key.F4, ModifierKeys.Alt),
-                new KeyBinding(ApplicationCommands.Open,  Key.F3, ModifierKeys.None),
-            });
-        }
-
-        private void LoadOffsetsRepo()
-        {
-            using (var response = (HttpWebResponse)WebRequest.Create(Settings.Default.UpdateOffsetURLRepo).GetResponse())
-            {
-                var serializer = new XmlSerializer(typeof(Offsets));
-                using (var stream = response.GetResponseStream())
-                {
-                    var offsets = (Offsets)serializer.Deserialize(response.GetResponseStream());
-                    Extensions.CopyProperies(offsets, Offsets.Default);
-                }
-            }
         }
     }
 }

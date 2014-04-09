@@ -1,8 +1,7 @@
-﻿using Microsoft.Windows.Controls;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Windows.Controls;
 using Yanitta.Properties;
 using Yanitta.Windows;
 
@@ -42,11 +41,6 @@ namespace Yanitta
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
-
-            if (ProcessList != null)
-                ProcessList.Dispose();
-
-            App.Current.Shutdown();
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)

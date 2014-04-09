@@ -13,10 +13,15 @@
         Icon="/Yanitta;component/Resources/Background_Downloader.png"
         ResizeMode="NoResize">
 
+    <Window.InputBindings>
+        <KeyBinding Command="Save"  Key="S" Modifiers="Control" />
+        <KeyBinding Command="Open"  Key="F3" />
+        <KeyBinding Command="Close" Key="F4" Modifiers="Alt" />
+    </Window.InputBindings>
+
     <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
         <StackPanel Orientation="Horizontal">
             <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
-            <CheckBox Margin="10,0,0,0" Content="Anti AFK"  IsChecked="{Binding AntiAFK}" />
             <Separator BorderThickness="1" Margin="10,0,0,0" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Language: " VerticalAlignment="Center"/>
@@ -42,7 +47,7 @@
 
         <StackPanel Orientation="Horizontal">
             <Label Content="Update Url Repo:" Width="100" />
-            <TextBox Width="310" Text="{Binding UpdateOffsetURLRepo}" />
+            <TextBox Width="310" Text="{Binding UpdateOffset}" />
             <Button Command="Find" Content="Update" CommandParameter="Repo" />
         </StackPanel>
 

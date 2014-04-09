@@ -167,16 +167,6 @@ namespace Yanitta
             {
                 this.UnregisterAllHotKeys();
             }
-
-            // anti afk bot
-            //if (Settings.Default.AniAFK && this.IsInGame && LastAction < DateTime.Now)
-            //{
-            //    this.Memory.SendMessage(0x0100, 19, 0); // {pause} down
-            //    this.Memory.SendMessage(0x0101, 19, 0); // {pause} up
-
-            //    LastAction = DateTime.Now.AddSeconds(new Random().Next(100, 250));
-            //    Debug.WriteLine("SendMessage: key(down/up) {pause}");
-            //}
         }
 
         private void HotKeyPressed(object sender, HandledEventArgs e)
@@ -224,10 +214,7 @@ namespace Yanitta
 
             System.IO.File.WriteAllText("InjectedLuaCode.lua", code);
 
-#if !TRACE
             this.LuaExecute(code);
-#endif
-            //this.LuaExecute("print('Hello wow!');", true);
         }
 
         public void LuaExecute(string command)
