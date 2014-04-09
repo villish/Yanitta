@@ -40,6 +40,7 @@ namespace Yanitta
         /// <summary>
         ///
         /// </summary>
+        [XmlElement("Rotation")]
         public ObservableCollection<Rotation> RotationList
         {
             get { return (ObservableCollection<Rotation>)GetValue(RotationListProperty); }

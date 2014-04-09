@@ -80,6 +80,7 @@ namespace Yanitta
         /// <summary>
         /// Список способностей в порядке их приоритета
         /// </summary>
+        [XmlElement("Ability")]
         public ObservableCollection<Ability> AbilityList
         {
             get { return (ObservableCollection<Ability>)GetValue(AbilityListProperty); }
