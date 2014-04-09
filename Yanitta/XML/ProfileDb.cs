@@ -80,7 +80,7 @@ namespace Yanitta
 
         public ProfileDb()
         {
-            this.Version     = "0.0.0.1";
+            this.RawVersion  = new Version();
             this.ProfileList = new ObservableCollection<Profile>();
         }
 
@@ -89,17 +89,6 @@ namespace Yanitta
         public Profile this[WowClass wowClass]
         {
             get { return this.ProfileList.FirstOrDefault(n => n.Class == wowClass); }
-        }
-
-        public void Exec(Action<Profile, Rotation> predicate)
-        {
-            foreach (var profile in this.ProfileList)
-            {
-                foreach (var rotation in profile.RotationList)
-                {
-                    predicate(profile, rotation);
-                }
-            }
         }
 
         public void Update(ProfileDb temp)
@@ -141,7 +130,14 @@ namespace Yanitta
                 if (ProfileDb.Instance != null)
                 {
                     if (incVersion)
-                        IncVersion();
+                    {
+                        this.RawVersion = new Version(
+                            this.RawVersion.Major,
+                            this.RawVersion.Minor,
+                            this.RawVersion.Build,
+                            this.RawVersion.Revision + 1
+                            );
+                    }
                     new XmlManager(fileName).Save(ProfileDb.Instance);
                     Console.WriteLine("Profiles Saved!");
                 }
@@ -153,36 +149,10 @@ namespace Yanitta
         }
 
         [XmlIgnore]
-        public int RawVersion
+        public Version RawVersion
         {
-            get
-            {
-                int hVersion = 0;
-                var tiles = this.Version.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(n => {
-                        int t;
-                        int.TryParse(n, out t);
-                        return t;
-                    }).ToList();
-
-                for (int i = 3; i >= 0; --i)
-                    hVersion |= (tiles.Count > i ? (tiles[i] & 0xFF) : 0) << (24 - (i * 8));
-                return hVersion;
-            }
-            set
-            {
-                this.Version = string.Format("{0}.{1}.{2}.{3}",
-                    (value >> 24) & 0xFF,
-                    (value >> 16) & 0xFF,
-                    (value >> 08) & 0xFF,
-                    (value >> 00) & 0xFF
-                    );
-            }
-        }
-
-        public void IncVersion()
-        {
-            ++RawVersion;
+            get { return new Version(this.Version); }
+            set { this.Version = value.ToString(); }
         }
 
         public static void UpdateProfiles()
