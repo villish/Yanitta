@@ -27,12 +27,6 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Примечание по ротации
-        /// </summary>
-        [XmlIgnore]
-        public string Notes { get; set; }
-
-        /// <summary>
         /// Rotation code
         /// </summary>
         [XmlIgnore]
@@ -60,16 +54,6 @@ namespace Yanitta
         /// <summary>
         /// [not used] use for serialisation
         /// </summary>
-        [XmlElement("Notes")]
-        public XmlCDataSection _rotationNotes
-        {
-            get { return this.Notes.CreateCDataSection(); }
-            set { this.Notes = value.GetTrimValue(); }
-        }
-
-        /// <summary>
-        /// [not used] use for serialisation
-        /// </summary>
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
@@ -91,7 +75,6 @@ namespace Yanitta
         {
             var rotation = new Rotation() {
                 Name         = this.Name + " (1)",
-                Notes        = this.Notes,
                 Lua          = this.Lua,
                 HotKey       = new HotKey(),
             };

@@ -7,9 +7,6 @@ using Yanitta.Windows;
 
 namespace Yanitta
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private WinCodeExecute   codeExecuteWindow = null;
@@ -79,7 +76,7 @@ namespace Yanitta
 
         private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
         {
-            this.WindowState = System.Windows.WindowState.Minimized;
+            this.WindowState = WindowState.Minimized;
         }
     }
 }

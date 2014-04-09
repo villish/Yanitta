@@ -262,11 +262,6 @@
                                     <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </Border>
                             </TabItem>
-                            <TabItem Header="{x:Static yanitta:Localization.Rotation_Note}">
-                                <Border BorderThickness="1" BorderBrush="#FF009600">
-                                    <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Notes, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
-                                </Border>
-                            </TabItem>
                         </TabControl>
                         <GroupBox Header="{x:Static yanitta:Localization.Rotation}">
                             <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Center" />

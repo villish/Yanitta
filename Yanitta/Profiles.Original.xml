@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.219</Version>
+  <Version>0.0.5.220</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -524,7 +524,7 @@ function CheckAndCastAbility(ability)
     end
 end
 
-function ChangeRotation(rotation, notes)
+function ChangeRotation(rotation)
     if AddonFrame.CurentRotation and (not rotation or rotation == AddonFrame.CurentRotation) then
         AddonFrame.CurentRotation = nil;
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
@@ -541,12 +541,6 @@ function ChangeRotation(rotation, notes)
         end
         AddonFrame.CurentRotation = rotation;
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
-        local notes = strtrim(notes or '');
-        if notes ~= "" then
-            for _,line in ipairs({strsplit('\n', notes)}) do
-                print("|cff6f0a9a"..line.."|r");
-            end
-        end
         PlaySound("PAPERDOLLOPEN", "Master");
     end
 end
@@ -5762,12 +5756,6 @@ return IsModKeyDown(mkLeftShift);
     </Rotation>
     <Rotation Name="Лед (2)">
       <HotKey Key="V" Modifier="Alt" />
-      <Notes><![CDATA[
-Тестовый вариант:
-    1) Доступность заклинаний
-    2) Досягаемость
-    3) Логика рун
-]]></Notes>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -8900,38 +8888,6 @@ end
     </Rotation>
     <Rotation Name="Танцующий с ветром">
       <HotKey Key="C" Modifier="Alt" />
-      <Notes><![CDATA[
-actions+=/chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
-actions+=/virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-actions+=/chi_brew,if=talent.chi_brew.enabled&chi<=2&(trinket.proc.agility.react|(charges=1&recharge_time<=10)|charges=2|target.time_to_die<charges*10)
-actions+=/tiger_palm,if=buff.tiger_power.remains<=3
-actions+=/tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack=20
-actions+=/tigereye_brew,if=buff.tigereye_brew_use.down&trinket.proc.agility.react
-actions+=/tigereye_brew,if=buff.tigereye_brew_use.down&chi>=2&(trinket.proc.agility.react|buff.tigereye_brew.stack>=15|target.time_to_die<40)&debuff.rising_sun_kick.up&buff.tiger_power.up
-actions+=/energizing_brew,if=energy.time_to_max>5
-actions+=/rising_sun_kick,if=debuff.rising_sun_kick.down
-actions+=/tiger_palm,if=buff.tiger_power.down&debuff.rising_sun_kick.remains>1&energy.time_to_max>1
-actions+=/invoke_xuen,if=talent.invoke_xuen.enabled
-actions+=/run_action_list,name=aoe,if=active_enemies>=3
-actions+=/run_action_list,name=single_target,if=active_enemies<3
-
-actions.aoe=rushing_jade_wind,if=talent.rushing_jade_wind.enabled
-actions.aoe+=/zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking
-actions.aoe+=/chi_wave,if=talent.chi_wave.enabled
-actions.aoe+=/chi_burst,if=talent.chi_burst.enabled
-actions.aoe+=/rising_sun_kick,if=chi=chi.max
-actions.aoe+=/spinning_crane_kick,if=!talent.rushing_jade_wind.enabled
-
-actions.single_target=rising_sun_kick
-actions.single_target+=/fists_of_fury,if=buff.energizing_brew.down&energy.time_to_max>4&buff.tiger_power.remains>4
-actions.single_target+=/chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
-actions.single_target+=/chi_burst,if=talent.chi_burst.enabled&energy.time_to_max>2
-actions.single_target+=/zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&energy.time_to_max>2&!dot.zen_sphere.ticking
-actions.single_target+=/blackout_kick,if=buff.combo_breaker_bok.react
-actions.single_target+=/tiger_palm,if=buff.combo_breaker_tp.react&(buff.combo_breaker_tp.remains<=2|energy.time_to_max>=2)
-actions.single_target+=/jab,if=chi.max-chi>=2
-actions.single_target+=/blackout_kick,if=energy+energy.regen*cooldown.rising_sun_kick.remains>=40
-]]></Notes>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>

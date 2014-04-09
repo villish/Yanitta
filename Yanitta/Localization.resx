@@ -411,12 +411,6 @@
   <data name="Rotation_Code_ToolTip" xml:space="preserve">
     <value />
   </data>
-  <data name="Rotation_Note" xml:space="preserve">
-    <value>Note</value>
-  </data>
-  <data name="Rotation_Note_ToolTip" xml:space="preserve">
-    <value />
-  </data>
   <data name="Rotation_TickDelay" xml:space="preserve">
     <value>Tick delay (ms): </value>
   </data>

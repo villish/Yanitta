@@ -171,7 +171,6 @@
     </Compile>
     <EmbeddedResource Include="Localization.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Localization.ru.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">

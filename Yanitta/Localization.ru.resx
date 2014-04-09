@@ -412,12 +412,6 @@
   <data name="Rotation_Code_ToolTip" xml:space="preserve">
     <value>Код который выполняется при старте ротации</value>
   </data>
-  <data name="Rotation_Note" xml:space="preserve">
-    <value>Примечание</value>
-  </data>
-  <data name="Rotation_Note_ToolTip" xml:space="preserve">
-    <value>Примечание для ратации</value>
-  </data>
   <data name="Rotation_TickDelay" xml:space="preserve">
     <value>Задержка (мс): </value>
   </data>
