@@ -64,10 +64,10 @@ namespace Yanitta.Properties {
         [global::System.Configuration.DefaultSettingValueAttribute("https://raw.github.com/Konctantin/Yanitta/master/Yanitta/offsets.xml")]
         public string UpdateOffset {
             get {
-                return ((string)(this["UpdateOffsetURLRepo"]));
+                return ((string)(this["UpdateOffset"]));
             }
             set {
-                this["UpdateOffsetURLRepo"] = value;
+                this["UpdateOffset"] = value;
             }
         }
         

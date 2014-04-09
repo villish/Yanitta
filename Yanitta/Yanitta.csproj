@@ -221,9 +221,6 @@
     <Resource Include="Resources\Rogue.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Save.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Shaman.png" />
   </ItemGroup>
   <ItemGroup>
@@ -245,16 +242,7 @@
     <Resource Include="Resources\Add.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Add_Symbol.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Button_Back.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Button_Down.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Button_Next.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Button_Up.png" />
@@ -266,21 +254,10 @@
     <Resource Include="Resources\Denided.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Error_Symbol.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Redo.png" />
-    <Resource Include="Resources\Remove record.png" />
-    <Resource Include="Resources\Undo.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6c55b776-26d4-4db3-a6ab-87e783b2f3d1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Refresh.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Readme.txt" />
@@ -288,9 +265,7 @@
   <ItemGroup>
     <Resource Include="Resources\Background_Downloader.png" />
     <Resource Include="Resources\BNUpdate.png" />
-    <Resource Include="Resources\MPQ.png" />
     <Resource Include="Resources\PTR_client.png" />
-    <Resource Include="Resources\World_of_Warcraft.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Google Black Alt.ico" />
@@ -304,10 +279,6 @@
     <None Include="YanittaApi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Export.png" />
-    <Resource Include="Resources\Import.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="offsets.xml">
