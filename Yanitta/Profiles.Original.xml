@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.220</Version>
+  <Version>0.0.5.225</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -10042,13 +10042,6 @@ end
         <Lua><![CDATA[
 if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
-    else
-        setAoE = true;
-        print("|cffff0000 >> AOE");
-    end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
@@ -10089,7 +10082,7 @@ elipse = UnitPower("player", SPELL_POWER_ECLIPSE);
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
+if IsMouseButtonDown(3) then
     return true;
 end
 ]]></Lua>
@@ -10126,14 +10119,14 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and UnitExists("target") then
-    if GetEclipseDirection() == "sun" and abs(elipse) > 80 then
+    if GetEclipseDirection() == "sun" then
         return true;
     end
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Природная чуткость">
-        <SpellID>0</SpellID>
+        <SpellID>124974</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -10149,6 +10142,25 @@ if useCooldown and UnitExists("target") then
     if GetEclipseDirection() == "moon" and abs(elipse) > 80 then
         return true;
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Омоложение">
+        <SpellID>774</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HealthByPercent("player") < 70 and
+    not HasBuff("player", 774, "PLAYER") then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -10917,25 +10929,6 @@ end
         <IsNotGCD>false</IsNotGCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-    </Rotation>
-    <Rotation Name="Тест">
-      <HotKey Key="X" Modifier="Control" />
-      <Ability Name="Увечье">
-        <SpellID>33876</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsNotGCD>false</IsNotGCD>
-        <IsSpellKnownCheck>false</IsSpellKnownCheck>
-        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
 ]]></Lua>
