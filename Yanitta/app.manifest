@@ -16,7 +16,7 @@
             Если виртуализацию файла и реестра нужно использовать для обратной 
             совместимости, удалите узел requestedExecutionLevel.
         -->
-        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
       </requestedPrivileges>
     </security>
   </trustInfo>
