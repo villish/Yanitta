@@ -8,9 +8,6 @@ using Yanitta.Properties;
 
 namespace Yanitta
 {
-    /// <summary>
-    /// Логика взаимодействия для WindowSettings.xaml
-    /// </summary>
     public partial class WindowSettings : Window
     {
         public WindowSettings()

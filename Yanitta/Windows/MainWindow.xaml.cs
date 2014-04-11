@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Linq;
 using System.Windows.Input;
 using Microsoft.Windows.Controls;
 using Yanitta.Properties;
@@ -7,17 +8,16 @@ using Yanitta.Windows;
 
 namespace Yanitta
 {
+    /// <summary>
+    /// Главное окно программы.
+    /// </summary>
     public partial class MainWindow : Window
     {
-        private WinCodeExecute   codeExecuteWindow = null;
-        private WinProfileEditor profileWindows    = null;
-        private WindowSettings   settingWindow     = null;
-
         public static ProcessList ProcessList { get; set; }
 
         public TaskbarIcon TaskbarIcon
         {
-            get { return notyfyIcon; }
+            get { return this.notyfyIcon; }
         }
 
         static MainWindow()
@@ -37,7 +37,7 @@ namespace Yanitta
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+            App.Current.Shutdown();
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
@@ -45,10 +45,9 @@ namespace Yanitta
             this.Close();
         }
 
-        private void ShowWindow<T>(ref T window) where T : Window, new()
+        private void ShowWindow<T>() where T : Window, new()
         {
-            if (window == null || !window.IsLoaded)
-                window = new T();
+            var window = App.Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
 
             window.Show();
 
@@ -61,17 +60,17 @@ namespace Yanitta
 
         private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            ShowWindow<WinCodeExecute>(ref codeExecuteWindow);
+            this.ShowWindow<WinCodeExecute>();
         }
 
         private void CommandBinding_Executed_ShowProfileWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            ShowWindow<WinProfileEditor>(ref profileWindows);
+            this.ShowWindow<WinProfileEditor>();
         }
 
         private void CommandBinding_Executed_ShowSettingWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            ShowWindow<WindowSettings>(ref settingWindow);
+            this.ShowWindow<WindowSettings>();
         }
 
         private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)

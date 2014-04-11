@@ -7,10 +7,16 @@ using Yanitta.Properties;
 
 namespace Yanitta
 {
+    /// <summary>
+    /// Самообновляемый список процессов.
+    /// </summary>
     public class ProcessList : ObservableCollection<WowMemory>, IDisposable
     {
         private DispatcherTimer refreshTimer;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="Yanitta.ProcessList"/>
+        /// </summary>
         public ProcessList()
             : base()
         {
@@ -33,7 +39,6 @@ namespace Yanitta
                     process.Dispose();
                 }
                 this.Clear();
-                return;
             }
 
             for (int i = this.Count - 1; i >= 0; --i)
@@ -64,7 +69,7 @@ namespace Yanitta
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine("Error WowMemory: " + ex.Message);
+                    Console.WriteLine("Error WowMemory: " + ex.Message);
                 }
             }
         }

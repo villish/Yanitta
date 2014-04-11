@@ -8,9 +8,6 @@ using Yanitta.Properties;
 
 namespace Yanitta
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
     public partial class App : Application
     {
         static App()
@@ -44,6 +41,7 @@ namespace Yanitta
 
         protected override void OnExit(ExitEventArgs e)
         {
+            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
             Console.WriteLine("Yanitta stoped ... !");
             ConsoleWriter.CloseWriter();
             base.OnExit(e);

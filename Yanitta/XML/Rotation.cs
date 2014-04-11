@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace Yanitta
 {
     /// <summary>
-    ///
+    /// Боевая ротация для персонажа.
     /// </summary>
     [Serializable]
     public class Rotation : DependencyObject, ICloneable
@@ -16,8 +16,9 @@ namespace Yanitta
         public static readonly DependencyProperty NameProperty        = DependencyProperty.Register("Name",        typeof(string),                        typeof(Rotation));
         public static readonly DependencyProperty HotKeyProperty      = DependencyProperty.Register("HotKey",      typeof(HotKey),                        typeof(Rotation));
         public static readonly DependencyProperty AbilityListProperty = DependencyProperty.Register("AbilityList", typeof(ObservableCollection<Ability>), typeof(Rotation));
+
         /// <summary>
-        /// Наименование ротации
+        /// Наименование ротации.
         /// </summary>
         [XmlAttribute]
         public string Name
@@ -27,13 +28,13 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Rotation code
+        /// Код Lua привязанный к ротации.
         /// </summary>
         [XmlIgnore]
         public string Lua { get; set; }
 
         /// <summary>
-        /// Горячие клавиши для управления ротацией
+        /// Горячие клавиши для управления ротацией.
         /// </summary>
         public HotKey HotKey
         {
@@ -42,7 +43,7 @@ namespace Yanitta
         }
 
         /// <summary>
-        ///
+        /// Создает новый экземпляр класс <see cref="Yanitta.Rotation"/>.
         /// </summary>
         public Rotation()
         {
@@ -52,7 +53,7 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// [not used] use for serialisation
+        /// [not used] use for serialization.
         /// </summary>
         [XmlElement("Lua")]
         public XmlCDataSection _lua
@@ -62,7 +63,7 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Список способностей в порядке их приоритета
+        /// Список способностей в порядке их приоритета.
         /// </summary>
         [XmlElement("Ability")]
         public ObservableCollection<Ability> AbilityList
@@ -71,6 +72,9 @@ namespace Yanitta
             set { SetValue(AbilityListProperty, value); }
         }
 
+        /// <summary>
+        /// Создает новый экземпляр класса с текщими значениями.
+        /// </summary>
         public object Clone()
         {
             var rotation = new Rotation() {

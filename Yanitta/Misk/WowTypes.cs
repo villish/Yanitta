@@ -1,21 +1,27 @@
 ﻿namespace Yanitta
 {
+    /// <summary>
+    /// Перечень доступных классов.
+    /// </summary>
     public enum WowClass : byte
     {
-        None        = 0x00,
-        Warrior     = 0x01,
-        Paladin     = 0x02,
-        Hunter      = 0x03,
-        Rogue       = 0x04,
-        Priest      = 0x05,
-        DeathKnight = 0x06,
-        Shaman      = 0x07,
-        Mage        = 0x08,
-        Warlock     = 0x09,
-        Monk        = 0x0A,
-        Druid       = 0x0B,
+        None        = 00,
+        Warrior     = 01,
+        Paladin     = 02,
+        Hunter      = 03,
+        Rogue       = 04,
+        Priest      = 05,
+        DeathKnight = 06,
+        Shaman      = 07,
+        Mage        = 08,
+        Warlock     = 09,
+        Monk        = 10,
+        Druid       = 11,
     }
 
+    /// <summary>
+    /// Тип цели.
+    /// </summary>
     public enum TargetType
     {
         None,
@@ -30,6 +36,9 @@
         MouseLocation
     }
 
+    /// <summary>
+    /// Тип движения персонажа.
+    /// </summary>
     public enum MovingStates
     {
         None      = 0,

@@ -3,17 +3,14 @@ using System.Windows.Input;
 
 namespace Yanitta.Windows
 {
-    /// <summary>
-    /// Логика взаимодействия для WinCodeExecute.xaml
-    /// </summary>
     public partial class WinCodeExecute : Window
     {
         public WinCodeExecute()
         {
             InitializeComponent();
 
-            if (DataContext is ProcessList)
-                this.cbProcess.SelectedIndex = (DataContext as ProcessList).Count > 0 ? 0 : -1;
+            if (this.mainGrid.DataContext is ProcessList)
+                this.cbProcess.SelectedIndex = (this.mainGrid.DataContext as ProcessList).Count > 0 ? 0 : -1;
         }
 
         private void Exec()

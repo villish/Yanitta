@@ -8,6 +8,9 @@ using System.Text;
 
 namespace Yanitta
 {
+    /// <summary>
+    /// Предоставляет методы для записи, чтения и выполнение в процессе.
+    /// </summary>
     public class ProcessMemory
     {
         #region API
@@ -37,19 +40,33 @@ namespace Yanitta
 
         #endregion
 
+        /// <summary>
+        /// Возвращает текущий процесс.
+        /// </summary>
         public Process Process { get; private set; }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="Yanitta.ProcessMemory"/>.
+        /// </summary>
+        /// <param name="process"></param>
         public ProcessMemory(Process process)
         {
             this.Process = process;
         }
 
-        public IntPtr Alloc(int size)
+        /// <summary>
+        /// Выделяет в процессе участок памяти.
+        /// </summary>
+        /// <param name="size">Размер выделяемой памяти.</param>
+        /// <param name="allocType">Тип выделяемой памяти.</param>
+        /// <param name="memProtect">Тип защиты памяти.</param>
+        /// <returns>Указатель на выделенный участок памяти.</returns>
+        public IntPtr Alloc(int size, AllocationType allocType = AllocationType.Commit, MemoryProtection memProtect = MemoryProtection.ExecuteReadWrite)
         {
             if (size <= 0)
                 throw new ArgumentNullException("size");
 
-            var address = VirtualAllocEx(this.Process.Handle, IntPtr.Zero, size, AllocationType.Commit, MemoryProtection.ExecuteReadWrite);
+            var address = VirtualAllocEx(this.Process.Handle, IntPtr.Zero, size, allocType, memProtect);
 
             if (address == IntPtr.Zero)
                 throw new Win32Exception();
@@ -57,15 +74,26 @@ namespace Yanitta
             return address;
         }
 
-        public void Free(IntPtr address)
+        /// <summary>
+        /// Осводождает ранее выделенный участок памяти.
+        /// </summary>
+        /// <param name="address">Указатель на выделенный участок памяти.</param>
+        /// <param name="freeType">Тип осводождения памяти.</param>
+        public void Free(IntPtr address, FreeType freeType = FreeType.Release)
         {
             if (address == IntPtr.Zero)
                 throw new ArgumentNullException("address");
 
-            if (!VirtualFreeEx(this.Process.Handle, address, 0, FreeType.Release))
+            if (!VirtualFreeEx(this.Process.Handle, address, 0, freeType))
                 throw new Win32Exception();
         }
 
+        /// <summary>
+        /// Считывает массив байт из текущего процесса.
+        /// </summary>
+        /// <param name="address">Указатель на участок памяти с которого надо начать считывание.</param>
+        /// <param name="count">Размер считываемого массива.</param>
+        /// <returns>Считанный из процесса масив.</returns>
         public unsafe byte[] ReadBytes(IntPtr address, int count)
         {
             var bytes = new byte[count];
@@ -74,6 +102,12 @@ namespace Yanitta
             return bytes;
         }
 
+        /// <summary>
+        /// Считывает из процесса значение указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Тип считываемого значения.</typeparam>
+        /// <param name="address">Указатель на участок памяти от куда надо считать значение.</param>
+        /// <returns>Значение указанного типа.</returns>
         public unsafe T Read<T>(IntPtr address) where T : struct
         {
             var result = new byte[Marshal.SizeOf(typeof(T))];
@@ -84,6 +118,12 @@ namespace Yanitta
             return returnObject;
         }
 
+        /// <summary>
+        /// Считывает из процесса строку заканчивающуюся 0 в кодировке utf-8.
+        /// </summary>
+        /// <param name="addess">Указатель на участок памяти от куда надо считать значение.</param>
+        /// <param name="length">Длинна строки (ограничение).</param>
+        /// <returns>Считанная строка</returns>
         public string ReadString(IntPtr addess, int length = 100)
         {
             var result = new byte[length];
@@ -92,6 +132,12 @@ namespace Yanitta
             return Encoding.UTF8.GetString(result.TakeWhile(ret => ret != 0).ToArray());
         }
 
+        /// <summary>
+        /// Записывает в память процесса значение указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Тип записываемого значения.</typeparam>
+        /// <param name="value">Значение, которое надо записать в память процесса.</param>
+        /// <returns>Указатель на участок памяти куда записано значение.</returns>
         public IntPtr Write<T>(T value) where T : struct
         {
             var buffer  = new byte[Marshal.SizeOf(value)];
@@ -118,6 +164,12 @@ namespace Yanitta
             return address;
         }
 
+        /// <summary>
+        /// Записывает в память процесса значение указанного типа.
+        /// </summary>
+        /// <typeparam name="T">Тип записываемого значения.</typeparam>
+        /// <param name="address">Указатель на участок памяти куда надо записать значение.</param>
+        /// <param name="value">Значение, которое надо записать в память процесса.</param>
         public void Write<T>(IntPtr address, T value) where T : struct
         {
             var buffer = new byte[Marshal.SizeOf(value)];
@@ -135,6 +187,11 @@ namespace Yanitta
             }
         }
 
+        /// <summary>
+        /// Затисывает массив байт в память процесса.
+        /// </summary>
+        /// <param name="buffer">Массив байт.</param>
+        /// <returns>Указатель на участок памяти куда записан массив.</returns>
         public IntPtr Write(byte[] buffer)
         {
             var addr = this.Alloc(buffer.Length);
@@ -144,12 +201,22 @@ namespace Yanitta
             return addr;
         }
 
+        /// <summary>
+        /// Затисывает массив байт в память процесса.
+        /// </summary>
+        /// <param name="address">Указатель на участок памяти куда надо записать массив.</param>
+        /// <param name="buffer">Массив байт.</param>
         public void Write(IntPtr address, byte[] buffer)
         {
             if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
         }
 
+        /// <summary>
+        /// Записывает в память процесса строку по указанному аддрессу в кодировке utf-8.
+        /// </summary>
+        /// <param name="address">Указатель на участок памяти куда надо записать строку.</param>
+        /// <param name="str">Записываемая строка.</param>
         public void WriteCString(IntPtr address, string str)
         {
             var buffer = Encoding.UTF8.GetBytes(str + '\0');
@@ -157,6 +224,11 @@ namespace Yanitta
                 throw new Win32Exception();
         }
 
+        /// <summary>
+        /// Записывает в память процесса указанную строку.
+        /// </summary>
+        /// <param name="str">Строка для записи в память.</param>
+        /// <returns>Указатель на строку в памяти.</returns>
         public IntPtr WriteCString(string str)
         {
             var buffer = Encoding.UTF8.GetBytes(str + '\0');
@@ -283,6 +355,14 @@ namespace Yanitta
             this.Free(retaddr);
         }
 
+        /// <summary>
+        /// Выполняет функцию по указанному адрессу с указанным списком аргуметов.
+        /// </summary>
+        /// <param name="address">Относительный адресс выполняемой функции.</param>
+        /// <param name="funcArgs">
+        /// Параметры функции.
+        /// Параметрами могут выступать как и значения так и указатели на значения.
+        /// </param>
         public void Call(IntPtr address, params int[] funcArgs)
         {
             var tHandle = OpenThread(ThreadAccess.All, false, this.Process.Threads[0].Id);
@@ -383,20 +463,30 @@ namespace Yanitta
             this.Free(retaddr);
         }
 
+        /// <summary>
+        /// Возвращает абсолютный аддресс в процессе.
+        /// </summary>
+        /// <param name="offset">Относительный аддресс.</param>
+        /// <returns>абсолютный аддресс в процессе.</returns>
         public IntPtr Rebase(IntPtr offset)
         {
             return new IntPtr(offset.ToInt64() + this.Process.MainModule.BaseAddress.ToInt64());
         }
 
+        /// <summary>
+        /// Указывает что главное окно процесса находится на переднем плане.
+        /// </summary>
         public bool IsFocusWindow
         {
             get { return this.Process.MainWindowHandle == GetForegroundWindow(); }
         }
-
     }
 
     #region Enums
 
+    /// <summary>
+    /// Тип выделения памяти.
+    /// </summary>
     [Flags]
     public enum AllocationType : uint
     {
@@ -411,6 +501,9 @@ namespace Yanitta
         LargePages = 0x20000000,
     }
 
+    /// <summary>
+    /// Тип защиты памяти.
+    /// </summary>
     [Flags]
     public enum MemoryProtection : uint
     {
@@ -427,6 +520,9 @@ namespace Yanitta
         WriteCombineModifierflag = 0x400,
     }
 
+    /// <summary>
+    /// Тип освобождения памяти.
+    /// </summary>
     [Flags]
     public enum FreeType : uint
     {
@@ -434,6 +530,9 @@ namespace Yanitta
         Release  = 0x8000,
     }
 
+    /// <summary>
+    /// Тип доступа к процессу.
+    /// </summary>
     [Flags]
     public enum ThreadAccess : uint
     {

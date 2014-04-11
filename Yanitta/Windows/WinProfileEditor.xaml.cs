@@ -8,9 +8,6 @@ using Yanitta.Properties;
 
 namespace Yanitta
 {
-    /// <summary>
-    /// Логика взаимодействия для WindowProfileEditor.xaml
-    /// </summary>
     public partial class WinProfileEditor : Window
     {
         private Key[] Keys = new Key[] { Key.X, Key.Z, Key.C, Key.V, Key.B, Key.N };
@@ -53,7 +50,7 @@ namespace Yanitta
             var index = rotationList.SelectedIndex;
             if (CurrentProfile != null && index > -1
                 && !(shift == -1 && index == 0)
-                && !(shift == 1 && index == CurrentProfile.RotationList.Count - 1))
+                && !(shift == 1  && index == CurrentProfile.RotationList.Count - 1))
             {
                 CurrentProfile.RotationList.Move(index, index + shift);
                 rotationList.ScrollIntoView(this.rotationList.SelectedItem);
@@ -64,8 +61,8 @@ namespace Yanitta
         {
             foreach (WowClass wowClass in Enum.GetValues(typeof(WowClass)))
             {
-                if (!ProfileDb.Instance.ProfileList.Any(n => n.Class == wowClass))
-                    ProfileDb.Instance.ProfileList.Add(new Profile() { Class = wowClass });
+                if (!ProfileDb.Instance.ProfileList.Any(profile => profile.Class == wowClass))
+                    ProfileDb.Instance.ProfileList.Add(new Profile { Class = wowClass });
             }
         }
 
@@ -139,8 +136,8 @@ namespace Yanitta
                     : ModifierKeys.None);
 
                 var rotation = new Rotation();
-                if (CurrentProfile.RotationList.Count < Keys.Length)
-                    rotation.HotKey = new HotKey(Keys[CurrentProfile.RotationList.Count], mod);
+                if (CurrentProfile.RotationList.Count < this.Keys.Length)
+                    rotation.HotKey = new HotKey(this.Keys[CurrentProfile.RotationList.Count], mod);
                 this.CurrentProfile.RotationList.Add(rotation);
                 this.rotationList.SelectedIndex = this.CurrentProfile.RotationList.Count - 1;
                 this.tbRotationName.Focus();

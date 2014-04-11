@@ -10,8 +10,15 @@ using Yanitta.Properties;
 
 namespace Yanitta
 {
+    /// <summary>
+    /// Определяет обработчик для <see cref="Yanitta.WowMemory"/>.
+    /// </summary>
+    /// <param name="memory"></param>
     public delegate void WowMemoryHandler(WowMemory memory);
 
+    /// <summary>
+    /// Посредник для взаимодействия с процессом.
+    /// </summary>
     public class WowMemory : DependencyObject, IDisposable
     {
         public readonly static DependencyProperty CurrentProfileProperty = DependencyProperty.Register("CurrentProfile",    typeof(Profile),    typeof(WowMemory));
@@ -19,8 +26,14 @@ namespace Yanitta
         public readonly static DependencyProperty NameProperty           = DependencyProperty.Register("Name",              typeof(string),     typeof(WowMemory));
         public readonly static DependencyProperty IsInGameProperty       = DependencyProperty.Register("IsInGame",          typeof(bool),       typeof(WowMemory));
 
+        /// <summary>
+        /// Событие для обработки закрытия процесса.
+        /// </summary>
         public event WowMemoryHandler GameExited;
 
+        /// <summary>
+        /// Id процесса.
+        /// </summary>
         public int ProcessId
         {
             get
@@ -31,36 +44,55 @@ namespace Yanitta
             }
         }
 
+        /// <summary>
+        /// Профиль персонажа.
+        /// </summary>
         public Profile CurrentProfile
         {
             get { return ProfileDb.Instance[this.Class]; }
             private set { SetValue(CurrentProfileProperty, value);  }
         }
 
+        /// <summary>
+        /// Класс персонажа.
+        /// </summary>
         public WowClass Class
         {
             get { return (WowClass)GetValue(ClassProperty); }
             private set { SetValue(ClassProperty, value);   }
         }
 
+        /// <summary>
+        /// Имя персонажа.
+        /// </summary>
         public string Name
         {
             get { return (string)GetValue(NameProperty); }
             private set { SetValue(NameProperty, value); }
         }
 
+        /// <summary>
+        /// Состояние, находится ли персонаж в игровом мире.
+        /// </summary>
         public bool IsInGame
         {
             get { return (bool)GetValue(IsInGameProperty);   }
             private set { SetValue(IsInGameProperty, value); }
         }
 
-        public ProcessMemory Memory     { get; private set; }
-        public bool          IsDisposed { get; private set; }
+        /// <summary>
+        /// Текущий процесс <see cref="Yanitta.ProcessMemory"/>
+        /// </summary>
+        public ProcessMemory Memory { get; private set; }
 
+        private bool IsDisposed;
         private DispatcherTimer mTimer;
         private DateTime LastAction = DateTime.Now;
 
+        /// <summary>
+        /// Инициализирует новый экземпляр класса <see cref="Yanitta.WowMemory"/>.
+        /// </summary>
+        /// <param name="process">Процесс вов.</param>
         public WowMemory(Process process)
         {
             this.Memory = new ProcessMemory(process);
@@ -79,6 +111,9 @@ namespace Yanitta
             this.mTimer.Start();
         }
 
+        /// <summary>
+        /// Проверяет доступность текущего процесса.
+        /// </summary>
         private bool CheckProcess()
         {
             if (this.Memory.Process.HasExited || Process.GetProcessById(this.ProcessId) == null)
@@ -94,6 +129,10 @@ namespace Yanitta
             return true;
         }
 
+        /// <summary>
+        /// Считывает из текущего процесса значения имени, класса и нахождение в мире.
+        /// В зависимости от считанных данных регистрирует или удаляет гарячие клавиши для управления ротациями.
+        /// </summary>
         private void ReadAllValues()
         {
             if (!CheckProcess())
@@ -115,15 +154,16 @@ namespace Yanitta
                 else
                 {
                     this.UnregisterAllHotKeys();
-                    this.Class     = (WowClass)(byte)0;
-                    this.Name      = "";
-                    CurrentProfile = null;
+                    this.CurrentProfile = null;
+                    this.Class = WowClass.None;
+                    this.Name  = string.Empty;
                 }
             }
 
             if (Memory.IsFocusWindow)
             {
-                MainWindow.ProcessList.Where(p => p != this).ForEach(p => p.UnregisterAllHotKeys());
+                MainWindow.ProcessList.Where(process => process != this)
+                    .ForEach(process => process.UnregisterAllHotKeys());
 
                 if (CurrentProfile != null)
                 {
@@ -169,6 +209,9 @@ namespace Yanitta
             }
         }
 
+        /// <summary>
+        /// Обработчик нажатия гарячих клавиш.
+        /// </summary>
         private void HotKeyPressed(object sender, HandledEventArgs e)
         {
             try
@@ -186,6 +229,10 @@ namespace Yanitta
             e.Handled = true;
         }
 
+        /// <summary>
+        /// Запускает/останавливает ротацию.
+        /// </summary>
+        /// <param name="rotation">Текущая ротация.</param>
         private void ExecuteProfile(Rotation rotation)
         {
             if (CurrentProfile == null)
@@ -217,6 +264,10 @@ namespace Yanitta
             this.LuaExecute(code);
         }
 
+        /// <summary>
+        /// Выполняет в текущем процессе указанный скрипт Lua.
+        /// </summary>
+        /// <param name="command">Скрипт Lua, который неоходимо выполнить.</param>
         public void LuaExecute(string command)
         {
             var bytes = Encoding.UTF8.GetBytes(command + '\0');
@@ -241,7 +292,10 @@ namespace Yanitta
             return string.Format("[{0}] {1} ({2})", this.ProcessId, this.Name, this.Class);
         }
 
-        public void UnregisterAllHotKeys()
+        /// <summary>
+        /// Удаляет все зарегистрированные гарячие клавиши в системе.
+        /// </summary>
+        private void UnregisterAllHotKeys()
         {
             if (this.CurrentProfile != null && this.CurrentProfile.RotationList != null)
             {

@@ -11,6 +11,9 @@ using Yanitta.Properties;
 
 namespace Yanitta
 {
+    /// <summary>
+    /// База профилей.
+    /// </summary>
     [Serializable]
     public class ProfileDb : DependencyObject
     {
@@ -21,6 +24,9 @@ namespace Yanitta
         public static readonly DependencyProperty ProfileListProperty    = DependencyProperty.Register("ProfileList",    typeof(ObservableCollection<Profile>), typeof(ProfileDb));
         public static readonly DependencyProperty DefaultProfileProperty = DependencyProperty.Register("DefaultProfile", typeof(Profile), typeof(ProfileDb));
 
+        /// <summary>
+        /// Веррсия базы данных.
+        /// </summary>
         [XmlElement]
         public string Version
         {
@@ -28,6 +34,9 @@ namespace Yanitta
             set { SetValue(VersionProperty, value); }
         }
 
+        /// <summary>
+        /// Автор.
+        /// </summary>
         [XmlElement]
         public string Author
         {
@@ -35,6 +44,9 @@ namespace Yanitta
             set { SetValue(AuthorProperty, value); }
         }
 
+        /// <summary>
+        /// Аддресс хранилища с обновлениями базы.
+        /// </summary>
         [XmlElement]
         public string Url
         {
@@ -42,6 +54,9 @@ namespace Yanitta
             set { SetValue(UrlProperty, value); }
         }
 
+        /// <summary>
+        /// Код ядра бота.
+        /// </summary>
         [XmlIgnore]
         public string Lua
         {
@@ -49,6 +64,9 @@ namespace Yanitta
             set { SetValue(LuaProperty, value); }
         }
 
+        /// <summary>
+        /// [not used] use for serialization.
+        /// </summary>
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
@@ -56,6 +74,9 @@ namespace Yanitta
             set { this.Lua = value.GetTrimValue(); }
         }
 
+        /// <summary>
+        /// Список профилей.
+        /// </summary>
         [XmlElement("Profile")]
         public ObservableCollection<Profile> ProfileList
         {
@@ -63,6 +84,10 @@ namespace Yanitta
             set { SetValue(ProfileListProperty, value); }
         }
 
+        /// <summary>
+        /// Профиль по умолчанию.
+        /// Этот профиль содержит ротации доступные всем классам.
+        /// </summary>
         [XmlIgnore]
         public Profile DefaultProfile
         {
@@ -70,14 +95,23 @@ namespace Yanitta
             private set { SetValue(DefaultProfileProperty, value);  }
         }
 
+        /// <summary>
+        /// Текущий экземпляр базы данных.
+        /// </summary>
         public static ProfileDb Instance { get; private set; }
 
+        /// <summary>
+        /// Инициализирует базу при первом обращении к классу.
+        /// </summary>
         static ProfileDb()
         {
             Instance = new ProfileDb();
             Instance.Load(Yanitta.Properties.Settings.Default.ProfilesFileName);
         }
 
+        /// <summary>
+        /// Инициализирует новый экземпляр объекта <see cref="Yanitta.ProfileDb"/>
+        /// </summary>
         public ProfileDb()
         {
             this.RawVersion  = new Version();
@@ -86,11 +120,20 @@ namespace Yanitta
 
         #region Extension
 
+        /// <summary>
+        /// Возвращает профиль для указанного класса.
+        /// </summary>
+        /// <param name="wowClass">Класс персонажа.</param>
+        /// <returns>Профиль ротаций <see cref="YanittaProfile"/>.</returns>
         public Profile this[WowClass wowClass]
         {
             get { return this.ProfileList.FirstOrDefault(n => n.Class == wowClass); }
         }
 
+        /// <summary>
+        /// Загружает значения полей из указанного объекта.
+        /// </summary>
+        /// <param name="temp">Объект из которого надо скопировать значения.</param>
         public void Update(ProfileDb temp)
         {
             this.Version     = temp.Version;
@@ -101,6 +144,10 @@ namespace Yanitta
             this.DefaultProfile = temp[WowClass.None];
         }
 
+        /// <summary>
+        /// Загружает базу данных из файла.
+        /// </summary>
+        /// <param name="fileName">Имя файла базы данных.</param>
         public void Load(string fileName)
         {
             try
@@ -123,6 +170,11 @@ namespace Yanitta
             }
         }
 
+        /// <summary>
+        /// Сохраняет базу данных в файл.
+        /// </summary>
+        /// <param name="fileName">Имя файла базы данных.</param>
+        /// <param name="incVersion">Указывает увеличивать ли версию базы данных.</param>
         public void Save(string fileName, bool incVersion = false)
         {
             try
@@ -148,6 +200,9 @@ namespace Yanitta
             }
         }
 
+        /// <summary>
+        /// Служебное поле (временно).
+        /// </summary>
         [XmlIgnore]
         public Version RawVersion
         {
@@ -155,6 +210,9 @@ namespace Yanitta
             set { this.Version = value.ToString(); }
         }
 
+        /// <summary>
+        /// Запрос обновления базы данных с указанного в настройках аддресса.
+        /// </summary>
         public static void UpdateProfiles()
         {
             if (string.IsNullOrWhiteSpace(ProfileDb.Instance.Url))

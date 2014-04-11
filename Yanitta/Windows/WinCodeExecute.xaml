@@ -12,7 +12,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="Save" Executed="CommandBinding_Executed_1" />
     </Window.CommandBindings>
-    <Grid DataContext="{Binding Source={StaticResource processList}}">
+    <Grid Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="22" />
             <RowDefinition Height="265*" />
