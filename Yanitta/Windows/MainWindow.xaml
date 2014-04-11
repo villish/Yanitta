@@ -69,21 +69,49 @@
             </TreeView.ItemTemplate>
         </TreeView>
 
-        <ListBox Margin="37,420,35,76" ItemsSource="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=DefaultProfile.RotationList}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderThickness="1" BorderBrush="#FF00AA00">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" Width="200" FontSize="15"/>
-                            <CheckBox IsChecked="{Binding HotKey.Control}" VerticalAlignment="Center" Content="Control" Width="75" FontSize="15"/>
-                            <CheckBox IsChecked="{Binding HotKey.Shift}"   VerticalAlignment="Center" Content="Shift"   Width="60" FontSize="15"/>
-                            <CheckBox IsChecked="{Binding HotKey.Alt}"     VerticalAlignment="Center" Content="Alt"     Width="50" FontSize="15"/>
-                            <ComboBox Width="100" SelectedValue="{Binding HotKey.Key}" ItemsSource="{Binding Source={StaticResource KeyValues}}"  VerticalAlignment="Center" FontSize="15"/>
-                        </StackPanel>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ListView Margin="37,420,35,76" ItemsSource="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=DefaultProfile.RotationList}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" FontSize="15"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding HotKey.Control}" VerticalAlignment="Center" Content="Control" FontSize="15"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding HotKey.Shift}" VerticalAlignment="Center" Content="Shift" FontSize="15"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding HotKey.Alt}" VerticalAlignment="Center" Content="Alt" FontSize="15"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox Width="100" VerticalAlignment="Center" FontSize="15"
+                                          SelectedValue="{Binding HotKey.Key}"
+                                          ItemsSource="{Binding Source={StaticResource KeyValues}}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
 
         <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico" />
     </Grid>
