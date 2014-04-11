@@ -366,7 +366,6 @@
                 <MenuItem Header="{x:Static yanitta:Localization.Save}"              ToolTip="{x:Static yanitta:Localization.SaveToolTip}"     Command="Save" />
                 <MenuItem Header="{x:Static yanitta:Localization.Reload}"            ToolTip="{x:Static yanitta:Localization.ReloadToolTip}"   Command="yanitta:YanittaCommand.Reload" />
                 <MenuItem Header="{x:Static yanitta:Localization.Update}"            ToolTip="{x:Static yanitta:Localization.UpdateToolTip}"   Command="yanitta:YanittaCommand.Update" />
-                <MenuItem Header="CreateLUA" Click="MenuItem_Click"/>
                 <MenuItem Header="{x:Static yanitta:Localization.Close}"             ToolTip="{x:Static yanitta:Localization.CloseToolTip}"    Command="Close" />
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.AbilityList}">
