@@ -9,8 +9,8 @@ namespace Yanitta.Windows
         {
             InitializeComponent();
 
-            if (this.mainGrid.DataContext is ProcessList)
-                this.cbProcess.SelectedIndex = (this.mainGrid.DataContext as ProcessList).Count > 0 ? 0 : -1;
+            if (this.cbProcess.Items.Count > 0)
+                this.cbProcess.SelectedIndex = 0;
         }
 
         private void Exec()
@@ -38,7 +38,7 @@ namespace Yanitta.Windows
                 this.Exec();
         }
 
-        private void CommandBinding_Executed_1(object sender, ExecutedRoutedEventArgs e)
+        private void CommandBinding_Exec_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             this.Exec();
         }

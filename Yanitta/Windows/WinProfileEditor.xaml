@@ -346,7 +346,7 @@
             </TabItem>
         </TabControl>
 
-        <ListView x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1">
+        <ListView x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1" BorderThickness="3">
             <ListView.View>
                 <GridView>
                     <GridViewColumn>
