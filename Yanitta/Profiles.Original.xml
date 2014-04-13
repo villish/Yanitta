@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.225</Version>
+  <Version>0.0.5.227</Version>
   <Author>Konctantin</Author>
   <Url>https://raw.github.com/Konctantin/yanitta/master/Yanitta/Profiles.Original.xml</Url>
   <Lua><![CDATA[
@@ -10061,6 +10061,10 @@ if IsMounted() or IsStealthed() then
     return true;
 end
 
+if GetShapeshiftForm() ~= 5 then
+    return true;
+end
+
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
@@ -10160,6 +10164,27 @@ end
         <Lua><![CDATA[
 if HealthByPercent("player") < 70 and
     not HasBuff("player", 774, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Омоложение">
+        <SpellID>774</SpellID>
+        <Target>Focus</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HealthByPercent("focus") < 70 and
+    not HasBuff("focus", 774, "PLAYER")
+    and not UnitIsDeadOrGhost("focus")
+    and not UnitIsEnemy("player", "focus") then
     return true;
 end
 ]]></Lua>
