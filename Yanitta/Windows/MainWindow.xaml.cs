@@ -12,16 +12,22 @@ namespace Yanitta
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static ProcessList ProcessList { get; set; }
-
-        static MainWindow()
-        {
-            ProcessList = new ProcessList();
-        }
-
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void ShowWindow<T>() where T : Window, new()
+        {
+            var window = App.Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
+
+            window.Show();
+
+            if (!window.IsActive)
+                window.Activate();
+
+            if (window.WindowState == WindowState.Minimized)
+                window.WindowState = WindowState.Normal;
         }
 
         private void Image_MouseDown(object o, RoutedEventArgs e)
@@ -37,19 +43,6 @@ namespace Yanitta
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
         {
             this.Close();
-        }
-
-        private void ShowWindow<T>() where T : Window, new()
-        {
-            var window = App.Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
-
-            window.Show();
-
-            if (!window.IsActive)
-                window.Activate();
-
-            if (window.WindowState == WindowState.Minimized)
-                window.WindowState = WindowState.Normal;
         }
 
         private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)

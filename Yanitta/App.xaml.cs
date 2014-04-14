@@ -10,9 +10,12 @@ namespace Yanitta
 {
     public partial class App : Application
     {
+        public static ProcessList ProcessList { get; set; }
+
         static App()
         {
             ConsoleWriter.Initialize("Yanitta.log", true);
+            ProcessList = new ProcessList();
         }
 
         protected override void OnStartup(StartupEventArgs e)

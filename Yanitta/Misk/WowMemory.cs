@@ -162,7 +162,7 @@ namespace Yanitta
 
             if (Memory.IsFocusWindow)
             {
-                MainWindow.ProcessList.Where(process => process != this)
+                App.ProcessList.Where(process => process != this)
                     .ForEach(process => process.UnregisterAllHotKeys());
 
                 if (CurrentProfile != null)
