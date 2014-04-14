@@ -236,9 +236,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\wow_fon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Add.png" />
   </ItemGroup>
   <ItemGroup>
