@@ -48,6 +48,10 @@
 
                     <!--Collections-->
                     <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:MainWindow.ProcessList}}" />
+
+                    <Image Width="20" x:Key="AddIcon"    Source="/Resources/Add.png" />
+                    <Image Width="20" x:Key="CopyIcon"   Source="/Resources/Clipboard.png" />
+                    <Image Width="20" x:Key="DeleteIcon" Source="/Resources/Denided.png" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

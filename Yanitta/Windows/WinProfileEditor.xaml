@@ -82,6 +82,13 @@
                                 </Button>
                             </ToolBar>
                             <ListView x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" Grid.Row="1" Margin="0,0,0,5">
+                                <ListView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{x:Static yanitta:Localization.AddRotation}"       ToolTip="{x:Static yanitta:Localization.AddRotation}"     Command="yanitta:YanittaCommand.AddRotation"    Icon="{DynamicResource AddIcon}"/>
+                                        <MenuItem Header="{x:Static yanitta:Localization.CopyRotation}"      ToolTip="{x:Static yanitta:Localization.CopyRotation}"    Command="yanitta:YanittaCommand.CopyRotation"   Icon="{DynamicResource CopyIcon}" />
+                                        <MenuItem Header="{x:Static yanitta:Localization.DeleteRotation}"    ToolTip="{x:Static yanitta:Localization.DeleteRotation}"  Command="yanitta:YanittaCommand.DeleteRotation" Icon="{DynamicResource DeleteIcon}" />
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Width="250" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
@@ -144,6 +151,13 @@
                                 <TextBox Name="tbAbilityFilter" Width="150" TextChanged="tbAbilityFilter_TextChanged"/>
                             </ToolBar>
                             <ListView x:Name="abilityList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/RotationList/AbilityList}" Grid.Row="1">
+                                <ListView.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="{x:Static yanitta:Localization.AddAbility}"        ToolTip="{x:Static yanitta:Localization.AddAbility}"      Command="yanitta:YanittaCommand.AddAbility"     Icon="{DynamicResource AddIcon}"/>
+                                        <MenuItem Header="{x:Static yanitta:Localization.CopyAbility}"       ToolTip="{x:Static yanitta:Localization.CopyAbility}"     Command="yanitta:YanittaCommand.CopyAbility"    Icon="{DynamicResource CopyIcon}"/>
+                                        <MenuItem Header="{x:Static yanitta:Localization.DeleteAbility}"     ToolTip="{x:Static yanitta:Localization.DeleteAbility}"   Command="yanitta:YanittaCommand.DeleteAbility"  Icon="{DynamicResource DeleteIcon}"/>
+                                    </ContextMenu>
+                                </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
@@ -369,14 +383,14 @@
                 <MenuItem Header="{x:Static yanitta:Localization.Close}"             ToolTip="{x:Static yanitta:Localization.CloseToolTip}"    Command="Close" />
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.AbilityList}">
-                <MenuItem Header="{x:Static yanitta:Localization.AddAbility}"        ToolTip="{x:Static yanitta:Localization.AddAbility}"      Command="yanitta:YanittaCommand.AddAbility" />
-                <MenuItem Header="{x:Static yanitta:Localization.CopyAbility}"       ToolTip="{x:Static yanitta:Localization.CopyAbility}"     Command="yanitta:YanittaCommand.CopyAbility" />
-                <MenuItem Header="{x:Static yanitta:Localization.DeleteAbility}"     ToolTip="{x:Static yanitta:Localization.DeleteAbility}"   Command="yanitta:YanittaCommand.DeleteAbility" />
+                <MenuItem Header="{x:Static yanitta:Localization.AddAbility}"        ToolTip="{x:Static yanitta:Localization.AddAbility}"      Command="yanitta:YanittaCommand.AddAbility"    Icon="{DynamicResource AddIcon}"/>
+                <MenuItem Header="{x:Static yanitta:Localization.CopyAbility}"       ToolTip="{x:Static yanitta:Localization.CopyAbility}"     Command="yanitta:YanittaCommand.CopyAbility"   Icon="{DynamicResource CopyIcon}"/>
+                <MenuItem Header="{x:Static yanitta:Localization.DeleteAbility}"     ToolTip="{x:Static yanitta:Localization.DeleteAbility}"   Command="yanitta:YanittaCommand.DeleteAbility" Icon="{DynamicResource DeleteIcon}"/>
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.RotationList}">
-                <MenuItem Header="{x:Static yanitta:Localization.AddRotation}"       ToolTip="{x:Static yanitta:Localization.AddRotation}"     Command="yanitta:YanittaCommand.AddRotation" />
-                <MenuItem Header="{x:Static yanitta:Localization.CopyRotation}"      ToolTip="{x:Static yanitta:Localization.CopyRotation}"    Command="yanitta:YanittaCommand.CopyRotation" />
-                <MenuItem Header="{x:Static yanitta:Localization.DeleteRotation}"    ToolTip="{x:Static yanitta:Localization.DeleteRotation}"  Command="yanitta:YanittaCommand.DeleteRotation" />
+                <MenuItem Header="{x:Static yanitta:Localization.AddRotation}"       ToolTip="{x:Static yanitta:Localization.AddRotation}"     Command="yanitta:YanittaCommand.AddRotation"    Icon="{DynamicResource AddIcon}"/>
+                <MenuItem Header="{x:Static yanitta:Localization.CopyRotation}"      ToolTip="{x:Static yanitta:Localization.CopyRotation}"    Command="yanitta:YanittaCommand.CopyRotation"   Icon="{DynamicResource CopyIcon}"/>
+                <MenuItem Header="{x:Static yanitta:Localization.DeleteRotation}"    ToolTip="{x:Static yanitta:Localization.DeleteRotation}"  Command="yanitta:YanittaCommand.DeleteRotation" Icon="{DynamicResource DeleteIcon}"/>
             </MenuItem>
             <MenuItem Header="{x:Static yanitta:Localization.Help}">
                 <MenuItem Header="{x:Static yanitta:Localization.Help}"              ToolTip="{x:Static yanitta:Localization.HelpToolTip}"     Command="Help" />
