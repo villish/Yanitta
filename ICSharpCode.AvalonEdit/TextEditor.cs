@@ -36,7 +36,6 @@ namespace ICSharpCode.AvalonEdit
         private FoldingManager foldingManager;
         private AbstractFoldingStrategy foldingStrategy = new RegexFoldingStrategy();
         private DispatcherTimer foldingUpdateTimer;
-        private Style mToolTipStype;
 
         #region Constructors
 
@@ -76,10 +75,6 @@ namespace ICSharpCode.AvalonEdit
 
             this.TextArea.TextView.MouseHover += TextViewMouseHover;
             this.TextArea.TextView.MouseHoverStopped += TextViewMouseHoverStopped;
-
-            #warning hack
-            var style = (Style)Application.Current.Resources.MergedDictionaries[0]["KamillaStyle"];
-            this.mToolTipStype = (Style)style.Resources[typeof(ToolTip)];
         }
 
         /// <summary>
@@ -165,7 +160,7 @@ namespace ICSharpCode.AvalonEdit
                 mToolTip = new ToolTip() {
                     Content = keyWordInfo.ToString(),
                     IsOpen = true,
-                    Style = mToolTipStype
+                    PlacementTarget = this
                 };
             }
         }

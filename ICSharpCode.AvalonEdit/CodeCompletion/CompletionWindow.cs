@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Diagnostics;
 
 namespace ICSharpCode.AvalonEdit.CodeCompletion
 {
@@ -48,8 +49,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             this.MinHeight = 15;
             this.MinWidth = 30;
 
-            #warning hack
-            this.Style = (Style)Application.Current.Resources.MergedDictionaries[0]["KamillaStyle"];
+            Debug.Assert(this.Owner != null, "must by not null");
+            this.Style = this.Owner.Style;
 
             toolTip.PlacementTarget = this;
             toolTip.Placement = PlacementMode.Right;
