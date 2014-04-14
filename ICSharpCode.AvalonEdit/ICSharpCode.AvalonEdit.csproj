@@ -135,15 +135,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
-    <Compile Include="NotifyIcon\BalloonIcon.cs" />
-    <Compile Include="NotifyIcon\PopupActivationMode.cs" />
-    <Compile Include="NotifyIcon\RoutedEventHelper.cs" />
-    <Compile Include="NotifyIcon\TaskbarIcon.cs" />
-    <Compile Include="NotifyIcon\TaskbarIcon.Declarations.cs" />
-    <Compile Include="NotifyIcon\TrayInfo.cs" />
-    <Compile Include="NotifyIcon\Util.cs" />
-    <Compile Include="NotifyIcon\WinApi.cs" />
-    <Compile Include="NotifyIcon\WindowMessageSink.cs" />
     <Compile Include="AvalonEditCommands.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />

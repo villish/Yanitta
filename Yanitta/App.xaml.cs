@@ -15,11 +15,6 @@ namespace Yanitta
             ConsoleWriter.Initialize("Yanitta.log", true);
         }
 
-        public static new MainWindow MainWindow
-        {
-            get { return App.Current.Windows.OfType<MainWindow>().FirstOrDefault(); }
-        }
-
         protected override void OnStartup(StartupEventArgs e)
         {
             if (e.Args.Length > 0 && e.Args[0] == "/e")

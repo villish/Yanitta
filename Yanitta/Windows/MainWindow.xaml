@@ -2,7 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:yanitta="clr-namespace:Yanitta"
-        xmlns:Controls="clr-namespace:Microsoft.Windows.Controls;assembly=ICSharpCode.AvalonEdit"
         x:Class="Yanitta.MainWindow"
         Title="{x:Static yanitta:Localization.Title}"
         AllowsTransparency="True"
@@ -72,7 +71,7 @@
         <ListView Margin="37,420,35,76" ItemsSource="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=DefaultProfile.RotationList}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="200">
+                    <GridViewColumn Width="300">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" FontSize="15"/>
@@ -112,7 +111,5 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
-        <Controls:TaskbarIcon x:Name="notyfyIcon" IconSource="/Resources/Google Black Alt.ico" />
     </Grid>
 </Window>

@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Linq;
 using System.Windows.Input;
-using Microsoft.Windows.Controls;
 using Yanitta.Properties;
 using Yanitta.Windows;
 
@@ -14,11 +13,6 @@ namespace Yanitta
     public partial class MainWindow : Window
     {
         public static ProcessList ProcessList { get; set; }
-
-        public TaskbarIcon TaskbarIcon
-        {
-            get { return this.notyfyIcon; }
-        }
 
         static MainWindow()
         {
