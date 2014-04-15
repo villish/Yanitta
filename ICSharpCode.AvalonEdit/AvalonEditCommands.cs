@@ -28,17 +28,17 @@ namespace ICSharpCode.AvalonEdit
         /// <summary>
         /// Converts the selected text to upper case.
         /// </summary>
-        public static readonly RoutedCommand ConvertToUppercase = new RoutedCommand("ConvertToUppercase", typeof(TextEditor));
+        public static readonly RoutedCommand ConvertToUppercase = new RoutedCommand("ConvertToUppercase", typeof(TextEditor), new InputGestureCollection { new KeyGesture(Key.U, ModifierKeys.Control | ModifierKeys.Shift) });
 
         /// <summary>
         /// Converts the selected text to lower case.
         /// </summary>
-        public static readonly RoutedCommand ConvertToLowercase = new RoutedCommand("ConvertToLowercase", typeof(TextEditor));
+        public static readonly RoutedCommand ConvertToLowercase = new RoutedCommand("ConvertToLowercase", typeof(TextEditor), new InputGestureCollection { new KeyGesture(Key.U, ModifierKeys.Control) });
 
         /// <summary>
         /// Converts the selected text to title case.
         /// </summary>
-        public static readonly RoutedCommand ConvertToTitleCase = new RoutedCommand("ConvertToTitleCase", typeof(TextEditor));
+        public static readonly RoutedCommand ConvertToTitleCase = new RoutedCommand("ConvertToTitleCase", typeof(TextEditor), new InputGestureCollection { new KeyGesture(Key.U, ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt) });
 
         /// <summary>
         /// Inverts the case of the selected text.
