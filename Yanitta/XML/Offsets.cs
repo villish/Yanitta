@@ -61,7 +61,7 @@ namespace Yanitta
         static Offsets()
         {
             if (File.Exists(fileName))
-                Default = new XmlManager(fileName).Load<Offsets>();
+                Default = XmlManager.Load<Offsets>(fileName);
             else
                 Default = new Offsets();
         }
@@ -70,7 +70,7 @@ namespace Yanitta
 
         public void Save()
         {
-            new XmlManager(fileName).Save(this);
+            XmlManager.Save(fileName, this);
         }
     }
 }

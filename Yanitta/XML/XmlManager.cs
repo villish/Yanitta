@@ -7,28 +7,15 @@ namespace Yanitta
     /// <summary>
     /// Представляет объект для сериализации/десериализации объекта в файл/из файла.
     /// </summary>
-    public class XmlManager
+    public static class XmlManager
     {
-        private string path;
-
-        /// <summary>
-        /// Инициализирует новый экземпляр объекта <see cref="Yanitta.XmlManager"/>
-        /// </summary>
-        /// <param name="path">Имя файла.</param>
-        public XmlManager(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentNullException("path");
-
-            this.path = path;
-        }
-
         /// <summary>
         /// Десериализирует файл в объект.
         /// </summary>
         /// <typeparam name="T">Тип объекта для десериализации.</typeparam>
+        /// <param name="path">Файл который надо десериализовать.</param>
         /// <returns>Десериализированый объект.</returns>
-        public T Load<T>() where T : class
+        public static T Load<T>(string path) where T : class
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException("File not found", path);
@@ -55,9 +42,13 @@ namespace Yanitta
         /// Сериализирует объект в файл.
         /// </summary>
         /// <typeparam name="T">Тип объекта для сериализации.</typeparam>
+        /// <param name="path">Файл который надо сериализовать.</param>
         /// <param name="obj">Объект для сериализации.</param>
-        public void Save<T>(T obj) where T : class
+        public static void Save<T>(string path, T obj) where T : class
         {
+            if (!File.Exists(path))
+                throw new FileNotFoundException("File not found", path);
+
             if (obj == null)
                 throw new ArgumentNullException("obj");
 

@@ -155,7 +155,7 @@ namespace Yanitta
             {
                 var sw = new Stopwatch();
                 sw.Start();
-                var temp = new XmlManager(fileName).Load<ProfileDb>();
+                var temp = XmlManager.Load<ProfileDb>(fileName);
                 sw.Stop();
                 Console.WriteLine("Profiles loading: {0}", sw.Elapsed);
                 sw.Reset();
@@ -191,7 +191,7 @@ namespace Yanitta
                             this.RawVersion.Revision + 1
                             );
                     }
-                    new XmlManager(fileName).Save(ProfileDb.Instance);
+                    XmlManager.Save(fileName, ProfileDb.Instance);
                     Console.WriteLine("Profiles Saved!");
                 }
             }
