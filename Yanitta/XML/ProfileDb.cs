@@ -116,6 +116,7 @@ namespace Yanitta
         {
             this.RawVersion  = new Version();
             this.ProfileList = new ObservableCollection<Profile>();
+            this.DefaultProfile = new Profile();
         }
 
         #region Extension
@@ -141,7 +142,7 @@ namespace Yanitta
             this.Lua         = temp.Lua;
             this.Url         = temp.Url;
             this.ProfileList = temp.ProfileList;
-            this.DefaultProfile = temp[WowClass.None];
+            this.DefaultProfile = temp[WowClass.None] ?? new Profile();
         }
 
         /// <summary>
