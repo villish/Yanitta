@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.227</Version>
+  <Version>0.0.5.231</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -8547,7 +8547,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
 agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
 energy     = UnitPower("player");     -- energy
-chi        = UnitPower("player", 12); -- chi
+chi        = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
 
 additionalChi = 0;
 if IsSpellKnown(115396) then
@@ -8901,6 +8901,48 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- модификатор5
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
+    else
+        setAoE = true;
+        AddonFrame.print("|cffff0000 AOE", true);
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
+    else
+        useCooldown = true;
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() or IsStealthed() then
+    return true;
+end
+
+local stuned_debufs = { 115078 };
+
+if HasDebuff("target", stuned_debufs) then
+    StopAttack();
+    PetStopAttack();
+    return true;
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 energy = UnitPower("player");     -- energy
 chi    = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
 ]]></Lua>
@@ -8923,20 +8965,36 @@ if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthM
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Будоражащий отвар">
-        <SpellID>115288</SpellID>
-        <Target>None</Target>
+      <Ability Name="Рука-копье">
+        <SpellID>116705</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotGCD>false</IsNotGCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if energi < 40 then
+return CheckInterrupt("target");
+]]></Lua>
+      </Ability>
+      <Ability Name="Отвар тигриной силы">
+        <SpellID>116740</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(2, HasBuff("player", 125195)) > 9 then
     return true;
 end
 ]]></Lua>
@@ -8954,7 +9012,163 @@ end
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi > 0
+if chi > 0 and select(3, HasBuff("player", 125359)) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Нокаутирующий удар">
+        <SpellID>100784</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if chi > 1 and HasBuff("player", 116768) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар восходящего солнца">
+        <SpellID>107428</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Неистовые кулаки">
+        <SpellID>113656</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if chi >= 3 and energy <= 30 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Лапа тигра">
+        <SpellID>100787</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HasBuff("player", 118864) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Волна ци">
+        <SpellID>115098</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Нокаутирующий удар">
+        <SpellID>100784</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Будоражущий отвар">
+        <SpellID>115288</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if energy <= 40 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Устранение вреда">
+        <SpellID>115072</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HealthByPercent("player") < 85 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Дзуки">
+        <SpellID>115698</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
