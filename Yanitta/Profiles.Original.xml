@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.231</Version>
+  <Version>0.0.5.237</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -9210,7 +9210,6 @@ useCooldown = true;
 setAoE      = nil;
 isCat       = nil;
 useAutoDispell = true;
-elipse = 0;
 ]]></Lua>
     <Rotation Name="Лекарь">
       <HotKey Key="Z" Modifier="Alt" />
@@ -9352,7 +9351,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-if LowHP.H70 > 3 and UnitAffectingCombat("player") then
+if LowHP.H50 > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 ]]></Lua>
@@ -9537,9 +9536,9 @@ and not HasBuff("mouseover", 774, "PLAYER") then
     return "mouseover";
 end
 
-if LowHP.H50 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
+if LowHP.H60 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 55 or (member.Agro > 2 and member.IsTank) or IsModKeyDown(mkLeftControl) then
+        if member.HP < 60 or (member.Agro > 2 and member.IsTank) or IsModKeyDown(mkLeftControl) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
                 return member.Unit;
             end
@@ -9649,8 +9648,9 @@ if not HasBuff("player", 132158) then
     end
     local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
     local harmony = select(3, HasBuff("player", 100977));
+
     local hp = members[1].HP;
-    if hp <= 40 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
+    if hp <= 50 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
         if GetShapeshiftForm() == 6 or not IS_MOVING then
             return members[1].Unit;
         end
@@ -9758,11 +9758,11 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if LowHP.H80 < 3 then
-    if members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2 then
-        return members[1].Unit;
-    end
-end
+--if LowHP.H80 < 3 then
+--    if members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2 then
+--        return members[1].Unit;
+--    end
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Знак дикой природы">
