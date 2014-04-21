@@ -2733,6 +2733,22 @@ holy_avenger   = HasBuff("player", 105809); -- Святая клятва
 inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
 ]]></Lua>
       </Ability>
+      <Ability Name="Укор">
+        <SpellID>96231</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt("target");
+]]></Lua>
+      </Ability>
       <Ability Name="Дознание">
         <SpellID>84963</SpellID>
         <Target>None</Target>
@@ -2747,6 +2763,24 @@ inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if hollyPower > 2 and inquisition_rem <= 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вспышка света">
+        <SpellID>19750</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if playerHP < 80 and select(2, HasBuff("player", 114250)) > 2 then
     return true;
 end
 ]]></Lua>
@@ -2829,7 +2863,7 @@ if useCooldown and inquisition then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Вердикт храмовника (1)">
+      <Ability Name="Вердикт храмовника">
         <SpellID>85256</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2949,7 +2983,7 @@ return setAoE;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Вердикт храмовника (2)">
+      <Ability Name="Вердикт храмовника">
         <SpellID>85256</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2962,9 +2996,7 @@ return true;
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and hollyPower > 2 then
-    return true;
-end
+return not setAoE;
 ]]></Lua>
       </Ability>
     </Rotation>
