@@ -8646,7 +8646,8 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
+if chi > 2 and not UnitIsPlayer("target") and
+    UnitHealth("target") < UnitHealthMax("player") then
     return true;
 end
 ]]></Lua>
@@ -8797,9 +8798,7 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi < (2 + additionalChi) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Танцующий журавль">
