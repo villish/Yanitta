@@ -98,16 +98,7 @@ namespace Yanitta
         /// <summary>
         /// Текущий экземпляр базы данных.
         /// </summary>
-        public static ProfileDb Instance { get; private set; }
-
-        /// <summary>
-        /// Инициализирует базу при первом обращении к классу.
-        /// </summary>
-        static ProfileDb()
-        {
-            Instance = new ProfileDb();
-            Instance.Load(Yanitta.Properties.Settings.Default.ProfilesFileName);
-        }
+        public static ProfileDb Instance { get; set; }
 
         /// <summary>
         /// Инициализирует новый экземпляр объекта <see cref="Yanitta.ProfileDb"/>
@@ -151,24 +142,8 @@ namespace Yanitta
         /// <param name="fileName">Имя файла базы данных.</param>
         public void Load(string fileName)
         {
-            try
-            {
-                var sw = new Stopwatch();
-                sw.Start();
-                var temp = XmlManager.Load<ProfileDb>(fileName);
-                sw.Stop();
-                Console.WriteLine("Profiles loading: {0}", sw.Elapsed);
-                sw.Reset();
-                ProfileDb.Instance.Update(temp);
-            }
-            catch (FileNotFoundException fex)
-            {
-                Console.WriteLine("File {0} not found...", fex.FileName);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: {0}", ex.Message);
-            }
+            var profileDb = XmlManager.Load<ProfileDb>(fileName);
+            ProfileDb.Instance.Update(profileDb);
         }
 
         /// <summary>

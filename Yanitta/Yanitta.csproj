@@ -100,6 +100,7 @@
     <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
     <Compile Include="Misk\ProcessList.cs" />
     <Compile Include="Misk\ProcessMemory.cs" />
+    <Compile Include="Misk\YanittaException.cs" />
     <Compile Include="XML\Offsets.cs" />
     <Compile Include="XML\HotKey.cs" />
     <Compile Include="Localization.Designer.cs">

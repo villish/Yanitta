@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Windows;
 
 namespace Yanitta
 {
@@ -83,6 +84,10 @@ namespace Yanitta
             if (exception != null)
             {
                 Console.WriteLine(exception);
+            }
+            if (e.ExceptionObject is YanittaException)
+            {
+                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Xml;
 using Yanitta.Properties;
 
 namespace Yanitta
@@ -26,13 +26,45 @@ namespace Yanitta
             if (Settings.Default.Language != "auto")
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
 
+            var fileName = Settings.Default.ProfilesFileName;
             Console.WriteLine("Yanitta startup!...");
 
-            var fileName = Settings.Default.ProfilesFileName;
-            if (File.Exists(fileName))
-                File.Copy(fileName, fileName + ".bak", true);
-            else if (File.Exists("Profiles.Original.xml"))
-                File.Copy("Profiles.Original.xml", fileName, true);
+            try
+            {
+                ProfileDb.Instance = new ProfileDb();
+                ProfileDb.Instance.Load(Yanitta.Properties.Settings.Default.ProfilesFileName);
+
+                //Если загрузка прошла удачно - сделаем резервную копию.
+                if (File.Exists(fileName))
+                    File.Copy(fileName, fileName + ".bak", true);
+
+                Console.WriteLine("База успешно загружена, резервная копия создана.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("Ошибка загрузки базы данных, возможно база повреждена.");
+                Console.WriteLine(ex.Message);
+                // Попытка загрузить резервную базу.
+                if (File.Exists(fileName + ".bak"))
+                {
+                    Console.WriteLine("Найден файл резервной копии...");
+                    File.Copy(fileName + ".bak", fileName, true);
+                }
+                else
+                    throw new FileNotFoundException("Файл резервной копии не найден.", fileName + ".bak");
+
+                try
+                {
+                    Console.WriteLine("Попытка загрузить базу данных из резервной копии.");
+                    ProfileDb.Instance = new ProfileDb();
+                    ProfileDb.Instance.Load(Yanitta.Properties.Settings.Default.ProfilesFileName);
+                    Console.WriteLine("База из резервной копии успешно загружена.");
+                }
+                catch (Exception ex_inner)
+                {
+                    throw new YanittaException("Ошибка загрузки базы из резервной копии.\r\n" + ex_inner.Message);
+                }
+            }
 
             base.OnStartup(e);
         }
