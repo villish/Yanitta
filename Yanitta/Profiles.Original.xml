@@ -1225,7 +1225,7 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name=" Удар героя">
+      <Ability Name="Удар героя">
         <SpellID>78</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1328,7 +1328,7 @@ if rage < 70 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name=" Ярость берсерка">
+      <Ability Name="Ярость берсерка">
         <SpellID>18499</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -2166,7 +2166,7 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name=" Удар колосса">
+      <Ability Name="Удар колосса">
         <SpellID>86346</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
