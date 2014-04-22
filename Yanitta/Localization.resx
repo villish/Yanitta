@@ -177,9 +177,6 @@
   <data name="IsAttacedTarget" xml:space="preserve">
     <value>Is attacked unit</value>
   </data>
-  <data name="IsRangeCheck" xml:space="preserve">
-    <value>Range check</value>
-  </data>
   <data name="IsUseIncombat" xml:space="preserve">
     <value>Use in combat</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="TargetToolTip" xml:space="preserve">
     <value>Target type</value>
-  </data>
-  <data name="IsRangeCheckToolTip" xml:space="preserve">
-    <value>Checking reach the target (does not work for some spells)</value>
   </data>
   <data name="IsInCombatToolTip" xml:space="preserve">
     <value>Check in combat</value>

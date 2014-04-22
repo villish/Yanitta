@@ -177,9 +177,6 @@
   <data name="IsAttacedTarget" xml:space="preserve">
     <value>Возможность атаковать</value>
   </data>
-  <data name="IsRangeCheck" xml:space="preserve">
-    <value>Проверка дистанции</value>
-  </data>
   <data name="IsUseIncombat" xml:space="preserve">
     <value>Использовать в бою</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="TargetToolTip" xml:space="preserve">
     <value>Тип цели</value>
-  </data>
-  <data name="IsRangeCheckToolTip" xml:space="preserve">
-    <value>Проверка досягаемости цели (не работает для некоторых заклинаний)</value>
   </data>
   <data name="IsInCombatToolTip" xml:space="preserve">
     <value>Проверка на нахождение в бою</value>
