@@ -1271,6 +1271,7 @@ namespace ICSharpCode.AvalonEdit
                 return null;
 
             int start = 0, len = 0;
+
             for (start = offset - 1; start >= 0; start--)
             {
                 var c = this.Text[start];
@@ -1280,8 +1281,7 @@ namespace ICSharpCode.AvalonEdit
                     break;
                 }
             }
-            if (start < 0)
-                return null;
+            start = Math.Max(start, 0);
             for (int j = start; j < this.Text.Length; ++j, ++len)
             {
                 var c = this.Text[j];
@@ -1307,7 +1307,7 @@ namespace ICSharpCode.AvalonEdit
                         break;
                     }
                 }
-                return i < 0 ? 0 : i;
+                return Math.Max(i, 0);
             }
         }
 
@@ -1325,7 +1325,7 @@ namespace ICSharpCode.AvalonEdit
                         break;
                     }
                 }
-                return i < 0 ? 0 : i;
+                return Math.Max(i, 0);
             }
         }
 
