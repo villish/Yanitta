@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.238</Version>
+  <Version>0.0.5.248</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -249,6 +249,7 @@ function InsertNewUnitToHeallersTable(unit)
     if UnitExists(unit)
         and not UnitIsDeadOrGhost(unit)
         and not UnitIsCorpse(unit)
+        and UnitHealth(unit) > 100
         and     UnitCanAssist(unit, "player")
         and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
         and not IsNotLineOfSight(unit) then
@@ -2894,9 +2895,9 @@ return true;
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if hollyPower >= 2 then
+--if hollyPower >= 2 then
     return not setAoE;
-end
+--end
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -8902,7 +8903,7 @@ myMana = PowerByPercent("player", SPELL_POWER_MANA);
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-return UnitIsDeadOrGhost(ability.Target);
+return UnitIsDeadOrGhost(ability.Target) and UnitIsPlayer(ability.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Оживление">
@@ -8917,7 +8918,7 @@ return UnitIsDeadOrGhost(ability.Target);
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if not UnitAffectingCombat("player")
+if not UnitAffectingCombat("player") and UnitIsPlayer(ability.Target)
     and (UnitIsDeadOrGhost(ability.Target) or UnitIsCorpse(ability.Target)) then
     return true;
 end
@@ -9147,6 +9148,7 @@ end
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftControl)
 and UnitExists("mouseover")
+and UnitHealth("mouseover") > 100
 and UnitCanAssist("player", "mouseover")
 and not HasBuff("mouseover", 774, "PLAYER") then
     return "mouseover";
@@ -9154,7 +9156,8 @@ end
 
 if LowHP.H60 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 60 or (member.Agro > 2 and member.IsTank) or IsModKeyDown(mkLeftControl) then
+        if member.HP < 60  or (member.Agro > 2 and member.IsTank)
+            or IsModKeyDown(mkLeftControl) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
                 return member.Unit;
             end
@@ -9255,7 +9258,10 @@ return members[1].HP < 35;
         <Lua><![CDATA[
 -- 132158 Природная стремительность
 if not HasBuff("player", 132158) then
-    if IsMouseButtonDown(4) and UnitExists("mouseover") and UnitCanAssist("player", "mouseover") then
+    if IsMouseButtonDown(4)
+    and UnitExists("mouseover")
+    and UnitHealth("mouseover") > 100
+    and UnitCanAssist("player", "mouseover") then
         return "mouseover";
     end
     local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
