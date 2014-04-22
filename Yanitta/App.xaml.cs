@@ -22,6 +22,8 @@ namespace Yanitta
         {
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
+            else if (e.Args.Length > 0 && e.Args[0] == "/ex")
+                StartupUri = new Uri("Windows/WinCodeExecute.xaml", UriKind.Relative);
 
             if (Settings.Default.Language != "auto")
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
