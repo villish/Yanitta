@@ -5,35 +5,38 @@
 
     <Style x:Key="KamillaStyle">
         <Style.Resources>
-            <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"                     Color="#FF222222" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.WindowFrameBrushKey}"                Color="#FF444444" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ScrollBarBrushKey}"                  Color="Gray" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}"                             Color="#FF222222" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.WindowFrameBrushKey}"                        Color="#FF444444" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ScrollBarBrushKey}"                          Color="Gray" />
 
-            <SolidColorBrush x:Key="{x:Static SystemColors.ActiveBorderBrushKey}"               Color="#FF444444" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveBorderBrushKey}"             Color="#FF212121" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ActiveBorderBrushKey}"                       Color="#FF444444" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveBorderBrushKey}"                     Color="#FF212121" />
 
-            <SolidColorBrush x:Key="{x:Static SystemColors.ActiveCaptionBrushKey}"              Color="LightGreen" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveCaptionBrushKey}"            Color="DarkGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ActiveCaptionBrushKey}"                      Color="LightGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveCaptionBrushKey}"                    Color="DarkGreen" />
 
-            <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkDarkBrushKey}"            Color="Black" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkBrushKey}"                Color="DarkGreen" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"                    Color="#FF006E00" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightBrushKey}"               Color="#FF009600" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightLightBrushKey}"          Color="#FF00AA00" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkDarkBrushKey}"                    Color="Black" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkBrushKey}"                        Color="DarkGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"                            Color="#FF006E00" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightBrushKey}"                       Color="#FF009600" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightLightBrushKey}"                  Color="#FF00AA00" />
 
-            <SolidColorBrush x:Key="{x:Static SystemColors.AppWorkspaceBrushKey}"               Color="DarkGreen" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.MenuBrushKey}"                       Color="DarkGreen" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.MenuBarBrushKey}"                    Color="DarkGreen" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.MenuHighlightBrushKey}"              Color="LightGreen" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"                  Color="#FF424242" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"              Color="#FF17AD1A" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.HotTrackBrush}"                      Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.AppWorkspaceBrushKey}"                       Color="DarkGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.MenuBrushKey}"                               Color="DarkGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.MenuBarBrushKey}"                            Color="DarkGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.MenuHighlightBrushKey}"                      Color="LightGreen" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}"                          Color="#FF424242" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}"                      Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HotTrackBrush}"                              Color="#FF17AD1A" />
 
-            <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}"                 Color="#FF17AD1A" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.MenuTextBrushKey}"                   Color="#FF17AD1A" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.InfoTextBrushKey}"                   Color="#FF17AD1A" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}"                Color="#FF17AD1A" />
-            <SolidColorBrush x:Key="{x:Static SystemColors.ActiveCaptionTextBrushKey}"          Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}"                         Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.MenuTextBrushKey}"                           Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InfoTextBrushKey}"                           Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}"                        Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ActiveCaptionTextBrushKey}"                  Color="#FF17AD1A" />
+
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}"         Color="#FF313131" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}"     Color="#FF17AD1A" />
 
             <LinearGradientBrush x:Key="BorderBrush" StartPoint="0,0" EndPoint="0,1">
                 <LinearGradientBrush.GradientStops>
@@ -555,6 +558,98 @@
                 </Style.Resources>
             </Style>
 
+            <!-- ListBox -->
+            <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
+            <Style TargetType="{x:Type ListBox}">
+                <Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
+                <Setter Property="Background"  Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+                <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+
+                <Setter Property="BorderThickness"                              Value="1"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"   Value="Auto"/>
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility"     Value="Auto"/>
+                <Setter Property="ScrollViewer.CanContentScroll"                Value="true"/>
+                <Setter Property="ScrollViewer.PanningMode"                     Value="Both"/>
+                <Setter Property="Stylus.IsFlicksEnabled"                       Value="False"/>
+                <Setter Property="VerticalContentAlignment"                     Value="Center"/>
+
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBox}">
+                            <Border x:Name="Bd" Padding="1" SnapsToDevicePixels="true"
+                                    BorderBrush     ="{TemplateBinding BorderBrush}"
+                                    BorderThickness ="{TemplateBinding BorderThickness}"
+                                    Background      ="{TemplateBinding Background}">
+                                <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </ScrollViewer>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" TargetName="Bd"
+                                            Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsGrouping" Value="true"/>
+                                        <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="{x:Type ListBoxItem}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="HorizontalContentAlignment"
+                        Value="{Binding HorizontalContentAlignment,
+                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                <Setter Property="VerticalContentAlignment"
+                        Value="{Binding VerticalContentAlignment,
+                                RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                <Setter Property="Padding" Value="2,0,0,0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border x:Name="Bd" SnapsToDevicePixels="true"
+                                    BorderBrush     ="{TemplateBinding BorderBrush}"
+                                    BorderThickness ="{TemplateBinding BorderThickness}"
+                                    Background      ="{TemplateBinding Background}"
+                                    Padding         ="{TemplateBinding Padding}">
+                                <ContentPresenter
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                    VerticalAlignment  ="{TemplateBinding VerticalContentAlignment}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter Property="Background" TargetName="Bd"
+                                            Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="Selector.IsSelectionActive" Value="false"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Background" TargetName="Bd"
+                                            Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightBrushKey}}"/>
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource {x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}}"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground"
+                                            Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
             <!--  SCROLLBAR STUFF  -->
 
             <SolidColorBrush x:Key="ScrollBarPressedBackgroundBrush" Color="#FF454545" />
