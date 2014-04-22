@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.227</Version>
+  <Version>0.0.5.237</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -2733,6 +2733,22 @@ holy_avenger   = HasBuff("player", 105809); -- Святая клятва
 inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
 ]]></Lua>
       </Ability>
+      <Ability Name="Укор">
+        <SpellID>96231</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt("target");
+]]></Lua>
+      </Ability>
       <Ability Name="Дознание">
         <SpellID>84963</SpellID>
         <Target>None</Target>
@@ -2747,6 +2763,24 @@ inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if hollyPower > 2 and inquisition_rem <= 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вспышка света">
+        <SpellID>19750</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if playerHP < 80 and select(2, HasBuff("player", 114250)) > 2 then
     return true;
 end
 ]]></Lua>
@@ -2829,7 +2863,7 @@ if useCooldown and inquisition then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Вердикт храмовника (1)">
+      <Ability Name="Вердикт храмовника">
         <SpellID>85256</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2949,7 +2983,7 @@ return setAoE;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Вердикт храмовника (2)">
+      <Ability Name="Вердикт храмовника">
         <SpellID>85256</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -2962,9 +2996,7 @@ return true;
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and hollyPower > 2 then
-    return true;
-end
+return not setAoE;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -8547,7 +8579,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
 agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
 energy     = UnitPower("player");     -- energy
-chi        = UnitPower("player", 12); -- chi
+chi        = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
 
 additionalChi = 0;
 if IsSpellKnown(115396) then
@@ -8614,7 +8646,8 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
+if chi > 2 and not UnitIsPlayer("target") and
+    UnitHealth("target") < UnitHealthMax("player") then
     return true;
 end
 ]]></Lua>
@@ -8765,9 +8798,7 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi < (2 + additionalChi) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Танцующий журавль">
@@ -8901,6 +8932,48 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- модификатор5
+if     IsModKeyDown(mkLeftShift) then
+elseif IsModKeyDown(mkLeftControl) then
+    if setAoE then
+        setAoE = false;
+        AddonFrame.print("|cff00ff00 Одиночная цель", true);
+    else
+        setAoE = true;
+        AddonFrame.print("|cffff0000 AOE", true);
+    end
+elseif IsModKeyDown(mkLeftAlt) then
+    return true;
+elseif IsModKeyDown(mkRightShift) then
+    if useCooldown then
+        useCooldown = false;
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
+    else
+        useCooldown = true;
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
+    end
+elseif IsModKeyDown(mkRightControl) then
+elseif IsModKeyDown(mkRightAlt) then
+end
+
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsMounted() or IsStealthed() then
+    return true;
+end
+
+local stuned_debufs = { 115078 };
+
+if HasDebuff("target", stuned_debufs) then
+    StopAttack();
+    PetStopAttack();
+    return true;
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
 energy = UnitPower("player");     -- energy
 chi    = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
 ]]></Lua>
@@ -8923,20 +8996,36 @@ if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthM
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Будоражащий отвар">
-        <SpellID>115288</SpellID>
-        <Target>None</Target>
+      <Ability Name="Рука-копье">
+        <SpellID>116705</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsRangeCheck>false</IsRangeCheck>
-        <IsAttacedTarget>false</IsAttacedTarget>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsNotGCD>false</IsNotGCD>
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if energi < 40 then
+return CheckInterrupt("target");
+]]></Lua>
+      </Ability>
+      <Ability Name="Отвар тигриной силы">
+        <SpellID>116740</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(2, HasBuff("player", 125195)) > 9 then
     return true;
 end
 ]]></Lua>
@@ -8954,7 +9043,163 @@ end
         <IsSpellKnownCheck>true</IsSpellKnownCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi > 0
+if chi > 0 and select(3, HasBuff("player", 125359)) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Нокаутирующий удар">
+        <SpellID>100784</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if chi > 1 and HasBuff("player", 116768) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар восходящего солнца">
+        <SpellID>107428</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Неистовые кулаки">
+        <SpellID>113656</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if chi >= 3 and energy <= 30 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Лапа тигра">
+        <SpellID>100787</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HasBuff("player", 118864) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Волна ци">
+        <SpellID>115098</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Нокаутирующий удар">
+        <SpellID>100784</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Будоражущий отвар">
+        <SpellID>115288</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>false</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if energy <= 40 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Устранение вреда">
+        <SpellID>115072</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HealthByPercent("player") < 85 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Дзуки">
+        <SpellID>115698</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsRangeCheck>true</IsRangeCheck>
+        <IsAttacedTarget>true</IsAttacedTarget>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsNotGCD>false</IsNotGCD>
+        <IsSpellKnownCheck>true</IsSpellKnownCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -8965,7 +9210,6 @@ useCooldown = true;
 setAoE      = nil;
 isCat       = nil;
 useAutoDispell = true;
-elipse = 0;
 ]]></Lua>
     <Rotation Name="Лекарь">
       <HotKey Key="Z" Modifier="Alt" />
@@ -9107,7 +9351,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-if LowHP.H70 > 3 and UnitAffectingCombat("player") then
+if LowHP.H50 > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 ]]></Lua>
@@ -9292,9 +9536,9 @@ and not HasBuff("mouseover", 774, "PLAYER") then
     return "mouseover";
 end
 
-if LowHP.H50 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
+if LowHP.H60 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 55 or (member.Agro > 2 and member.IsTank) or IsModKeyDown(mkLeftControl) then
+        if member.HP < 60 or (member.Agro > 2 and member.IsTank) or IsModKeyDown(mkLeftControl) then
             if not HasBuff(member.Unit, 774, "PLAYER") then
                 return member.Unit;
             end
@@ -9404,8 +9648,9 @@ if not HasBuff("player", 132158) then
     end
     local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
     local harmony = select(3, HasBuff("player", 100977));
+
     local hp = members[1].HP;
-    if hp <= 40 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
+    if hp <= 50 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
         if GetShapeshiftForm() == 6 or not IS_MOVING then
             return members[1].Unit;
         end
@@ -9513,11 +9758,11 @@ end
         <IsSpellKnownCheck>false</IsSpellKnownCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if LowHP.H80 < 3 then
-    if members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2 then
-        return members[1].Unit;
-    end
-end
+--if LowHP.H80 < 3 then
+--    if members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2 then
+--        return members[1].Unit;
+--    end
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Знак дикой природы">
