@@ -1311,33 +1311,6 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        public int LenghtCurrentWord
-        {
-            get
-            {
-                int i = 0;
-                for (int j = StartCurrentWord; j < this.Text.Length; ++j, ++i)
-                {
-                    var c = this.Text[j];
-                    // допустимые символы в именах...
-                    if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
-                    {
-                        break;
-                    }
-                }
-                return Math.Max(i, 0);
-            }
-        }
-
-        public string CurrentWord
-        {
-            get
-            {
-                var word = this.Text.Substring(StartCurrentWord, LenghtCurrentWord);
-                return string.IsNullOrWhiteSpace(word) ? "" : word.Trim();
-            }
-        }
-
         public string CurrentWordToCursor
         {
             get
