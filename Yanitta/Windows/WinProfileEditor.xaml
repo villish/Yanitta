@@ -206,14 +206,6 @@
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
 
-                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsAttacedTarget}">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding IsAttacedTarget}" ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-
                                         <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsUseIncombat}">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -314,7 +306,6 @@
 
                                 <StackPanel Grid.Column="2">
                                     <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"     Content="{x:Static yanitta:Localization.IsUseIncombat}"     ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
-                                    <CheckBox Margin="3" IsChecked="{Binding IsAttacedTarget}"   Content="{x:Static yanitta:Localization.IsAttacedTarget}"   ToolTip="{x:Static yanitta:Localization.IsAttacedTargetToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding IsSpellKnownCheck}" Content="{x:Static yanitta:Localization.IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}"    Content="{x:Static yanitta:Localization.SetRecastDelay}"    ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding IsNotGCD}"          Content="{x:Static yanitta:Localization.IsNotGCD}"          ToolTip="{x:Static yanitta:Localization.IsNotGCDToolTip}"/>

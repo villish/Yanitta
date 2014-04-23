@@ -174,9 +174,6 @@
   <data name="Help" xml:space="preserve">
     <value>Помощь</value>
   </data>
-  <data name="IsAttacedTarget" xml:space="preserve">
-    <value>Возможность атаковать</value>
-  </data>
   <data name="IsUseIncombat" xml:space="preserve">
     <value>Использовать в бою</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="IsInCombatToolTip" xml:space="preserve">
     <value>Проверка на нахождение в бою</value>
-  </data>
-  <data name="IsAttacedTargetToolTip" xml:space="preserve">
-    <value>Возможность атаковать цель</value>
   </data>
   <data name="CancelCasting" xml:space="preserve">
     <value>Прерывать заклинания</value>

@@ -38,11 +38,6 @@ namespace Yanitta
         public bool CancelCasting          { get; set; }
 
         /// <summary>
-        /// Проверка возможности атаковать цель
-        /// </summary>
-        public bool IsAttacedTarget        { get; set; }
-
-        /// <summary>
         /// Проверка нахождения в бою
         /// </summary>
         public bool IsUseIncombat          { get; set; }
@@ -102,7 +97,6 @@ namespace Yanitta
             var target            = this.Target.ToString().ToLower();
             var cancelChannel     = this.CancelChannel.ToString().ToLower();
             var cancelCasting     = this.CancelCasting.ToString().ToLower();
-            var isAttacedTarget   = this.IsAttacedTarget.ToString().ToLower();
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
             var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
             var isNotHCD          = this.IsNotGCD.ToString().ToLower();
@@ -120,7 +114,6 @@ namespace Yanitta
             builder.AppendFormatLine("    IsMovingCheck     = \"{0}\",", isMovingCheck);
             builder.AppendFormatLine("    DropChanel        = {0},",     cancelChannel);
             builder.AppendFormatLine("    CancelCasting     = {0},",     cancelCasting);
-            builder.AppendFormatLine("    IsAttackedCheck   = {0},",     isAttacedTarget);
             builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
             builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
             builder.AppendFormatLine("    IsSpellKnownCheck = {0},",     isSpellKnownCheck);

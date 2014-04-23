@@ -174,9 +174,6 @@
   <data name="Help" xml:space="preserve">
     <value>Help</value>
   </data>
-  <data name="IsAttacedTarget" xml:space="preserve">
-    <value>Is attacked unit</value>
-  </data>
   <data name="IsUseIncombat" xml:space="preserve">
     <value>Use in combat</value>
   </data>
@@ -239,9 +236,6 @@
   </data>
   <data name="IsInCombatToolTip" xml:space="preserve">
     <value>Check in combat</value>
-  </data>
-  <data name="IsAttacedTargetToolTip" xml:space="preserve">
-    <value>Is attaced unit</value>
   </data>
   <data name="CancelCasting" xml:space="preserve">
     <value>Drop casting</value>
