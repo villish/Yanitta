@@ -48,11 +48,6 @@ namespace Yanitta
         public bool SetRecastDelay         { get; set; }
 
         /// <summary>
-        /// Это заклинание не имеет общего ГКД
-        /// </summary>
-        public bool IsNotGCD               { get; set; }
-
-        /// <summary>
         /// Делает проверку на то, что данное заклинание доступно для персонажа.
         /// Не работает для некоторых заклинаний (например: Увечье (друид))
         /// </summary>
@@ -99,7 +94,6 @@ namespace Yanitta
             var cancelCasting     = this.CancelCasting.ToString().ToLower();
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
             var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
-            var isNotHCD          = this.IsNotGCD.ToString().ToLower();
             var isSpellKnownCheck = this.IsSpellKnownCheck.ToString().ToLower();
             var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
 
@@ -117,7 +111,6 @@ namespace Yanitta
             builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
             builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
             builder.AppendFormatLine("    IsSpellKnownCheck = {0},",     isSpellKnownCheck);
-            builder.AppendFormatLine("    IsNotGCD          = {0},",     isNotHCD);
             builder.AppendFormatLine("    LastCastingTime   = 0,");
             builder.AppendFormatLine("    Func = function(ability)\n        {0}\n    end",
                 string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));

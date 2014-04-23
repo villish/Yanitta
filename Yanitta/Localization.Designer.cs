@@ -439,24 +439,6 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Is attacked unit.
-        /// </summary>
-        public static string IsAttacedTarget {
-            get {
-                return ResourceManager.GetString("IsAttacedTarget", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Is attaced unit.
-        /// </summary>
-        public static string IsAttacedTargetToolTip {
-            get {
-                return ResourceManager.GetString("IsAttacedTargetToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Check in combat.
         /// </summary>
         public static string IsInCombatToolTip {
@@ -480,42 +462,6 @@ namespace Yanitta {
         public static string IsMovingCheckToolTip {
             get {
                 return ResourceManager.GetString("IsMovingCheckToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Without GCD.
-        /// </summary>
-        public static string IsNotGCD {
-            get {
-                return ResourceManager.GetString("IsNotGCD", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Indicates that the ability has no global cooldown.
-        /// </summary>
-        public static string IsNotGCDToolTip {
-            get {
-                return ResourceManager.GetString("IsNotGCDToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Range check.
-        /// </summary>
-        public static string IsRangeCheck {
-            get {
-                return ResourceManager.GetString("IsRangeCheck", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Checking reach the target (does not work for some spells).
-        /// </summary>
-        public static string IsRangeCheckToolTip {
-            get {
-                return ResourceManager.GetString("IsRangeCheckToolTip", resourceCulture);
             }
         }
         

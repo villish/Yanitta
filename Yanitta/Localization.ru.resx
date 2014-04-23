@@ -246,12 +246,6 @@
   <data name="SetRecastDelayToolTip" xml:space="preserve">
     <value>Задержка на произнесение следующего этого заклинания</value>
   </data>
-  <data name="IsNotGCDToolTip" xml:space="preserve">
-    <value>Указывает, что данная способность не имеет глобального кулдауна</value>
-  </data>
-  <data name="IsNotGCD" xml:space="preserve">
-    <value>Без ГКД</value>
-  </data>
   <data name="CoreHeader" xml:space="preserve">
     <value>Код ядра</value>
   </data>

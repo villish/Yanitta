@@ -246,12 +246,6 @@
   <data name="SetRecastDelayToolTip" xml:space="preserve">
     <value>The delay in the next utterance of this spell</value>
   </data>
-  <data name="IsNotGCDToolTip" xml:space="preserve">
-    <value>Indicates that the ability has no global cooldown</value>
-  </data>
-  <data name="IsNotGCD" xml:space="preserve">
-    <value>Without GCD</value>
-  </data>
   <data name="CoreHeader" xml:space="preserve">
     <value>Core</value>
   </data>
