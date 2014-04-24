@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.255</Version>
+  <Version>0.0.5.257</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -1801,6 +1801,22 @@ return NeedReflect(ability.Target);
         <Lua><![CDATA[
 -- Код профиля
 return NeedMassReflect(ability.Target);
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар громовержца">
+        <SpellID>107570</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsInArenaTeam() then
+    --if not UnitHasControl(ability.Target) then
+        return true;
+    --end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Подрезать сухожилья">
