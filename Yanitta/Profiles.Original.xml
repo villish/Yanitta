@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.252</Version>
+  <Version>0.0.5.253</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -2432,7 +2432,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition then
+if useCooldown and inquisition and isInMeele then
     -- Защитник древних королей
     if SpellCD(86698) < 291 then
         return true;
@@ -2449,7 +2449,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition then
+if useCooldown and inquisition and isInMeele then
     -- Гнев карателя
     if SpellCD(31884) < 10 then
         return true;
@@ -2466,7 +2466,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition and hollyPower <= 2 then
+if useCooldown and inquisition and hollyPower <= 2 and isInMeele then
     -- Защитник древних королей
     if SpellCD(86698) < 289 then
         return true;
