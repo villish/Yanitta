@@ -315,13 +315,6 @@
   <data name="WowClass_Druid" xml:space="preserve">
     <value>Друид</value>
   </data>
-  <data name="IsSpellKnownCheck" xml:space="preserve">
-    <value>Доступность заклинания</value>
-  </data>
-  <data name="IsSpellKnownCheckToolTip" xml:space="preserve">
-    <value>Делает проверку на то, что данное заклинание уже доступно для персонажа.
-Не работает для некоторых заклинаний (например: Увечье (друид))</value>
-  </data>
   <data name="SpellIdToolTip" xml:space="preserve">
     <value>Идентификатор заклинания, межет быть 0 если требуется специальная обработка.</value>
   </data>

@@ -466,24 +466,6 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Is spell known.
-        /// </summary>
-        public static string IsSpellKnownCheck {
-            get {
-                return ResourceManager.GetString("IsSpellKnownCheck", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Ищет локализованную строку, похожую на Check whether the player (or pet) knows a spell..
-        /// </summary>
-        public static string IsSpellKnownCheckToolTip {
-            get {
-                return ResourceManager.GetString("IsSpellKnownCheckToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Ищет локализованную строку, похожую на Use in combat.
         /// </summary>
         public static string IsUseIncombat {

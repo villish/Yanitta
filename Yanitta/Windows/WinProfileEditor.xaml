@@ -214,14 +214,6 @@
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
 
-                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsSpellKnownCheck}">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-
                                         <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.SetRecastDelay}">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -297,11 +289,10 @@
                                 </Grid>
 
                                 <StackPanel Grid.Column="2">
-                                    <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"     Content="{x:Static yanitta:Localization.IsUseIncombat}"     ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
-                                    <CheckBox Margin="3" IsChecked="{Binding IsSpellKnownCheck}" Content="{x:Static yanitta:Localization.IsSpellKnownCheck}" ToolTip="{x:Static yanitta:Localization.IsSpellKnownCheckToolTip}"/>
-                                    <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}"    Content="{x:Static yanitta:Localization.SetRecastDelay}"    ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
-                                    <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"     Content="{x:Static yanitta:Localization.CancelCasting}"     ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
-                                    <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"     Content="{x:Static yanitta:Localization.CancelChanel}"      ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"  Content="{x:Static yanitta:Localization.IsUseIncombat}"  ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}" Content="{x:Static yanitta:Localization.SetRecastDelay}" ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="{x:Static yanitta:Localization.CancelCasting}"  ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"  Content="{x:Static yanitta:Localization.CancelChanel}"   ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                                 </StackPanel>
                             </Grid>
                         </GroupBox>

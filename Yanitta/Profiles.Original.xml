@@ -434,6 +434,24 @@ end
 --              CORE                 --
 ---------------------------------------
 
+-- Проверяем доступность заклинания.
+function IsPlayerKnownSpell(spellId, spellName)
+    -- Основная проверка
+    if IsPlayerSpell(spellId)
+        or IsSpellKnown(spellId) or IsSpellKnown(spellId, true)
+        or IsTalentSpell(spellName) then
+        return true;
+    end
+    -- Проверка на доступность заклинания по уровню и специализиции
+    local spellList = { GetSpecializationSpells(GetSpecialization()) };
+    for i = 1, #spellList, 2 do
+        if spellList[i] == spellId and
+            UnitLevel("player") > (spellList[i+1] or 0) then
+            return true;
+        end
+    end
+end
+
 function CheckAndCastAbility(ability)
     if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
         return;
@@ -451,12 +469,8 @@ function CheckAndCastAbility(ability)
 
     if ability.SpellId < 1 then
         return ability.Func(ability);
-    elseif not IsUsableSpell(ability.SpellId) then
-        return;
-    elseif ability.IsSpellKnownCheck
-        and not (IsPlayerSpell(ability.SpellId)
-            or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)
-            or GetSpellBookItemInfo(spellInfo)) then
+    elseif not (IsUsableSpell(ability.SpellId)
+        or IsPlayerKnownSpell(ability.SpellId, spellInfo)) then
         return;
     end
 

@@ -48,15 +48,12 @@ namespace Yanitta
         public bool SetRecastDelay         { get; set; }
 
         /// <summary>
-        /// Делает проверку на то, что данное заклинание доступно для персонажа.
-        /// Не работает для некоторых заклинаний (например: Увечье (друид))
-        /// </summary>
-        public bool IsSpellKnownCheck      { get; set; }
-
-        /// <summary>
         /// Проверка, движения персонажа.
         /// </summary>
         public MovingStates IsMovingCheck  { get; set; }
+
+        /// <summary>
+        /// </summary>
 
         /// <summary>
         /// Луа код для проверки использования способности
@@ -94,7 +91,6 @@ namespace Yanitta
             var cancelCasting     = this.CancelCasting.ToString().ToLower();
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
             var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
-            var isSpellKnownCheck = this.IsSpellKnownCheck.ToString().ToLower();
             var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
 
             // код
@@ -110,7 +106,6 @@ namespace Yanitta
             builder.AppendFormatLine("    CancelCasting     = {0},",     cancelCasting);
             builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
             builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
-            builder.AppendFormatLine("    IsSpellKnownCheck = {0},",     isSpellKnownCheck);
             builder.AppendFormatLine("    LastCastingTime   = 0,");
             builder.AppendFormatLine("    Func = function(ability)\n        {0}\n    end",
                 string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));

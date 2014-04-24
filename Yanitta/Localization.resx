@@ -315,12 +315,6 @@
   <data name="WowClass_Druid" xml:space="preserve">
     <value>Druid</value>
   </data>
-  <data name="IsSpellKnownCheck" xml:space="preserve">
-    <value>Is spell known</value>
-  </data>
-  <data name="IsSpellKnownCheckToolTip" xml:space="preserve">
-    <value>Check whether the player (or pet) knows a spell.</value>
-  </data>
   <data name="SpellIdToolTip" xml:space="preserve">
     <value>Spell Id</value>
   </data>
