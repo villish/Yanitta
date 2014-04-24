@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.253</Version>
+  <Version>0.0.5.255</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -472,7 +472,7 @@ function CheckAndCastAbility(ability)
     if ability.SpellId < 1 then
         return ability.Func(ability);
     elseif not (IsUsableSpell(ability.SpellId)
-        or IsPlayerKnownSpell(ability.SpellId, spellInfo)) then
+        and IsPlayerKnownSpell(ability.SpellId, spellInfo)) then
         return;
     end
 
