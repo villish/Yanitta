@@ -53,17 +53,11 @@ namespace Yanitta
         public MovingStates IsMovingCheck  { get; set; }
 
         /// <summary>
-        /// </summary>
-
-        /// <summary>
         /// Луа код для проверки использования способности
         /// </summary>
         [XmlIgnore]
         public string Lua                  { get; set; }
 
-        /// <summary>
-        ///
-        /// </summary>
         public Ability()
         {
             this.Name = "ability_name";
