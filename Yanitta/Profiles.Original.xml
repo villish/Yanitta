@@ -314,6 +314,8 @@ function DontDispell(debuffId, member)
 --                end
 --            end
 --        end
+    -- Прикосновение скверны (треш перед боссом Ша гордыни)
+    -- Диспелятся сразу все дебафы, а при диспеле наносится урон.
     elseif debuffId == 149207 then
         return true;
     end
