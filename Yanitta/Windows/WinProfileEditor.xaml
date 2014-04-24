@@ -190,22 +190,6 @@
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
 
-                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelChanel}">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding CancelChannel}" ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-
-                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelCasting}">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding CancelCasting}" ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-
                                         <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsUseIncombat}">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -221,6 +205,23 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelCasting}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding CancelCasting}" ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.CancelChanel}">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding CancelChannel}" ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+
                                     </GridView>
                                 </ListView.View>
                             </ListView>
