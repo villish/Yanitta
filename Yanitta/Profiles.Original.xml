@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.265</Version>
+  <Version>0.0.5.269</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -4225,20 +4225,20 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
+        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        print("|cffff0000 >> AOE");
+        AddonFrame.print("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt)     then
@@ -4368,6 +4368,18 @@ if not HasDebuff("target", diseases, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Удар смерти">
+        <SpellID>49998</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Удар чумы">
         <SpellID>45462</SpellID>
         <Target>Target</Target>
@@ -4392,7 +4404,6 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-
 if not HasDebuff("target", 55095) or HasBuff("player", 59052) then
     return true;
 end
@@ -4429,18 +4440,6 @@ or runes.Death.Count == 1 then
         return true;
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар смерти">
-        <SpellID>49998</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Вскипание крови">
