@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.257</Version>
+  <Version>0.0.5.262</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -7755,12 +7755,12 @@ useAutoDispell = true;
         <Lua><![CDATA[
 -- модификатор
 if     IsModKeyDown(mkLeftShift) then
-    for index=1,5 do 
-    	if not IsRaidMarkerActive(index) then
-    		PlaceRaidMarker(index);
-    		break;
-    	end
-    end
+--    for index=1,5 do
+--        if not IsRaidMarkerActive(index) then
+--            PlaceRaidMarker(index);
+--            break;
+--        end
+--    end
     return true;
 --elseif IsModKeyDown(mkLeftControl) then
 --elseif IsModKeyDown(mkLeftAlt) then
@@ -7816,7 +7816,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Дикий гриб">
-        <SpellID>88747</SpellID>
+        <SpellID>145205</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
