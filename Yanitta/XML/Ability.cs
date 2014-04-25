@@ -18,32 +18,32 @@ namespace Yanitta
         public string Name                 { get; set; }
 
         /// <summary>
-        /// Ид заклинания
+        /// Ид заклинания.
         /// </summary>
         public uint SpellID                { get; set; }
 
         /// <summary>
-        /// Тип цели
+        /// Тип цели.
         /// </summary>
         public TargetType Target           { get; set; }
 
         /// <summary>
-        /// Прерывать канальные заклинания
+        /// Прерывать канальные заклинания.
         /// </summary>
         public bool CancelChannel          { get; set; }
 
         /// <summary>
-        /// Прерывать чтение заклинаний
+        /// Прерывать чтение заклинаний.
         /// </summary>
         public bool CancelCasting          { get; set; }
 
         /// <summary>
-        /// Проверка нахождения в бою
+        /// Проверка нахождения в бою.
         /// </summary>
         public bool IsUseIncombat          { get; set; }
 
         /// <summary>
-        /// Использовать задержку на произнесение следующего заклинания
+        /// Использовать задержку на произнесение следующего заклинания.
         /// </summary>
         public bool SetRecastDelay         { get; set; }
 
@@ -53,15 +53,10 @@ namespace Yanitta
         public MovingStates IsMovingCheck  { get; set; }
 
         /// <summary>
-        /// Луа код для проверки использования способности
+        /// Луа код для проверки использования способности.
         /// </summary>
         [XmlIgnore]
         public string Lua                  { get; set; }
-
-        public Ability()
-        {
-            this.Name = "ability_name";
-        }
 
         /// <summary>
         ///
