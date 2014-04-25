@@ -2473,7 +2473,7 @@ if useCooldown and inquisition and isInMeele then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Святая клятва">
+      <Ability Name="Святой каратель">
         <SpellID>105809</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -2513,10 +2513,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE then
-    if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
-        return true;
-    end
+if not setAoE and hollyPower > 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -2529,10 +2527,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE then
-    if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
-        return true;
-    end
+if setAoE and hollyPower > 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -2605,9 +2601,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---if hollyPower >= 2 then
-    return not setAoE;
---end
+return not setAoE;
 ]]></Lua>
       </Ability>
     </Rotation>
