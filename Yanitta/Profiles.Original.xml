@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.262</Version>
+  <Version>0.0.5.265</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -4365,7 +4365,11 @@ return useCooldown;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasDebuff("target", 59879, "PLAYER") and not HasDebuff("target", 59921, "PLAYER") then
+local diseases = {
+    55078, -- Кровавая чума
+    55095, -- Озноб
+};
+if not HasDebuff("target", diseases, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -4379,7 +4383,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not UnitDebuff("target", 59879) then
+-- Кровавая чума
+if not HasDebuff("target", 55078, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -4393,7 +4398,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not UnitDebuff("target", 59921) or HasBuff("player", 59052) then
+
+if not HasDebuff("target", 55095) or HasBuff("player", 59052) then
     return true;
 end
 ]]></Lua>
@@ -4407,7 +4413,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if HealthByPercent("target") < 35 then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Кровоотвод">
@@ -4450,8 +4458,12 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE and isInMeele and runes.Blood.Count > 0 or HasBuff("player", 81141) then
-    return true;
+if isInMeele then
+    if setAoE and runes.Blood.Count > 0 then
+        return true;
+    elseif HasBuff("player", 81141) then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -4465,7 +4477,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- if=(blood=1&blood.cooldown_remains<1)|blood=2
-if isInMeele and (runes.Blood.Count == 1 and runes.Blood.Rem < 1) or runes.Blood.Count == 2 then
+if isInMeele and runes.Blood.Count > 0 then
     return true;
 end
 ]]></Lua>
@@ -4479,9 +4491,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitPower("player") > 40 then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Усиление рунического оружия">
