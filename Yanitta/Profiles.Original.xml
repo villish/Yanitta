@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.285</Version>
+  <Version>0.0.5.289</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -4909,6 +4909,147 @@ return IsModKeyDown(mkLeftShift);
     </Rotation>
     <Rotation Name="Нечестивость">
       <HotKey Key="C" Modifier="Alt" />
+      <Ability Name="Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Смерть и разложение">
+        <SpellID>43265</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
+      <Ability Name="Кровоотвод">
+        <SpellID>45529</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Death.Count < 1 then
+    if (select(2, HasBuff("player", 114851)) or 0) >= 5 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вспышка болезни">
+        <SpellID>77575</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local diseases = {
+    59879, -- Кровавая чума
+    59921, -- Озноб
+};
+if not HasDebuff("target", diseases, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар чумы">
+        <SpellID>45462</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not (HasDebuff("target", 59879, "PLAYER")        -- Кровавая чума
+    and HasDebuff("target", 59921, "PLAYER")) then  -- Озноб
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Жнец душ">
+        <SpellID>130736</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Frost.Count > 0 and HealthByPercent("target") < 35 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Темное превращение">
+        <SpellID>63560</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+      </Ability>
+      <Ability Name="Лик смерти">
+        <SpellID>47541</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Power > 40 or HasBuff("player", 49530) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар разложения">
+        <SpellID>85948</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Frost.Count > 0 and runes.Blood.Count > 0 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар плети">
+        <SpellID>55090</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Frost.Count > 0 then
+    return true;
+end
+]]></Lua>
+      </Ability>
     </Rotation>
     <Rotation Name="Лед (2)">
       <HotKey Key="V" Modifier="Alt" />
