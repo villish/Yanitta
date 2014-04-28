@@ -435,7 +435,6 @@ namespace Yanitta
     public enum ContextFlags : uint
     {
         i386              = 0x10000,
-        i486              = 0x10000,        // same as i386
         Control           = i386    | 0x01, // SS:SP, CS:IP, FLAGS, BP
         Integer           = i386    | 0x02, // AX, BX, CX, DX, SI, DI
         Segments          = i386    | 0x04, // DS, ES, FS, GS
