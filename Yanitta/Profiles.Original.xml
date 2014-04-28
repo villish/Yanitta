@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.289</Version>
+  <Version>0.0.5.293</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -845,6 +845,18 @@ function OnModifyerStateChanged(modifier, state)
     end
 end
 ]]></Lua>
+      <Ability Name="Героический прыжок">
+        <SpellID>6544</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -874,20 +886,6 @@ isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
 hasAPbuff  = HasBuff("player", { 57330, 19506});
 playerHP   = HealthByPercent("player");
 rage       = UnitPower("player");
-]]></Lua>
-      </Ability>
-      <Ability Name="Героический прыжок">
-        <SpellID>6544</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
-    return true;
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -1317,10 +1315,22 @@ function OnModifyerStateChanged(modifier, state)
     end
 end
 ]]></Lua>
+      <Ability Name="Героический прыжок">
+        <SpellID>6544</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
-        <CancelChannel>true</CancelChannel>
+        <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
@@ -1341,9 +1351,12 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-FillFurryData();
+koloss     = HasDebuff("target", 86346, "PLAYER"); -- дебафф колосса
+koloss_CD  = SpellCD(86346); -- кулдаун колосса
 playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
+rage       = UnitPower("player");
+targetHP   = HealthByPercent("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Победный раж">
@@ -1384,18 +1397,6 @@ if isInMeele and SpellCD(6552) > 0 and CheckInterrupt("target") then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Героический прыжок">
-        <SpellID>6544</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
-]]></Lua>
-      </Ability>
       <Ability Name="Сокрушительный Бросок">
         <SpellID>64382</SpellID>
         <Target>Target</Target>
@@ -1417,7 +1418,7 @@ return IsModKeyDown(mkRightControl);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and (kolossRem >= 5 or koloss_remains <= 4 or SpellCD(12292) <= 3) then
+if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
     return true;
 end
 ]]></Lua>
@@ -1431,7 +1432,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and koloss_remains < 1 and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
+if useCooldown and isInMeele and koloss_remains < 1
+    and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
     return true;
@@ -1448,8 +1450,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitIsPVP("player") then
---    if HasFullControl() then
---        return true;
     if HasDebuff("player", ccIDs) then
         return true;
     end
@@ -1467,9 +1467,33 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and (kolossRem >= 5 or koloss_remains <= 4 or SpellCD(12292) <= 3) then
+if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар колосса">
+        <SpellID>86346</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Кровожадность">
+        <SpellID>23881</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return rage < 100;
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
@@ -1503,7 +1527,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if (setAoE or 0) == 0 and ((targetHP >= 20 and ( HasDebuff("target", 86346, "PLAYER") and rage >= 40 )) or rage >= 110) then
+if setAoE == 0 and targetHP >= 20 and (koloss or rage > 100) then
     return true;
 end
 ]]></Lua>
@@ -1517,23 +1541,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if (setAoE or 0) == 2 and ((targetHP >= 20 and ( HasDebuff("target", 86346, "PLAYER") and rage >= 40 )) or rage >= 110) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Яростный выпад">
-        <SpellID>85288</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if ragingBlow and (koloss or HasBuff("player", { 12292, 1719 })) then
-    return true;
-elseif koloss_remains >= 6 or RB_Rem <= 6 then
+if setAoE == 2 and targetHP >= 20 and (koloss or rage > 100) then
     return true;
 end
 ]]></Lua>
@@ -1550,7 +1558,23 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Зверский удар (1)">
+      <Ability Name="Яростный выпад">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Стаки Яросного выпада!
+local count, remains = select(2, HasBuff("player", 131116));
+if koloss or (count > 1 and koloss_CD <= 3 or remains < 3) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Зверский удар">
         <SpellID>100130</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1559,21 +1583,10 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 46916) and targetHP >= 20 and SpellCD(23881) > 0 and SpellCD(23881) <= 1 then
+local buff = HasBuff("player", 46916); -- прилив крови
+if targetHP >= 20 or buff or rage >= 110 or koloss or (koloss_CD > 6 and rage > 30) then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар колосса">
-        <SpellID>86346</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Рев дракона">
@@ -1590,34 +1603,6 @@ if isInMeele and not koloss and HasBuff("player", 12292) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Кровожадность">
-        <SpellID>23881</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not (targetHP < 20  and HasDebuff("target", 86346, "PLAYER") and rage >= 30) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Зверский удар (2)">
-        <SpellID>100130</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HasBuff("player", 46916) and targetHP >= 20 then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Героический бросок">
         <SpellID>57755</SpellID>
         <Target>Target</Target>
@@ -1628,20 +1613,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Зверский удар (3)">
-        <SpellID>100130</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if (koloss and targetHP >= 20) or (koloss_remains >= 1 and rage >= 80 and targetHP >= 20) then
-    return true;
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Командирский крик">
@@ -1713,6 +1684,18 @@ function OnModifyerStateChanged(modifier, state)
     end
 end
 ]]></Lua>
+      <Ability Name="Героический прыжок">
+        <SpellID>6544</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -1745,20 +1728,6 @@ koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER");
 koloss_cd  = SpellCD(86346);
 ]]></Lua>
       </Ability>
-      <Ability Name="Героический прыжок">
-        <SpellID>6544</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Победный раж">
         <SpellID>34428</SpellID>
         <Target>Target</Target>
@@ -1768,9 +1737,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP <= 80 then
-    return true;
-end
+return playerHP <= 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
