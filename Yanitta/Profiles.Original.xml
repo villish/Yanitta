@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.265</Version>
+  <Version>0.0.5.276</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
 OnEventExtended = nil;
+OnModifyerStateChanged = nil;
 ABILITY_TABLE   = { };
 LOSS_TABLE      = { };
 LAST_TARGET     = 0;
@@ -555,6 +556,7 @@ function ChangeRotation(rotation)
             AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
             AddonFrame:RegisterEvent("PLAYER_LOGOUT");
             AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
+            AddonFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
         end
         AddonFrame.CurentRotation = rotation;
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
@@ -569,6 +571,11 @@ function AddonFrame_OnEvent(self, event, ...)
         ChangeRotation();
     elseif event == "WORLD_MAP_UPDATE" then
         LOSS_TABLE = { };
+    elseif event == "MODIFIER_STATE_CHANGED" then
+        if type(OnModifyerStateChanged) == "function" then
+            local modifier, state = ...;
+            OnModifyerStateChanged(modifier, state);
+        end
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subEvent, hideCaster,
               sourceGUID,srcName,  sourceFlags,sourceFlags2,
@@ -803,6 +810,41 @@ end
 ]]></Lua>
     <Rotation Name="Защита">
       <HotKey Key="X" Modifier="Alt" />
+      <Lua><![CDATA[
+setAoE = false;
+isAltMod = true;
+useCooldown = true;
+
+function OnModifyerStateChanged(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000 AOE", true);
+        end
+    elseif modifier == "RALT" then
+        if isAltMod then
+            isAltMod = false;
+            AddonFrame.print("|cffff0000Используется блок щитом", true);
+        else
+            isAltMod = true;
+            AddonFrame.print("|cff00ff00Используется непроницаемый щит", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -812,39 +854,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- модификатор
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        AddonFrame.print("|cff00ff00 Одиночная цель", true);
-    else
-        setAoE = true;
-        AddonFrame.print("|cffff0000 AOE", true);
-    end
-elseif IsModKeyDown(mkLeftAlt) then
-    return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt)     then
-    if isAltMod then
-        isAltMod = false;
-        AddonFrame.print("|cffff0000Используется блок щитом", true);
-    else
-        isAltMod = true;
-        AddonFrame.print("|cff00ff00Используется непроницаемый щит", true);
-    end
-end
-
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+-- Пауза в ротации
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -2345,6 +2356,32 @@ end
     </Rotation>
     <Rotation Name="Воздаяние">
       <HotKey Key="C" Modifier="Alt" />
+      <Lua><![CDATA[
+setAoE = false;
+useCooldown = true;
+
+function OnModifyerStateChanged(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000 AOE", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -2354,32 +2391,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- модификатор5
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
-    else
-        setAoE = true;
-        AddonFrame.print("|cffff0000 >> AOE", true);
-    end
-elseif IsModKeyDown(mkLeftAlt) then
-    return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
-end
-
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+-- Пауза в ротации
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -2473,7 +2486,7 @@ if useCooldown and inquisition and isInMeele then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Святая клятва">
+      <Ability Name="Святой каратель">
         <SpellID>105809</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -2513,10 +2526,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE then
-    if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
-        return true;
-    end
+if not setAoE and hollyPower > 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -2529,10 +2540,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE then
-    if hollyPower > 4 or (hollyPower > 1 and holy_avenger) then
-        return true;
-    end
+if setAoE and hollyPower > 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -2605,9 +2614,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---if hollyPower >= 2 then
-    return not setAoE;
---end
+return not setAoE;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -2617,6 +2624,31 @@ return true;
 useCooldown = true;
 setAoE      = nil;
 isAltMod    = nil;
+
+setAoE = false;
+useCooldown = true;
+
+function OnModifyerStateChanged(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000 AOE", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
 ]]></Lua>
     <Rotation Name="PVE Выживание">
       <HotKey Key="X" Modifier="Alt" />
@@ -2630,16 +2662,7 @@ isAltMod    = nil;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- модификатор
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        AddonFrame.print("|cff00ff00 Одиночная цель", true);
-    else
-        setAoE = true;
-        AddonFrame.print("|cffff0000 AOE", true);
-    end
-elseif IsModKeyDown(mkLeftAlt) then
+if IsModKeyDown(mkLeftAlt) or IsStealthed() then
     StopAttack();
     PetStopAttack();
     -- перейдем в аспект ястребя
@@ -2647,16 +2670,6 @@ elseif IsModKeyDown(mkLeftAlt) then
         CastShapeshiftForm(1);
     end
     return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
 end
 
 -- если в комуфляже или притворились мертвыми или "Слился с тенью"
@@ -4231,20 +4244,20 @@ if     IsModKeyDown(mkLeftShift) then
 elseif IsModKeyDown(mkLeftControl) then
     if setAoE then
         setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
+        AddonFrame.print("|cff00ff00 >> Одиночная цель", true);
     else
         setAoE = true;
-        print("|cffff0000 >> AOE");
+        AddonFrame.print("|cffff0000 >> AOE", true);
     end
 elseif IsModKeyDown(mkLeftAlt) then
     return true;
 elseif IsModKeyDown(mkRightShift) then
     if useCooldown then
         useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
+        AddonFrame.print("|cffff0000Кулдауны выключены", true);
     else
         useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
+        AddonFrame.print("|cff00ff00Кулдауны включены", true);
     end
 elseif IsModKeyDown(mkRightControl) then
 elseif IsModKeyDown(mkRightAlt)     then
@@ -4374,6 +4387,18 @@ if not HasDebuff("target", diseases, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Удар смерти">
+        <SpellID>49998</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Удар чумы">
         <SpellID>45462</SpellID>
         <Target>Target</Target>
@@ -4398,7 +4423,6 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-
 if not HasDebuff("target", 55095) or HasBuff("player", 59052) then
     return true;
 end
@@ -4435,18 +4459,6 @@ or runes.Death.Count == 1 then
         return true;
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар смерти">
-        <SpellID>49998</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Вскипание крови">
@@ -7516,6 +7528,32 @@ end
     </Rotation>
     <Rotation Name="Танцующий с ветром">
       <HotKey Key="C" Modifier="Alt" />
+      <Lua><![CDATA[
+setAoE = false;
+useCooldown = true;
+
+function OnModifyerStateChanged(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000 AOE", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -7525,32 +7563,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- модификатор5
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        AddonFrame.print("|cff00ff00 Одиночная цель", true);
-    else
-        setAoE = true;
-        AddonFrame.print("|cffff0000 AOE", true);
-    end
-elseif IsModKeyDown(mkLeftAlt) then
-    return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
-end
-
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -8275,6 +8289,41 @@ return useDamage;
     </Rotation>
     <Rotation Name="Страж">
       <HotKey Key="X" Modifier="Alt" />
+      <Lua><![CDATA[
+setAoE = false;
+isAltMod = true;
+useCooldown = true;
+
+function OnModifyerStateChanged(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000 AOE", true);
+        end
+    elseif modifier == "RALT" then
+        if isAltMod then
+            isAltMod = false;
+            AddonFrame.print("|cffff0000Используется \'Дикая защита\'", true);
+        else
+            isAltMod = true;
+            AddonFrame.print("|cff00ff00Используется \'Неистовое восстановление\'", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -8284,38 +8333,10 @@ return useDamage;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        AddonFrame.print("|cff00ff00 Одиночная цель", true);
-    else
-        setAoE = true;
-        AddonFrame.print("|cffff0000 AOE", true);
-    end
-elseif IsModKeyDown(mkLeftAlt) then
-    return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
-    if isAltMod then
-        isAltMod = false;
-        AddonFrame.print("|cffff0000Используется \'Дикая защита\'", true);
-    else
-        isAltMod = true;
-        AddonFrame.print("|cff00ff00Используется \'Неистовое восстановление\'", true);
-    end
-end
-
 -- если персонаж на маунте, или в инвизе или не в форме медведа или кота
-if IsMounted() or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1) or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMounted()
+    or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1)
+    or IsStealthed() then
     return true;
 end
 
@@ -8923,6 +8944,32 @@ end
     </Rotation>
     <Rotation Name="Сила зверя">
       <HotKey Key="C" Modifier="Alt" />
+      <Lua><![CDATA[
+setAoE = false;
+useCooldown = true;
+
+function OnModifyerStateChanged(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000 AOE", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -8932,31 +8979,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if     IsModKeyDown(mkLeftShift) then
-elseif IsModKeyDown(mkLeftControl) then
-    if setAoE then
-        setAoE = false;
-        print("|cff00ff00 >> Одиночная цель");
-    else
-        setAoE = true;
-        print("|cffff0000 >> AOE");
-    end
-elseif IsModKeyDown(mkLeftAlt) then
-    return true;
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        print("|cffff0000Кулдауны выключены");
-    else
-        useCooldown = true;
-        print("|cff00ff00Кулдауны включены");
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
-end
-
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or HasBuff("player", 5215) then
+if IsModKeyDown(mkLeftAlt) or IsMounted() or HasBuff("player", 5215) then
     return true;
 end
 
