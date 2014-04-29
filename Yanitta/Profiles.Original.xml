@@ -3322,26 +3322,28 @@ end
     <Rotation Name="Фарм ларей">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
-ALREADY_PICKPOCKETED_TABLE = { };
+mTempTable = { };
 RFrame = CreateFrame("Frame");
 RFrame:RegisterEvent("UI_ERROR_MESSAGE");
 RFrame:RegisterEvent("WORLD_MAP_UPDATE");
 RFrame:SetScript("OnEvent",  function(self, event, ...)
     if event == "UI_ERROR_MESSAGE" then
         local msg = ...;
-        if UnitExists("target") and (msg == SPELL_FAILED_TARGET_NO_POCKETS or msg == ERR_ALREADY_PICKPOCKETED) then
-            ALREADY_PICKPOCKETED_TABLE[UnitGUID("target")] = GetTime();
+        if UnitExists("target")
+            and (msg == SPELL_FAILED_TARGET_NO_POCKETS
+              or msg == ERR_ALREADY_PICKPOCKETED) then
+            mTempTable[UnitGUID("target")] = GetTime();
         end
     elseif event == "WORLD_MAP_UPDATE" then
-        ALREADY_PICKPOCKETED_TABLE = { };
+        mTempTable = { };
     end
 end);
 RFrame:Show();
 
 function IsPickPocketed(unit)
-    if ALREADY_PICKPOCKETED_TABLE then
-        local t = ALREADY_PICKPOCKETED_TABLE[UnitGUID(unit)];
-        if type(t) == "number" and (t + 300) > GetTime() then
+    if type(mTempTable) == "table" then
+        local lastTime = mTempTable[UnitGUID(unit)] or 0;
+        if (lastTime + 300) > GetTime() then
             return true;
         end
     end
