@@ -643,16 +643,6 @@ end
 useCooldown = true;
 setAoE      = nil;
 isAltMod    = nil;
-targetCount = 3;
-
-kolossRem  = 0;
-RB_Count   = 0;
-RB_Rem     = 0;
-rage       = 0;
-targetHP   = 0;
-
-koloss_remains      = 0;
-bloodthirst_remains = 0;
 
 ccIDs = {
     108194,     -- Асфиксия
@@ -762,23 +752,6 @@ reflect_table = {
         144214, -- Стрела ледяной бури (Кор'кронские Тёмные Шаманы)
     }
 };
-
-function FillFurryData()
-     -- Удар колосса
-    koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER");
-    -- Яростный выпад!
-    ragingBlow,RB_Count,RB_Rem = HasBuff("player", 131116);
-    -- Кровавый фарш
-    meat_cleaver, meat_cleaver_couunt = HasBuff("player", 12950);
-
-    rage = UnitPower("player");
-    targetHP   = HealthByPercent("target");
-
-    -- кулдаун колосса
-    koloss_remains = SpellCD(86346);
-    -- кулдаун кровожадности
-    bloodthirst_remains = SpellCD(23881);
-end
 
 function NeedReflect(unit)
     if UnitIsEnemy("player", unit) and UnitIsUnit("player", unit.."target") then
