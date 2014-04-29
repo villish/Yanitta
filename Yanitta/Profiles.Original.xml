@@ -2465,7 +2465,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and hollyPower > 2 then
+if not setAoE and hollyPower > 4 then
     return true;
 end
 ]]></Lua>
@@ -2553,7 +2553,9 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return not setAoE;
+if not setAoE and hollyPower > 2 then
+    return true;
+end
 ]]></Lua>
       </Ability>
     </Rotation>
