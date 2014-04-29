@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.301</Version>
+  <Version>0.0.5.302</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -7910,11 +7910,11 @@ if UnitChannelInfo("player") then
 end
 
 -- используем аксесуар на ману, только в форме исцеления (0)
-if myMana < 80 and GetShapeshiftForm() == 0 then
+if PowerByPercent("player", SPELL_POWER_MANA) < 80 and GetShapeshiftForm() == 0 then
     UseItemBySlot(INVSLOT_TRINKET2);
 end
 
-if myMana < 90 and GetShapeshiftForm() == 0 then
+if PowerByPercent("player", SPELL_POWER_MANA) < 90 and GetShapeshiftForm() == 0 then
     UseItemBySlot(INVSLOT_TRINKET1);
 end
 
