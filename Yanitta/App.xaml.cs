@@ -34,7 +34,7 @@ namespace Yanitta
             try
             {
                 ProfileDb.Instance = new ProfileDb();
-                ProfileDb.Instance.Load(Yanitta.Properties.Settings.Default.ProfilesFileName);
+                ProfileDb.Instance.Load(fileName);
 
                 //Если загрузка прошла удачно - сделаем резервную копию.
                 if (File.Exists(fileName))
@@ -59,7 +59,7 @@ namespace Yanitta
                 {
                     Console.WriteLine("Попытка загрузить базу данных из резервной копии.");
                     ProfileDb.Instance = new ProfileDb();
-                    ProfileDb.Instance.Load(Yanitta.Properties.Settings.Default.ProfilesFileName);
+                    ProfileDb.Instance.Load(fileName);
                     Console.WriteLine("База из резервной копии успешно загружена.");
                 }
                 catch (Exception ex_inner)
