@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.302</Version>
+  <Version>0.0.5.303</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -2340,14 +2340,9 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-agroStatus = UnitThreatSituation("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(35395), "target") == 1;
 playerHP   = HealthByPercent("player");
 hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
-
-divine_purpose = HasBuff("player", 90174);  -- Божественный замысел
-holy_avenger   = HasBuff("player", 105809); -- Святая клятва
-inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
 ]]></Lua>
       </Ability>
       <Ability Name="Укор">
@@ -2371,7 +2366,7 @@ return CheckInterrupt("target");
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if hollyPower > 2 and inquisition_rem <= 2 then
+if select(3, HasBuff("player", 84963)) < 3 then
     return true;
 end
 ]]></Lua>
@@ -2400,7 +2395,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition and isInMeele then
+if useCooldown and isInMeele then
     -- Защитник древних королей
     if SpellCD(86698) < 291 then
         return true;
@@ -2417,7 +2412,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition and isInMeele then
+if useCooldown and isInMeele then
     -- Гнев карателя
     if SpellCD(31884) < 10 then
         return true;
@@ -2434,7 +2429,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition and hollyPower <= 2 and isInMeele then
+if useCooldown and hollyPower <= 2 and isInMeele then
     -- Защитник древних королей
     if SpellCD(86698) < 289 then
         return true;
@@ -2451,9 +2446,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and inquisition then
-    return true;
-end
+return useCooldown;
 ]]></Lua>
       </Ability>
       <Ability Name="Вердикт храмовника">
@@ -2465,9 +2458,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and hollyPower > 4 then
-    return true;
-end
+return not setAoE and hollyPower > 4;
 ]]></Lua>
       </Ability>
       <Ability Name="Божественная буря">
@@ -2479,9 +2470,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE and hollyPower > 2 then
-    return true;
-end
+return setAoE and hollyPower > 2;
 ]]></Lua>
       </Ability>
       <Ability Name="Молот гнева">
@@ -2553,9 +2542,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and hollyPower > 2 then
-    return true;
-end
+return not setAoE and hollyPower > 2;
 ]]></Lua>
       </Ability>
     </Rotation>
