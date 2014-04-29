@@ -130,7 +130,6 @@
     <Compile Include="Windows\WinProfileEditor.xaml.cs">
       <DependentUpon>WinProfileEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\YanittaCommand.cs" />
     <Compile Include="Misk\WowMemory.cs" />
     <Compile Include="XML\ProfileDb.cs" />
     <Compile Include="XML\Rotation.cs" />

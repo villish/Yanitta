@@ -12,28 +12,36 @@
         WindowStyle="None"
         Closing="Window_Closing">
 
+    <Window.Resources>
+        <RoutedUICommand x:Key="CloseWindow"    />
+        <RoutedUICommand x:Key="MinimizeWindow" />
+        <RoutedUICommand x:Key="OpenCodeExec"   />
+        <RoutedUICommand x:Key="OpenProfiles"   />
+        <RoutedUICommand x:Key="OpenSettings"   />
+    </Window.Resources>
+
     <Window.InputBindings>
         <KeyBinding Command="Close" Modifiers="Alt" Key="F4" />
     </Window.InputBindings>
 
     <Window.CommandBindings>
-        <CommandBinding Command="Close" Executed="CommandBinding_Executed_Close" />
-        <CommandBinding Command="Redo"  Executed="CommandBinding_Executed_Minimize" />
-        <CommandBinding Command="yanitta:YanittaCommand.OpenCodeExec" Executed="CommandBinding_Executed_ShowExecuteWindow" />
-        <CommandBinding Command="yanitta:YanittaCommand.OpenProfiles" Executed="CommandBinding_Executed_ShowProfileWindow" />
-        <CommandBinding Command="yanitta:YanittaCommand.OpenSettings" Executed="CommandBinding_Executed_ShowSettingWindow" />
+        <CommandBinding Command="{StaticResource CloseWindow}"    Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="{StaticResource MinimizeWindow}" Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{StaticResource OpenCodeExec}"   Executed="CommandBinding_Executed_ShowExecuteWindow" />
+        <CommandBinding Command="{StaticResource OpenProfiles}"   Executed="CommandBinding_Executed_ShowProfileWindow" />
+        <CommandBinding Command="{StaticResource OpenSettings}"   Executed="CommandBinding_Executed_ShowSettingWindow" />
     </Window.CommandBindings>
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyle}">
         <Path Fill="Black" Data="M 20,90 L 730,90 L 730,540 L 20,540 L 20,90" />
         <Image Width="750" MouseDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
 
-        <Button Width="100" Height="24" Margin="507,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="yanitta:YanittaCommand.OpenSettings" Content="{x:Static yanitta:Localization.Setting}" />
-        <Button Width="100" Height="24" Margin="37,55,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="yanitta:YanittaCommand.OpenProfiles" Content="{x:Static yanitta:Localization.Constructor}" />
-        <Button Width="100" Height="24" Margin="151,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="yanitta:YanittaCommand.OpenCodeExec" Content="{x:Static yanitta:Localization.CodeConsole}" />
+        <Button Width="100" Height="24" Margin="507,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenSettings}" Content="{x:Static yanitta:Localization.Setting}" />
+        <Button Width="100" Height="24" Margin="37,55,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenProfiles}" Content="{x:Static yanitta:Localization.Constructor}" />
+        <Button Width="100" Height="24" Margin="151,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenCodeExec}" Content="{x:Static yanitta:Localization.CodeConsole}" />
 
-        <Button Content="X" Width="22" Height="24" Margin="702,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Close" ToolTip="{x:Static yanitta:Localization.Close}" />
-        <Button Content="_" Width="22" Height="24" Margin="680,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Redo"  ToolTip="{x:Static yanitta:Localization.Minimise}" />
+        <Button Content="X" Width="22" Height="24" Margin="702,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource CloseWindow}"    ToolTip="{x:Static yanitta:Localization.Close}" />
+        <Button Content="_" Width="22" Height="24" Margin="680,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource MinimizeWindow}" ToolTip="{x:Static yanitta:Localization.Minimise}" />
 
         <TreeView HorizontalAlignment="Left" Height="301" Margin="37,119,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
             <TreeView.ItemContainerStyle>
