@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.296</Version>
+  <Version>0.0.5.301</Version>
   <Author>Konctantin</Author>
   <Url />
   <Lua><![CDATA[
@@ -9663,6 +9663,69 @@ end
 if UnitExists("target") and UnitIsEnemy("player", "target")
     and GetPetActionCooldown(1) == 0 then
     CastPetAction(1);
+end
+]]></Lua>
+      </Ability>
+    </Rotation>
+    <Rotation Name="Ульдуар - Левиафан">
+      <HotKey Key="C" Modifier="Alt Shift" />
+      <Ability Name="Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not UnitHasVehicleUI("player") then
+    return true;
+end
+
+if IsModKeyDown(mkLeftAlt) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок валуна">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetPetActionCooldown(1) == 0 then
+    CastPetAction(1);
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок бочки колчедана">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetPetActionCooldown(2) == 0 then
+    CastPetAction(2);
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Таран">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetPetActionCooldown(3) == 0 then
+    CastPetAction(3);
 end
 ]]></Lua>
       </Ability>
