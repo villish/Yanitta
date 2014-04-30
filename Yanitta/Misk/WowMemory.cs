@@ -21,10 +21,10 @@ namespace Yanitta
     /// </summary>
     public class WowMemory : DependencyObject, IDisposable
     {
-        public readonly static DependencyProperty CurrentProfileProperty = DependencyProperty.Register("CurrentProfile",    typeof(Profile),    typeof(WowMemory));
-        public readonly static DependencyProperty ClassProperty          = DependencyProperty.Register("Class",             typeof(WowClass),   typeof(WowMemory));
-        public readonly static DependencyProperty NameProperty           = DependencyProperty.Register("Name",              typeof(string),     typeof(WowMemory));
-        public readonly static DependencyProperty IsInGameProperty       = DependencyProperty.Register("IsInGame",          typeof(bool),       typeof(WowMemory));
+        public readonly static DependencyProperty CurrentProfileProperty = DependencyProperty.Register("CurrentProfile", typeof(Profile),  typeof(WowMemory));
+        public readonly static DependencyProperty ClassProperty          = DependencyProperty.Register("Class",          typeof(WowClass), typeof(WowMemory));
+        public readonly static DependencyProperty NameProperty           = DependencyProperty.Register("Name",           typeof(string),   typeof(WowMemory));
+        public readonly static DependencyProperty IsInGameProperty       = DependencyProperty.Register("IsInGame",       typeof(bool),     typeof(WowMemory));
 
         /// <summary>
         /// Событие для обработки закрытия процесса.
@@ -166,40 +166,12 @@ namespace Yanitta
 
                 if (CurrentProfile != null)
                 {
-                    CurrentProfile.RotationList.ForEach((rotation) =>
-                    {
-                        if (!rotation.HotKey.IsRegistered)
-                        {
-                            rotation.HotKey.SetHandler(rotation, HotKeyPressed);
-                            try
-                            {
-                                rotation.HotKey.Register();
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("HotKey Error: " + ex.Message);
-                            }
-                        }
-                    });
+                    CurrentProfile.RegisterHotKeys(HotKeyPressed);
                 }
 
                 if (ProfileDb.Instance.DefaultProfile != null)
                 {
-                    ProfileDb.Instance.DefaultProfile.RotationList.ForEach((rotation) =>
-                    {
-                        if (!rotation.HotKey.IsRegistered)
-                        {
-                            rotation.HotKey.SetHandler(rotation, HotKeyPressed);
-                            try
-                            {
-                                rotation.HotKey.Register();
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine("HotKey Error: " + ex.Message);
-                            }
-                        }
-                    });
+                    ProfileDb.Instance.DefaultProfile.RegisterHotKeys(HotKeyPressed);
                 }
             }
             else if (CurrentProfile != null)
@@ -234,14 +206,10 @@ namespace Yanitta
         /// <param name="rotation">Текущая ротация.</param>
         private void ExecuteProfile(Rotation rotation)
         {
-            if (CurrentProfile == null)
-                throw new NullReferenceException("CurrentProfile is null");
-
             if (rotation == null)
-                throw new ArgumentNullException("rotation is null");
+                throw new ArgumentNullException("rotation");
 
-            var builder = new StringBuilder();
-            builder.AppendLine(ProfileDb.Instance.Lua);
+            var builder = new StringBuilder(ProfileDb.Instance.Lua);
 
             foreach (var ability in rotation.AbilityList)
             {
@@ -296,21 +264,14 @@ namespace Yanitta
         /// </summary>
         private void UnregisterAllHotKeys()
         {
-            if (this.CurrentProfile != null && this.CurrentProfile.RotationList != null)
+            if (this.CurrentProfile != null)
             {
-                this.CurrentProfile.RotationList.ForEach((rotation) => {
-                    if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
-                        rotation.HotKey.Unregister();
-                });
+                this.CurrentProfile.UnregisterHotKeys();
             }
 
-            if (ProfileDb.Instance.DefaultProfile != null && ProfileDb.Instance.DefaultProfile.RotationList != null)
+            if (ProfileDb.Instance.DefaultProfile != null)
             {
-                ProfileDb.Instance.DefaultProfile.RotationList.ForEach((rotation) =>
-                {
-                    if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
-                        rotation.HotKey.Unregister();
-                });
+                ProfileDb.Instance.DefaultProfile.UnregisterHotKeys();
             }
         }
 

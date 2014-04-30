@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -45,6 +46,34 @@ namespace Yanitta
         public Profile()
         {
             RotationList = new ObservableCollection<Rotation>();
+        }
+
+        public void UnregisterHotKeys()
+        {
+            foreach (var rotation in this.RotationList)
+            {
+                if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
+                    rotation.HotKey.Unregister();
+            }
+        }
+
+        public void RegisterHotKeys(EventHandler<HandledEventArgs> handler)
+        {
+            foreach (var rotation in this.RotationList)
+            {
+                if (!rotation.HotKey.IsRegistered)
+                {
+                    rotation.HotKey.SetHandler(rotation, handler);
+                    try
+                    {
+                        rotation.HotKey.Register();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("HotKey Error: " + ex.Message);
+                    }
+                }
+            }
         }
     }
 }
