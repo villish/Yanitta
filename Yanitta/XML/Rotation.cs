@@ -39,6 +39,7 @@ namespace Yanitta
         /// <summary>
         /// Горячие клавиши для управления ротацией.
         /// </summary>
+        [XmlElement]
         public HotKey HotKey { get; set; }
 
         /// <summary>
@@ -72,10 +73,10 @@ namespace Yanitta
         /// </summary>
         public object Clone()
         {
-            var rotation = new Rotation() {
-                Name         = this.Name + " (1)",
-                Lua          = this.Lua,
-                HotKey       = new HotKey(),
+            var rotation = new Rotation {
+                Name   = this.Name + " (1)",
+                Lua    = this.Lua,
+                HotKey = new HotKey(),
             };
 
             foreach (var ability in this.AbilityList)

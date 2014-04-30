@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Xml;
 
@@ -39,24 +37,6 @@ namespace Yanitta
             if (string.IsNullOrWhiteSpace(content))
                 return null;
             return new XmlDocument().CreateCDataSection("\n" + content + "\n");
-        }
-
-        public static void CopyProperies(object src, object dst)
-        {
-            if (src == null || dst == null)
-                throw new ArgumentNullException();
-            var typesrc = src.GetType();
-            var typedst = dst.GetType();
-            if (typesrc != typedst)
-                throw new Exception();
-
-            var flag = BindingFlags.Public | BindingFlags.Instance;
-            foreach (var srcprop in typesrc.GetProperties(flag))
-            {
-                var dstprop = typedst.GetProperty(srcprop.Name);
-                var val = srcprop.GetValue(src, null);
-                dstprop.SetValue(dst, val, null);
-            }
         }
     }
 }
