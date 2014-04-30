@@ -79,6 +79,8 @@ namespace Yanitta
                         this.Name  = string.Empty;
                     }
 
+                    ChangeHotKeys();
+
                     this.OnPropertyChanged("Class");
                     this.OnPropertyChanged("Name");
                     this.OnPropertyChanged("CurrentProfile");
@@ -97,24 +99,34 @@ namespace Yanitta
                 if (this.isFocus != value)
                 {
                     this.isFocus = value;
+                    ChangeHotKeys();
                     this.OnPropertyChanged();
+                }
+            }
+        }
 
-                    if (value)
-                    {
-                        App.ProcessList.Where(process => process != this)
-                            .ForEach(process => process.UnregisterAllHotKeys());
+        private void ChangeHotKeys()
+        {
+            if (this.isFocus && this.isInGame)
+            {
+                // Немного разъяснений, чтобы самому в следующий раз не запутатся:
+                // Когда окно становится в фокусе и персонаж находится в игровоом мире
+                // сначала надо снять регистрацию всех гарячих клавиш со всех доступных профилей.
+                // Возможно это будут профили других процессов.
+                ProfileDb.Instance.ProfileList.ForEach(
+                    profile => profile.UnregisterHotKeys());
 
-                        if (CurrentProfile != null)
-                            CurrentProfile.RegisterHotKeys(HotKeyPressed);
+                // И только тогда делаем регистрацию новых гарячих клавиш на ротации текущего профиля
+                if (CurrentProfile != null)
+                    CurrentProfile.RegisterHotKeys(HotKeyPressed);
 
-                        if (ProfileDb.Instance.DefaultProfile != null)
-                            ProfileDb.Instance.DefaultProfile.RegisterHotKeys(HotKeyPressed);
-                    }
-                    else
-                    {
-                        this.UnregisterAllHotKeys();
-                    }
-                };
+                // А потом на общие ротации
+                if (ProfileDb.Instance.DefaultProfile != null)
+                    ProfileDb.Instance.DefaultProfile.RegisterHotKeys(HotKeyPressed);
+            }
+            else
+            {
+                this.UnregisterAllHotKeys();
             }
         }
 
@@ -161,7 +173,8 @@ namespace Yanitta
         /// </summary>
         private bool CheckProcess()
         {
-            if (this.Memory.Process.HasExited || Process.GetProcessById(this.ProcessId) == null)
+            if (this.Memory.Process.HasExited
+                || Process.GetProcessById(this.ProcessId) == null)
             {
                 this.IsInGame = false;
                 if (this.GameExited != null)
@@ -260,14 +273,10 @@ namespace Yanitta
         private void UnregisterAllHotKeys()
         {
             if (this.CurrentProfile != null)
-            {
                 this.CurrentProfile.UnregisterHotKeys();
-            }
 
             if (ProfileDb.Instance.DefaultProfile != null)
-            {
                 ProfileDb.Instance.DefaultProfile.UnregisterHotKeys();
-            }
         }
 
         ~WowMemory()
