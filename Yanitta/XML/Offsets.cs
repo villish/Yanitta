@@ -37,9 +37,9 @@ namespace Yanitta
 
         public static Offsets Default { get; set; }
 
-        public void Save()
+        public static void Save()
         {
-            XmlManager.Save(fileName, this);
+            XmlManager.Save(fileName, Default);
         }
     }
 }

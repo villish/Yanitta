@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
@@ -11,18 +10,24 @@ namespace Yanitta
     /// Боевая ротация для персонажа.
     /// </summary>
     [Serializable]
-    public class Rotation : DependencyObject, ICloneable
+    public class Rotation : ViewModelBase, ICloneable
     {
-        public static readonly DependencyProperty NameProperty = DependencyProperty.Register("Name", typeof(string), typeof(Rotation));
-
+        private string name;
         /// <summary>
         /// Наименование ротации.
         /// </summary>
         [XmlAttribute]
         public string Name
         {
-            get { return (string)GetValue(NameProperty); }
-            set { SetValue(NameProperty, value); }
+            get { return this.name; }
+            set
+            {
+                if (this.name != value)
+                {
+                    this.name = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         /// <summary>

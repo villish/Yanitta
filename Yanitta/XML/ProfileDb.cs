@@ -59,8 +59,6 @@ namespace Yanitta
             this.ProfileList = new ObservableCollection<Profile>();
         }
 
-        #region Extension
-
         /// <summary>
         /// Возвращает профиль для указанного класса.
         /// </summary>
@@ -80,18 +78,13 @@ namespace Yanitta
         {
             try
             {
-                if (ProfileDb.Instance != null)
-                {
-                    XmlManager.Save(Settings.Default.ProfilesFileName, ProfileDb.Instance);
-                    Console.WriteLine("Profiles Saved!");
-                }
+                XmlManager.Save(Settings.Default.ProfilesFileName, ProfileDb.Instance);
+                Console.WriteLine("Profiles Saved!");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error: {0}", ex);
             }
         }
-
-        #endregion
     }
 }
