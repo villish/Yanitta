@@ -12,11 +12,20 @@
         Icon="/Yanitta;component/Resources/Background_Downloader.png"
         ResizeMode="NoResize">
 
+    <Window.Resources>
+        <RoutedUICommand x:Key="Save"/>
+        <RoutedUICommand x:Key="Open"/>
+    </Window.Resources>
+
     <Window.InputBindings>
-        <KeyBinding Command="Save"  Key="S" Modifiers="Control" />
-        <KeyBinding Command="Open"  Key="F3" />
-        <KeyBinding Command="Close" Key="F4" Modifiers="Alt" />
+        <KeyBinding Command="{StaticResource Save}"  Key="S" Modifiers="Control" />
+        <KeyBinding Command="{StaticResource Open}"  Key="F3" />
     </Window.InputBindings>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource Save}"  Executed="CommandBinding_Save_Executed" />
+        <CommandBinding Command="{StaticResource Open}"  Executed="CommandBinding_Open_Executed"/>
+    </Window.CommandBindings>
 
     <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
         <StackPanel Orientation="Horizontal">
@@ -39,18 +48,11 @@
         <StackPanel Orientation="Horizontal">
             <Label Width="100" Content="Profile file:" />
             <TextBox Width="330" Text="{Binding ProfilesFileName}" />
-            <Button Width="20" Command="Open" Content="..." />
+            <Button Width="20" Command="{StaticResource Open}" Content="..." />
         </StackPanel>
 
         <Separator />
 
-        <StackPanel Orientation="Horizontal">
-            <Label Content="Update Url Repo:" Width="100" />
-            <TextBox Width="310" Text="{Binding UpdateOffset}" />
-            <Button Command="Find" Content="Update" CommandParameter="Repo" />
-        </StackPanel>
-
-        <Separator />
         <StackPanel DataContext="{Binding Source={x:Static yanitta:Offsets.Default}}">
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="Build:" />
@@ -79,6 +81,6 @@
         </StackPanel>
 
         <Separator />
-        <Button Width="123" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="Save" Content="Save" />
+        <Button Width="123" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="{StaticResource Save}" Content="Save" />
     </StackPanel>
 </Window>

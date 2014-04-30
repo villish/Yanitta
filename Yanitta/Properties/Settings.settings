@@ -11,9 +11,6 @@
     <Setting Name="ProcessName" Type="System.String" Scope="User">
       <Value Profile="(Default)">wow</Value>
     </Setting>
-    <Setting Name="UpdateOffset" Type="System.String" Scope="User">
-      <Value Profile="(Default)">https://raw.github.com/Konctantin/Yanitta/master/Yanitta/offsets.xml</Value>
-    </Setting>
     <Setting Name="Language" Type="System.String" Scope="User">
       <Value Profile="(Default)">auto</Value>
     </Setting>

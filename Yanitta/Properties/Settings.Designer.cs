@@ -61,18 +61,6 @@ namespace Yanitta.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://raw.github.com/Konctantin/Yanitta/master/Yanitta/offsets.xml")]
-        public string UpdateOffset {
-            get {
-                return ((string)(this["UpdateOffset"]));
-            }
-            set {
-                this["UpdateOffset"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("auto")]
         public string Language {
             get {
