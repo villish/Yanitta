@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -10,11 +9,8 @@ namespace Yanitta
     /// Контейнер ротаций и способностей привязанный к конкретному классу <see cref="Yanitta.WowClass"/>.
     /// </summary>
     [Serializable]
-    public class Profile : DependencyObject
+    public class Profile
     {
-        public static readonly DependencyProperty LuaProperty          = DependencyProperty.Register("Lua",          typeof(string),                         typeof(Profile));
-        public static readonly DependencyProperty RotationListProperty = DependencyProperty.Register("RotationList", typeof(ObservableCollection<Rotation>), typeof(Profile));
-
         /// <summary>
         /// Класс персонажа.
         /// </summary>
@@ -25,11 +21,7 @@ namespace Yanitta
         /// Код Lua привязанный к профилю.
         /// </summary>
         [XmlIgnore]
-        public string Lua
-        {
-            get { return (string)(GetValue(LuaProperty) ?? ""); }
-            set { SetValue(LuaProperty, value); }
-        }
+        public string Lua { get; set; }
 
         /// <summary>
         /// [not used] use for serialization.
@@ -45,11 +37,7 @@ namespace Yanitta
         /// Список ротаций профиля.
         /// </summary>
         [XmlElement("Rotation")]
-        public ObservableCollection<Rotation> RotationList
-        {
-            get { return (ObservableCollection<Rotation>)GetValue(RotationListProperty); }
-            set { SetValue(RotationListProperty, value); }
-        }
+        public ObservableCollection<Rotation> RotationList { get; set; }
 
         /// <summary>
         /// Создает новый экземпляр класса <see cref="Yanitta.Profile"/>

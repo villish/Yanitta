@@ -13,9 +13,8 @@ namespace Yanitta
     [Serializable]
     public class Rotation : DependencyObject, ICloneable
     {
-        public static readonly DependencyProperty NameProperty        = DependencyProperty.Register("Name",        typeof(string),                        typeof(Rotation));
-        public static readonly DependencyProperty HotKeyProperty      = DependencyProperty.Register("HotKey",      typeof(HotKey),                        typeof(Rotation));
-        public static readonly DependencyProperty AbilityListProperty = DependencyProperty.Register("AbilityList", typeof(ObservableCollection<Ability>), typeof(Rotation));
+        public static readonly DependencyProperty NameProperty   = DependencyProperty.Register("Name",   typeof(string), typeof(Rotation));
+        public static readonly DependencyProperty HotKeyProperty = DependencyProperty.Register("HotKey", typeof(HotKey), typeof(Rotation));
 
         /// <summary>
         /// Наименование ротации.
@@ -66,11 +65,7 @@ namespace Yanitta
         /// Список способностей в порядке их приоритета.
         /// </summary>
         [XmlElement("Ability")]
-        public ObservableCollection<Ability> AbilityList
-        {
-            get { return (ObservableCollection<Ability>)GetValue(AbilityListProperty); }
-            set { SetValue(AbilityListProperty, value); }
-        }
+        public ObservableCollection<Ability> AbilityList { get; set; }
 
         /// <summary>
         /// Создает новый экземпляр класса с текщими значениями.
