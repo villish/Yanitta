@@ -13,8 +13,7 @@ namespace Yanitta
     [Serializable]
     public class Rotation : DependencyObject, ICloneable
     {
-        public static readonly DependencyProperty NameProperty   = DependencyProperty.Register("Name",   typeof(string), typeof(Rotation));
-        public static readonly DependencyProperty HotKeyProperty = DependencyProperty.Register("HotKey", typeof(HotKey), typeof(Rotation));
+        public static readonly DependencyProperty NameProperty = DependencyProperty.Register("Name", typeof(string), typeof(Rotation));
 
         /// <summary>
         /// Наименование ротации.
@@ -35,11 +34,7 @@ namespace Yanitta
         /// <summary>
         /// Горячие клавиши для управления ротацией.
         /// </summary>
-        public HotKey HotKey
-        {
-            get { return (HotKey)GetValue(HotKeyProperty); }
-            set { SetValue(HotKeyProperty, value); }
-        }
+        public HotKey HotKey { get; set; }
 
         /// <summary>
         /// Создает новый экземпляр класс <see cref="Yanitta.Rotation"/>.
