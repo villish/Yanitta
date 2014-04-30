@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using System.Xml;
 using Yanitta.Properties;
 
 namespace Yanitta
@@ -12,18 +11,16 @@ namespace Yanitta
     {
         public static ProcessList ProcessList { get; set; }
 
-        static App()
-        {
-            ConsoleWriter.Initialize("Yanitta.log", true);
-            ProcessList = new ProcessList();
-        }
-
         protected override void OnStartup(StartupEventArgs e)
         {
+            ConsoleWriter.Initialize("Yanitta.log", true);
+
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
             else if (e.Args.Length > 0 && e.Args[0] == "/ex")
                 StartupUri = new Uri("Windows/WinCodeExecute.xaml", UriKind.Relative);
+
+            App.ProcessList = new ProcessList();
 
             if (Settings.Default.Language != "auto")
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);

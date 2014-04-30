@@ -29,6 +29,7 @@ namespace Yanitta
         /// <summary>
         /// Событие для обработки закрытия процесса.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event WowMemoryHandler GameExited;
 
         /// <summary>
@@ -36,12 +37,7 @@ namespace Yanitta
         /// </summary>
         public int ProcessId
         {
-            get
-            {
-                if (this.Memory == null)
-                    return 0;
-                return this.Memory.Process.Id;
-            }
+            get { return this.Memory.Process.Id; }
         }
 
         /// <summary>
@@ -95,11 +91,14 @@ namespace Yanitta
         /// <param name="process">Процесс вов.</param>
         public WowMemory(Process process)
         {
-            this.Memory = new ProcessMemory(process);
+            if (process == null)
+                throw new ArgumentNullException("process");
 
-            int build = this.Memory.Process.MainModule.FileVersionInfo.FilePrivatePart;
+            int build = process.MainModule.FileVersionInfo.FilePrivatePart;
             if (build != Offsets.Default.Build)
                 throw new Exception(string.Format("Current build [{0}] WoW is not supported [{1}]", build, Offsets.Default.Build));
+
+            this.Memory = new ProcessMemory(process);
 
             this.mTimer = new DispatcherTimer();
             this.mTimer.Interval = TimeSpan.FromMilliseconds(500);

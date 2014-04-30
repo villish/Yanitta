@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -15,27 +16,27 @@ namespace Yanitta
     {
         #region API
 
-        [DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2"), DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
         static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern IntPtr OpenThread(ThreadAccess DesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwThreadId);
-        [DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern IntPtr OpenThread(ThreadAccess DesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwThreadId);
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2"), DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
         static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, FreeType dwFreeType);
-        [DllImport("kernel32", SetLastError = true)]
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2"), DllImport("kernel32", SetLastError = true)]
         static extern bool VirtualProtectEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, MemoryProtection flNewProtect, out MemoryProtection lpflOldProtect);
-        [DllImport("kernel32", SetLastError = true)]
-        private static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, IntPtr lpNumberOfBytesWritten);
-        [DllImport("kernel32", SetLastError = true)]
-        private static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, IntPtr lpNumberOfBytesRead);
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern uint SuspendThread(IntPtr thandle);
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern uint ResumeThread(IntPtr thandle);
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern bool GetThreadContext(IntPtr thandle, ref CONTEXT context);
-        [DllImport("kernel32", SetLastError = true)]
-        public static extern bool SetThreadContext(IntPtr thandle, ref CONTEXT context);
-        [DllImport("user32")]
+        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, IntPtr lpNumberOfBytesWritten);
+        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, IntPtr lpNumberOfBytesRead);
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern uint SuspendThread(IntPtr thandle);
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern uint ResumeThread(IntPtr thandle);
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern bool GetThreadContext(IntPtr thandle, ref CONTEXT context);
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern bool SetThreadContext(IntPtr thandle, ref CONTEXT context);
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("user32")]
         static extern IntPtr GetForegroundWindow();
 
         #endregion

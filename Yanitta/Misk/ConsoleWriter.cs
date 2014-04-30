@@ -11,9 +11,9 @@ namespace Yanitta
         private static ConsoleWriter Instance;
         private StreamWriter m_writer;
 
-        public ConsoleWriter(string fileName, bool isRegisterUnhandledException = false)
+        public ConsoleWriter(string fileName, bool isRegisterUnhandledException)
         {
-            m_writer = new StreamWriter(fileName, false, this.Encoding);
+            m_writer = new StreamWriter(fileName, false);
             m_writer.AutoFlush = true;
             Console.SetOut(this);
             Debug.Listeners.Add(new TextWriterTraceListener(this));
