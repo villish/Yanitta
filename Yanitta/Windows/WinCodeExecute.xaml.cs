@@ -13,7 +13,7 @@ namespace Yanitta.Windows
                 this.cbProcess.SelectedIndex = 0;
         }
 
-        private void Exec()
+        private void CommandBinding_Exec_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(this.teCode.Text))
             {
@@ -30,17 +30,6 @@ namespace Yanitta.Windows
                     MessageBox.Show(Localization.NotSelectedProcessMessage);
                 }
             }
-        }
-
-        private void Window_PreviewKeyDown_1(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.F5)
-                this.Exec();
-        }
-
-        private void CommandBinding_Exec_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            this.Exec();
         }
     }
 }

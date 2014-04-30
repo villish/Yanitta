@@ -4,17 +4,23 @@
     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
     x:Class="Yanitta.Windows.WinCodeExecute"
     xmlns:yanitta="clr-namespace:Yanitta"
-    PreviewKeyDown="Window_PreviewKeyDown_1"
     Title="{x:Static yanitta:Localization.CodeExequteTitle}" Height="321" Width="435"
     Style="{DynamicResource KamillaStyle}"
     FontFamily="../Resources/#MORPHEUS"
     Icon="/Yanitta;component/Resources/PTR_client.png">
+
     <Window.Resources>
         <RoutedUICommand x:Key="Exec" />
     </Window.Resources>
+
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource Exec}" Executed="CommandBinding_Exec_Executed" />
     </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Command="{StaticResource Exec}" Key="F5" />
+    </Window.InputBindings>
+
     <Grid DataContext="{Binding Source={StaticResource processList}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="22" />
