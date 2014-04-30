@@ -30,8 +30,7 @@ namespace Yanitta
 
             try
             {
-                ProfileDb.Instance = new ProfileDb();
-                ProfileDb.Instance.Load(fileName);
+                ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
 
                 //Если загрузка прошла удачно - сделаем резервную копию.
                 if (File.Exists(fileName))
@@ -55,8 +54,7 @@ namespace Yanitta
                 try
                 {
                     Console.WriteLine("Попытка загрузить базу данных из резервной копии.");
-                    ProfileDb.Instance = new ProfileDb();
-                    ProfileDb.Instance.Load(fileName);
+                    ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
                     Console.WriteLine("База из резервной копии успешно загружена.");
                 }
                 catch (Exception ex_inner)
@@ -70,7 +68,7 @@ namespace Yanitta
 
         protected override void OnExit(ExitEventArgs e)
         {
-            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+            ProfileDb.Save();
             Console.WriteLine("Yanitta stoped ... !");
             ConsoleWriter.CloseWriter();
             base.OnExit(e);

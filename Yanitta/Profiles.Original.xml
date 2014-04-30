@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
-<ProfileDb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Version>0.0.5.303</Version>
-  <Author>Konctantin</Author>
-  <Url />
+<Profiles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Lua><![CDATA[
 OnEventExtended = nil;
 OnModifyerStateChanged = nil;
@@ -9718,4 +9715,4 @@ end
       </Ability>
     </Rotation>
   </Profile>
-</ProfileDb>
+</Profiles>

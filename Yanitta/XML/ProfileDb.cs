@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Windows;
 using System.Xml;
 using System.Xml.Serialization;
 using Yanitta.Properties;
@@ -15,54 +11,14 @@ namespace Yanitta
     /// База профилей.
     /// </summary>
     [Serializable]
-    public class ProfileDb : DependencyObject
+    [XmlRoot("Profiles")]
+    public class ProfileDb
     {
-        public static readonly DependencyProperty LuaProperty            = DependencyProperty.Register("Lua",            typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty VersionProperty        = DependencyProperty.Register("Version",        typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty AuthorProperty         = DependencyProperty.Register("Author",         typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty UrlProperty            = DependencyProperty.Register("Url",            typeof(string), typeof(ProfileDb));
-        public static readonly DependencyProperty ProfileListProperty    = DependencyProperty.Register("ProfileList",    typeof(ObservableCollection<Profile>), typeof(ProfileDb));
-        public static readonly DependencyProperty DefaultProfileProperty = DependencyProperty.Register("DefaultProfile", typeof(Profile), typeof(ProfileDb));
-
-        /// <summary>
-        /// Веррсия базы данных.
-        /// </summary>
-        [XmlElement]
-        public string Version
-        {
-            get { return (string)GetValue(VersionProperty); }
-            set { SetValue(VersionProperty, value); }
-        }
-
-        /// <summary>
-        /// Автор.
-        /// </summary>
-        [XmlElement]
-        public string Author
-        {
-            get { return (string)GetValue(AuthorProperty); }
-            set { SetValue(AuthorProperty, value); }
-        }
-
-        /// <summary>
-        /// Аддресс хранилища с обновлениями базы.
-        /// </summary>
-        [XmlElement]
-        public string Url
-        {
-            get { return (string)GetValue(UrlProperty); }
-            set { SetValue(UrlProperty, value); }
-        }
-
         /// <summary>
         /// Код ядра бота.
         /// </summary>
         [XmlIgnore]
-        public string Lua
-        {
-            get { return (string)GetValue(LuaProperty); }
-            set { SetValue(LuaProperty, value); }
-        }
+        public string Lua { get; set; }
 
         /// <summary>
         /// [not used] use for serialization.
@@ -78,11 +34,7 @@ namespace Yanitta
         /// Список профилей.
         /// </summary>
         [XmlElement("Profile")]
-        public ObservableCollection<Profile> ProfileList
-        {
-            get { return (ObservableCollection<Profile>)GetValue(ProfileListProperty); }
-            set { SetValue(ProfileListProperty, value); }
-        }
+        public ObservableCollection<Profile> ProfileList { get; set; }
 
         /// <summary>
         /// Профиль по умолчанию.
@@ -91,8 +43,7 @@ namespace Yanitta
         [XmlIgnore]
         public Profile DefaultProfile
         {
-            get { return (Profile)GetValue(DefaultProfileProperty); }
-            private set { SetValue(DefaultProfileProperty, value);  }
+            get { return this[WowClass.None]; }
         }
 
         /// <summary>
@@ -105,9 +56,7 @@ namespace Yanitta
         /// </summary>
         public ProfileDb()
         {
-            this.RawVersion  = new Version();
             this.ProfileList = new ObservableCollection<Profile>();
-            this.DefaultProfile = new Profile();
         }
 
         #region Extension
@@ -123,96 +72,23 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Загружает значения полей из указанного объекта.
-        /// </summary>
-        /// <param name="temp">Объект из которого надо скопировать значения.</param>
-        public void Update(ProfileDb temp)
-        {
-            this.Version     = temp.Version;
-            this.Author      = temp.Author;
-            this.Lua         = temp.Lua;
-            this.Url         = temp.Url;
-            this.ProfileList = temp.ProfileList;
-            this.DefaultProfile = temp[WowClass.None] ?? new Profile();
-        }
-
-        /// <summary>
-        /// Загружает базу данных из файла.
-        /// </summary>
-        /// <param name="fileName">Имя файла базы данных.</param>
-        public void Load(string fileName)
-        {
-            var profileDb = XmlManager.Load<ProfileDb>(fileName);
-            ProfileDb.Instance.Update(profileDb);
-        }
-
-        /// <summary>
         /// Сохраняет базу данных в файл.
         /// </summary>
         /// <param name="fileName">Имя файла базы данных.</param>
         /// <param name="incVersion">Указывает увеличивать ли версию базы данных.</param>
-        public void Save(string fileName, bool incVersion = false)
+        public static void Save()
         {
             try
             {
                 if (ProfileDb.Instance != null)
                 {
-                    if (incVersion)
-                    {
-                        this.RawVersion = new Version(
-                            this.RawVersion.Major,
-                            this.RawVersion.Minor,
-                            this.RawVersion.Build,
-                            this.RawVersion.Revision + 1
-                            );
-                    }
-                    XmlManager.Save(fileName, ProfileDb.Instance);
+                    XmlManager.Save(Settings.Default.ProfilesFileName, ProfileDb.Instance);
                     Console.WriteLine("Profiles Saved!");
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error: {0}", ex);
-            }
-        }
-
-        /// <summary>
-        /// Служебное поле (временно).
-        /// </summary>
-        [XmlIgnore]
-        public Version RawVersion
-        {
-            get { return new Version(this.Version); }
-            set { this.Version = value.ToString(); }
-        }
-
-        /// <summary>
-        /// Запрос обновления базы данных с указанного в настройках аддресса.
-        /// </summary>
-        public static void UpdateProfiles()
-        {
-            if (string.IsNullOrWhiteSpace(ProfileDb.Instance.Url))
-            {
-                throw new Exception("Url is empty!");
-            }
-
-            using (var response = (HttpWebResponse)WebRequest.Create(ProfileDb.Instance.Url).GetResponse())
-            {
-                using (var stream = new StreamReader(response.GetResponseStream()))
-                {
-                    var profile = (ProfileDb)new XmlSerializer(typeof(ProfileDb)).Deserialize(stream);
-                    if (profile.RawVersion > ProfileDb.Instance.RawVersion)
-                    {
-                        var question = string.Format("Обнаружен профиль v{0}, текущий v{1}.\r\nОбновить профиль?",
-                            profile.Version, ProfileDb.Instance.Version);
-                        var res = MessageBox.Show(question, "Обновление", MessageBoxButton.YesNo, MessageBoxImage.Information);
-                        if (res == MessageBoxResult.Yes)
-                        {
-                            ProfileDb.Instance.Update(profile);
-                            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
-                        }
-                    }
-                }
             }
         }
 

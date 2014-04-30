@@ -88,7 +88,7 @@ namespace Yanitta
 
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName);
+            ProfileDb.Save();
         }
 
         #region Commands
@@ -166,26 +166,9 @@ namespace Yanitta
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
         }
 
-        private void CommandBinding_Executed_Update(object sender, ExecutedRoutedEventArgs e)
-        {
-            try
-            {
-                ProfileDb.UpdateProfiles();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void CommandBinding_Executed_Reload(object sender, ExecutedRoutedEventArgs e)
-        {
-            ProfileDb.Instance.Load(Settings.Default.ProfilesFileName);
-        }
-
         private void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
         {
-            ProfileDb.Instance.Save(Settings.Default.ProfilesFileName, true);
+            ProfileDb.Save();
         }
 
         private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
