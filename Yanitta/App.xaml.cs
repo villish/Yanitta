@@ -11,10 +11,14 @@ namespace Yanitta
     {
         public static ProcessList ProcessList { get; set; }
 
-        protected override void OnStartup(StartupEventArgs e)
+        static App()
         {
             ConsoleWriter.Initialize("Yanitta.log", true);
+            ProcessList = new ProcessList();
+        }
 
+        protected override void OnStartup(StartupEventArgs e)
+        {
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
             else if (e.Args.Length > 0 && e.Args[0] == "/ex")

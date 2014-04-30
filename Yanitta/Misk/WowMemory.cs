@@ -209,7 +209,8 @@ namespace Yanitta
             if (rotation == null)
                 throw new ArgumentNullException("rotation");
 
-            var builder = new StringBuilder(ProfileDb.Instance.Lua);
+            var builder = new StringBuilder();
+            builder.AppendLine(ProfileDb.Instance.Lua);
 
             foreach (var ability in rotation.AbilityList)
             {
