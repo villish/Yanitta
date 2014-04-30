@@ -48,6 +48,9 @@ namespace Yanitta
             RotationList = new ObservableCollection<Rotation>();
         }
 
+        /// <summary>
+        /// Отменяет регистрацию гарячих клавиш для всех ротаций текущего профиля.
+        /// </summary>
         public void UnregisterHotKeys()
         {
             foreach (var rotation in this.RotationList)
@@ -57,6 +60,10 @@ namespace Yanitta
             }
         }
 
+        /// <summary>
+        /// Регистрирует гарячие клавиши для всех ротаций текущего профиля.
+        /// </summary>
+        /// <param name="handler">Обрабочик срабатывания гарячих клавиш.</param>
         public void RegisterHotKeys(EventHandler<HandledEventArgs> handler)
         {
             foreach (var rotation in this.RotationList)
