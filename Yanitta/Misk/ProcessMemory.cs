@@ -53,6 +53,7 @@ namespace Yanitta
         public ProcessMemory(Process process)
         {
             this.Process = process;
+            this.Process.EnableRaisingEvents = true;
         }
 
         /// <summary>

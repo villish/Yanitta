@@ -24,8 +24,6 @@ namespace Yanitta
             else if (e.Args.Length > 0 && e.Args[0] == "/ex")
                 StartupUri = new Uri("Windows/WinCodeExecute.xaml", UriKind.Relative);
 
-            App.ProcessList = new ProcessList();
-
             if (Settings.Default.Language != "auto")
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
 

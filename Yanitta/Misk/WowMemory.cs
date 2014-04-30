@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Yanitta.Properties;
@@ -19,18 +18,16 @@ namespace Yanitta
     /// <summary>
     /// Посредник для взаимодействия с процессом.
     /// </summary>
-    public class WowMemory : DependencyObject, IDisposable
+    public class WowMemory : ViewModelBase, IDisposable
     {
-        public readonly static DependencyProperty CurrentProfileProperty = DependencyProperty.Register("CurrentProfile", typeof(Profile),  typeof(WowMemory));
-        public readonly static DependencyProperty ClassProperty          = DependencyProperty.Register("Class",          typeof(WowClass), typeof(WowMemory));
-        public readonly static DependencyProperty NameProperty           = DependencyProperty.Register("Name",           typeof(string),   typeof(WowMemory));
-        public readonly static DependencyProperty IsInGameProperty       = DependencyProperty.Register("IsInGame",       typeof(bool),     typeof(WowMemory));
-
         /// <summary>
         /// Событие для обработки закрытия процесса.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event WowMemoryHandler GameExited;
+
+        private bool isInGame;
+        private bool isFocus;
 
         /// <summary>
         /// Id процесса.
@@ -45,35 +42,80 @@ namespace Yanitta
         /// </summary>
         public Profile CurrentProfile
         {
-            get { return ProfileDb.Instance[this.Class]; }
-            private set { SetValue(CurrentProfileProperty, value);  }
+            get { return IsInGame ? ProfileDb.Instance[this.Class] : null; }
         }
 
         /// <summary>
         /// Класс персонажа.
         /// </summary>
-        public WowClass Class
-        {
-            get { return (WowClass)GetValue(ClassProperty); }
-            private set { SetValue(ClassProperty, value);   }
-        }
+        public WowClass Class { get; private set; }
 
         /// <summary>
         /// Имя персонажа.
         /// </summary>
-        public string Name
-        {
-            get { return (string)GetValue(NameProperty); }
-            private set { SetValue(NameProperty, value); }
-        }
+        public string Name { get; private set; }
 
         /// <summary>
         /// Состояние, находится ли персонаж в игровом мире.
         /// </summary>
         public bool IsInGame
         {
-            get { return (bool)GetValue(IsInGameProperty);   }
-            private set { SetValue(IsInGameProperty, value); }
+            get { return this.isInGame; }
+            private set
+            {
+                if (this.isInGame != value)
+                {
+                    this.isInGame = value;
+                    this.OnPropertyChanged("IsInGame");
+
+                    if (value)
+                    {
+                        this.Class = (WowClass)this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.PlayerClass));
+                        this.Name  = this.Memory.ReadString(Memory.Rebase((IntPtr)Offsets.Default.PlayerName));
+                    }
+                    else
+                    {
+                        this.Class = WowClass.None;
+                        this.Name  = string.Empty;
+                    }
+
+                    this.OnPropertyChanged("Class");
+                    this.OnPropertyChanged("Name");
+                    this.OnPropertyChanged("CurrentProfile");
+                };
+            }
+        }
+
+        /// <summary>
+        /// Указывает, активно ли основное окно процесса.
+        /// </summary>
+        public bool IsFocus
+        {
+            get { return this.isFocus; }
+            private set
+            {
+                if (this.isFocus != value)
+                {
+                    this.isFocus = value;
+                    this.OnPropertyChanged();
+
+                    if (value)
+                    {
+                        App.ProcessList.Where(process => process != this)
+                            .ForEach(process => process.UnregisterAllHotKeys());
+
+                        if (CurrentProfile != null)
+                            CurrentProfile.RegisterHotKeys(HotKeyPressed);
+
+                        if (ProfileDb.Instance.DefaultProfile != null)
+                            ProfileDb.Instance.DefaultProfile.RegisterHotKeys(HotKeyPressed);
+                    }
+                    else
+                    {
+                        this.UnregisterAllHotKeys();
+                    }
+                };
+            }
         }
 
         /// <summary>
@@ -102,9 +144,13 @@ namespace Yanitta
 
             this.mTimer = new DispatcherTimer();
             this.mTimer.Interval = TimeSpan.FromMilliseconds(500);
-            this.mTimer.Tick += (o, e) => this.ReadAllValues();
-
-            this.ReadAllValues();
+            this.mTimer.Tick += (o, e) => {
+                if (CheckProcess())
+                {
+                    this.IsFocus  = this.Memory.IsFocusWindow;
+                    this.IsInGame = this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.IsInGame)) != 0;
+                }
+            };
 
             this.mTimer.IsEnabled = true;
             this.mTimer.Start();
@@ -126,58 +172,6 @@ namespace Yanitta
                 return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Считывает из текущего процесса значения имени, класса и нахождение в мире.
-        /// В зависимости от считанных данных регистрирует или удаляет гарячие клавиши для управления ротациями.
-        /// </summary>
-        private void ReadAllValues()
-        {
-            if (!CheckProcess())
-                return;
-
-            var isInGame = this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.IsInGame)) != 0;
-            if (isInGame != this.IsInGame)
-            {
-                this.IsInGame = isInGame;
-
-                Debug.WriteLine("IsInGame: " + this.IsInGame);
-
-                if (this.IsInGame)
-                {
-                    this.Class = (WowClass)this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.PlayerClass));
-                    this.Name  = this.Memory.ReadString(Memory.Rebase((IntPtr)Offsets.Default.PlayerName));
-                    this.CurrentProfile = ProfileDb.Instance[this.Class];
-                }
-                else
-                {
-                    this.UnregisterAllHotKeys();
-                    this.CurrentProfile = null;
-                    this.Class = WowClass.None;
-                    this.Name  = string.Empty;
-                }
-            }
-
-            if (Memory.IsFocusWindow)
-            {
-                App.ProcessList.Where(process => process != this)
-                    .ForEach(process => process.UnregisterAllHotKeys());
-
-                if (CurrentProfile != null)
-                {
-                    CurrentProfile.RegisterHotKeys(HotKeyPressed);
-                }
-
-                if (ProfileDb.Instance.DefaultProfile != null)
-                {
-                    ProfileDb.Instance.DefaultProfile.RegisterHotKeys(HotKeyPressed);
-                }
-            }
-            else if (CurrentProfile != null)
-            {
-                this.UnregisterAllHotKeys();
-            }
         }
 
         /// <summary>
