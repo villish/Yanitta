@@ -3,6 +3,7 @@ using ICSharpCode.AvalonEdit.Rendering;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Runtime.InteropServices;
 
 namespace ICSharpCode.AvalonEdit.Editing
 {
@@ -13,6 +14,7 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// AbstractMargin derives from FrameworkElement, so if you don't want to handle visual children and rendering
     /// on your own, choose another base class for your margin!
     /// </summary>
+    [ComVisible(false)]
     public abstract class AbstractMargin : FrameworkElement, ITextViewConnect
     {
         /// <summary>

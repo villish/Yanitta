@@ -78,6 +78,7 @@ namespace ICSharpCode.AvalonEdit
         /// <summary>
         /// Разкомментирует код
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Un")]
         public static readonly RoutedCommand UnComment = new RoutedCommand("UnComment", typeof(TextEditor), new InputGestureCollection { new KeyGesture(Key.J, ModifierKeys.Control) });
     }
 }
