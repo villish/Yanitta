@@ -434,22 +434,32 @@ end
 --              CORE                 --
 ---------------------------------------
 
--- Проверяем доступность заклинания.
-function IsPlayerKnownSpell(spellId, spellName)
-    -- Основная проверка
-    if IsPlayerSpell(spellId)
-        or IsSpellKnown(spellId) or IsSpellKnown(spellId, true)
-        or IsTalentSpell(spellName)
-        or select(2, GetSpellBookItemInfo(spellName)) == spellId then
-        return true;
-    end
+-- Проверяем доступность заклинаний
+function CheckAllSpells()
+    if type(ABILITY_TABLE) == "table" then
+        for _,ability in ipairs(ABILITY_TABLE) do
+            if ability.SpellId > 0 then
+                local spellName = GetSpellInfo(ability.SpellId);
+                ability.IsKnown = false;
+                -- Основная проверка
+                if IsPlayerSpell(ability.SpellId)
+                    or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)
+                    or IsTalentSpell(spellName)
+                    or select(2, GetSpellBookItemInfo(spellName)) == ability.SpellId then
+                    ability.IsKnown = true;
+                end
 
-    -- Проверка на доступность заклинания по уровню и специализиции
-    local spellList = { GetSpecializationSpells(GetSpecialization()) };
-    for i = 1, #spellList, 2 do
-        if spellList[i] == spellId and
-            UnitLevel("player") > (spellList[i+1] or 0) then
-            return true;
+                if not ability.IsKnown then
+                    -- Проверка на доступность заклинания по уровню и специализиции
+                    local spellList = { GetSpecializationSpells(GetSpecialization()) };
+                    for i = 1, #spellList, 2 do
+                        if spellList[i] == ability.SpellId and UnitLevel("player") > (spellList[i+1] or 0) then
+                            ability.IsKnown = true;
+                        end
+                    end
+                end
+                -- можно добавить еще проверки
+            end
         end
     end
 end
@@ -471,8 +481,7 @@ function CheckAndCastAbility(ability)
 
     if ability.SpellId < 1 then
         return ability.Func(ability);
-    elseif not (IsUsableSpell(ability.SpellId)
-        and IsPlayerKnownSpell(ability.SpellId, spellInfo)) then
+    elseif not (ability.IsKnown and IsUsableSpell(ability.SpellId)) then
         return;
     end
 
@@ -556,7 +565,9 @@ function ChangeRotation(rotation)
             AddonFrame:RegisterEvent("PLAYER_LOGOUT");
             AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
             AddonFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
+            AddonFrame:RegisterEvent("SPELLS_CHANGED");
         end
+        CheckAllSpells();
         AddonFrame.CurentRotation = rotation;
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
         PlaySound("PAPERDOLLOPEN", "Master");
@@ -566,10 +577,13 @@ end
 function AddonFrame_OnEvent(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         self:Show();
+        CheckAllSpells();
     elseif event == "PLAYER_LOGOUT" then
         ChangeRotation();
     elseif event == "WORLD_MAP_UPDATE" then
         LOSS_TABLE = { };
+    elseif event == "SPELLS_CHANGED" then
+        CheckAllSpells();
     elseif event == "MODIFIER_STATE_CHANGED" then
         if type(OnModifyerStateChanged) == "function" then
             local modifier, state = ...;
