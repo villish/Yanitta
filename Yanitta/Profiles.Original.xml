@@ -3807,6 +3807,26 @@ end
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
 ]]></Lua>
       </Ability>
+      <Ability Name="Левитация">
+        <SpellID>1706</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- надо тестировать
+if not IsFalling() then
+    falingStartTime = 0;
+elseif IsFalling() and (falingStartTime or 0) == 0 then
+    falingStartTime = GetTime();
+elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 111759) then
+    falingStartTime = 0;
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Массовое разсеивание">
         <SpellID>32375</SpellID>
         <Target>MouseLocation</Target>
@@ -4326,18 +4346,6 @@ if not HasDebuff("target", diseases, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар смерти">
-        <SpellID>49998</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
       <Ability Name="Удар чумы">
         <SpellID>45462</SpellID>
         <Target>Target</Target>
@@ -4365,6 +4373,18 @@ end
 if not HasDebuff("target", 55095) or HasBuff("player", 59052) then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар смерти">
+        <SpellID>49998</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Жнец душ">
@@ -6608,6 +6628,11 @@ if IsModKeyDown(mkLeftAlt) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
+
+-- заклинание не проходит проверку на IsUsableSpell
+if not setAoE and HasBuff("player", 108683) then
+    CastSpellByName(GetSpellInfo(108683));
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Неистовство тьмы">
@@ -6638,6 +6663,25 @@ if IsMouseButtonDown(3) then
     if cd > 0 and cd < 28 then
         return true;
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Огненный ливень">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- заклинание не проходит проверку на доступность
+if IsModKeyDown(mkLeftShift) and HasBuff("player", 104232) then
+    local spellName = GetSpellInfo(104232);
+    CastSpellByName(spellName, nil);
+    CameraOrSelectOrMoveStart();
+    CameraOrSelectOrMoveStop();
+    CastSpellByName(spellName, nil);
 end
 ]]></Lua>
       </Ability>
@@ -6691,22 +6735,6 @@ end
 
 -- quest
 --return QuestCore();
-]]></Lua>
-      </Ability>
-      <Ability Name="Огненный ливень">
-        <SpellID>104232</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
-    if not HasBuff("player", 104232) then
-        return true;
-    end
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Запрет чар">
@@ -6833,19 +6861,14 @@ end
       </Ability>
       <Ability Name="Огонь и сера">
         <SpellID>108683</SpellID>
-        <Target>None</Target>
+        <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and HasBuff("player", 108683) then
-    print("Проверить и доработать");
-    return true;
-end
 if isInRange and power2 > 0 and setAoE and not HasBuff("player", 108683) then
-    print("Проверить и доработать");
     return true;
 end
 ]]></Lua>
