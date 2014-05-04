@@ -433,32 +433,45 @@ end
 ---------------------------------------
 --              CORE                 --
 ---------------------------------------
+function CheckKnownAbility(ability)
+    local spellName = GetSpellInfo(ability.SpellId);
+    ability.IsKnown = false;
+
+    -- Основная проверка
+    if IsPlayerSpell(ability.SpellId)
+        or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)
+        or IsTalentSpell(spellName) then
+        ability.IsKnown = true;
+        return;
+    end
+
+    if GetSpecialization() then
+        -- Проверка на доступность заклинания по уровню и специализиции
+        local spellList = { GetSpecializationSpells(GetSpecialization()) };
+        local lvl = UnitLevel("player");
+        for i = 1, #spellList, 2 do
+            if spellList[i] == ability.SpellId and lvl > (spellList[i+1] or 0) then
+                ability.IsKnown = true;
+                return;
+            end
+        end
+    end
+
+    -- Есть заклинания, которые имеют одинаковое название и разные Id
+    local spellId = select(2, GetSpellBookItemInfo(spellName));
+    if spellId and ability.SpellId ~= spellId then
+        print("|cff15bd05Заклинание: "..spellName.." Id "..tostring(ability.SpellId).." -> "..tostring(spellId).."|r");
+        ability.SpellId = spellId;
+        ability.IsKnown = true;
+    end
+end
 
 -- Проверяем доступность заклинаний
 function CheckAllSpells()
     if type(ABILITY_TABLE) == "table" then
         for _,ability in ipairs(ABILITY_TABLE) do
             if ability.SpellId > 0 then
-                local spellName = GetSpellInfo(ability.SpellId);
-                ability.IsKnown = false;
-                -- Основная проверка
-                if IsPlayerSpell(ability.SpellId)
-                    or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)
-                    or IsTalentSpell(spellName)
-                    or select(2, GetSpellBookItemInfo(spellName)) == ability.SpellId then
-                    ability.IsKnown = true;
-                end
-
-                if not ability.IsKnown then
-                    -- Проверка на доступность заклинания по уровню и специализиции
-                    local spellList = { GetSpecializationSpells(GetSpecialization()) };
-                    for i = 1, #spellList, 2 do
-                        if spellList[i] == ability.SpellId and UnitLevel("player") > (spellList[i+1] or 0) then
-                            ability.IsKnown = true;
-                        end
-                    end
-                end
-                -- можно добавить еще проверки
+                CheckKnownAbility(ability);
             end
         end
     end
