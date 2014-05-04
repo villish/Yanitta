@@ -73,11 +73,6 @@ namespace Yanitta
                         this.Class = (WowClass)this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.PlayerClass));
                         this.Name  = this.Memory.ReadString(Memory.Rebase((IntPtr)Offsets.Default.PlayerName));
                     }
-                    else
-                    {
-                        this.Class = WowClass.None;
-                        this.Name  = string.Empty;
-                    }
 
                     ChangeHotKeys();
 
@@ -192,6 +187,7 @@ namespace Yanitta
         /// </summary>
         private void HotKeyPressed(object sender, HandledEventArgs e)
         {
+            Debug.Assert(sender != null);
             try
             {
                 var hotKey   = sender as HotKey;

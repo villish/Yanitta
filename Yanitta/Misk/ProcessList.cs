@@ -12,6 +12,9 @@ namespace Yanitta
     /// </summary>
     public class ProcessList : ObservableCollection<WowMemory>, IDisposable
     {
+        // Track whether Dispose has been called.
+        private bool disposed = false;
+
         private DispatcherTimer refreshTimer;
 
         /// <summary>
@@ -74,18 +77,43 @@ namespace Yanitta
             }
         }
 
+        ~ProcessList()
+        {
+            Dispose(false);
+        }
+
         public void Dispose()
         {
-            if (this.refreshTimer != null)
-            {
-                this.refreshTimer.IsEnabled = false;
-                this.refreshTimer.Stop();
-                this.refreshTimer = null;
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            foreach (var process in this)
-                process.Dispose();
-            this.Clear();
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!this.disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                if (disposing)
+                {
+                    if (this.refreshTimer != null)
+                    {
+                        this.refreshTimer.IsEnabled = false;
+                        this.refreshTimer.Stop();
+
+                    }
+
+                    foreach (var process in this)
+                        process.Dispose();
+                    this.Clear();
+                }
+
+                this.refreshTimer = null;
+
+                // Note disposing has been done.
+                disposed = true;
+            }
         }
     }
 }

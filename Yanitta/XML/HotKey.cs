@@ -12,6 +12,15 @@ namespace System.Windows.Input
     [Serializable]
     public class HotKey : IDisposable, INotifyPropertyChanged
     {
+        // Track whether Dispose has been called.
+        private bool disposed = false;
+
+        [XmlIgnore]
+        private Key key;
+
+        [XmlIgnore]
+        private ModifierKeys modifier;
+
         [NonSerialized]
         private HwndSource m_HandleSource = null;
 
@@ -120,43 +129,20 @@ namespace System.Windows.Input
         }
 
         /// <summary>
-        /// <see cref="System.Dispose"/>
-        /// </summary>
-        public void Dispose()
-        {
-            this.Unregister();
-
-            if (this.m_HandleSource != null && !this.m_HandleSource.IsDisposed)
-            {
-                this.m_HandleSource.RemoveHook(HwndSourceHook);
-                this.m_HandleSource.Dispose();
-            }
-            this.m_HandleSource = null;
-
-            this.Modifier = ModifierKeys.None;
-            this.Key      = Key.None;
-            this.Tag      = null;
-            this.Pressed  = null;
-        }
-
-        ~HotKey()
-        {
-            Dispose();
-        }
-
-        private Key key;
-
-        /// <summary>
         ///
         /// </summary>
         [XmlAttribute]
         [NotifyParentProperty(true)]
-        public Key Key { 
-            get { return key; } 
+        public Key Key
+        {
+            get { return this.key; }
             set
             {
-                key = value;
-                SendNotify("Key"); 
+                if (this.key != value)
+                {
+                    this.key = value;
+                    OnPropertyChanged("Key");
+                }
             }
         }
 
@@ -164,7 +150,18 @@ namespace System.Windows.Input
         ///
         /// </summary>
         [XmlAttribute]
-        public ModifierKeys Modifier { get; set; }
+        public ModifierKeys Modifier
+        {
+            get { return this.modifier; }
+            set
+            {
+                if (this.Modifier != value)
+                {
+                    this.modifier = value;
+                    OnPropertyChanged("Modifier");
+                }
+            }
+        }
 
         /// <summary>
         ///
@@ -198,67 +195,65 @@ namespace System.Windows.Input
         [XmlIgnore]
         public bool Control
         {
-            get { return (this.Modifier & ModifierKeys.Control) != 0; }
+            get { return (this.modifier & ModifierKeys.Control) != 0; }
             set
             {
                 if (value)
-                    this.Modifier |= ModifierKeys.Control;
+                    this.modifier |= ModifierKeys.Control;
                 else
-                    this.Modifier &= ~ModifierKeys.Control;
+                    this.modifier &= ~ModifierKeys.Control;
 
-                SendNotify("Control");
+                OnPropertyChanged("Control");
+                OnPropertyChanged("Modifier");
             }
         }
 
         [XmlIgnore]
         public bool Shift
         {
-            get { return (this.Modifier & ModifierKeys.Shift) != 0; }
+            get { return (this.modifier & ModifierKeys.Shift) != 0; }
             set
             {
                 if (value)
-                    this.Modifier |= ModifierKeys.Shift;
+                    this.modifier |= ModifierKeys.Shift;
                 else
-                    this.Modifier &= ~ModifierKeys.Shift;
+                    this.modifier &= ~ModifierKeys.Shift;
 
-                SendNotify("Shift");
+                OnPropertyChanged("Shift");
+                OnPropertyChanged("Modifier");
             }
         }
 
         [XmlIgnore]
         public bool Alt
         {
-            get { return (this.Modifier & ModifierKeys.Alt) != 0; }
+            get { return (this.modifier & ModifierKeys.Alt) != 0; }
             set
             {
                 if (value)
-                    this.Modifier |= ModifierKeys.Alt;
+                    this.modifier |= ModifierKeys.Alt;
                 else
-                    this.Modifier &= ~ModifierKeys.Alt;
+                    this.modifier &= ~ModifierKeys.Alt;
 
-                SendNotify("Alt");
+                OnPropertyChanged("Alt");
+                OnPropertyChanged("Modifier");
             }
         }
 
         [XmlIgnore]
         public bool Windows
         {
-            get { return (this.Modifier & ModifierKeys.Windows) != 0; }
+            get { return (this.modifier & ModifierKeys.Windows) != 0; }
             set
             {
                 if (value)
-                    this.Modifier |= ModifierKeys.Windows;
+                    this.modifier |= ModifierKeys.Windows;
                 else
-                    this.Modifier &= ~ModifierKeys.Windows;
+                    this.modifier &= ~ModifierKeys.Windows;
 
-                SendNotify("Windows");
+                OnPropertyChanged("Windows");
+                OnPropertyChanged("Modifier");
             }
-        }
-
-        private void SendNotify(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         /// <summary>
@@ -301,12 +296,51 @@ namespace System.Windows.Input
             return modstr + "+" + this.Key;
         }
 
-        public void SetHandler(object tag, EventHandler<HandledEventArgs> handler)
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
         {
-            this.Tag = tag;
-            Pressed = handler;
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        ~HotKey()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!this.disposed)
+            {
+                // If disposing equals true, dispose all managed
+                // and unmanaged resources.
+                this.Unregister();
+                if (disposing)
+                {
+                    if (this.m_HandleSource != null && !this.m_HandleSource.IsDisposed)
+                    {
+                        this.m_HandleSource.RemoveHook(HwndSourceHook);
+                        this.m_HandleSource.Dispose();
+                    }
+                }
+
+                this.m_HandleSource = null;
+                this.Modifier = ModifierKeys.None;
+                this.Key      = Key.None;
+                this.Tag      = null;
+                this.Pressed  = null;
+
+                // Note disposing has been done.
+                disposed = true;
+            }
+        }
     }
 }

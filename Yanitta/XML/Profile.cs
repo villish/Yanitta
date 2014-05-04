@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -68,9 +69,12 @@ namespace Yanitta
         {
             foreach (var rotation in this.RotationList)
             {
+                Debug.Assert(rotation.HotKey != null);
                 if (!rotation.HotKey.IsRegistered)
                 {
-                    rotation.HotKey.SetHandler(rotation, handler);
+                    rotation.HotKey.Tag = rotation;
+                    rotation.HotKey.Pressed -= handler;
+                    rotation.HotKey.Pressed += handler;
                     try
                     {
                         rotation.HotKey.Register();
