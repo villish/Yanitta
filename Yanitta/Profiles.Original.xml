@@ -7785,20 +7785,6 @@ if isInMeele and playerHP < 90 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Нокаутирующий удар">
-        <SpellID>100784</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if chi >= 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Лапа тигра">
         <SpellID>100787</SpellID>
         <Target>Target</Target>
@@ -7808,9 +7794,21 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if (chi < 3 and energy < 40) or not HasBuff("player", 125359) then
+if not HasBuff("player", 125359) then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Нокаутирующий удар">
+        <SpellID>100784</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Дзуки">
@@ -7827,6 +7825,18 @@ if SpellCD(121253) > 1 or energy > 80 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Лапа тигра">
+        <SpellID>100787</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Наследие императора">
         <SpellID>117666</SpellID>
         <Target>Player</Target>
@@ -7840,6 +7850,18 @@ local params_buff = { 1126, 115921, 20217, 90363 };
 if not HasBuff("player", params_buff) then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Детоксикация">
+        <SpellID>115450</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+--return GetDispellInfo();
 ]]></Lua>
       </Ability>
     </Rotation>
