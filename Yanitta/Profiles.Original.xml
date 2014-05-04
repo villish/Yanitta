@@ -4226,6 +4226,18 @@ end
 ]]></Lua>
     <Rotation Name="Кровь">
       <HotKey Key="X" Modifier="Alt" />
+      <Ability Name="Смерть и разложение">
+        <SpellID>43265</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -4259,18 +4271,6 @@ end
 isInMeele  = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
 agroStatus = UnitThreatSituation("player");
 playerHP   = HealthByPercent("player");
-]]></Lua>
-      </Ability>
-      <Ability Name="Смерть и разложение">
-        <SpellID>43265</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
       <Ability Name="Кровь вампира">
@@ -4338,7 +4338,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown;
+return useCooldown and isInMeele;
 ]]></Lua>
       </Ability>
       <Ability Name="Вспышка болезни">
@@ -4383,7 +4383,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasDebuff("target", 55095) or HasBuff("player", 59052) then
+if not HasDebuff("target", 55095, "PLAYER") or HasBuff("player", 59052) then
     return true;
 end
 ]]></Lua>
@@ -4423,11 +4423,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- if=(unholy=0&frost>=1)|(unholy>=1&frost=0)|(death=1)
-if (runes.Unholy.Count == 0 and runes.Frost.Count >= 1) 
-or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) 
-or runes.Death.Count == 1 then
-    if (select(2, HasBuff("player", 114851)) or 0) >= 5 then
+if runes.Death.Count == 1
+    or (runes.Unholy.Count == 0 and runes.Frost.Count >= 1)
+    or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) then
+    if select(2, HasBuff("player", 114851)) >= 5 then
         return true;
     end
 end
@@ -4487,7 +4486,10 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and runes.Blood.Count == 0 and runes.Unholy.Count == 0 and runes.Frost.Count == 0 then
+if useCooldown and isInMeele
+    and runes.Blood.Count == 0
+    and runes.Unholy.Count == 0
+    and runes.Frost.Count == 0 then
     return true;
 end
 ]]></Lua>
