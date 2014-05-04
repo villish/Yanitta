@@ -7503,19 +7503,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Дзуки">
-        <SpellID>108557</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Дзуки">
-        <SpellID>115698</SpellID>
+        <SpellID>100780</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -7555,6 +7543,20 @@ function OnModifyerStateChanged(modifier, state)
     end
 end
 ]]></Lua>
+      <Ability Name="Хмельная дымка">
+        <SpellID>115180</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -7601,20 +7603,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkRightAlt) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Хмельная дымка">
-        <SpellID>115180</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
     return true;
 end
 ]]></Lua>
@@ -7690,6 +7678,18 @@ end
 if agroStatus > 2 and HasBuff("player", 118636) then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Волна ци">
+        <SpellID>115098</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Укрепляющий отвар">
@@ -7785,8 +7785,8 @@ if isInMeele and playerHP < 90 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Дзуки">
-        <SpellID>100780</SpellID>
+      <Ability Name="Нокаутирующий удар">
+        <SpellID>100784</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -7794,7 +7794,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if (chi < 3 or energy > 85) and SpellCD(121253) > 1 then
+if chi >= 3 then
     return true;
 end
 ]]></Lua>
@@ -7813,8 +7813,8 @@ if (chi < 3 and energy < 40) or not HasBuff("player", 125359) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Нокаутирующий удар">
-        <SpellID>100784</SpellID>
+      <Ability Name="Дзуки">
+        <SpellID>100780</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -7822,7 +7822,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi >= 3 then
+if SpellCD(121253) > 1 or energy > 80 then
     return true;
 end
 ]]></Lua>
