@@ -8600,7 +8600,10 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and not isCat then
-    return true;
+    -- надо проверить ИД кровотечения.
+    if setAoE or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -8642,30 +8645,12 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- без ГКД
-if isCat then
-    return false;
-end
-
-if playerHP > 80 then
-    if HasBuff("player", 135288) then
+if not isCat then
+    -- зубы и когти
+    if HasBuff("player", 135288) or agroStatus < 3 or UnitPower("player") > 90 then
         return true;
     end
 end
-if agroStatus < 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Волшебный огонь">
-        <SpellID>770</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Растерзать">
@@ -8680,6 +8665,18 @@ return true;
 if not isCat then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Волшебный огонь">
+        <SpellID>770</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Взбучка (Кот)">
