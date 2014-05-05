@@ -1,12 +1,4 @@
-﻿using ICSharpCode.AvalonEdit.CodeCompletion;
-using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Folding;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.AvalonEdit.Search;
-using ICSharpCode.AvalonEdit.Utils;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -20,6 +12,16 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Folding;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Bracket;
+using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit
 {
@@ -35,7 +37,9 @@ namespace ICSharpCode.AvalonEdit
         private ToolTip mToolTip;
         private FoldingManager foldingManager;
         private AbstractFoldingStrategy foldingStrategy = new RegexFoldingStrategy();
+        private BracketHighlightRenderer bracketRenderer;
         private DispatcherTimer foldingUpdateTimer;
+        private BracketSearcher bracketSearcher = new BracketSearcher();
 
         #region Constructors
 
@@ -69,6 +73,9 @@ namespace ICSharpCode.AvalonEdit
                 }
             };
             foldingUpdateTimer.Start();
+
+            this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
+            this.TextArea.Caret.PositionChanged += HighlightBrackets;
 
             this.TextArea.TextEntering += TextEditorTextAreaTextEntering;
             this.TextArea.PreviewKeyDown += TextArea_PreviewKeyDown;
@@ -459,6 +466,19 @@ namespace ICSharpCode.AvalonEdit
         }
 
         #endregion Syntax highlighting
+
+        #region CaretPositionChanged - Bracket Highlighting
+
+        /// <summary>
+        /// Highlights matching brackets.
+        /// </summary>
+        private void HighlightBrackets(object sender, EventArgs e)
+        {
+            var result = this.bracketSearcher.SearchBracket(this.Document, this.TextArea.Caret.Offset);
+            this.bracketRenderer.SetHighlight(result);
+        }
+
+        #endregion
 
         #region WordWrap
 
