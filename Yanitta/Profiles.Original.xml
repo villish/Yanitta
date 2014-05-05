@@ -7368,6 +7368,27 @@ end
 return CheckInterrupt("target");
 ]]></Lua>
       </Ability>
+      <Ability Name="Детоксикация">
+        <SpellID>115450</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local monk_dispells = DISPELL_TABLE["MONK_NONE"];
+if monk_dispells then
+    for index = 1, 40 do
+        local dispelType = select(5, UnitDebuff("player", index));
+        if not name then break end
+        if monk_dispells[dispelType] then
+            return true;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Отвар тигриной силы">
         <SpellID>116740</SpellID>
         <Target>Player</Target>
@@ -7680,6 +7701,27 @@ if agroStatus > 2 and HasBuff("player", 118636) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Детоксикация">
+        <SpellID>115450</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local monk_dispells = DISPELL_TABLE["MONK_NONE"];
+if monk_dispells then
+    for index = 1, 40 do
+        local dispelType = select(5, UnitDebuff("player", index));
+        if not name then break end
+        if monk_dispells[dispelType] then
+            return true;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Волна ци">
         <SpellID>115098</SpellID>
         <Target>Target</Target>
@@ -7850,18 +7892,6 @@ local params_buff = { 1126, 115921, 20217, 90363 };
 if not HasBuff("player", params_buff) then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Детоксикация">
-        <SpellID>115450</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---return GetDispellInfo();
 ]]></Lua>
       </Ability>
     </Rotation>
