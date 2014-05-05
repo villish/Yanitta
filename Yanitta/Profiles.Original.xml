@@ -340,7 +340,7 @@ function GetDispellInfo(dispeller_type)
             end
         end
     end
-    if #dispellTable > 1 then
+    if #dispellTable > 0 then
         table.sort(dispellTable, function(A, B)
             return A.Count > B.Count;
         end);
