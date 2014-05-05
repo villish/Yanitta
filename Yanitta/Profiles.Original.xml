@@ -4117,9 +4117,10 @@ useCooldown        = true;
 setAoE             = nil;
 isAltMod           = nil;
 rune_names = { "Blood", "Unholy", "Frost", "Death" };
+rune_indexes_helper = { 1, 3, 5 };
 
 DIESES_BLOOD_PLAGUE       = 55078;
-DIESES_FROST_FEVER         = 55095;
+DIESES_FROST_FEVER        = 55095;
 
 function FillDiesesInfo(ability)
     blood_plague,_,blood_plague_rem = HasDebuff(ability.Target, DIESES_BLOOD_PLAGUE, "PLAYER");-- Кровавая чума
@@ -4222,6 +4223,13 @@ end
 
 function HaveRuneAtCooldown()
     return GetRunesAtCooldownCount() > 0;
+end
+
+function TestRuneFunction_GetCountOfDepletedRunes()
+    for i = 1,3 do
+        local slot = rune_indexes_helper[i];
+        local start, duration = GetRuneCooldown(slot);
+    end
 end
 ]]></Lua>
     <Rotation Name="Кровь">
@@ -4606,10 +4614,8 @@ return true; -- всегда кастовать Зимный горн для п�
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
-frostFever,_,frostFeverRem = HasDebuff("target", DIESES_FROST_FEVER, "PLAYER");
-
-return (not bloodPlague or bloodPlagueRem <= 1) or (not frostFever or frostFeverRem <= 1);
+FillDiesesInfo(ability);
+return (not blood_plague or blood_plague_rem <= 1) or (not frost_fever or frost_fever_rem <= 1);
 ]]></Lua>
       </Ability>
       <Ability Name="Жнец душ">
@@ -4621,8 +4627,8 @@ return (not bloodPlague or bloodPlagueRem <= 1) or (not frostFever or frostFever
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local unholy = GetFreeRuneCountForType(RUNETYPE_FROST);
-if unholy < 1 then
+local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
+if frost < 1 then
     return false;
 end
 
@@ -4672,7 +4678,7 @@ return unholy >= 1 and frost >= 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return runes.Power >= 20;
+return UnitPower("player") >= 20;
 ]]></Lua>
       </Ability>
       <Ability Name="Лик Смерти">
@@ -4685,7 +4691,7 @@ return runes.Power >= 20;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Сливаем избыток рунической энергии Ликом Смерти
-if runes.Power < 80 then
+if UnitPower("player") < 80 then
     return false;
 end
 
@@ -4725,14 +4731,13 @@ return stackCount >= 5;
         <Lua><![CDATA[
 -- Поглощает 2 болезни и восстанавливает 1 случайную руну ввиде руны смерти
 
-bloodPlague,_,bloodPlagueRem = HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
-frostFever,_,frostFeverRem = HasDebuff("target", DIESES_FROST_FEVER, "PLAYER");
-
+FillDiesesInfo(ability);
 -- На целе есть 2 болезни
-if not bloodPlague or not frostFever then
+if not blood_plague or not frost_fever then
     return false;
 end
 
+-- Нужна 1 полностью исчерпанная руна, т.е из пары рун, где 1 перезаряжается, а другая ждет - она и есть полностью исчерпанная
 local reqCount = 2;
 if HealthByPercent("target") < 5 then
     reqCount = 1;
@@ -4740,6 +4745,7 @@ end
 
 return GetRunesAtCooldownCount() > reqCount;
 
+-- Вытягиваем чуму также если КД  болячек менее 5 секунд
 --return HaveFullyDepletedRunes() or HealthByPercent("target") < 5;
 ]]></Lua>
       </Ability>
