@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using System.Xml.Serialization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace System.Windows.Input
 {
@@ -28,11 +29,13 @@ namespace System.Windows.Input
 
         private const int WM_HOTKEY = 0x312;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("user32.dll", EntryPoint = "RegisterHotKey", SetLastError = true)]
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
+        [DllImport("user32.dll", EntryPoint = "RegisterHotKey", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool apiRegisterHotKey(IntPtr hWnd, int id, ModifierKeys fsModifiers, int vk);
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("user32.dll", EntryPoint = "UnregisterHotKey", SetLastError = true)]
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
+        [DllImport("user32.dll", EntryPoint = "UnregisterHotKey", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool apiUnregisterHotKey(IntPtr hWnd, int id);
 
