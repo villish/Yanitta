@@ -3331,23 +3331,26 @@ end
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 mTempTable = { };
-RFrame = CreateFrame("Frame");
-RFrame:RegisterEvent("UI_ERROR_MESSAGE");
-RFrame:RegisterEvent("WORLD_MAP_UPDATE");
-RFrame:SetScript("OnEvent",  function(self, event, ...)
-    if event == "UI_ERROR_MESSAGE" then
-        local msg = ...;
-        if UnitExists("target")
-            and (msg == SPELL_FAILED_TARGET_NO_POCKETS
-              or msg == ERR_ALREADY_PICKPOCKETED) then
-            mTempTable[UnitGUID("target")] = GetTime();
-        end
-    elseif event == "WORLD_MAP_UPDATE" then
-        mTempTable = { };
-    end
-end);
-RFrame:Show();
+AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
 
+function EVENT_MODS.UI_ERROR_MESSAGE(self, event, msg)
+    -- Если моба невозможно обократсть.
+    -- Или его уже обокрали или у него нет карманов.
+    -- Заносим его в таблицу для дальнейшей проверки.
+    if UnitExists("target")
+        and (msg == SPELL_FAILED_TARGET_NO_POCKETS
+          or msg == ERR_ALREADY_PICKPOCKETED) then
+        mTempTable[UnitGUID("target")] = GetTime();
+    end
+end
+
+function EVENT_MODS.WORLD_MAP_UPDATE(self, event, ...)
+    -- очистка таблицы мобов с обшареными карманами
+    mTempTable = { };
+end
+
+-- Функция проверки на возможность обокрасть цель.
+-- Проверяется таблица на присутствие "неправильного моба"
 function IsPickPocketed(unit)
     if type(mTempTable) == "table" then
         local lastTime = mTempTable[UnitGUID(unit)] or 0;
