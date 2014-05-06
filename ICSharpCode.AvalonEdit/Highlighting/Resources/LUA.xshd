@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 
 <SyntaxDefinition name="LUA" extensions=".lua" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Comment"       foreground="Gray"       fontStyle="oblique"    exampleText="-- comment" />
+  <Color name="Comment"       foreground="Gray"       fontStyle="oblique"     exampleText="-- comment" />
   <Color name="String"        foreground="#FF5E5EAE"                          exampleText="text = &quot;Hello, World!&quot;" />
   <Color name="Operators"     foreground="#FFFF0F27"                          exampleText="= + * /"/>
   <Color name="Keywords"      foreground="#FF569CD6"   fontWeight="bold"      exampleText="if then else end function" />
@@ -3031,11 +3031,15 @@
 
       <Word>setAoE</Word>
       <Word>useCooldown</Word>
+      <Word>isInRange</Word>
+      <Word>isInMeele</Word>
+      <Word>useAutoDispell</Word>
 
       <Word>FORCE_IN_COMBAT</Word>
       <Word>MAIN_CLASS_SPELL</Word>
       <Word>AURA_PROC_LIST</Word>
       <Word>ABILITY_TABLE</Word>
+      <Word>EVENT_MODS</Word>
       <Word>LOSS_TABLE</Word>
       <Word>LAST_TARGET</Word>
       <Word>IS_MOVING</Word>
