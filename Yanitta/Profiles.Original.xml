@@ -4110,6 +4110,7 @@ function FillRunesInfo()
         Unholy = { Rem = 0, Count = 0, FullCount = 0 },
         Frost  = { Rem = 0, Count = 0, FullCount = 0 },
         Death  = { Rem = 0, Count = 0, FullCount = 0 },
+        Total  = 0,
         Power  = UnitPower("player", SPELL_POWER_RUNIC_POWER),
     };
 
@@ -4118,6 +4119,8 @@ function FillRunesInfo()
         local runeCount       = GetRuneCount(slot);
         local start, duration = GetRuneCooldown(slot);
         local rune_name       = rune_names[runeType];
+
+        runes.Total = runes.Total + runeCount;
 
         runes[rune_name].Rem       = (start + duration) - GetTime();
         runes[rune_name].Count     = runeCount + runes[rune_name].Count;
@@ -5043,6 +5046,7 @@ FillRunesInfo();
 
 -- Если в слоте под левую руку ничего нет.
 isTwoHand = not GetInventoryItemID("player", INVSLOT_OFFHAND);
+isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Вспышка болезни">
@@ -5056,6 +5060,62 @@ isTwoHand = not GetInventoryItemID("player", INVSLOT_OFFHAND);
         <Lua><![CDATA[
 return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 2 -- Кровавая чума
     or select(3, HasDebuff(ability.Target, 55095, "PLAYER")) < 2 -- Озноб
+]]></Lua>
+      </Ability>
+      <Ability Name="Кровоотвод">
+        <SpellID>45529</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Total < 2 then
+    return select(2, HasBuff("player", 114851)) > 4;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяной столб">
+        <SpellID>51271</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Воскрешение мертвых">
+        <SpellID>46584</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Усиление рунического оружия">
+        <SpellID>47568</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return runes.Total < 2;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Удар чумы">
