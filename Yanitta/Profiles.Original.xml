@@ -620,7 +620,7 @@ function AddonFrame_OnEvent(self, event, ...)
     end
 
     if type(EVENT_MODS[event]) == "function" then
-        EVENT_MODS[event](self, event, ...);
+        EVENT_MODS[event](...);
     end
 end
 
@@ -809,7 +809,7 @@ setAoE = false;
 isAltMod = true;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -1283,7 +1283,7 @@ return isInMeele;
 setAoE = 0;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -1649,7 +1649,7 @@ return rage < 70;
 setAoE = 0;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -2057,7 +2057,7 @@ setAoE      = nil;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -2320,7 +2320,7 @@ end
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -2577,7 +2577,7 @@ isAltMod    = nil;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -2998,7 +2998,7 @@ setAoE = false;
 invisible = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -3333,7 +3333,7 @@ end
 mTempTable = { };
 AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
 
-function EVENT_MODS.UI_ERROR_MESSAGE(self, event, msg)
+function EVENT_MODS.UI_ERROR_MESSAGE(msg)
     -- Если моба невозможно обократсть.
     -- Или его уже обокрали или у него нет карманов.
     -- Заносим его в таблицу для дальнейшей проверки.
@@ -3344,7 +3344,7 @@ function EVENT_MODS.UI_ERROR_MESSAGE(self, event, msg)
     end
 end
 
-function EVENT_MODS.WORLD_MAP_UPDATE(self, event, ...)
+function EVENT_MODS.WORLD_MAP_UPDATE()
     -- очистка таблицы мобов с обшареными карманами
     mTempTable = { };
 end
@@ -3393,7 +3393,7 @@ useAutoDispell = true;
 useAutoDispell = true;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "RALT" then
@@ -3769,7 +3769,7 @@ return true;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -4077,7 +4077,7 @@ return isInRange;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -5485,7 +5485,7 @@ end
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -5660,7 +5660,7 @@ return true;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -5710,7 +5710,7 @@ setAoE = false;
 useAutoDispell = true;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -5882,7 +5882,7 @@ end
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -5910,13 +5910,11 @@ end
 igniteDamage = 0;     -- Урон от тика доты Воспламенение (12654)
 pyroCrit     = nil;   -- Было ли заклинание Огненная глыба (11366) критическим
 
-function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(self, event, ...)
-    -- для начала приведу полный список параметров.
-    local timestamp, subEvent, hideCaster,
+function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
           sourceGUID,srcName,  sourceFlags,sourceFlags2,
           destGUID,  destName, destFlags,  destFlags2,
           spellId,   spellName,spellSchool,amount,   overkill,school,
-          resisted,  blocked,  absorbed,   critical, glancing,crushing = ...;
+          resisted,  blocked,  absorbed,   critical, glancing,crushing)
 
     if subEvent == "SPELL_PERIODIC_DAMAGE" then
         if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
@@ -6346,7 +6344,7 @@ return not HasBuff("player", 7302);
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -7262,7 +7260,7 @@ useCooldown = true;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -7515,7 +7513,7 @@ return true;
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -7885,7 +7883,7 @@ useAutoDispell = true;
 useAutoDispell = true;
 useDamage = false;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "RCTRL" then
@@ -8406,7 +8404,7 @@ setAoE = false;
 isAltMod = true;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -8768,7 +8766,7 @@ end
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
@@ -9067,7 +9065,7 @@ end
 setAoE = false;
 useCooldown = true;
 
-function EVENT_MODS.MODIFIER_STATE_CHANGED(self, event, modifier, state)
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
