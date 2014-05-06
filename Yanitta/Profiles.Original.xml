@@ -5058,8 +5058,8 @@ isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 2 -- Кровавая чума
-    or select(3, HasDebuff(ability.Target, 55095, "PLAYER")) < 2 -- Озноб
+return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 3 -- Кровавая чума
+    or select(3, HasDebuff(ability.Target, 55095, "PLAYER")) < 3 -- Озноб
 ]]></Lua>
       </Ability>
       <Ability Name="Кровоотвод">
@@ -5127,7 +5127,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 2 -- Кровавая чума
+return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 3 -- Кровавая чума
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяной удар (1H)">
@@ -5141,7 +5141,7 @@ return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 2 -- Кровав
         <Lua><![CDATA[
 if not isTwoHand then
     -- Машина для убийств
-    if HasBuff("player", 51128) or runes.Power > 80 then
+    if HasBuff("player", 51124) or runes.Power > 80 then
         return true;
     end
 end
@@ -5226,7 +5226,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isTwoHand then
-    return HasBuff("player", 51128); -- Машина для убийств
+    return HasBuff("player", 51124); -- Машина для убийств
 end
 ]]></Lua>
       </Ability>
