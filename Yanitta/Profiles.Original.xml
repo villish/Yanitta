@@ -665,119 +665,34 @@ useCooldown = true;
 setAoE      = nil;
 isAltMod    = nil;
 
-ccIDs = {
-    108194,     -- Асфиксия
-    115001,     -- Беспощадность зимы
-    91800,      -- Отгрызть
-    91797,      -- Чудовищный удар
-    102795,     -- Медвежьи объятия
-    33786,      -- Смерч
-    99,         -- Дезориентирующий рык
-    22570,      -- Калечение
-    5211,       -- Mighty Bash
-    9005,       -- Pounce
-    110698,     -- Hammer of Justice
-    113004,     -- Intimidating Roar
-    113056,     -- Intimidating Roar
-    117526,     -- Binding Shot
-    3355,       -- Freezing Trap
-    1513,       -- Scare Beast
-    19503,      -- Scatter Shot
-    19386,      -- Wyvern Sting
-    90337,      -- Bad Manner
-    24394,      -- Intimidation
-    50519,      -- Sonic Blast
-    56626,      -- Sting
-    118271,     -- Combustion Impact
-    44572,      -- Deep Freeze
-    31661,      -- Dragon's Breath
-    118,        -- Polymorph
-    61305,      -- Polymorph: Black Cat
-    28272,      -- Polymorph: Pig
-    61721,      -- Polymorph: Rabbit
-    61780,      -- Polymorph: Turkey
-    28271,      -- Polymorph: Turtle
-    82691,      -- Ring of Frost
-    123393,     -- Breath of Fire
-    126451,     -- Clash
-    122242,     -- Clash
-    119392,     -- Charging Ox Wave
-    119381,     -- Leg Sweep
-    115078,     -- Paralysis
-    105421,     -- Blinding Light
-    115752,     -- Blinding Light
-    105593,     -- Fist of Justice
-    853,        -- Hammer of Justice
-    119072,     -- Holy Wrath
-    20066,      -- Repentance
-    10326,      -- Turn Evil
-    113506,     -- Cyclone
-    605,        -- Dominate Mind
-    64044,      -- Psychic Horror
-    8122,       -- Psychic Scream
-    113792,     -- Psychic Terror
-    9484,       -- Shackle Undead
-    87204,      -- Sin and Punishment
-    2094,       -- Blind
-    1833,       -- Cheap Shot
-    1776,       -- Gouge
-    408,        -- Kidney Shot
-    113953,     -- Paralysis
-    6770,       -- Sap
-    76780,      -- Bind Elemental
-    77505,      -- Earthquake
-    51514,      -- Hex
-    118905,     -- Static Charge
-    118345,     -- Pulverize
-    710,        -- Banish
-    54786,      -- Demonic Leap
-    5782,       -- Fear
-    118699,     -- Fear
-    5484,       -- Howl of Terror
-    6789,       -- Mortal Coil
-    30283,      -- Shadowfury
-    104045,     -- Sleep
-    89766,      -- Axe Toss
-    115268,     -- Mesmerize
-    6358,       -- Seduction
-    7922,       -- Рывок и оглушение
-    5246,       -- Устрашающий крик (Воин)
-    20511,      -- Устрашающий крик
-    132168,     -- Ударная волна
-    105771,     -- Вестник войны
-    107079,     -- Сотрясающая ладонь
-    13327,      -- Безрассудный рывок
-    20549       -- Громовая поступь
-};
-
 reflect_table = {
     PVP = {
-        33786,  -- DRUID (Cyclone)
-        28272,  -- MAGE (All Polymorphs / Frost Bomb / Arcane Blast)
-        118,
-        61305,
-        61721,
-        61780,
-        28271,
-        113092,
-        30451,
-        20066,  -- PALADIN (Repentance)
-        605,    -- PRIEST (Mind Control)
-        51514,  -- SHAMAN (Hex)
-        51505,  -- SHAMAN (Lava Burst)
-        5782,   -- WARLOCK (Fear / Chaos Bolt)
-        118699,
-        116858
+        33786,  -- DRUID   (Смерч)
+        28272,  -- MAGE    (Превращение - Свинья)
+        118,    -- MAGE    (Превращение - Овца)
+        61305,  -- MAGE    (Превращение - Кошка)
+        61721,  -- MAGE    (Превращение - Кролик)
+        61780,  -- MAGE    (Превращение - Индейка)
+        28271,  -- MAGE    (Превращение - Черепаха)
+        113092, -- MAGE    (Ледяная бомба)
+        30451,  -- MAGE    (Чародейская вспышка)
+        20066,  -- PALADIN (Покаяние)
+        605,    -- PRIEST  (Господство над разумом)
+        51514,  -- SHAMAN  (Сглаз)
+        51505,  -- SHAMAN  (Выброс лавы)
+        5782,   -- WARLOCK (Страх)
+        118699, -- WARLOCK (Страх)
+        116858  -- WARLOCK (Стрела Хаоса)
     },
     RAIDS = {
         144214, -- Стрела ледяной бури (Кор'кронские Тёмные Шаманы)
     }
 };
 
-function NeedReflect(unit)
-    if UnitIsEnemy("player", unit) and UnitIsUnit("player", unit.."target") then
-        local name,_,_,_,_,endTime = UnitCastingInfo(unit);
-        if name and (((endTime / 1000) - GetTime()) - AddonFrame.ping) <= 2 then
+function NeedReflect(unitEnemy, unitFreind)
+    if UnitIsEnemy("player", unitEnemy) and UnitIsUnit(unitFreind, unitEnemy.."target") then
+        local name,_,_,_,_,endTime = UnitCastingInfo(unitEnemy);
+        if name and (((endTime / 1000) - GetTime()) - AddonFrame.ping) < 2 then
             if UnitIsPVP("player") then
                 for _,spell_id in ipairs(reflect_table.PVP) do
                     if name == GetSpellInfo(spell_id) then
@@ -795,10 +710,20 @@ function NeedReflect(unit)
     end
 end
 
-function NeedMassReflect(unit)
+function NeedMassReflect()
     local reflect_buff = { 23920, 114028 };
     if not HasBuff("player", reflect_buff) or SpellCD(23920) > 0 then
-        return NeedReflect(unit);
+        if IsInArenaTeam() then
+            for i = 1, 5 do
+                for j = 1, 5 do
+                    if UnitExists("party"..i) and UnitExists("arena"..j) then
+                        return NeedReflect("party"..i, "arena"..j);
+                    end
+                end
+            end
+        else
+            return NeedReflect("target", "player");
+        end
     end
 end
 ]]></Lua>
@@ -918,6 +843,24 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if playerHP <= 80 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ярость берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if UnitIsPVP("player") then
+    if not HasFullControl() then
+        return true;
+    end
+elseif isInMeele and rage < 20 and not HasBuff("player", 12880) then
     return true;
 end
 ]]></Lua>
@@ -1084,7 +1027,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
-return NeedReflect(ability.Target);
+return NeedReflect(ability.Target, "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Массовое отражение заклинаний">
@@ -1096,8 +1039,7 @@ return NeedReflect(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Код профиля
-return NeedMassReflect(ability.Target);
+return NeedMassReflect();
 ]]></Lua>
       </Ability>
       <Ability Name="Подрезать сухожилья">
@@ -1244,26 +1186,6 @@ if rage < 70 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Ярость берсерка">
-        <SpellID>18499</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPVP("player") then
---    if HasFullControl() then
---        return true;
-    if HasDebuff("player", ccIDs) then
-        return true;
-    end
-elseif isInMeele and rage < 20 and not HasBuff("player", 12880) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Сокрушение">
         <SpellID>20243</SpellID>
         <Target>Target</Target>
@@ -1403,6 +1325,24 @@ end
 return IsModKeyDown(mkRightControl);
 ]]></Lua>
       </Ability>
+      <Ability Name="Ярость берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if UnitIsPVP("player") then
+    if not HasFullControl() then
+        return true;
+    end
+elseif isInMeele and not HasBuff("player", 12880) and not HasBuff("player", 131116) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Безразсудство">
         <SpellID>1719</SpellID>
         <Target>None</Target>
@@ -1430,24 +1370,6 @@ if useCooldown and isInMeele and koloss_remains < 1
     and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ярость берсерка">
-        <SpellID>18499</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPVP("player") then
-    if HasDebuff("player", ccIDs) then
-        return true;
-    end
-elseif isInMeele and not HasBuff("player", 12880) and not HasBuff("player", 131116) then
     return true;
 end
 ]]></Lua>
@@ -1756,7 +1678,7 @@ return CheckInterrupt("target");
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
-return NeedReflect(ability.Target);
+return NeedReflect(ability.Target, "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Массовое отражение заклинаний">
@@ -1769,22 +1691,24 @@ return NeedReflect(ability.Target);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
-return NeedMassReflect(ability.Target);
+return NeedMassReflect();
 ]]></Lua>
       </Ability>
       <Ability Name="Удар громовержца">
         <SpellID>107570</SpellID>
-        <Target>Mouseover</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsInArenaTeam() then
-    --if not UnitHasControl(ability.Target) then
-        return true;
-    --end
+if UnitIsPVP("player") then
+    if UnitHasControl("mouseover") then
+        return "mouseover";
+    end
+else
+    return "target";
 end
 ]]></Lua>
       </Ability>
@@ -1818,7 +1742,7 @@ end
       </Ability>
       <Ability Name="Кровавая Баня">
         <SpellID>12292</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -1840,9 +1764,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitIsPVP("player") then
---    if HasFullControl() then
---        return true;
-    if HasDebuff("player", ccIDs) then
+    if not HasFullControl() then
         return true;
     end
 elseif isInMeele and rage < 20 and not HasBuff("player", 12880) then
@@ -1859,37 +1781,35 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE > 0 then
-    return true;
-end
+return isInMeele and setAoE > 0;
 ]]></Lua>
       </Ability>
       <Ability Name="Удар грома">
         <SpellID>6343</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE > 3 and isInMeele and not HasDebuff("target", 115767, "PLAYER") then
+if isInMeele and setAoE > 1
+    -- Глубокие раны
+    and not HasDebuff("target", 115767, "PLAYER") then
     return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
         <SpellID>1680</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE > 3 and isInMeele then
-    return true;
-end
+return isInMeele and setAoE > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Смертельный удар">
@@ -1913,14 +1833,12 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if kolossRem <= 1 and kolossRem < 1 then
-    return true;
-end
+return not koloss;
 ]]></Lua>
       </Ability>
       <Ability Name="Рев дракона">
         <SpellID>118000</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -1934,6 +1852,30 @@ if isInMeele and not koloss then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Удар героя">
+        <SpellID>78</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE > 2 and koloss and rage > 70;
+]]></Lua>
+      </Ability>
+      <Ability Name="Разсекающий удар">
+        <SpellID>845</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE > 2 and koloss and rage > 70;
+]]></Lua>
+      </Ability>
       <Ability Name="Казнь">
         <SpellID>5308</SpellID>
         <Target>Target</Target>
@@ -1943,9 +1885,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE < 4 and (not HasBuff("player", 29725) or not HasBuff("player", 60503) or rage > 70) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Превосходство">
@@ -1962,34 +1902,6 @@ if rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар героя">
-        <SpellID>78</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE < 3 and ((HasGlyph(4339) and rage > 115) or rage > 85) or (kolossRem > 0 and rage > 40) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE > 2 and ((HasGlyph(4339) and rage > 115) or rage > 85) or (kolossRem > 0 and rage > 40) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Мощный удар">
         <SpellID>1464</SpellID>
         <Target>Target</Target>
@@ -1999,13 +1911,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if rage > 35 then
-    if setAoE and (kolossRem > 0 or HasBuff("player", 12328)) then -- Размашистые удары
-        return true;
-    elseif not setAoE and (kolossRem > 0 and select(3, HasBuff("player", 60503)) < 3) and targetHP >= 20 then -- Вкус крови
-        return true;
-    end
-end
+return rage > 40 and HealthByPercent(ability.Target) > 20;
 ]]></Lua>
       </Ability>
       <Ability Name="Командирский крик">
@@ -2038,9 +1944,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if rage < 70 then
-    return true;
-end
+return rage < 70;
 ]]></Lua>
       </Ability>
     </Rotation>
