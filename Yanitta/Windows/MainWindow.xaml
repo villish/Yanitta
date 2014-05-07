@@ -63,7 +63,7 @@
                         <DataTemplate>
                             <Border BorderThickness="1" BorderBrush="#FF00AA00">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}" Width="200" FontSize="15"/>
+                                    <TextBlock Text="{Binding Name}" Width="300" FontSize="15"/>
                                     <CheckBox IsChecked="{Binding HotKey.Control}" VerticalAlignment="Center" Content="Control" Width="75" FontSize="15"/>
                                     <CheckBox IsChecked="{Binding HotKey.Shift}"   VerticalAlignment="Center" Content="Shift"   Width="60" FontSize="15"/>
                                     <CheckBox IsChecked="{Binding HotKey.Alt}"     VerticalAlignment="Center" Content="Alt"     Width="50" FontSize="15"/>
