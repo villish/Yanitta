@@ -33,7 +33,7 @@
     </Window.CommandBindings>
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyle}">
-        <Path Fill="Black" Data="M 20,90 L 730,90 L 730,540 L 20,540 L 20,90" />
+        <Rectangle Fill="Black" Margin="10,80,10,60"/>
         <Image Width="750" MouseDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
 
         <Button Width="100" Height="24" Margin="507,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenSettings}" Content="{x:Static yanitta:Localization.Setting}" />
