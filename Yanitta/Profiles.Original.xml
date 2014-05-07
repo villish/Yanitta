@@ -1861,7 +1861,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 2 and koloss and rage > 70;
+return setAoE > 2 and rage > 70;
 ]]></Lua>
       </Ability>
       <Ability Name="Разсекающий удар">
@@ -1873,7 +1873,7 @@ return setAoE > 2 and koloss and rage > 70;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 2 and koloss and rage > 70;
+return setAoE > 2 and rage > 70;
 ]]></Lua>
       </Ability>
       <Ability Name="Казнь">
@@ -6136,23 +6136,13 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
-isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
 
 if IsMounted() then
     return true;
 end
 
-power2 = 0;
-if GetSpecialization() == 1 then     -- aflyction
-    power2 = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
-elseif GetSpecialization() == 2 then -- demonology
-    power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
-    if power2 < 100 or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
-        CancelShapeshiftForm();
-    end
-elseif GetSpecialization() == 3 then -- dectruction
-    power2 = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
-end
+power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
+isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
