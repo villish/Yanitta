@@ -86,28 +86,6 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Регистрирует гарячие клавиши для текущей ротации.
-        /// </summary>
-        /// <param name="handler">Обрабочик срабатывания гарячих клавиш.</param>
-        public void Register(EventHandler<HandledEventArgs> handler)
-        {
-            if (!this.HotKey.IsRegistered)
-            {
-                this.HotKey.Tag = this;
-                this.HotKey.Pressed -= handler;
-                this.HotKey.Pressed += handler;
-                try
-                {
-                    this.HotKey.Register();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("HotKey Error: " + ex.Message);
-                }
-            }
-        }
-
-        /// <summary>
         /// Снимает регистрацию гарячих клавиш для текущей ротации.
         /// </summary>
         public void Unregister()

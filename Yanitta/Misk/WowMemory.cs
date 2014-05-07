@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -135,16 +134,27 @@ namespace Yanitta
                 // Когда окно становится в фокусе и персонаж находится в игровоом мире
                 // сначала надо снять регистрацию всех гарячих клавиш со всех доступных профилей.
                 // Возможно это будут профили других процессов.
-                ProfileDb.Instance.ProfileList.ForEach(profile => {
-                    foreach (var rotation in profile.RotationList)
-                    {
-                        if (rotation.HotKey.IsRegistered)
-                            rotation.HotKey.Unregister();
-                    }
-                });
+                ProfileDb.Instance.ProfileList.ForEach(
+                    profile => profile.RotationList.ForEach(
+                        rotation => rotation.Unregister()));
 
                 // И только тогда делаем регистрацию новых гарячих клавиш на текущие ротации
-                this.Rotations.ForEach(rotation => rotation.Register(HotKeyPressed));
+                this.Rotations.ForEach(rotation => {
+                    if (!rotation.HotKey.IsRegistered)
+                    {
+                        rotation.HotKey.Tag = rotation;
+                        rotation.HotKey.Pressed -= HotKeyPressed;
+                        rotation.HotKey.Pressed += HotKeyPressed;
+                        try
+                        {
+                            rotation.HotKey.Register();
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("HotKey Error: " + ex.Message);
+                        }
+                    }
+                });
             }
             else
             {
