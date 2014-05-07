@@ -43,7 +43,7 @@
         <Button Content="X" Width="22" Height="24" Margin="702,56,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource CloseWindow}"    ToolTip="{x:Static yanitta:Localization.Close}" />
         <Button Content="_" Width="22" Height="24" Margin="680,56,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource MinimizeWindow}" ToolTip="{x:Static yanitta:Localization.Minimise}" />
 
-        <TreeView HorizontalAlignment="Left" Height="301" Margin="37,119,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
+        <TreeView HorizontalAlignment="Left" Height="407" Margin="37,119,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
                     <Setter Property="IsExpanded" Value="True"/>
@@ -51,7 +51,7 @@
             </TreeView.ItemContainerStyle>
 
             <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding CurrentProfile.RotationList}">
+                <HierarchicalDataTemplate ItemsSource="{Binding Rotations}">
                     <Border BorderThickness="1" BorderBrush="#FF00AA00">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="40" />
@@ -75,49 +75,5 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-
-        <ListView Margin="37,415,35,76" ItemsSource="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=DefaultProfile.RotationList}" Height="120">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="300">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="75">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding HotKey.Control}" VerticalAlignment="Center" Content="Control" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="75">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding HotKey.Shift}" VerticalAlignment="Center" Content="Shift" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="75">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding HotKey.Alt}" VerticalAlignment="Center" Content="Alt" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn >
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <ComboBox Width="100" VerticalAlignment="Center"
-                                          SelectedValue="{Binding HotKey.Key}"
-                                          ItemsSource="{Binding Source={StaticResource KeyValues}}" />
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
     </Grid>
 </Window>

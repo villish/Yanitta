@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
@@ -82,6 +83,37 @@ namespace Yanitta
             foreach (var ability in this.AbilityList)
                 rotation.AbilityList.Add((Ability)ability.Clone());
             return rotation;
+        }
+
+        /// <summary>
+        /// Регистрирует гарячие клавиши для текущей ротации.
+        /// </summary>
+        /// <param name="handler">Обрабочик срабатывания гарячих клавиш.</param>
+        public void Register(EventHandler<HandledEventArgs> handler)
+        {
+            if (!this.HotKey.IsRegistered)
+            {
+                this.HotKey.Tag = this;
+                this.HotKey.Pressed -= handler;
+                this.HotKey.Pressed += handler;
+                try
+                {
+                    this.HotKey.Register();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("HotKey Error: " + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Снимает регистрацию гарячих клавиш для текущей ротации.
+        /// </summary>
+        public void Unregister()
+        {
+            if (this.HotKey.IsRegistered)
+                this.HotKey.Unregister();
         }
     }
 }

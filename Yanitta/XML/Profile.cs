@@ -46,45 +46,7 @@ namespace Yanitta
         /// </summary>
         public Profile()
         {
-            RotationList = new ObservableCollection<Rotation>();
-        }
-
-        /// <summary>
-        /// Отменяет регистрацию гарячих клавиш для всех ротаций текущего профиля.
-        /// </summary>
-        public void UnregisterHotKeys()
-        {
-            foreach (var rotation in this.RotationList)
-            {
-                if (rotation.HotKey != null && rotation.HotKey.IsRegistered)
-                    rotation.HotKey.Unregister();
-            }
-        }
-
-        /// <summary>
-        /// Регистрирует гарячие клавиши для всех ротаций текущего профиля.
-        /// </summary>
-        /// <param name="handler">Обрабочик срабатывания гарячих клавиш.</param>
-        public void RegisterHotKeys(EventHandler<HandledEventArgs> handler)
-        {
-            foreach (var rotation in this.RotationList)
-            {
-                Debug.Assert(rotation.HotKey != null);
-                if (!rotation.HotKey.IsRegistered)
-                {
-                    rotation.HotKey.Tag = rotation;
-                    rotation.HotKey.Pressed -= handler;
-                    rotation.HotKey.Pressed += handler;
-                    try
-                    {
-                        rotation.HotKey.Register();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("HotKey Error: " + ex.Message);
-                    }
-                }
-            }
+            this.RotationList = new ObservableCollection<Rotation>();
         }
     }
 }

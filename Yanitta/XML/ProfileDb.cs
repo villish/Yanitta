@@ -37,16 +37,6 @@ namespace Yanitta
         public ObservableCollection<Profile> ProfileList { get; set; }
 
         /// <summary>
-        /// Профиль по умолчанию.
-        /// Этот профиль содержит ротации доступные всем классам.
-        /// </summary>
-        [XmlIgnore]
-        public Profile DefaultProfile
-        {
-            get { return this[WowClass.None]; }
-        }
-
-        /// <summary>
         /// Текущий экземпляр базы данных.
         /// </summary>
         public static ProfileDb Instance { get; set; }
