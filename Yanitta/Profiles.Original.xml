@@ -1707,7 +1707,7 @@ if UnitIsPVP("player") then
     if UnitHasControl("mouseover") then
         return "mouseover";
     end
-else
+elseif koloss then
     return "target";
 end
 ]]></Lua>
@@ -1833,7 +1833,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return not koloss;
+return kolossRem < 2;
 ]]></Lua>
       </Ability>
       <Ability Name="Рев дракона">
@@ -1861,7 +1861,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 2 and rage > 70;
+return setAoE > 2 and rage > 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Разсекающий удар">
@@ -1873,7 +1873,7 @@ return setAoE > 2 and rage > 70;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 2 and rage > 70;
+return setAoE > 2 and rage > 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Казнь">
@@ -1898,7 +1898,10 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
-    return true;
+    -- Под бафом кроводажности не используем превосходство
+    if not HasBuff("player", 1719) then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -1911,7 +1914,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return rage > 40 and HealthByPercent(ability.Target) > 20;
+return (rage > 40 or HasBuff("player", 1719))
+    and HealthByPercent(ability.Target) > 20;
 ]]></Lua>
       </Ability>
       <Ability Name="Командирский крик">
