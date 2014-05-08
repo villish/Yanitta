@@ -6665,6 +6665,69 @@ AfflyTargetList = {
     "boss4",
     "boss5",
 };
+
+AflyProckTable = {
+    [980]   = { [0x1222112a5656] = { LastDoted = 0 } }, -- Агония
+    [172]   = { }, -- Порча
+    [30108] = { }, -- Нестабильное колдовство
+};
+
+AflyProckSpells = {
+    [113860] = 0, -- Черная душа: Страдание
+    [0     ] = 0, -- Чары на оружие
+    [0     ] = 0, -- Тринкет 1
+    [0     ] = 0, -- Тринкет 2
+    [0     ] = 0, -- Героизм (необходимо перечеслить)
+};
+
+function NeedReApplyDot(spellId, target)
+    if not UnitExists(target) then
+        return
+    end;
+
+    local ability = AflyProckTable[spellId];
+    if ability then
+        local targetData = ability[UnitGUID(target)];
+        -- Если данных нет - тогда ничего и не делаем
+        if not targetData then
+            return;
+        end
+        -- Далее обработаем данные: необходимо реализовать
+    end
+end
+-- Тут будем отрабатывать логику перевешивания дотов под проками
+-- пока что отключим...
+function EVENT_MODS.____COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
+        sourceGUID,srcName,  sourceFlags,sourceFlags2,
+        destGUID,  destName, destFlags,  destFlags2,
+        spellId,   spellName,spellSchool,amount,   overkill,school,
+        resisted,  blocked,  absorbed,   critical, glancing,crushing)
+
+    if subEvent == "SPELL_AURA_APPLIED" then
+        -- зафиксировать прок
+        if destGUID == UnitGUID("player") then
+            local prockSpell = AflyProckSpells[spellId];
+            if prockSpell then
+                prockSpell[spellId] = GetTime();
+            end
+        end
+        -- Так же зафиксировать когда была наложена дота
+        -- отметить отработку перевешенных дот
+        local ability = AflyProckTable[spellId];
+        if ability then
+            local targetData = ability[destGUID];
+            if targetData then
+                targetData.LastDoted = GetTime();
+            end
+        end
+    elseif subEvent == "SPELL_AURA_REMOVED" and destGUID == UnitGUID("player") then
+        -- отменить перевешивание дот
+        local prockSpell = AflyProckSpells[spellId];
+        if prockSpell then
+            prockSpell[spellId] = 0;
+        end
+    end
+end
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
