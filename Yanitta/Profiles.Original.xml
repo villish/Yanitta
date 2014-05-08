@@ -3698,6 +3698,18 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
+
+-- Список целей для накладывания дот
+SPTargetList = {
+    "target",
+    "focus",
+    "mouseover",
+    "boss1",
+    "boss2",
+    "boss3",
+    "boss4",
+    "boss5",
+};
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -3770,7 +3782,7 @@ return IsModKeyDown(mkLeftAlt);
 return setAoE;
 ]]></Lua>
       </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Target)">
+      <Ability Name="Слово Тьмы: Смерть">
         <SpellID>32379</SpellID>
         <Target>Target</Target>
         <CancelChannel>true</CancelChannel>
@@ -3779,31 +3791,17 @@ return setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return HealthByPercent("target") < 20;
-]]></Lua>
-      </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Focus)">
-        <SpellID>32379</SpellID>
-        <Target>Focus</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return HealthByPercent("focus") < 20;
-]]></Lua>
-      </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Mouseover)">
-        <SpellID>32379</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return HealthByPercent("mouseover") < 20;
+for _, target in ipairs(SPTargetList) do
+    if UnitExists(target)
+    and UnitCanAttack("player", target)
+    and not UnitIsDeadOrGhost(target)
+    and UnitIsEnemy("player", target)
+    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+        if HealthByPercent(target) < 20 then
+            return target;
+        end
+    end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Всепожирающая чума">
@@ -3815,7 +3813,7 @@ return HealthByPercent("mouseover") < 20;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitPower("player", SPELL_POWER_SHADOW_ORBS) >= 3 then
+if UnitPower("player", SPELL_POWER_SHADOW_ORBS) > 2 then
     return true;
 end
 ]]></Lua>
@@ -3879,39 +3877,16 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
-if not name or rem < 2 or IS_MOVING then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Слово тьмы: Боль (focus)">
-        <SpellID>589</SpellID>
-        <Target>Focus</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
-if not name or rem < 2 or IS_MOVING then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Слово тьмы: Боль (mouseover)">
-        <SpellID>589</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local name, count, rem = HasDebuff(ability.Target, 589, "PLAYER");
-if not name or rem < 2 or IS_MOVING then
-    return true;
+for _, target in ipairs(SPTargetList) do
+    if UnitExists(target)
+    and UnitCanAttack("player", target)
+    and not UnitIsDeadOrGhost(target)
+    and UnitIsEnemy("player", target)
+    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+        if IS_MOVING or select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -3925,43 +3900,16 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IS_MOVING then
-    local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
-    if not name or rem < 2 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Прикосновение вампира (Focus)">
-        <SpellID>34914</SpellID>
-        <Target>Focus</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not IS_MOVING then
-    local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
-    if not name or rem < 2 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Прикосновение вампира (Mouseover)">
-        <SpellID>34914</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not IS_MOVING then
-    local name, count, rem = HasDebuff(ability.Target, 34914, "PLAYER");
-    if not name or rem < 2 then
-        return true;
+    for _, target in ipairs(SPTargetList) do
+        if UnitExists(target)
+        and UnitCanAttack("player", target)
+        and not UnitIsDeadOrGhost(target)
+        and UnitIsEnemy("player", target)
+        and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+            if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
+                return target;
+            end
+        end
     end
 end
 ]]></Lua>
