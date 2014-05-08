@@ -6733,18 +6733,7 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-
-power2 = 0;
-if GetSpecialization() == 1 then     -- aflyction
-    power2 = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
-elseif GetSpecialization() == 2 then -- demonology
-    power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
-    if power2 < 100 or select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
-        CancelShapeshiftForm();
-    end
-elseif GetSpecialization() == 3 then -- dectruction
-    power2 = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
-end
+power2    = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
@@ -6796,7 +6785,8 @@ if power2 > 0 and SpellCD(74434) == 0 then
         if UnitExists(target)
         and UnitCanAttack(target)
         and not UnitIsDeadOrGhost(target)
-        and UnitIsEnemy(target) then
+        and UnitIsEnemy(target)
+        and IsSpellInRange(GetSpellInfo(86121)) == 1 then
             -- Необходима такая реализация
             -- 1) Если у цели больше 20% здоровья - тогда просто накладываем все доты, обновляем вручную
             -- 2) Если у цели меньше 20% здоровья - тогда и накладываем и обновляем доты
@@ -6835,36 +6825,16 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Порча">
-        <SpellID>172</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Нестабильное колдовство">
-        <SpellID>30108</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 3 then
-    return true;
+for _, target in ipairs(AfflyTargetList) do
+    if UnitExists(target)
+    and UnitCanAttack("player", target)
+    and not UnitIsDeadOrGhost(target)
+    and UnitIsEnemy("player", target)
+    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -6877,31 +6847,20 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if power2 > 0 and not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
-    if  select(3, HasDebuff(ability.Target, 980,   "PLAYER")) > 7      -- Агония
-    and select(3, HasDebuff(ability.Target, 172,   "PLAYER")) > 7      -- Порча
-    and select(3, HasDebuff(ability.Target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Агония">
-        <SpellID>980</SpellID>
-        <Target>Focus</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-for _, target in ipairs(AfflyTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack(target)
-    and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy(target) then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
-            return target;
+if power2 > 0 then
+    for _, target in ipairs(AfflyTargetList) do
+        if UnitExists(target)
+        and UnitCanAttack("player", target)
+        and not UnitIsDeadOrGhost(target)
+        and UnitIsEnemy("player", target)
+        and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+            if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
+                if  select(3, HasDebuff(ability.Target, 980,   "PLAYER")) > 7      -- Агония
+                and select(3, HasDebuff(ability.Target, 172,   "PLAYER")) > 7      -- Порча
+                and select(3, HasDebuff(ability.Target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
+                    return target;
+                end
+            end
         end
     end
 end
@@ -6909,7 +6868,7 @@ end
       </Ability>
       <Ability Name="Порча">
         <SpellID>172</SpellID>
-        <Target>Focus</Target>
+        <Target>Target</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6918,9 +6877,10 @@ end
         <Lua><![CDATA[
 for _, target in ipairs(AfflyTargetList) do
     if UnitExists(target)
-    and UnitCanAttack(target)
+    and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy(target) then
+    and UnitIsEnemy("player", target)
+    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
         end
@@ -6930,7 +6890,7 @@ end
       </Ability>
       <Ability Name="Нестабильное колдовство">
         <SpellID>30108</SpellID>
-        <Target>Focus</Target>
+        <Target>Target</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6939,9 +6899,10 @@ end
         <Lua><![CDATA[
 for _, target in ipairs(AfflyTargetList) do
     if UnitExists(target)
-    and UnitCanAttack(target)
+    and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy(target) then
+    and UnitIsEnemy("player", target)
+    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
         end
