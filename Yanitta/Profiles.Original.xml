@@ -6701,6 +6701,19 @@ end
     </Rotation>
     <Rotation Name="Колдовство">
       <HotKey Key="C" Modifier="Alt" />
+      <Lua><![CDATA[
+-- Список целей для накладывания дот
+AfflyTargetList = {
+    "target",
+    "focus",
+    "mouseover",
+    "boss1",
+    "boss2",
+    "boss3",
+    "boss4",
+    "boss5",
+};
+]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -6735,6 +6748,68 @@ if HealthByPercent("player") < 30 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Проклятие стихий">
+        <SpellID>1490</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if UnitHealth(ability.Target) > (UnitHealthMax("player")*2) then
+    if not HasDebuff(ability.Target, 1490) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Черная душа: Страдание">
+        <SpellID>113860</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Обмен душ">
+        <SpellID>86121</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if power2 > 0 and SpellCD(74434) == 0 then
+    for _, target in ipairs(AfflyTargetList) do
+        if UnitExists(target)
+        and UnitCanAttack(target)
+        and not UnitIsDeadOrGhost(target)
+        and UnitIsEnemy(target) then
+            -- Необходима такая реализация
+            -- 1) Если у цели больше 20% здоровья - тогда просто накладываем все доты, обновляем вручную
+            -- 2) Если у цели меньше 20% здоровья - тогда и накладываем и обновляем доты
+            -- Если нету ни одного дебафа
+            if not (HasDebuff(target, 980,   "PLAYER") or -- Агония
+                    HasDebuff(target, 172,   "PLAYER") or -- Порча
+                    HasDebuff(target, 30108, "PLAYER")    -- Нестабильное колдовство
+                    ) then
+                -- Горящая душа (без ГКД)
+                CastSpellByName(GetSpellInfo(74434));
+                return target;
+            end
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Семя порчи">
         <SpellID>27243</SpellID>
         <Target>Target</Target>
@@ -6744,7 +6819,49 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE;
+--return setAoE;
+]]></Lua>
+      </Ability>
+      <Ability Name="Агония">
+        <SpellID>980</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 3 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Порча">
+        <SpellID>172</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 3 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Нестабильное колдовство">
+        <SpellID>30108</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 3 then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Блуждающий дух">
@@ -6754,28 +6871,18 @@ return setAoE;
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if power2 > 0 and not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
-    return true;
+    if  select(3, HasDebuff(ability.Target, 980,   "PLAYER")) > 7      -- Агония
+    and select(3, HasDebuff(ability.Target, 172,   "PLAYER")) > 7      -- Порча
+    and select(3, HasDebuff(ability.Target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Агония (Target)">
-        <SpellID>980</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Агония (Focus)">
+      <Ability Name="Агония">
         <SpellID>980</SpellID>
         <Target>Focus</Target>
         <CancelChannel>true</CancelChannel>
@@ -6784,40 +6891,19 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
+for _, target in ipairs(AfflyTargetList) do
+    if UnitExists(target)
+    and UnitCanAttack(target)
+    and not UnitIsDeadOrGhost(target)
+    and UnitIsEnemy(target) then
+        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Агония (Mouseover)">
-        <SpellID>980</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Порча (Target)">
-        <SpellID>172</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Порча (Focus)">
+      <Ability Name="Порча">
         <SpellID>172</SpellID>
         <Target>Focus</Target>
         <CancelChannel>true</CancelChannel>
@@ -6826,40 +6912,19 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
+for _, target in ipairs(AfflyTargetList) do
+    if UnitExists(target)
+    and UnitCanAttack(target)
+    and not UnitIsDeadOrGhost(target)
+    and UnitIsEnemy(target) then
+        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Порча (Mouseover)">
-        <SpellID>172</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Нестабильное колдовство (Target)">
-        <SpellID>30108</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Нестабильное колдовство (Focus)">
+      <Ability Name="Нестабильное колдовство">
         <SpellID>30108</SpellID>
         <Target>Focus</Target>
         <CancelChannel>true</CancelChannel>
@@ -6868,22 +6933,15 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Нестабильное колдовство (Mouseover)">
-        <SpellID>30108</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
+for _, target in ipairs(AfflyTargetList) do
+    if UnitExists(target)
+    and UnitCanAttack(target)
+    and not UnitIsDeadOrGhost(target)
+    and UnitIsEnemy(target) then
+        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -6910,9 +6968,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HealthByPercent(ability.Target) > 20 then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Пламя Скверны">
@@ -6936,7 +6992,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitLevel("player") > 81 and not HasBuff("player", 109773) then
+if not HasBuff("player", 109773) then
     return true;
 end
 ]]></Lua>
