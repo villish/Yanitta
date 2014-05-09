@@ -3795,8 +3795,9 @@ for _, target in ipairs(SPTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+    and not UnitIsFriend("player", target)
+    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if HealthByPercent(target) < 20 then
             return target;
         end
@@ -3881,8 +3882,9 @@ for _, target in ipairs(SPTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+    and not UnitIsFriend("player", target)
+    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if IS_MOVING or select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
             return target;
         end
@@ -3890,7 +3892,7 @@ for _, target in ipairs(SPTargetList) do
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Прикосновение вампира (target)">
+      <Ability Name="Прикосновение вампира">
         <SpellID>34914</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -3904,8 +3906,9 @@ if not IS_MOVING then
         if UnitExists(target)
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
-        and UnitIsEnemy("player", target)
-        and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+        and not UnitIsFriend("player", target)
+        --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+        and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
                 return target;
             end
@@ -6794,10 +6797,11 @@ end
 if power2 > 0 and SpellCD(74434) == 0 then
     for _, target in ipairs(AfflyTargetList) do
         if UnitExists(target)
-        and UnitCanAttack(target)
+        and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
-        and UnitIsEnemy(target)
-        and IsSpellInRange(GetSpellInfo(86121)) == 1 then
+        and not UnitIsFriend("player", target)
+        --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+        and IsSpellInRange(GetSpellInfo(86121), targer) == 1 then
             -- Необходима такая реализация
             -- 1) Если у цели больше 20% здоровья - тогда просто накладываем все доты, обновляем вручную
             -- 2) Если у цели меньше 20% здоровья - тогда и накладываем и обновляем доты
@@ -6840,8 +6844,9 @@ for _, target in ipairs(AfflyTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+    and not UnitIsFriend("player", target)
+    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
             return target;
         end
@@ -6863,8 +6868,9 @@ if power2 > 0 then
         if UnitExists(target)
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
-        and UnitIsEnemy("player", target)
-        and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+        and not UnitIsFriend("player", target)
+        --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+        and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
                 if  select(3, HasDebuff(ability.Target, 980,   "PLAYER")) > 7      -- Агония
                 and select(3, HasDebuff(ability.Target, 172,   "PLAYER")) > 7      -- Порча
@@ -6890,8 +6896,9 @@ for _, target in ipairs(AfflyTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+    and not UnitIsFriend("player", target)
+    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
         end
@@ -6912,12 +6919,28 @@ for _, target in ipairs(AfflyTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
-    and UnitIsEnemy("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId)) == 1 then
+    and not UnitIsFriend("player", target)
+    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
         end
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Жизнеотвод">
+        <SpellID>1454</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if PowerByPercent("player", SPELL_POWER_MANA) < 60
+    and HealthByPercent("player") > 80 then
+    return true;
 end
 ]]></Lua>
       </Ability>
