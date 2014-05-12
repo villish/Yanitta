@@ -21,6 +21,8 @@
         <RoutedUICommand x:Key="AddRotation" />
         <RoutedUICommand x:Key="CopyRotation" />
         <RoutedUICommand x:Key="DeleteRotation" />
+        <RoutedUICommand x:Key="MoveRotation" />
+        <RoutedUICommand x:Key="MoveAbility" />
     </Window.Resources>
 
     <Window.InputBindings>
@@ -38,6 +40,8 @@
         <CommandBinding Command="{StaticResource AddRotation}"    Executed="CommandBinding_Executed_AddRotation" />
         <CommandBinding Command="{StaticResource CopyRotation}"   Executed="CommandBinding_Executed_CopyRotation" />
         <CommandBinding Command="{StaticResource DeleteRotation}" Executed="CommandBinding_Executed_DeleteRotation" />
+        <CommandBinding Command="{StaticResource MoveRotation}"   Executed="CommandBinding_MoveRotation_Executed" />
+        <CommandBinding Command="{StaticResource MoveAbility}"    Executed="CommandBinding_MoveAbility_Executed" />
     </Window.CommandBindings>
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
@@ -81,10 +85,10 @@
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
-                                <Button x:Name="bRotMoveUp" Foreground="Transparent" Click="bRotMoveUp_Click">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="-1">
                                     <Image Source="/Yanitta;component/Resources/Button_Up.png" />
                                 </Button>
-                                <Button x:Name="bRotMoveDown" Foreground="Transparent" Click="bRotMoveDown_Click">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="1">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                             </ToolBar>
@@ -147,10 +151,10 @@
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
-                                <Button x:Name="bAbMoveUp" Foreground="Transparent" Click="bAbMoveUp_Click_1">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="-1">
                                     <Image Source="/Yanitta;component/Resources/Button_Up.png" />
                                 </Button>
-                                <Button x:Name="bAbMoveDown" Foreground="Transparent" Click="bAbMoveDown_Click_1">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="1">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                                 <Separator />
