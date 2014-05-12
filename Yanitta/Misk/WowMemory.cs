@@ -315,7 +315,7 @@ namespace Yanitta
 
         private void Dispose(bool disposing)
         {
-            if (this.IsDisposed || !disposing)
+            if (this.IsDisposed)
                 return;
 
             if (this.mTimer != null)
