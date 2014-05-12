@@ -32,30 +32,6 @@ namespace Yanitta
             get { return (rotationList != null && rotationList.SelectedValue is Rotation) ? (Rotation)rotationList.SelectedValue : null; }
         }
 
-        private void MoveAbility(int shift)
-        {
-            var index = abilityList.SelectedIndex;
-            if (CurrentRotation != null && index > -1
-                && !(shift == -1 && index == 0)
-                && !(shift == 1  && index == CurrentRotation.AbilityList.Count - 1))
-            {
-                CurrentRotation.AbilityList.Move(index, index + shift);
-                abilityList.ScrollIntoView(this.abilityList.SelectedItem);
-            }
-        }
-
-        private void MoveRotation(int shift)
-        {
-            var index = rotationList.SelectedIndex;
-            if (CurrentProfile != null && index > -1
-                && !(shift == -1 && index == 0)
-                && !(shift == 1  && index == CurrentProfile.RotationList.Count - 1))
-            {
-                CurrentProfile.RotationList.Move(index, index + shift);
-                rotationList.ScrollIntoView(this.rotationList.SelectedItem);
-            }
-        }
-
         private void InitialiseEmptyProfiles()
         {
             foreach (WowClass wowClass in Enum.GetValues(typeof(WowClass)))
@@ -63,26 +39,6 @@ namespace Yanitta
                 if (!ProfileDb.Instance.ProfileList.Any(profile => profile.Class == wowClass))
                     ProfileDb.Instance.ProfileList.Add(new Profile { Class = wowClass });
             }
-        }
-
-        private void bAbMoveUp_Click_1(object sender, RoutedEventArgs e)
-        {
-            MoveAbility(-1);
-        }
-
-        private void bAbMoveDown_Click_1(object sender, RoutedEventArgs e)
-        {
-            MoveAbility(1);
-        }
-
-        private void bRotMoveUp_Click(object sender, RoutedEventArgs e)
-        {
-            MoveRotation(-1);
-        }
-
-        private void bRotMoveDown_Click(object sender, RoutedEventArgs e)
-        {
-            MoveRotation(1);
         }
 
         private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
@@ -163,6 +119,32 @@ namespace Yanitta
                    this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (this.CurrentRotation != null && result == MessageBoxResult.Yes)
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
+        }
+
+        private void CommandBinding_MoveRotation_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var shift = int.Parse((string)e.Parameter);
+            var index = rotationList.SelectedIndex;
+            if (CurrentProfile != null && index > -1
+                && !(shift == -1 && index == 0)
+                && !(shift == 1  && index == CurrentProfile.RotationList.Count - 1))
+            {
+                CurrentProfile.RotationList.Move(index, index + shift);
+                rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+            }
+        }
+
+        private void CommandBinding_MoveAbility_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var shift = int.Parse((string)e.Parameter);
+            var index = abilityList.SelectedIndex;
+            if (CurrentRotation != null && index > -1
+                && !(shift == -1 && index == 0)
+                && !(shift == 1  && index == CurrentRotation.AbilityList.Count - 1))
+            {
+                CurrentRotation.AbilityList.Move(index, index + shift);
+                abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            }
         }
 
         private void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
