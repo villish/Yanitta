@@ -1222,10 +1222,10 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if modifier == "LCTRL" then
         setAoE = setAoE or 0;
         if setAoE == 0 then
+            setAoE = 1;
+            AddonFrame.print("|cff6f0a9aКливы", true);
+        elseif setAoE == 1 then
             setAoE = 2;
-            AddonFrame.print("|cff6f0a9aНесколько целей", true);
-        elseif setAoE == 2 then
-            setAoE = 3;
             AddonFrame.print("|cffff0000AOE", true);
         else
             setAoE = 0;
@@ -1434,9 +1434,9 @@ return rage < 100;
         <Lua><![CDATA[
 local setAoE = setAoE or 0;
 if isInMeele then
-    if setAoE == 3 then
+    if setAoE == 2 then
         return true;
-    elseif setAoE == 2 then
+    elseif setAoE == 1 then
         local name,count = HasBuff("player", 12950);
         if count < 2 then
             return true;
@@ -1468,7 +1468,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE == 2 and targetHP >= 20 and (koloss or rage > 100) then
+if setAoE == 1 and targetHP >= 20 and (koloss or rage > 100) then
     return true;
 end
 ]]></Lua>
@@ -1588,13 +1588,10 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if modifier == "LCTRL" then
         setAoE = setAoE or 0;
         if setAoE == 0 then
+            setAoE = 1;
+            AddonFrame.print("|cff6f0a9aКливы", true);
+        elseif setAoE == 1 then
             setAoE = 2;
-            AddonFrame.print("|cff6f0a9aНесколько целей 2", true);
-        elseif setAoE == 2 then
-            setAoE = 3;
-            AddonFrame.print("|cff6f0a9aНесколько целей 3", true);
-        elseif setAoE == 3 then
-            setAoE = 4;
             AddonFrame.print("|cffff0000AOE", true);
         else
             setAoE = 0;
@@ -1804,7 +1801,7 @@ return isInMeele and setAoE > 0;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and setAoE > 1
+if isInMeele and setAoE > 0
     -- Глубокие раны
     and not HasDebuff("target", 115767, "PLAYER") then
     return true;
@@ -1820,7 +1817,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return isInMeele and setAoE > 3;
+return isInMeele and setAoE > 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Смертельный удар">
@@ -1872,7 +1869,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 2 and rage > 80;
+return setAoE == 0 and rage > 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Разсекающий удар">
@@ -1884,7 +1881,7 @@ return setAoE > 2 and rage > 80;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 2 and rage > 80;
+return setAoE == 1 and rage > 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Казнь">
@@ -8453,7 +8450,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
-
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
