@@ -582,27 +582,24 @@ function CheckAndCastAbility(ability)
 end
 
 function ChangeRotation(rotation)
+    if not AddonFrame then return end;
     if AddonFrame.CurentRotation and (not rotation or rotation == AddonFrame.CurentRotation) then
         AddonFrame.CurentRotation = nil;
+        AddonFrame:UnregisterAllEvents();
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
-        if AddonFrame then
-            AddonFrame:UnregisterAllEvents();
-        end
     elseif rotation then
-        if AddonFrame then
-            AddonFrame:UnregisterAllEvents();
-            AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-            AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-            AddonFrame:RegisterEvent("PLAYER_LOGOUT");
-            AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
-            AddonFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
-            AddonFrame:RegisterEvent("SPELLS_CHANGED");
-        end
-        CheckAllSpells();
+        AddonFrame:UnregisterAllEvents();
+        AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+        AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+        AddonFrame:RegisterEvent("PLAYER_LOGOUT");
+        AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
+        AddonFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
+        AddonFrame:RegisterEvent("SPELLS_CHANGED");
         AddonFrame.CurentRotation = rotation;
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
         PlaySound("PAPERDOLLOPEN", "Master");
+        CheckAllSpells();
     end
 end
 
