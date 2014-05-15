@@ -1404,6 +1404,18 @@ if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Кровожадность">
+        <SpellID>23881</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return rage < 100;
+]]></Lua>
+      </Ability>
       <Ability Name="Удар колосса">
         <SpellID>86346</SpellID>
         <Target>Target</Target>
@@ -1416,8 +1428,8 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Кровожадность">
-        <SpellID>23881</SpellID>
+      <Ability Name="Удар громовержца">
+        <SpellID>107570</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -1425,7 +1437,9 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return rage < 100;
+if koloss then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
@@ -1707,24 +1721,6 @@ return NeedReflect(ability.Target, "player");
 return NeedMassReflect();
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар громовержца">
-        <SpellID>107570</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPVP("player") then
-    if UnitHasControl("mouseover") then
-        return "mouseover";
-    end
-elseif koloss then
-    return "target";
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Подрезать сухожилья">
         <SpellID>1715</SpellID>
         <Target>Target</Target>
@@ -1847,6 +1843,24 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return kolossRem < 2;
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар громовержца">
+        <SpellID>107570</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if UnitIsPVP("player") then
+    if UnitHasControl("mouseover") then
+        return "mouseover";
+    end
+elseif koloss then
+    return "target";
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Рев дракона">
