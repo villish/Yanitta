@@ -6666,7 +6666,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and isInRange and power2 > 0 and SpellCD(74434) == 0 then
     if UnitExists(ability.Target)
@@ -6707,7 +6707,7 @@ if power2 > 0 and SpellCD(74434) == 0 then
             -- Если нету ни одного дебафа
             -- если у цели меньше 20% здоровья
             -- если мы двигаемся
-            if HealthByPercent(target) < 20 or IS_MOVING then
+            if HealthByPercent("target") <= 20 or IS_MOVING then
                 -- Проверяем только "Нестабильное колдовство"
                 -- так как маленькая продолжительность и есть время каста
                 -- так же не будем терять ДПС при перебежках.
