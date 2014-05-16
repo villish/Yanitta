@@ -6659,6 +6659,29 @@ if useCooldown then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Семя порчи">
+        <SpellID>27243</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if setAoE and isInRange and power2 > 0 and SpellCD(74434) == 0 then
+    if UnitExists(ability.Target)
+        and UnitCanAttack("player", ability.Target)
+        and not UnitIsDeadOrGhost(ability.Target)
+        and not UnitIsFriend("player", ability.Target) then
+        if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
+            -- Горящая душа (без ГКД)
+            CastSpellByName(GetSpellInfo(74434));
+            return true;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Обмен душ">
         <SpellID>86121</SpellID>
         <Target>Target</Target>
@@ -6669,6 +6692,11 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if power2 > 0 and SpellCD(74434) == 0 then
+    local dotList = {
+        980,    -- Агония
+        172,    -- Порча
+        30108,  -- Нестабильное колдовство
+    };
     for _, target in ipairs(RaidTargetList) do
         if UnitExists(target)
         and UnitCanAttack("player", target)
@@ -6676,14 +6704,20 @@ if power2 > 0 and SpellCD(74434) == 0 then
         and not UnitIsFriend("player", target)
         --and UnitIsEnemy("player", target) -- не рабоает на манекенах
         and IsSpellInRange(GetSpellInfo(86121), targer) == 1 then
-            -- Необходима такая реализация
-            -- 1) Если у цели больше 20% здоровья - тогда просто накладываем все доты, обновляем вручную
-            -- 2) Если у цели меньше 20% здоровья - тогда и накладываем и обновляем доты
             -- Если нету ни одного дебафа
-            if not (HasDebuff(target, 980,   "PLAYER") or -- Агония
-                    HasDebuff(target, 172,   "PLAYER") or -- Порча
-                    HasDebuff(target, 30108, "PLAYER")    -- Нестабильное колдовство
-                    ) then
+            -- если у цели меньше 20% здоровья
+            -- если мы двигаемся
+            if HealthByPercent(target) < 20 or IS_MOVING then
+                -- Проверяем только "Нестабильное колдовство"
+                -- так как маленькая продолжительность и есть время каста
+                -- так же не будем терять ДПС при перебежках.
+                if select(3, HasDebuff(target, 30108, "PLAYER")) < 3 then
+                    -- Горящая душа (без ГКД)
+                    CastSpellByName(GetSpellInfo(74434));
+                    return target;
+                end
+            -- Накладываем через горящую душу когда дотов вообще нету
+            elseif not HasDebuff(target, dotList, "PLAYER") then
                 -- Горящая душа (без ГКД)
                 CastSpellByName(GetSpellInfo(74434));
                 return target;
@@ -6691,18 +6725,6 @@ if power2 > 0 and SpellCD(74434) == 0 then
         end
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Семя порчи">
-        <SpellID>27243</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---return setAoE;
 ]]></Lua>
       </Ability>
       <Ability Name="Агония">
