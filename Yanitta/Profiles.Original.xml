@@ -22,7 +22,9 @@ moving_spell_table = {
     108839, -- Плавучая льдина
 };
 
-RaidTargetList = {
+RaidTargetList = { "target", "focus", "mouseover", "boss1", "boss2", "boss3", "boss4", "boss5", "arena1", "arena2", "arena3", "arena4", "arena5" };
+
+TargetListInfo = {
     -- misk
     ["target"] = {},
     ["focus"] = {},
@@ -39,7 +41,7 @@ RaidTargetList = {
     ["arena3"] = {},
     ["arena4"] = {},
     ["arena5"] = {},
-};
+}
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
@@ -3820,7 +3822,7 @@ return setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -3907,7 +3909,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -3931,7 +3933,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IS_MOVING then
-    for target in pairs(RaidTargetList) do
+    for _, target in ipairs(RaidTargetList) do
         if UnitExists(target)
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
@@ -5708,7 +5710,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -5892,7 +5894,7 @@ return not HasBuff("player", 11426);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -6522,7 +6524,7 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -6731,7 +6733,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if power2 > 0 and SpellCD(74434) == 0 then
-    for target in pairs(RaidTargetList) do
+    for _, target in ipairs(RaidTargetList) do
         if UnitExists(target)
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
@@ -6776,7 +6778,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -6800,7 +6802,7 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if power2 > 0 then
-    for target in pairs(RaidTargetList) do
+    for _, target in ipairs(RaidTargetList) do
         if UnitExists(target)
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
@@ -6828,7 +6830,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
@@ -6851,7 +6853,7 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-for target in pairs(RaidTargetList) do
+for _, target in ipairs(RaidTargetList) do
     if UnitExists(target)
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
