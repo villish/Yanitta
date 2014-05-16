@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Windows;
 
 namespace Yanitta
 {
@@ -19,7 +18,9 @@ namespace Yanitta
             Debug.Listeners.Add(new TextWriterTraceListener(this));
 
             if (isRegisterUnhandledException)
+            {
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            }
         }
 
         public static void Initialize(string fileName, bool isRegisterUnhandledException = false)
@@ -82,13 +83,7 @@ namespace Yanitta
         {
             var exception = e.ExceptionObject as Exception;
             if (exception != null)
-            {
                 Console.WriteLine(exception);
-            }
-            if (e.ExceptionObject is YanittaException)
-            {
-                MessageBox.Show(exception.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         public static void CloseWriter()

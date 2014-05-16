@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Windows.Controls.Primitives;
 using System.Xml;
 
 namespace Yanitta
 {
     public static class Extensions
     {
+        public static T SelectedValue<T>(this Selector control) where T : class
+        {
+            return control == null ? null : control.SelectedValue as T;
+        }
+
         public static void ForEach<T>(this IEnumerable<T> collection, Action<T> predicate)
         {
             if (collection == null)

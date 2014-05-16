@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
-using System.Windows;
 using System.Linq;
+using System.Windows;
 using System.Windows.Input;
-using Yanitta.Properties;
 using Yanitta.Windows;
 
 namespace Yanitta

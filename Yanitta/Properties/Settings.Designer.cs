@@ -25,7 +25,7 @@ namespace Yanitta.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Profiles.xml")]
+        [global::System.Configuration.DefaultSettingValueAttribute("..\\..\\Yanitta\\Profiles.Original.xml")]
         public string ProfilesFileName {
             get {
                 return ((string)(this["ProfilesFileName"]));
