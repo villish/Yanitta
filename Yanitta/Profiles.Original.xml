@@ -582,6 +582,8 @@ function CheckAndCastAbility(ability)
 end
 
 function ChangeRotation(rotation)
+    --assert(type(AddonFrame) ~= "table",
+    --    '\"AddonFrame\" не существует в текущем контексте');
     if not AddonFrame then return end;
     if AddonFrame.CurentRotation and (not rotation or rotation == AddonFrame.CurentRotation) then
         AddonFrame.CurentRotation = nil;
@@ -658,7 +660,7 @@ function AddonFrame_OnUpdate(self, elapsed)
     end
 end
 
-if not AddonFrame then
+if type(AddonFrame) ~= "table" then
     AddonFrame = CreateFrame("Frame");
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
     AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);

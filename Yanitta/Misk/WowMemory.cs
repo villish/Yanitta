@@ -256,6 +256,7 @@ namespace Yanitta
 
             builder.AppendFormatLine(@"DebugMode = {0};", Settings.Default.DebugMode.ToString().ToLower());
             // Запуск ротации
+            builder.AppendFormatLine("assert(type(ChangeRotation) == \"function\", 'Не найдена функция \"ChangeRotation\"');");
             builder.AppendFormatLine(@"ChangeRotation(""{0}"");", rotation.Name);
 
             var code = builder.ToString();
