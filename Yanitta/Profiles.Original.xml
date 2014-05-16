@@ -3363,30 +3363,6 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- модификатор
-if     IsModKeyDown(mkLeftShift) then
-    return true;
-elseif IsModKeyDown(mkLeftControl) then
-elseif IsModKeyDown(mkLeftAlt) then
-elseif IsModKeyDown(mkRightShift) then
-    if useCooldown then
-        useCooldown = false;
-        AddonFrame.print("|cffff0000Кулдауны выключены", true);
-    else
-        useCooldown = true;
-        AddonFrame.print("|cff00ff00Кулдауны включены", true);
-    end
-elseif IsModKeyDown(mkRightControl) then
-elseif IsModKeyDown(mkRightAlt) then
-    if useAutoDispell then
-        useAutoDispell = false;
-        AddonFrame.print("|cffff0000Диспел по mouseover: Выключен", true);
-    else
-        useAutoDispell = true;
-        AddonFrame.print("|cff00ff00Диспел по mouseover: Включен", true);
-    end
-end
-
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsMounted() or IsStealthed() then
     return true;
@@ -6606,6 +6582,18 @@ end
     </Rotation>
     <Rotation Name="Колдовство">
       <HotKey Key="C" Modifier="Alt" />
+      <Ability Name="Неистовство тьмы">
+        <SpellID>30283</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsMouseButtonDown(3);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -6626,6 +6614,14 @@ power2    = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
+end
+
+-- Установка пета в указанную позицию
+if IsMouseButtonDown(4) then
+    PetMoveTo();
+    CameraOrSelectOrMoveStart();
+    CameraOrSelectOrMoveStop();
+    PetMoveTo();
 end
 ]]></Lua>
       </Ability>
