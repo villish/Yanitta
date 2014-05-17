@@ -128,8 +128,8 @@ function IsMoving()
 end
 
 -- Проверка на нахождение персонажа за спиной цели
-function IsNotBehind(sec)
-    return GetTime() - (AddonFrame.LastNotBehindTime or 0) <= (sec or 1);
+function IsBehind(sec)
+    return (GetTime() - (AddonFrame.LastNotBehindTime or 0)) > (sec or 1);
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
