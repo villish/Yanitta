@@ -128,8 +128,8 @@ function IsMoving()
 end
 
 -- Проверка на нахождение персонажа за спиной цели
-function IsNotBehind(sec)
-    return GetTime() - (AddonFrame.LastNotBehindTime or 0) <= (sec or 1);
+function IsBehind(sec)
+    return (GetTime() - (AddonFrame.LastNotBehindTime or 0)) > (sec or 1);
 end
 
 -- Проверка на нахождение цели в зоне видимости персонажа
@@ -5965,6 +5965,12 @@ return not HasBuff("player", 7302);
 setAoE = false;
 useCooldown = true;
 
+InterruptList = {
+    "target",
+    "focus",
+    "mouseover"
+};
+
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -6622,6 +6628,28 @@ if IsMouseButtonDown(4) then
     CameraOrSelectOrMoveStart();
     CameraOrSelectOrMoveStop();
     PetMoveTo();
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Запрет чар">
+        <SpellID>132409</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+for _, target in ipairs(InterruptList) do
+    if UnitExists(target)
+        and UnitCanAttack("player", target)
+        and not UnitIsDeadOrGhost(target)
+        and not UnitIsFriend("player", target)
+        and IsSpellInRange(GetSpellInfo(ability.SpellId), targer) == 1 then
+        if CheckInterrupt(target) then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -8644,6 +8672,7 @@ end
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
+behindMode = 0; -- 0 - Автоопределение, 1 - Полоснуть, 2 - Увечье
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -8664,6 +8693,18 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
         end
+    elseif modifier == "RALT" then
+        behindMode = behindMode or 0;
+        if behindMode == 0 then
+            behindMode = 1;
+            AddonFrame.print("|cff6f0a9aИспользуем \"Полоснуть\"", true);
+        elseif behindMode == 1 then
+            behindMode = 2;
+            AddonFrame.print("|cffff0000Используем \"Увечье\"", true);
+        else
+            behindMode = 0;
+            AddonFrame.print("|cff00ff00Автоматический режим определения (\"За спиной\")", true);
+        end
     end
 end
 ]]></Lua>
@@ -8677,7 +8718,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or HasBuff("player", 5215) then
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -8686,8 +8727,6 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-agroStatus = UnitThreatSituation("player");
-playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;
 energy     = UnitPower("player");
@@ -8703,8 +8742,7 @@ combopoint = GetComboPoints("player");
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local sr = select(3, HasBuff("player", 52610));
-if (combopoint > 4 and sr < 4) or (sr < 2 and combopoint > 0) then
+if isInMeele and select(3, HasBuff("player", 52610)) < 2 then
     return true;
 end
 ]]></Lua>
@@ -8718,7 +8756,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if energy < 35 then
+if isInMeele and useCooldown and energy <= 35 then
     return true;
 end
 ]]></Lua>
@@ -8732,35 +8770,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and energy < 35 and not HasBuff("player", 106952) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Взбучка">
-        <SpellID>106832</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and (setAoE or HasBuff("player", 16864)) and not HasDebuff("target", 106830, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Размах">
-        <SpellID>62078</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE and isInMeele then
+if isInMeele and useCooldown and energy < 35 and not HasBuff("player", 106952) then
     return true;
 end
 ]]></Lua>
@@ -8774,7 +8784,37 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsSpellKnown(124974) then
+if isInMeele and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Взбучка">
+        <SpellID>106832</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and setAoE then
+    if select(3, HasDebuff("target", 106830, "PLAYER")) < 2 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Размах">
+        <SpellID>62078</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if setAoE and isInMeele then
     return true;
 end
 ]]></Lua>
@@ -8803,8 +8843,11 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local rip = select(3, HasDebuff("target", 1079, "PLAYER"));
-if HealthByPercent("target") < 25 then
-    if (rip < 2 and combopoint > 1) or combopoint > 4 then
+
+if rip > 8 and energy >= 50 and combopoint > 4 then
+    return true;
+elseif HealthByPercent("target") < 25 then
+    if (rip < 2 and combopoint > 1) or (combopoint > 4 and energy >= 50) then
         return true;
     end
 end
@@ -8847,8 +8890,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not IsNotBehind(3) then
-    return true;
+if combopoint < 5 then
+    if (behindMode == 0 and IsBehind(2)) or behindMode == 1 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -8861,8 +8906,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if energy >= 40 then
-    return true;
+if combopoint < 5 then
+    if (behindMode == 0 and energy >= 40) or behindMode == 2 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
