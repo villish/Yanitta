@@ -3892,7 +3892,7 @@ for _, target in ipairs(RaidTargetList) do
     and not UnitIsFriend("player", target)
     --and UnitIsEnemy("player", target) -- не рабоает на манекенах
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if IS_MOVING or select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
+        if IS_MOVING or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 2 then
             return target;
         end
     end
@@ -3916,7 +3916,7 @@ if not IS_MOVING then
         and not UnitIsFriend("player", target)
         --and UnitIsEnemy("player", target) -- не рабоает на манекенах
         and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-            if select(3, HasDebuff(ability.Target, ability.SpellId, "PLAYER")) < 2 then
+            if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3.5 then
                 return target;
             end
         end
@@ -6661,7 +6661,7 @@ end
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and isInRange and power2 > 0 and SpellCD(74434) == 0 then
