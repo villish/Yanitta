@@ -5965,6 +5965,12 @@ return not HasBuff("player", 7302);
 setAoE = false;
 useCooldown = true;
 
+InterruptList = {
+    "target",
+    "focus",
+    "mouseover"
+};
+
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -6622,6 +6628,28 @@ if IsMouseButtonDown(4) then
     CameraOrSelectOrMoveStart();
     CameraOrSelectOrMoveStop();
     PetMoveTo();
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Запрет чар">
+        <SpellID>132409</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+for _, target in ipairs(InterruptList) do
+    if UnitExists(target)
+        and UnitCanAttack("player", target)
+        and not UnitIsDeadOrGhost(target)
+        and not UnitIsFriend("player", target)
+        and IsSpellInRange(GetSpellInfo(ability.SpellId), targer) == 1 then
+        if CheckInterrupt(target) then
+            return target;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
