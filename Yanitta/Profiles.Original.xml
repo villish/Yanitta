@@ -1828,6 +1828,22 @@ end
 return isInMeele and setAoE > 1;
 ]]></Lua>
       </Ability>
+      <Ability Name="Рев дракона">
+        <SpellID>118000</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and not koloss then
+    --if HasBuff("player", 12292) then
+        return true;
+    --end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Смертельный удар">
         <SpellID>12294</SpellID>
         <Target>Target</Target>
@@ -1867,22 +1883,6 @@ if UnitIsPVP("player") then
     end
 elseif koloss then
     return "target";
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Рев дракона">
-        <SpellID>118000</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and not koloss then
-    if HasBuff("player", 12292) then
-        return true;
-    end
 end
 ]]></Lua>
       </Ability>
@@ -3311,6 +3311,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if IsMounted() or IsModKeyDown(mkLeftAlt) then
+    return true;
+end
+
 if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
     CastShapeshiftForm(1);
 end
