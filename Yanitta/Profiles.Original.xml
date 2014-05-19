@@ -593,7 +593,6 @@ function ChangeRotation(rotation)
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
     elseif rotation then
-        AddonFrame:UnregisterAllEvents();
         AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
         AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
         AddonFrame:RegisterEvent("PLAYER_LOGOUT");
@@ -660,6 +659,10 @@ function AddonFrame_OnUpdate(self, elapsed)
     if (AddonFrame.Duration or 0) < GetTime() then
         AddonFrame.Msg:SetText("");
     end
+end
+
+if type(AddonFrame) == "table" then
+    AddonFrame:UnregisterAllEvents();
 end
 
 if type(AddonFrame) ~= "table" then
