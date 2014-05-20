@@ -6289,7 +6289,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- заклинание не проходит проверку на доступность
-if IsModKeyDown(mkLeftShift) and HasBuff("player", 104232) then
+if IsModKeyDown(mkLeftShift) and not HasBuff("player", 104232) then
     local spellName = GetSpellInfo(104232);
     CastSpellByName(spellName, nil);
     CameraOrSelectOrMoveStart();
