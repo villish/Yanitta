@@ -555,9 +555,12 @@ function CheckAndCastAbility(ability)
             return;
         elseif SpellHasRange(spellInfo) and IsSpellInRange(spellInfo, ability.Target) == 0 then
             return;
-        elseif UnitIsEnemy("player", ability.Target) and
-            (UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target)) then
+        elseif IsHelpfulSpell(spellInfo) and not UnitIsFriend("player", ability.Target) then
             return;
+        elseif not UnitIsFriend("player", ability.Target) then
+            if UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target) then
+                return;
+            end
         end
     end
 
