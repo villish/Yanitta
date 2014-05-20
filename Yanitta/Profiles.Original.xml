@@ -514,7 +514,7 @@ function CheckAndCastAbility(ability)
 
     if ability.SpellId < 1 then
         return ability.Func(ability);
-    elseif not (ability.IsKnown and IsUsableSpell(ability.SpellId)) then
+    elseif not (ability.IsKnown and IsUsableSpell(spellInfo)) then
         return;
     end
 
