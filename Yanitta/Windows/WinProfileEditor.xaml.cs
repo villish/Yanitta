@@ -47,11 +47,6 @@ namespace Yanitta
                 ProfileDb.Instance.ProfileList.Move(old, ProfileDb.Instance.ProfileList.Count - 1);
         }
 
-        private void Window_Closing_1(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            ProfileDb.Save();
-        }
-
         #region Commands
 
         // ability

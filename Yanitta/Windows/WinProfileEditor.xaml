@@ -11,7 +11,6 @@
         Height="900"
         FontFamily="../Resources/#MORPHEUS"
         Style="{DynamicResource KamillaStyle}"
-        Closing="Window_Closing_1"
         Icon="/Yanitta;component/Resources/BNUpdate.png">
 
     <Window.Resources>
