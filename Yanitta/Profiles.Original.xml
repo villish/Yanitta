@@ -557,6 +557,8 @@ function CheckAndCastAbility(ability)
             return;
         elseif IsHelpfulSpell(spellInfo) and not UnitIsFriend("player", ability.Target) then
             return;
+        elseif IsHarmfulSpell(spellInfo) and UnitIsFriend("player", ability.Target) then
+            return;
         elseif not UnitIsFriend("player", ability.Target) then
             if UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target) then
                 return;
