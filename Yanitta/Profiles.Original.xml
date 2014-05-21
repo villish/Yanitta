@@ -502,9 +502,10 @@ function CheckAndCastAbility(ability)
         return;
     end
 
-    local recastDelay = 0;
-    if ability.SetRecastDelay then
-        recastDelay = AddonFrame.ping + 300;
+    local recastDelay = AddonFrame.ping or 0.05;
+    if ability.SetRecastDelay and ability.LastTargetGUID
+        and UnitGUID(ability.Target) == ability.LastTargetGUID then
+        recastDelay = recastDelay + 300;
         if (GetTime() - ability.LastCastingTime) < 1 then
             return;
         end
@@ -519,7 +520,7 @@ function CheckAndCastAbility(ability)
     end
 
     local start, duration, enable = GetSpellCooldown(ability.SpellId);
-    if enable == 1 and ((duration + start) - GetTime()) > AddonFrame.ping then
+    if enable == 1 and ((duration + start) - GetTime()) > recastDelay then
         return;
     end
 
@@ -628,10 +629,9 @@ function AddonFrame_OnEvent(self, event, ...)
               spellId,   spellName,spellSchool, param15 = ...;
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
             for i, ability in ipairs(ABILITY_TABLE) do
-                if spellId == ability.SpellId and destGUID == UnitGUID(ability.Target) then
-                    if ability.SetRecastDelay then
-                        ability.LastCastingTime = GetTime();
-                    end
+                if spellId == ability.SpellId then
+                    ability.LastCastingTime = GetTime();
+                    ability.LastTargetGUID  = destGUID;
                 end
             end
         elseif subEvent == "SPELL_CAST_FAILED" then
@@ -3890,7 +3890,7 @@ end
       </Ability>
       <Ability Name="Слово тьмы: Боль">
         <SpellID>589</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -3913,7 +3913,7 @@ end
       </Ability>
       <Ability Name="Прикосновение вампира">
         <SpellID>34914</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -3926,7 +3926,8 @@ if not IS_MOVING then
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
         and not UnitIsFriend("player", target)
-        --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+        -- Для дот, которые имеют время каста
+        and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
         and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3.5 then
                 return target;
@@ -6504,7 +6505,7 @@ end
       </Ability>
       <Ability Name="Жертвенный огонь">
         <SpellID>348</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6516,7 +6517,8 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    -- Для дот, которые имеют время каста
+    and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
@@ -6758,7 +6760,7 @@ end
       </Ability>
       <Ability Name="Агония">
         <SpellID>980</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6781,7 +6783,7 @@ end
       </Ability>
       <Ability Name="Блуждающий дух">
         <SpellID>48181</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6794,7 +6796,7 @@ if power2 > 0 then
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
         and not UnitIsFriend("player", target)
-        --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+        and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
         and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
                 if  select(3, HasDebuff(ability.Target, 980,   "PLAYER")) > 7      -- Агония
@@ -6810,7 +6812,7 @@ end
       </Ability>
       <Ability Name="Порча">
         <SpellID>172</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6833,7 +6835,7 @@ end
       </Ability>
       <Ability Name="Нестабильное колдовство">
         <SpellID>30108</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6845,7 +6847,8 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
+    -- Для дот, которые имеют время каста
+    and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
