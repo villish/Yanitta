@@ -6282,22 +6282,15 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Огненный ливень">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
+        <SpellID>104232</SpellID>
+        <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- заклинание не проходит проверку на доступность
-if IsModKeyDown(mkLeftShift) and not HasBuff("player", 104232) then
-    local spellName = GetSpellInfo(104232);
-    CastSpellByName(spellName, nil);
-    CameraOrSelectOrMoveStart();
-    CameraOrSelectOrMoveStop();
-    CastSpellByName(spellName, nil);
-end
+return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
       <Ability Name="Пауза">
