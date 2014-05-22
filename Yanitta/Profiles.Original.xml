@@ -2069,6 +2069,20 @@ if not HasBuff("player", 20925, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Вечное пламя">
+        <SpellID>114163</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if hollyPower > 2 and select(3, HasBuff("player", 114163, "PLAYER")) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Торжество">
         <SpellID>130551</SpellID>
         <Target>Player</Target>
@@ -6797,9 +6811,9 @@ if power2 > 0 then
         --and UnitIsEnemy("player", target) -- не рабоает на манекенах
         and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
-                if  select(3, HasDebuff(ability.Target, 980,   "PLAYER")) > 7      -- Агония
-                and select(3, HasDebuff(ability.Target, 172,   "PLAYER")) > 7      -- Порча
-                and select(3, HasDebuff(ability.Target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
+                if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
+                and select(3, HasDebuff(target, 172,   "PLAYER")) > 7      -- Порча
+                and select(3, HasDebuff(target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
                     return target;
                 end
             end
