@@ -3419,7 +3419,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-return IsModKeyDown(mkLeftAlt);
+return IsMouseButtonDown(4);-- IsModKeyDown(mkLeftAlt);
 ]]></Lua>
       </Ability>
       <Ability Name="Слово силы: Барьер">
@@ -3431,7 +3431,7 @@ return IsModKeyDown(mkLeftAlt);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return IsModKeyDown(mkLeftControl);
+return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftControl);
 ]]></Lua>
       </Ability>
       <Ability Name="Разсеивание заклинаний (Авто)">
@@ -3538,9 +3538,17 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Ослабленная душа (6788)
+if IsModKeyDown(mkLeftControl)
+and UnitExists("mouseover")
+and UnitHealth("mouseover") > 100
+and UnitCanAssist("player", "mouseover")
+and not HasDebuff("mouseover", 6788) then
+    return "mouseover";
+end
+
 for _,member in ipairs(members) do
-    if not HasDebuff(member.Unit, 6788) then
-        if member.Agro > 2 or (IS_MOVING and member.HP < 70) or member.HP < 50 then
+    if not HasDebuff(member.Unit, 6788) or HasBuff("player", 123266) then
+        if (member.IsTank and member.Agro > 2) or IsModKeyDown(mkLeftControl) then
             return member.Unit;
         end
     end
@@ -3614,7 +3622,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(members) do
-   if (member.IsTank and member.HP < 90) or member.HP < 70 then
+   if member.IsTank and member.HP < 70 then
        if not HasBuff(member.Unit, 139, "PLAYER") then
            return member.Unit;
        end
@@ -3631,7 +3639,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if UnitCanAttack("player", "target") ~= 1 then
+if not UnitCanAttack("player", "target") then
     if members[1].HP < 90 then
         return members[1].Unit;
     end
@@ -5919,7 +5927,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return HasBuff("player", 44549);
+if HasBuff("player", 44549) then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяное копье">
@@ -6359,6 +6369,20 @@ end
 --return QuestCore();
 ]]></Lua>
       </Ability>
+      <Ability Name="Углевод">
+        <SpellID>114635</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if power2 > 0 and HealthByPercent("player") < 60 then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Запрет чар">
         <SpellID>119910</SpellID>
         <Target>Target</Target>
@@ -6531,7 +6555,7 @@ for _, target in ipairs(RaidTargetList) do
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
     --and UnitIsEnemy("player", target) -- не рабоает на манекенах
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
+    and IsSpellInRange(GetSpellInfo(1490), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
         end
@@ -6629,6 +6653,7 @@ return IsMouseButtonDown(3);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
+
 if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
@@ -7169,7 +7194,7 @@ end
       </Ability>
       <Ability Name="Устранение вреда">
         <SpellID>115072</SpellID>
-        <Target>Target</Target>
+        <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -7473,7 +7498,7 @@ end
       </Ability>
       <Ability Name="Устранение вреда">
         <SpellID>115072</SpellID>
-        <Target>Target</Target>
+        <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
