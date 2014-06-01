@@ -5619,7 +5619,7 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
         if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
             -- Воспламенение
             if spellId == 12654 then
-                igniteDamage = amount;
+                igniteDamage = amount or 0;
                 --print("Тик: Воспламенение (12654) - "..tostring(amount));
             end
         end
@@ -5658,20 +5658,12 @@ isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Использование предметов">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() then
-    return true;
+
+-- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
+if UnitCastingInfo("player") == GetSpellInfo(133) or UnitCastingInfo("player") == GetSpellInfo(2943) then
+    if HasBuff("player", 48108) then
+        SpellStopCasting();
+    end
 end
 
 if useCooldown then
@@ -5679,6 +5671,18 @@ if useCooldown then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET1);
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Руна мощи">
+        <SpellID>116011</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkRightAlt);
 ]]></Lua>
       </Ability>
       <Ability Name="Огненный столб">
@@ -5704,14 +5708,40 @@ return IsModKeyDown(mkLeftShift);
         <Lua><![CDATA[
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Так же важно использовать возгорание под прок тринек
-if useCooldown and pyroCrit and (igniteDamage or 0) > 5000 then
+if useCooldown and (pyroCrit or igniteDamage > 100000) then
     if select(3, HasDebuff(ability.Target, 12654, "PLAYER")) > 3 then
         return true;
     end
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Живая бомба (Target)">
+      <Ability Name="Путешествие во времени">
+        <SpellID>108978</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and HasBuff("player", 48108) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Зеркальное изображение">
+        <SpellID>55342</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useCooldown;
+]]></Lua>
+      </Ability>
+      <Ability Name="Живая бомба">
         <SpellID>44457</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -5725,7 +5755,6 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
     and IsSpellInRange(GetSpellInfo(133), target) == 1 then
         if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
             return target;
@@ -5758,7 +5787,21 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInRange and HasBuff("player", 48107) then
+if isInRange and (HasBuff("player", 48107) or HasDebuff("target", 11129)) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Щит заклинателя">
+        <SpellID>1463</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasBuff("player", 1463) then
     return true;
 end
 ]]></Lua>
@@ -5785,6 +5828,20 @@ return true;
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Раскаленный доспех">
+        <SpellID>30482</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasBuff("player", 30482) then
+    return true;
+end
 ]]></Lua>
       </Ability>
     </Rotation>
