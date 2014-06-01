@@ -2589,8 +2589,8 @@ if IsModKeyDown(mkLeftAlt) or IsStealthed() then
     return true;
 end
 
--- если в комуфляже или притворились мертвыми или "Слился с тенью"
-if HasBuff("player", { 5384, 51755, 58984 }) then
+-- если притворились мертвыми
+if HasBuff("player", 5384) then
     return true;
 end
 
@@ -3945,7 +3945,6 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if IS_MOVING or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 2 then
             return target;
@@ -3969,8 +3968,6 @@ if not IS_MOVING then
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
         and not UnitIsFriend("player", target)
-        -- Для дот, которые имеют время каста
-        and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
         and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3.5 then
                 return target;
@@ -5988,7 +5985,6 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
     and IsSpellInRange(GetSpellInfo(116), target) == 1 then
         if not HasDebuff(target, ability.SpellId, "PLAYER")then
             return target;
@@ -6887,7 +6883,6 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
             return target;
@@ -6898,7 +6893,7 @@ end
       </Ability>
       <Ability Name="Блуждающий дух">
         <SpellID>48181</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6911,7 +6906,6 @@ if power2 > 0 then
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
         and not UnitIsFriend("player", target)
-        and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
         and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
             if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
                 if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
@@ -6939,7 +6933,6 @@ for _, target in ipairs(RaidTargetList) do
     and UnitCanAttack("player", target)
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
@@ -6963,7 +6956,6 @@ for _, target in ipairs(RaidTargetList) do
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
     -- Для дот, которые имеют время каста
-    and (ability.LastTargetGUID ~= UnitGUID(target) or (GetTime() - ability.LastCastingTime) >= 1)
     and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
         if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
             return target;
