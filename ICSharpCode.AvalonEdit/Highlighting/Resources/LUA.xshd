@@ -3984,10 +3984,12 @@
             <Word>ABILITY_TABLE</Word>
             <Word>EVENT_MODS</Word>
             <Word>LOSS_TABLE</Word>
+            <Word>NOTIFY_CAST_TABLE</Word>
             <Word>LAST_TARGET</Word>
             <Word>IS_MOVING</Word>
             <Word>LowHP</Word>
             <Word>members</Word>
+            <Word>AddonFrame</Word>
             <Word>moving_spell_table</Word>
         </Keywords>
 
