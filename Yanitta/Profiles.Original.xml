@@ -5912,6 +5912,18 @@ end
     </Rotation>
     <Rotation Name="Лед">
       <HotKey Key="X" Modifier="Alt" />
+      <Ability Name="Руна мощи">
+        <SpellID>116011</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkRightAlt);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -5969,18 +5981,6 @@ elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 130) the
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Чародейская гениальность">
-        <SpellID>1459</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not HasBuff("player", 1459);
-]]></Lua>
-      </Ability>
       <Ability Name="Снежная Буря">
         <SpellID>10</SpellID>
         <Target>MouseLocation</Target>
@@ -6003,6 +6003,30 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(ability.Target);
+]]></Lua>
+      </Ability>
+      <Ability Name="Зеркальное изображение">
+        <SpellID>55342</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInRange and useCooldown;
+]]></Lua>
+      </Ability>
+      <Ability Name="Щит заклинателя">
+        <SpellID>1463</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not HasBuff("player", 1463);
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяная преграда">
@@ -6098,6 +6122,18 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейская гениальность">
+        <SpellID>1459</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not HasBuff("player", 1459);
 ]]></Lua>
       </Ability>
       <Ability Name="Морозный доспех">
