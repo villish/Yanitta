@@ -5656,6 +5656,30 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
     end
 end
 ]]></Lua>
+      <Ability Name="Руна мощи">
+        <SpellID>116011</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkRightAlt);
+]]></Lua>
+      </Ability>
+      <Ability Name="Огненный столб">
+        <SpellID>2120</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -5675,6 +5699,11 @@ isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
+end
+
+-- Самоцвет маны
+if PowerByPercent("player") < 50 then
+    UseItemById(36799);
 end
 
 -- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
@@ -5709,30 +5738,6 @@ elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 130) the
     falingStartTime = 0;
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Руна мощи">
-        <SpellID>116011</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkRightAlt);
-]]></Lua>
-      </Ability>
-      <Ability Name="Огненный столб">
-        <SpellID>2120</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
       <Ability Name="Антимагия">
@@ -5781,14 +5786,14 @@ end
       </Ability>
       <Ability Name="Зеркальное изображение">
         <SpellID>55342</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown;
+return isInRange and useCooldown;
 ]]></Lua>
       </Ability>
       <Ability Name="Живая бомба">
@@ -5806,7 +5811,7 @@ for _, target in ipairs(RaidTargetList) do
     and not UnitIsDeadOrGhost(target)
     and not UnitIsFriend("player", target)
     and IsSpellInRange(GetSpellInfo(133), target) == 1 then
-        if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
+        if not HasDebuff(target, ability.SpellId, "PLAYER") then
             return target;
         end
     end
@@ -5851,9 +5856,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasBuff("player", 1463) then
-    return true;
-end
+return not HasBuff("player", 1463);
 ]]></Lua>
       </Ability>
       <Ability Name="Ожoг">
