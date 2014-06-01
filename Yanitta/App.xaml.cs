@@ -17,23 +17,18 @@ namespace Yanitta
             ProcessList = new ProcessList();
         }
 
-        public App()
-            : base()
-        {
-            this.Dispatcher.UnhandledException += (o, e) =>
-            {
-                if (e.Exception is YanittaException)
-                {
-                    MessageBox.Show(e.Exception.Message,
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Console.WriteLine(e.Exception.Message);
-                    e.Handled = true;
-                }
-            };
-        }
-
         protected override void OnStartup(StartupEventArgs e)
         {
+            this.Dispatcher.UnhandledException += (o, ex) => {
+                if (ex.Exception is YanittaException)
+                {
+                    MessageBox.Show(ex.Exception.Message,
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Console.WriteLine(ex.Exception.Message);
+                    ex.Handled = true;
+                }
+            };
+
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
             else if (e.Args.Length > 0 && e.Args[0] == "/ex")
