@@ -2737,20 +2737,6 @@ if pethp ~= 0 and pethp < 75 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Убийственный выстрел">
-        <SpellID>53351</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitLevel("player") >= 35 then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Залп">
         <SpellID>2643</SpellID>
         <Target>Target</Target>
@@ -2775,8 +2761,8 @@ return setAoE;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Черная стрела">
-        <SpellID>3674</SpellID>
+      <Ability Name="Убийственный выстрел">
+        <SpellID>53351</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2784,7 +2770,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return not setAoE;
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Укус змеи">
@@ -2799,6 +2785,18 @@ return not setAoE;
 if not setAoE and not HasDebuff(ability.Target, 118253, "PLAYER") then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Черная стрела">
+        <SpellID>3674</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not setAoE;
 ]]></Lua>
       </Ability>
       <Ability Name="Бросок глеф">
@@ -2873,11 +2871,16 @@ return useCooldown;
 if not setAoE and unitFocus > 35 then
     --local lowHP = (UnitHealth(ability.Target) or 0) < (UnitHealthMax("player") * 3);
     -- Если Стая воронов скоро откатится, копим для нее концентрацию
-    if useCooldown and IsPlayerSpell(131894) and SpellCD(131894) < 2 then
+    if useCooldown and IsPlayerSpell(131894) and SpellCD(131894) < 2 and unitFocus < 80 then
         return;
     end
     -- Если Черная стрела скоро откатится, копим для нее концентрацию
-    if IsPlayerSpell(3674) and SpellCD(3674) < 2 then
+    if IsPlayerSpell(3674) and SpellCD(3674) < 2 and unitFocus < 50 then
+        return;
+    end
+
+    -- Не стреляем чародейным выстрелом, когда у нас мало фокуса и откатывается КД на разрывной выстрел
+    if SpellCD(53301) < 2 and not HasBuff("player", 56343) then
         return;
     end
     return true;
@@ -2894,6 +2897,18 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsSpellInRange(GetSpellInfo(3044), "target") == 1;
+]]></Lua>
+      </Ability>
+      <Ability Name="Верный выстрел">
+        <SpellID>56641</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
