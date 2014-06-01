@@ -5692,6 +5692,26 @@ if useCooldown then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Замедленное падение">
+        <SpellID>130</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- надо тестировать
+if not IsFalling() then
+    falingStartTime = 0;
+elseif IsFalling() and (falingStartTime or 0) == 0 then
+    falingStartTime = GetTime();
+elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 130) then
+    falingStartTime = 0;
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Руна мощи">
         <SpellID>116011</SpellID>
         <Target>MouseLocation</Target>
@@ -5714,6 +5734,18 @@ return IsModKeyDown(mkRightAlt);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
+      <Ability Name="Антимагия">
+        <SpellID>2139</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt(ability.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Возгорание">
@@ -5847,6 +5879,18 @@ return true;
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейская гениальность">
+        <SpellID>1459</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not HasBuff("player", 1459);
 ]]></Lua>
       </Ability>
       <Ability Name="Раскаленный доспех">
