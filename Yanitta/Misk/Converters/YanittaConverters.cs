@@ -34,9 +34,9 @@ namespace Yanitta
         }
     }
 
-    public class ListItemIndexConverter : ConverterBase<ListItemIndexConverter>
+    public class ItemsControlIndexConverter : ConverterBase<ItemsControlIndexConverter>
     {
-        // {Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Converter={yanitta:ListItemIndexConverter}}
+        // {Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl}, Converter={yanitta:ListItemIndexConverter}}
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var item = value as DependencyObject;
