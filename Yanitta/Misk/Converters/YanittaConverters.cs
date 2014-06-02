@@ -9,6 +9,8 @@ namespace Yanitta
 {
     public class EnumToImageConverter : ConverterBase<EnumToImageConverter>
     {
+        public EnumToImageConverter() : base() { }
+
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null || !(value is WowClass))
@@ -22,6 +24,8 @@ namespace Yanitta
 
     public class EnumToLocalizedSrtConverter : ConverterBase<EnumToLocalizedSrtConverter>
     {
+        public EnumToLocalizedSrtConverter() : base() { }
+
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null || !(value is Enum))
@@ -36,6 +40,8 @@ namespace Yanitta
 
     public class ItemsControlIndexConverter : ConverterBase<ItemsControlIndexConverter>
     {
+        public ItemsControlIndexConverter() : base() { }
+
         // {Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl}, Converter={yanitta:ListItemIndexConverter}}
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -48,6 +54,8 @@ namespace Yanitta
 
     public class ResizeConverter : ConverterBase<ResizeConverter>
     {
+        public ResizeConverter() : base() { }
+
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             double mod = 0d;
@@ -66,6 +74,8 @@ namespace Yanitta
 
     public class StringToIntConverter : ConverterBase<StringToIntConverter>
     {
+        public StringToIntConverter() : base() { }
+
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return string.Format("0x{0:X}", value);
