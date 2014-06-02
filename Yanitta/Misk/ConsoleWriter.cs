@@ -12,7 +12,7 @@ namespace Yanitta
 
         public ConsoleWriter(string fileName, bool isRegisterUnhandledException)
         {
-            m_writer = new StreamWriter(fileName, false);
+            m_writer = new StreamWriter(Path.Combine(Environment.CurrentDirectory, fileName), false);
             m_writer.AutoFlush = true;
             Console.SetOut(this);
             Debug.Listeners.Add(new TextWriterTraceListener(this));
