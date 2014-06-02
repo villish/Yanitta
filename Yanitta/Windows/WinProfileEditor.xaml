@@ -171,7 +171,7 @@
                                 </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Converter={yanitta:CollectionToCountConverter}}" />
+                                        <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Converter={yanitta:ListItemIndexConverter}}" />
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
                                         <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
 
@@ -356,10 +356,10 @@
             <TextBlock Text="{Binding ProfileList/Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Width="100"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.AbilityCount}"/>
-            <TextBlock Text="{Binding ProfileList/RotationList/AbilityList, Converter={yanitta:CollectionToCountConverter}}" Width="30"/>
+            <TextBlock Text="{Binding ProfileList/RotationList/AbilityList.Count}" Width="30"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.RotationCount}"/>
-            <TextBlock Text="{Binding ProfileList/RotationList, Converter={yanitta:CollectionToCountConverter}}" Width="30"/>
+            <TextBlock Text="{Binding ProfileList/RotationList.Count}" Width="30"/>
         </StatusBar>
     </Grid>
 </Window>
