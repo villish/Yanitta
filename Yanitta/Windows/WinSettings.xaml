@@ -60,23 +60,23 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="PlayerName" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerName, Converter={StaticResource integerConverter}}" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerName, Converter={yanitta:StringToIntConverter}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="PlayerClass" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerClass, Converter={StaticResource integerConverter}}" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerClass, Converter={yanitta:StringToIntConverter}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="IsInGame" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding IsInGame, Converter={StaticResource integerConverter}}" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding IsInGame, Converter={yanitta:StringToIntConverter}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="ExecuteBuffer" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding ExecuteBuffer, Converter={StaticResource integerConverter}}" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding ExecuteBuffer, Converter={yanitta:StringToIntConverter}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label Width="200" Content="Injected address" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding InjectedAddress, Converter={StaticResource integerConverter}}" />
+                <TextBox Width="250" TextAlignment="Right" Text="{Binding InjectedAddress, Converter={yanitta:StringToIntConverter}}" />
             </StackPanel>
         </StackPanel>
 

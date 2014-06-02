@@ -39,14 +39,6 @@
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
 
-                    <!--Converters-->
-                    <yanitta:EnumToImageConverter        x:Key="enumToImage" />
-                    <yanitta:StringToIntConverter        x:Key="integerConverter" />
-                    <yanitta:EnumToLocalizedSrtConverter x:Key="EnumToStr" />
-                    <yanitta:CollectionToCountConverter  x:Key="CollectionToCount" />
-                    <yanitta:ResizeConverter             x:Key="ResizeConverter" />
-                    <yanitta:ListItemIndexConverter      x:Key="rowIndexConverter" />
-
                     <!--Collections-->
                     <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:App.ProcessList}}" />
 
