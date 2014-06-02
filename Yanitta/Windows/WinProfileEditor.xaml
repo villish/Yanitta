@@ -101,7 +101,8 @@
                                 </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="250" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
+                                        <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Converter={StaticResource rowIndexConverter}}" />
+                                        <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
                                         <GridViewColumn Width="30" Header="Control">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -170,6 +171,7 @@
                                 </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
+                                        <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ListViewItem}, Converter={StaticResource rowIndexConverter}}" />
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
                                         <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
 
