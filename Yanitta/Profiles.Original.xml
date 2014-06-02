@@ -2882,8 +2882,8 @@ return useCooldown;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and unitFocus > 35 then
-    local focus = UnitPower("player");
+local focus = UnitPower("player");
+if not setAoE and focus > 35 then
     --local lowHP = (UnitHealth(ability.Target) or 0) < (UnitHealthMax("player") * 3);
     -- Если Стая воронов скоро откатится, копим для нее концентрацию
     if useCooldown and IsPlayerSpell(131894) and SpellCD(131894) < 2 and focus < 80 then
