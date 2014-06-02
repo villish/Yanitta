@@ -163,15 +163,15 @@ end
 
 -- Возвращает дистанцию между двумя игроками
 function GetDistance(unit1, unit2)
-    local a1, b1, c1, d1 = select(2, GetCurrentMapDungeonLevel());
-    if not (a1 and b1 and c1 and d1) then
-        a1, b1, c1, d1 = select(2, GetCurrentMapZone());
+    local lvl, a1, b1, a2, b2 = GetCurrentMapDungeonLevel();
+    if not (a1 and b1 and a2 and b2) then
+        lvl, a1, y1, a2, y2 = GetCurrentMapZone();
     end
-    if a1 and b1 and c1 and d1 then
+    if a1 and b1 and a2 and b2 then
         local x1, y1 = GetPlayerMapPosition(unit1);
         local x2, y2 = GetPlayerMapPosition(unit2);
-        local dX = ((x1 - x2) * abs(c1 - a1)) ^ 2;
-        local dY = ((y1 - y2) * abs(d1 - b1)) ^ 2;
+        local dX = ((x1 - x2) * abs(a2 - a1)) ^ 2;
+        local dY = ((y1 - y2) * abs(b2 - b1)) ^ 2;
         return sqrt(dX + dY);
     end
 end
@@ -346,7 +346,7 @@ end
 -- Возвращает: unit, count или nil - если диспелить нечего.
 function GetDispellInfo(dispeller_type)
     local dispeller = dispeller_type or "NONE";
-    local d_class   = select(2, UnitClass("player")) or "";
+    local d_class   = select(2, UnitClass("player"));
     local c_rec     = DISPELL_TABLE[d_class.."_"..dispeller];
 
     if not c_rec then return end
@@ -362,9 +362,11 @@ function GetDispellInfo(dispeller_type)
         end
     end
     if #dispellTable > 0 then
-        table.sort(dispellTable, function(A, B)
-            return A.Count > B.Count;
-        end);
+        if #dispellTable > 1 then
+            table.sort(dispellTable, function(A, B)
+                return A.Count > B.Count;
+            end);
+        end
         return dispellTable[1].Unit, dispellTable;
     end
 end
