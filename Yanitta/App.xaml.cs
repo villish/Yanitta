@@ -13,12 +13,13 @@ namespace Yanitta
 
         static App()
         {
-            ConsoleWriter.Initialize("Yanitta.log", true);
             ProcessList = new ProcessList();
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            ConsoleWriter.Initialize("Yanitta.log", true);
+
             this.Dispatcher.UnhandledException += (o, ex) => {
                 if (ex.Exception is YanittaException)
                 {

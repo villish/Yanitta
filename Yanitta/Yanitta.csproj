@@ -94,10 +94,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Misk\ConsoleWriter.cs" />
-    <Compile Include="Misk\Converters\EnumToLocalizedSrtConverter.cs" />
-    <Compile Include="Misk\Converters\ResizeConverter.cs" />
-    <Compile Include="Misk\Converters\StringToIntConverter.cs" />
-    <Compile Include="Misk\Converters\CollectionToCountConverter.cs" />
+    <Compile Include="Misk\Converters\ConverterBase.cs" />
+    <Compile Include="Misk\Converters\YanittaConverters.cs" />
     <Compile Include="Misk\ProcessList.cs" />
     <Compile Include="Misk\ProcessMemory.cs" />
     <Compile Include="Misk\YanittaException.cs" />
@@ -108,7 +106,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Localization.resx</DependentUpon>
     </Compile>
-    <Compile Include="Misk\Converters\EnumToImageConverter.cs" />
     <Compile Include="Misk\Extensions.cs" />
     <Compile Include="Misk\WowTypes.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

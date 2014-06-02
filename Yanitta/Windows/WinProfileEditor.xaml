@@ -101,7 +101,8 @@
                                 </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="250" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
+                                        <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl}, Converter={yanitta:ItemsControlIndexConverter}}" />
+                                        <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
                                         <GridViewColumn Width="30" Header="Control">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -170,13 +171,14 @@
                                 </ListView.ContextMenu>
                                 <ListView.View>
                                     <GridView>
+                                        <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl}, Converter={yanitta:ItemsControlIndexConverter}}" />
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
                                         <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
 
                                         <GridViewColumn Header="{x:Static yanitta:Localization.Target}" Width="100" x:Name="hTarget">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={StaticResource ResizeConverter}, ElementName=hTarget}"
+                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={yanitta:ResizeConverter}, ElementName=hTarget}"
                                                               ItemsSource="{Binding Source={StaticResource TargetValues}}" SelectedValue="{Binding Target}"
                                                               ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
                                                 </DataTemplate>
@@ -186,13 +188,13 @@
                                         <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={StaticResource ResizeConverter}, ElementName=hIsMovingCheck}"
+                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={yanitta:ResizeConverter}, ElementName=hIsMovingCheck}"
                                                               ItemsSource="{Binding Source={StaticResource MovingValues}}"
                                                               SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text="{Binding ., Converter={StaticResource EnumToStr}}"
-                                                                           ToolTip="{Binding ., ConverterParameter=ToolTip, Converter={StaticResource EnumToStr}}"/>
+                                                                <TextBlock Text="{Binding ., Converter={yanitta:EnumToLocalizedSrtConverter}}"
+                                                                           ToolTip="{Binding ., ConverterParameter=ToolTip, Converter={yanitta:EnumToLocalizedSrtConverter}}"/>
                                                             </DataTemplate>
                                                         </ComboBox.ItemTemplate>
                                                     </ComboBox>
@@ -292,8 +294,8 @@
                                                           SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding Path=., Converter={StaticResource EnumToStr}}"
-                                                       ToolTip="{Binding Path=., Converter={StaticResource EnumToStr}, ConverterParameter=ToolTip}"/>
+                                                <TextBlock Text="{Binding Path=., Converter={yanitta:EnumToLocalizedSrtConverter}}"
+                                                       ToolTip="{Binding Path=., Converter={yanitta:EnumToLocalizedSrtConverter}, ConverterParameter=ToolTip}"/>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
@@ -322,8 +324,8 @@
         <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1" HorizontalContentAlignment="Center" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding Class, Converter={StaticResource enumToImage}}" Width="64"
-                                    ToolTip="{Binding Class, Converter={StaticResource EnumToStr}}" Cursor="Hand" />
+                    <Image Source="{Binding Class, Converter={yanitta:EnumToImageConverter}}" Width="64"
+                                    ToolTip="{Binding Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Cursor="Hand" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -350,14 +352,14 @@
 
         <StatusBar Grid.ColumnSpan="2" Grid.Row="2">
             <TextBlock Text="{x:Static yanitta:Localization.CurentProfile}"/>
-            <Image Source="{Binding ProfileList/Class, Converter={StaticResource enumToImage}}" />
-            <TextBlock Text="{Binding ProfileList/Class, Converter={StaticResource EnumToStr}}" Width="100"/>
+            <Image Source="{Binding ProfileList/Class, Converter={yanitta:EnumToImageConverter}}" />
+            <TextBlock Text="{Binding ProfileList/Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Width="100"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.AbilityCount}"/>
-            <TextBlock Text="{Binding ProfileList/RotationList/AbilityList, Converter={StaticResource CollectionToCount}}" Width="30"/>
+            <TextBlock Text="{Binding ProfileList/RotationList/AbilityList.Count}" Width="30"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.RotationCount}"/>
-            <TextBlock Text="{Binding ProfileList/RotationList, Converter={StaticResource CollectionToCount}}" Width="30"/>
+            <TextBlock Text="{Binding ProfileList/RotationList.Count}" Width="30"/>
         </StatusBar>
     </Grid>
 </Window>

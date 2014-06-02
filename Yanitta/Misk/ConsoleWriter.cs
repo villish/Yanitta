@@ -12,15 +12,18 @@ namespace Yanitta
 
         public ConsoleWriter(string fileName, bool isRegisterUnhandledException)
         {
-            m_writer = new StreamWriter(fileName, false);
+            m_writer = new StreamWriter(Path.Combine(Environment.CurrentDirectory, fileName), false);
             m_writer.AutoFlush = true;
             Console.SetOut(this);
             Debug.Listeners.Add(new TextWriterTraceListener(this));
+            Trace.Listeners.Add(new TextWriterTraceListener(this));
 
             if (isRegisterUnhandledException)
             {
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             }
+
+            m_writer.WriteLine("===================== START {0:dd.MM.yyyy} =====================", DateTime.Now);
         }
 
         public static void Initialize(string fileName, bool isRegisterUnhandledException = false)
@@ -66,7 +69,9 @@ namespace Yanitta
             base.Close();
             if (m_writer != null)
             {
+                m_writer.WriteLine("====================== END {0:dd.MM.yyyy} ======================", DateTime.Now);
                 Debug.Listeners.Clear();
+                Trace.Listeners.Clear();
                 m_writer.Close();
                 m_writer = null;
             }
