@@ -2596,12 +2596,12 @@ if HasBuff("player", 5384) then
     return true;
 end
 
--- При проке "На изготовку" прерываем чтение "Выстрел кобры"
-if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
-    if HasBuff("player", 56453) then
-        SpellStopCasting();
-    end
-end
+---- При проке "На изготовку" прерываем чтение "Выстрел кобры"
+--if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
+--    if HasBuff("player", 56453) then
+--        SpellStopCasting();
+--    end
+--end
 
 -- Установка пета в указанную позицию
 if IsMouseButtonDown(4) then
@@ -2720,6 +2720,38 @@ if useCooldown then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Перенаправление">
+        <SpellID>34477</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMouseButtonDown(5) then
+    if UnitExists("focus") and UnitIsFriend("player", "focus") and not UnitIsDeadOrGhost("focus") then
+        return "fucus";
+    elseif UnitExists("mouseover") and UnitIsFriend("player", "mouseover") and not UnitIsDeadOrGhost("mouseover") then
+        return "mouseover";
+    elseif UnitExists("pet") and not UnitIsDeadOrGhost("pet") then
+        return "pet";
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Встречный выстрел">
+        <SpellID>147362</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt(ability.Target);
+]]></Lua>
+      </Ability>
       <Ability Name="Усмиряющий выстрел">
         <SpellID>19801</SpellID>
         <Target>Target</Target>
@@ -2767,7 +2799,7 @@ return setAoE;
         <SpellID>53301</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
+        <CancelCasting>true</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -2779,7 +2811,7 @@ return true;
         <SpellID>53351</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
+        <CancelCasting>true</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -2883,7 +2915,7 @@ return useCooldown;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local focus = UnitPower("player");
-if not setAoE and focus > 35 then
+if not setAoE and focus > 40 then
     --local lowHP = (UnitHealth(ability.Target) or 0) < (UnitHealthMax("player") * 3);
     -- Если Стая воронов скоро откатится, копим для нее концентрацию
     if useCooldown and IsPlayerSpell(131894) and SpellCD(131894) < 2 and focus < 80 then
@@ -2924,26 +2956,6 @@ return IsSpellInRange(GetSpellInfo(3044), "target") == 1;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Перенаправление">
-        <SpellID>34477</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsMouseButtonDown(5) then
-    if UnitExists("focus") and UnitIsFriend("focus") and not UnitIsDeadOrGhost("focus") then
-        return "fucus";
-    elseif UnitExists("mouseover") and UnitIsFriend("mouseover") and not UnitIsDeadOrGhost("mouseover") then
-        return "mouseover";
-    elseif UnitExists("pet") and not UnitIsDeadOrGhost("pet") then
-        return "pet";
-    end
-end
 ]]></Lua>
       </Ability>
     </Rotation>
