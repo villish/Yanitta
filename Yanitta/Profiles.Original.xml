@@ -2926,6 +2926,26 @@ return IsSpellInRange(GetSpellInfo(3044), "target") == 1;
 return true;
 ]]></Lua>
       </Ability>
+      <Ability Name="Перенаправление">
+        <SpellID>34477</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMouseButtonDown(5) then
+    if UnitExists("focus") and UnitIsFriend("focus") and not UnitIsDeadOrGhost("focus") then
+        return "fucus";
+    elseif UnitExists("mouseover") and UnitIsFriend("mouseover") and not UnitIsDeadOrGhost("mouseover") then
+        return "mouseover";
+    elseif UnitExists("pet") and not UnitIsDeadOrGhost("pet") then
+        return "pet";
+    end
+end
+]]></Lua>
+      </Ability>
     </Rotation>
     <Rotation Name="Повелитель зверей">
       <HotKey Key="C" Modifier="Alt" />
