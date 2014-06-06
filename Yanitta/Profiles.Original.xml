@@ -570,7 +570,7 @@ function CheckAndCastAbility(ability)
         end
     end
 
-    if ability.CencelCasting or ability.DropChanel then
+    if ability.CancelCasting or ability.DropChanel then
         SpellStopCasting();
     end
     if ability.Target == "mouselocation" then
@@ -2854,7 +2854,7 @@ return not setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return unitFocus >= 15;
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Ужасный зверь">
