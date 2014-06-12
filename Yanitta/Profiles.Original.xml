@@ -227,15 +227,19 @@ function CheckInterrupt(unit, sec)
 end
 
 -- Проверяет наличие исступления.
-function CheckEnrage(unit)
+function CheckEnrage(unit, ...)
     if UnitCanAttack("player", unit) then
+        -- Исступление отображается как пустая строка
+        local dispels = { "", ... };
         for i = 1, 40 do
             local name,_,_,_,dispelType = UnitBuff(unit, i);
             if not name then
                 return;
-            -- Исступление отображается как пустая строка
-            elseif dispelType == "" then
-                return true;
+            end
+            for _, dispell in ipairs(dispels) do
+                if dispelType == dispell then
+                    return true;
+                end
             end
         end
     end
@@ -2779,7 +2783,7 @@ return CheckInterrupt(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if CheckEnrage(ability.Target) then
+if CheckEnrage(ability.Target, "Magic") then
     return true;
 end
 ]]></Lua>
