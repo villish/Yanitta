@@ -2724,7 +2724,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Рык">
-        <SpellID>0</SpellID>
+        <SpellID>2649</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2732,13 +2732,13 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---if not GetSpellAutocast(ability.SpellId, "pet") then
---    if not (UnitInRaid("player") or UnitInParty("player")) then
---        if UnitThreatSituation("pet", "target") < 2 then
---            return true;
---        end
---    end
---end
+if not select(2, GetSpellAutocast(GetSpellInfo(ability.SpellId), "pet")) then
+    if not (UnitInRaid("player") or UnitInParty("player")) then
+        if (UnitThreatSituation("pet", "target") or 0) < 2 then
+            return true;
+        end
+    end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Перенаправление">
