@@ -509,9 +509,8 @@ function CheckAndCastAbility(ability)
         return;
     end
 
-    local recastDelay = AddonFrame.ping or 0.05;
-    if ability.SetRecastDelay and ability.LastTargetGUID
-        and UnitGUID(ability.Target) == ability.LastTargetGUID then
+    local recastDelay = AddonFrame.ping or 0.005;
+    if ability.SetRecastDelay and UnitGUID(ability.Target) == ability.LastTargetGUID then
         recastDelay = recastDelay + 300;
         if (GetTime() - ability.LastCastingTime) < 1 then
             return;
@@ -596,29 +595,6 @@ function CheckAndCastAbility(ability)
     return true;
 end
 
-function ChangeRotation(rotation)
-    --assert(type(AddonFrame) ~= "table",
-    --    '\"AddonFrame\" не существует в текущем контексте');
-    if not AddonFrame then return end;
-    if AddonFrame.CurentRotation and (not rotation or rotation == AddonFrame.CurentRotation) then
-        AddonFrame.CurentRotation = nil;
-        AddonFrame:UnregisterAllEvents();
-        AddonFrame.print("|cfff5360cРотация отключена.|r", true);
-        PlaySound("PAPERDOLLCLOSE", "Master");
-    elseif rotation then
-        AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
-        AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
-        AddonFrame:RegisterEvent("PLAYER_LOGOUT");
-        AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
-        AddonFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
-        AddonFrame:RegisterEvent("SPELLS_CHANGED");
-        AddonFrame.CurentRotation = rotation;
-        AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
-        PlaySound("PAPERDOLLOPEN", "Master");
-        CheckAllSpells();
-    end
-end
-
 function AddonFrame_OnEvent(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         self:Show();
@@ -635,7 +611,7 @@ function AddonFrame_OnEvent(self, event, ...)
               destGUID,  destName, destFlags,  destFlags2,
               spellId,   spellName,spellSchool, param15 = ...;
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
-            if NOTIFY_CAST_TABLE[spellId] then
+            if DebugMode and NOTIFY_CAST_TABLE[spellId] then
                 print(NOTIFY_CAST_TABLE[spellId]);
             end
             for i, ability in ipairs(ABILITY_TABLE) do
@@ -695,6 +671,29 @@ if type(AddonFrame) ~= "table" then
     end
     AddonFrame:SetPoint("CENTER", 0, 200);
     AddonFrame:Show();
+end
+
+function ChangeRotation(rotation)
+    --assert(type(AddonFrame) ~= "table",
+    --    '\"AddonFrame\" не существует в текущем контексте');
+    if not AddonFrame then return end;
+    if AddonFrame.CurentRotation and (not rotation or rotation == AddonFrame.CurentRotation) then
+        AddonFrame.CurentRotation = nil;
+        AddonFrame:UnregisterAllEvents();
+        AddonFrame.print("|cfff5360cРотация отключена.|r", true);
+        PlaySound("PAPERDOLLCLOSE", "Master");
+    elseif rotation then
+        AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
+        AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
+        AddonFrame:RegisterEvent("PLAYER_LOGOUT");
+        AddonFrame:RegisterEvent("WORLD_MAP_UPDATE");
+        AddonFrame:RegisterEvent("MODIFIER_STATE_CHANGED");
+        AddonFrame:RegisterEvent("SPELLS_CHANGED");
+        AddonFrame.CurentRotation = rotation;
+        AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
+        PlaySound("PAPERDOLLOPEN", "Master");
+        CheckAllSpells();
+    end
 end
 ]]></Lua>
   <Profile Class="Warrior">
