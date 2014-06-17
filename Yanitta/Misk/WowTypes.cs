@@ -33,7 +33,12 @@
         Player,
         Vehicle,
         Mouseover,
-        MouseLocation
+        MouseLocation,
+        Boss1,
+        Boss2,
+        Boss3,
+        Boss4,
+        Boss5,
     }
 
     /// <summary>
