@@ -483,7 +483,7 @@ function CheckKnownAbility(ability)
     -- Есть заклинания, которые имеют одинаковое название и разные Id
     local spellId = select(2, GetSpellBookItemInfo(spellName));
     if spellId and ability.SpellId ~= spellId then
-        print("|cff15bd05Заклинание: "..spellName.." Id "..tostring(ability.SpellId).." -> "..tostring(spellId).."|r");
+        print(string.format("|cff15bd05Заклинание: %s Id %d -> %d|r", spellName, ability.SpellId, spellId));
         ability.SpellId = spellId;
         ability.IsKnown = true;
     end
