@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace Yanitta
@@ -25,7 +27,8 @@ namespace Yanitta
         /// <summary>
         /// Тип цели.
         /// </summary>
-        public TargetType Target           { get; set; }
+        [XmlElement("Target")]
+        public List<TargetType> TargetList { get; set; }
 
         /// <summary>
         /// Прерывать канальные заклинания.
@@ -68,6 +71,11 @@ namespace Yanitta
             set { this.Lua = value.GetTrimValue();      }
         }
 
+        public Ability()
+        {
+            TargetList = new List<TargetType>();
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -75,7 +83,7 @@ namespace Yanitta
         public override string ToString()
         {
             // переменные
-            var target            = this.Target.ToString().ToLower();
+            //var target            = this.Target.ToString().ToLower();
             var cancelChannel     = this.CancelChannel.ToString().ToLower();
             var cancelCasting     = this.CancelCasting.ToString().ToLower();
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
@@ -89,14 +97,16 @@ namespace Yanitta
             builder.AppendFormatLine("table.insert(ABILITY_TABLE, {");
             builder.AppendFormatLine("    SpellId           = {0},",     this.SpellID);
             builder.AppendFormatLine("    Name              = \"{0}\",", this.Name);
-            builder.AppendFormatLine("    Target            = \"{0}\",", target);
             builder.AppendFormatLine("    IsMovingCheck     = \"{0}\",", isMovingCheck);
             builder.AppendFormatLine("    DropChanel        = {0},",     cancelChannel);
             builder.AppendFormatLine("    CancelCasting     = {0},",     cancelCasting);
             builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
             builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
-            builder.AppendFormatLine("    LastCastingTime   = 0,");
-            builder.AppendFormatLine("    Func = function(ability)\n        {0}\n    end",
+            builder.AppendFormatLine(@"    TargetList        = {{ {0} }},",
+                string.Join(", ", TargetList.Select(n =>
+                    string.Format(@"{{ Target = ""{0}"", Guid = nil, LastCastingTime = 0 }}", n.ToString().ToLower()))));
+
+            builder.AppendFormatLine("    Func = function(ability, targetInfo)\n        {0}\n    end",
                 string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
             builder.AppendFormatLine("});");
 

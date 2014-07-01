@@ -23,27 +23,6 @@ moving_spell_table = {
     108839, -- Плавучая льдина
 };
 
-RaidTargetList = { "target", "focus", "mouseover", "boss1", "boss2", "boss3", "boss4", "boss5", "arena1", "arena2", "arena3", "arena4", "arena5" };
-
-TargetListInfo = {
-    -- misk
-    ["target"] = {},
-    ["focus"] = {},
-    ["mouseover"] = {},
-    -- raid
-    ["boss1"] = {},
-    ["boss2"] = {},
-    ["boss3"] = {},
-    ["boss4"] = {},
-    ["boss5"] = {},
-    -- arena
-    ["arena1"] = {},
-    ["arena2"] = {},
-    ["arena3"] = {},
-    ["arena4"] = {},
-    ["arena5"] = {},
-}
-
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
 --  Имя эффекта
@@ -500,33 +479,30 @@ function CheckAllSpells()
     end
 end
 
-function CheckAndCastAbility(ability)
+function CheckAndCastAbility(ability, targetInfo)
     if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
         return;
     end
 
-    local recastDelay = AddonFrame.ping or 0.05;
-    if ability.SetRecastDelay then
-        recastDelay = recastDelay + 300;
-        if (GetTime() - ability.LastCastingTime) < 1 then
-            return;
-        end
+    if ability.SetRecastDelay
+    and ability.Guid == UnitGUID(targetInfo.Target) and ability.LastCastingTime >= GetTime() then
+        return;
     end
 
     local spellInfo = GetSpellInfo(ability.SpellId);
 
     if ability.SpellId < 1 then
-        return ability.Func(ability);
+        return ability.Func(ability, targetInfo);
     elseif not (ability.IsKnown and IsUsableSpell(spellInfo)) then
         return;
     end
 
     local start, duration, enable = GetSpellCooldown(ability.SpellId);
-    if enable == 1 and ((duration + start) - GetTime()) > recastDelay then
+    if enable == 1 and ((duration + start) - GetTime()) > AddonFrame.ping then
         return;
     end
 
-    local castPing = (AddonFrame.ping * 1000) - recastDelay;
+    local castPing = (AddonFrame.ping * 1000);
     if not ability.CancelCasting then
         local endTime = select(6, UnitCastingInfo("player")) or 0;
         if (endTime - (GetTime() * 1000)) >= castPing then
@@ -546,24 +522,24 @@ function CheckAndCastAbility(ability)
         return;
     end
 
-    local result = ability.Func(ability);
+    local result = ability.Func(ability, targetInfo);
     if not result then
         return;
     elseif type(result) == "string" then
-        ability.Target = result;
+        targetInfo.Target = result;
     end
 
-    if ability.Target ~= "none" and ability.Target ~= "player" and ability.Target ~= "mouselocation" then
-        if not UnitExists(ability.Target) then
+    if targetInfo.Target ~= "none" and targetInfo.Target ~= "player" and targetInfo.Target ~= "mouselocation" then
+        if not UnitExists(targetInfo.Target) then
             return;
-        elseif SpellHasRange(spellInfo) and IsSpellInRange(spellInfo, ability.Target) == 0 then
+        elseif SpellHasRange(spellInfo) and IsSpellInRange(spellInfo, targetInfo.Target) == 0 then
             return;
-        elseif IsHelpfulSpell(spellInfo) and not UnitIsFriend("player", ability.Target) then
+        elseif IsHelpfulSpell(spellInfo) and not UnitIsFriend("player", targetInfo.Target) then
             return;
-        elseif IsHarmfulSpell(spellInfo) and UnitIsFriend("player", ability.Target) then
+        elseif IsHarmfulSpell(spellInfo) and UnitIsFriend("player", targetInfo.Target) then
             return;
-        elseif not UnitIsFriend("player", ability.Target) then
-            if UnitIsDeadOrGhost(ability.Target) or not UnitCanAttack("player", ability.Target) then
+        elseif not UnitIsFriend("player", targetInfo.Target) then
+            if UnitIsDeadOrGhost(targetInfo.Target) or not UnitCanAttack("player", targetInfo.Target) then
                 return;
             end
         end
@@ -572,21 +548,17 @@ function CheckAndCastAbility(ability)
     if ability.CancelCasting or ability.DropChanel then
         SpellStopCasting();
     end
-    if ability.Target == "mouselocation" then
-        local last = UnitGUID("target");
+    if target == "mouselocation" then
         CastSpellByName(spellInfo, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
         CastSpellByName(spellInfo, nil);
-        if UnitGUID("target") ~= last then
-            TargetLastTarget();
-        end
-    elseif ability.Target == "none" then
+    elseif target == "none" then
         LAST_TARGET = UnitGUID("player");
         CastSpellByName(spellInfo, nil);
     else
-        LAST_TARGET = UnitGUID(ability.Target);
-        CastSpellByName(spellInfo, ability.Target);
+        LAST_TARGET = UnitGUID(target);
+        CastSpellByName(spellInfo, targetInfo.Target);
     end
     return true;
 end
@@ -633,17 +605,37 @@ function AddonFrame_OnEvent(self, event, ...)
             if NOTIFY_CAST_TABLE[spellId] then
                 print(NOTIFY_CAST_TABLE[spellId]);
             end
-            for i, ability in ipairs(ABILITY_TABLE) do
-                if spellId == ability.SpellId then
-                    ability.LastCastingTime = GetTime();
-                    ability.LastTargetGUID  = destGUID;
+            for _,ability in ipairs(ABILITY_TABLE) do
+                for _,targetInfo in ipairs(ability.TargetList) do
+                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
+                        targetInfo.Guid = destGUID,
+                        targetInfo.LastCastingTime = GetTime() + 1000,
+                    end
                 end
             end
-        elseif subEvent == "SPELL_CAST_FAILED" then
+        elseif subEvent == "SPELL_CAST_START" and sourceGUID == UnitGUID("player") then
+            for _,ability in ipairs(ABILITY_TABLE) do
+                for _,targetInfo in ipairs(ability.TargetList) do
+                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
+                        targetInfo.Guid = destGUID,
+                        targetInfo.LastCastingTime = GetTime() + 1000 + (select(7, GetSpellInfo(spellId)) or 0),
+                    end
+                end
+            end
+        elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
-                LOSS_TABLE[LAST_TARGET] = { ctime  = GetTime(), cspell = spellId };
-            elseif param15 == SPELL_FAILED_NOT_BEHIND then
-                AddonFrame.LastNotBehindTime = GetTime();
+                LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
+            end
+            for _,ability in ipairs(ABILITY_TABLE) do
+                for _,targetInfo in ipairs(ability.TargetList) do
+                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
+                        targetInfo.Guid = nil;
+                        targetInfo.LastCastingTime = 0;
+                        if param15 == SPELL_FAILED_NOT_BEHIND then
+                            targetInfo.LastNotBehindTime = GetTime();
+                        end
+                    end
+                end
             end
         end
     end
@@ -659,8 +651,10 @@ function AddonFrame_OnUpdate(self, elapsed)
             IS_MOVING = IsMoving();
             AddonFrame.ping = select(4, GetNetStats()) / 1000;
             for _,ability in ipairs(ABILITY_TABLE) do
-                if CheckAndCastAbility(ability) then
-                    break;
+                for _,target in ipairs(ability.TargetList) do
+                    if CheckAndCastAbility(ability, target) then
+                        break;
+                    end
                 end
             end
         end
@@ -1016,7 +1010,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele and agroStatus > 2 then
-    if UnitHealth(ability.Target) > (UnitHealthMax("player") * 3) then
+    if UnitHealth(TargetInfo.Target) > (UnitHealthMax("player") * 3) then
         return true;
     end
 end
@@ -1043,7 +1037,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitIsPlayer(ability.Target) then
+if UnitIsPlayer(TargetInfo.Target) then
     return true;
 elseif rage > 60 and (playerHP > 70 or agroStatus < 3) then
     return true;
@@ -1060,7 +1054,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
-return NeedReflect(ability.Target, "player");
+return NeedReflect(TargetInfo.Target, "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Массовое отражение заклинаний">
@@ -1084,7 +1078,7 @@ return NeedMassReflect();
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitIsPlayer(ability.Target) and not HasDebuff(ability.Target, 1715) then
+if UnitIsPlayer(TargetInfo.Target) and not HasDebuff(TargetInfo.Target, 1715) then
     return true;
 end
 ]]></Lua>
@@ -1098,8 +1092,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitIsPlayer(ability.Target) then
-    local class = select(2, UnitClass(ability.Target));
+if UnitIsPlayer(TargetInfo.Target) then
+    local class = select(2, UnitClass(TargetInfo.Target));
     if  (class == "WARRIOR") or
         (class == "PALDIN")  or
         (class == "ROGUE")   or
@@ -1147,7 +1141,7 @@ return true;
         <Lua><![CDATA[
 -- Это заклинание не затрагивает ГКД
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if UnitIsPlayer(ability.Target) and HealthByPercent(ability.Target) > 20 then
+if UnitIsPlayer(TargetInfo.Target) and HealthByPercent(TargetInfo.Target) > 20 then
     return true;
 elseif not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308))) then
     return true;
@@ -1722,7 +1716,7 @@ return CheckInterrupt("target");
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
-return NeedReflect(ability.Target, "player");
+return NeedReflect(TargetInfo.Target, "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Массовое отражение заклинаний">
@@ -1747,7 +1741,7 @@ return NeedMassReflect();
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitIsPlayer(ability.Target) and not HasDebuff(ability.Target, 1715) then
+if UnitIsPlayer(TargetInfo.Target) and not HasDebuff(TargetInfo.Target, 1715) then
     return true;
 end
 ]]></Lua>
@@ -1959,7 +1953,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return (rage > 40 or HasBuff("player", 1719))
-    and HealthByPercent(ability.Target) > 20;
+    and HealthByPercent(TargetInfo.Target) > 20;
 ]]></Lua>
       </Ability>
       <Ability Name="Командирский крик">
@@ -2768,7 +2762,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(ability.Target);
+return CheckInterrupt(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Усмиряющий выстрел">
@@ -2780,7 +2774,7 @@ return CheckInterrupt(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if CheckEnrage(ability.Target) then
+if CheckEnrage(TargetInfo.Target) then
     return true;
 end
 ]]></Lua>
@@ -2847,7 +2841,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and not HasDebuff(ability.Target, 118253, "PLAYER") then
+if not setAoE and not HasDebuff(TargetInfo.Target, 118253, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -3190,7 +3184,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(ability.Target);
+return CheckInterrupt(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Усмиряющий выстрел">
@@ -3202,7 +3196,7 @@ return CheckInterrupt(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if CheckEnrage(ability.Target) then
+if CheckEnrage(TargetInfo.Target) then
     return true;
 end
 ]]></Lua>
@@ -3245,7 +3239,7 @@ return setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and not HasDebuff(ability.Target, 118253, "PLAYER") then
+if not setAoE and not HasDebuff(TargetInfo.Target, 118253, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -4417,47 +4411,33 @@ end
       </Ability>
       <Ability Name="Слово тьмы: Боль">
         <SpellID>589</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if IS_MOVING or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 2 then
-            return target;
-        end
-    end
+if IS_MOVING or select(3, HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER")) < 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Прикосновение вампира">
         <SpellID>34914</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if not IS_MOVING then
-    for _, target in ipairs(RaidTargetList) do
-        if UnitExists(target)
-        and UnitCanAttack("player", target)
-        and not UnitIsDeadOrGhost(target)
-        and not UnitIsFriend("player", target)
-        and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-            if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3.5 then
-                return target;
-            end
-        end
-    end
+if select(3, HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER")) < 3.5 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -4554,8 +4534,8 @@ DIESES_FROST_FEVER        = 55095;
 
 -- это надо убрать, так как ИД заклинаний разные на разных спеках.
 function FillDiesesInfo(ability)
-    blood_plague,_,blood_plague_rem = HasDebuff(ability.Target, DIESES_BLOOD_PLAGUE, "PLAYER");-- Кровавая чума
-    frost_fever, _,frost_fever_rem  = HasDebuff(ability.Target, DIESES_FROST_FEVER, "PLAYER");-- Озноб
+    blood_plague,_,blood_plague_rem = HasDebuff(TargetInfo.Target, DIESES_BLOOD_PLAGUE, "PLAYER");-- Кровавая чума
+    frost_fever, _,frost_fever_rem  = HasDebuff(TargetInfo.Target, DIESES_FROST_FEVER, "PLAYER");-- Озноб
 end
 
 function GetFreeRuneCountForType(runeType)
@@ -5461,8 +5441,8 @@ isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 3 -- Кровавая чума
-    or select(3, HasDebuff(ability.Target, 55095, "PLAYER")) < 3 -- Озноб
+return select(3, HasDebuff(TargetInfo.Target, 55078, "PLAYER")) < 3 -- Кровавая чума
+    or select(3, HasDebuff(TargetInfo.Target, 55095, "PLAYER")) < 3 -- Озноб
 ]]></Lua>
       </Ability>
       <Ability Name="Кровоотвод">
@@ -5530,7 +5510,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return select(3, HasDebuff(ability.Target, 55078, "PLAYER")) < 3 -- Кровавая чума
+return select(3, HasDebuff(TargetInfo.Target, 55078, "PLAYER")) < 3 -- Кровавая чума
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяной удар (1H)">
@@ -5559,7 +5539,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HealthByPercent(ability.Target) < 35 then
+if HealthByPercent(TargetInfo.Target) < 35 then
     return true;
 end
 ]]></Lua>
@@ -5574,7 +5554,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return HasBuff("player", 59057) -- Иней
-    or select(3, HasDebuff(ability.Target, 55095, "PLAYER")) < 2; -- Озноб
+    or select(3, HasDebuff(TargetInfo.Target, 55095, "PLAYER")) < 2; -- Озноб
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяной удар (1H)">
@@ -5772,7 +5752,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, 8050, "PLAYER")) <= 3 then
+if select(3, HasDebuff(TargetInfo.Target, 8050, "PLAYER")) <= 3 then
     return true;
 end
 ]]></Lua>
@@ -5786,7 +5766,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, 8050, "PLAYER")) <= 3 then
+if select(3, HasDebuff(TargetInfo.Target, 8050, "PLAYER")) <= 3 then
     return true;
 end
 ]]></Lua>
@@ -5800,7 +5780,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(ability.Target, 8050, "PLAYER")) <= 3 then
+if select(3, HasDebuff(TargetInfo.Target, 8050, "PLAYER")) <= 3 then
     return true;
 end
 ]]></Lua>
@@ -6234,7 +6214,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(ability.Target);
+return CheckInterrupt(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Возгорание">
@@ -6249,7 +6229,7 @@ return CheckInterrupt(ability.Target);
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Так же важно использовать возгорание под прок тринек
 if useCooldown and (pyroCrit or igniteDamage > 100000) then
-    if select(3, HasDebuff(ability.Target, 12654, "PLAYER")) > 3 then
+    if select(3, HasDebuff(TargetInfo.Target, 12654, "PLAYER")) > 3 then
         return true;
     end
 end
@@ -6284,21 +6264,17 @@ return isInRange and useCooldown;
       <Ability Name="Живая бомба">
         <SpellID>44457</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    and IsSpellInRange(GetSpellInfo(133), target) == 1 then
-        if not HasDebuff(target, ability.SpellId, "PLAYER") then
-            return target;
-        end
+if IsSpellInRange(GetSpellInfo(133), TargetInfo.Target) == 1 then
+    if not HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER") then
+        return true;
     end
 end
 ]]></Lua>
@@ -6487,7 +6463,7 @@ return IsModKeyDown(mkLeftShift);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(ability.Target);
+return CheckInterrupt(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Зеркальное изображение">
@@ -6529,21 +6505,17 @@ return not HasBuff("player", 11426);
       <Ability Name="Живая бомба">
         <SpellID>44457</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    and IsSpellInRange(GetSpellInfo(116), target) == 1 then
-        if not HasDebuff(target, ability.SpellId, "PLAYER")then
-            return target;
-        end
+if IsSpellInRange(GetSpellInfo(116), TargetInfo.Target) == 1 then
+    if not HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER") then
+        return true;
     end
 end
 ]]></Lua>
@@ -6643,12 +6615,6 @@ return not HasBuff("player", 7302);
 setAoE = false;
 useCooldown = true;
 
-InterruptList = {
-    "target",
-    "focus",
-    "mouseover"
-};
-
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -6669,57 +6635,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
         end
     end
-end
-
-function QuestCore()
-
-    if IsModKeyDown(mkRightAlt) then
-        RunMacroText("/tar Властитель преисподней");
-        RunMacroText("/cast Порабощение демона");
-        return true;
-    end
-
-    --if UnitName("pet") == "Властитель преисподней" then
-        
-        if HealthByPercent("player") < 60 then
-            -- Пламенное дыхание Скверны
-            if SpellCD(138813) == 0 then
-                CastSpellByName(GetSpellInfo(138813), "player");
-            end
-        end
-
-        -- катаклизм
-        if UnitCastingInfo("focus") == GetSpellInfo(138564) then
-            -- рывок
-            if SpellCD(138796) == 0 then
-                CastSpellByName(GetSpellInfo(138796), "focus");
-            end
-        end
-
-        -- Стрела хаоса
-        if UnitCastingInfo("focus") == GetSpellInfo(138559) then
-            -- Демонический круг: Телепортация
-            if SpellCD(48020) == 0 then
-                SpellStopCasting();
-                CastSpellByName(GetSpellInfo(48020));
-            end
-        end
-    --else
-    --    if UnitExists("Властитель преисподней") then
-    --        TargetUnit("Властитель преисподней");
-    --        if UnitName("target") == "Властитель преисподней" then
-    --            CastSpellByName(GetSpellInfo(1098), "target");
-    --        end
-    --    end
-    --end
-
-
-    if UnitName("mouseover") == "Владыка судеб" then
-        if not HasDebuff("mouseover", 710) then
-            CastSpellByName("Изгнание", "mouseover");
-        end
-    end
-
 end
 ]]></Lua>
     <Rotation Name="Демонология">
@@ -7006,9 +6921,6 @@ if useCooldown and HasBuff("player", 113858) then
     UseItemBySlot(INVSLOT_HAND);
     useChaosBold = true;
 end
-
--- quest
---return QuestCore();
 ]]></Lua>
       </Ability>
       <Ability Name="Углевод">
@@ -7034,7 +6946,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(ability.Target);
+return CheckInterrupt(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Запрет чар">
@@ -7046,7 +6958,7 @@ return CheckInterrupt(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(ability.Target);
+return CheckInterrupt(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Проклятие стихий">
@@ -7058,8 +6970,8 @@ return CheckInterrupt(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitHealth(ability.Target) > (UnitHealthMax("player")*2) then
-    if not HasDebuff(ability.Target, 1490, "PLAYER") then
+if UnitHealth(TargetInfo.Target) > (UnitHealthMax("player")*2) then
+    if not HasDebuff(TargetInfo.Target, 1490, "PLAYER") then
         return true;
     end
 end
@@ -7074,7 +6986,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if power2 > 0 and useChaosBold and HealthByPercent(ability.Target) < 20 then
+if power2 > 0 and useChaosBold and HealthByPercent(TargetInfo.Target) < 20 then
     return true;
 end
 ]]></Lua>
@@ -7118,9 +7030,9 @@ end
         <Lua><![CDATA[
 if power2 > 0 and not RainOfFire and not FireAndBrimstone and ChaosCount == 0 then
     if UnitExists("target")
-        and not UnitIsUnit(ability.Target, "target")
+        and not UnitIsUnit(TargetInfo.Target, "target")
         and UnitIsEnemy("target", "player") then
-        if not HasDebuff(ability.Target, 80240, "PLAYER") then
+        if not HasDebuff(TargetInfo.Target, 80240, "PLAYER") then
             return true;
         end
     end
@@ -7138,9 +7050,9 @@ end
         <Lua><![CDATA[
 if power2 > 0 and not RainOfFire and not FireAndBrimstone and ChaosCount == 0 then
     if UnitExists("target")
-        and not (UnitIsUnit(ability.Target, "target") or UnitIsUnit(ability.Target, "focus"))
+        and not (UnitIsUnit(TargetInfo.Target, "target") or UnitIsUnit(TargetInfo.Target, "focus"))
         and UnitIsEnemy("target", "player") then
-        if not HasDebuff(ability.Target, 80240, "PLAYER") then
+        if not HasDebuff(TargetInfo.Target, 80240, "PLAYER") then
             return true;
         end
     end
@@ -7170,13 +7082,13 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if UnitHealth(ability.Target) < UnitHealthMax("player") then
+if UnitHealth(TargetInfo.Target) < UnitHealthMax("player") then
     return;
 end
 
 if FireAndBrimstone and power2 > 0 and isInRange and ChaosCount < 3
     and IsSpellKnown(108683) then
-    if select(3, HasDebuff(ability.Target, 108686, "PLAYER")) < 3 then
+    if select(3, HasDebuff(TargetInfo.Target, 108686, "PLAYER")) < 3 then
         return true;
     end
 end
@@ -7184,22 +7096,18 @@ end
       </Ability>
       <Ability Name="Жертвенный огонь">
         <SpellID>348</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    and IsSpellInRange(GetSpellInfo(1490), target) == 1 then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
-            return target;
-        end
+if IsSpellInRange(GetSpellInfo(1490), TargetInfo.Target) == 1 then
+    if select(3, HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER")) < 3 then
+        return true;
     end
 end
 ]]></Lua>
@@ -7319,22 +7227,16 @@ end
       <Ability Name="Запрет чар">
         <SpellID>132409</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>true</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(InterruptList) do
-    if UnitExists(target)
-        and UnitCanAttack("player", target)
-        and not UnitIsDeadOrGhost(target)
-        and not UnitIsFriend("player", target)
-        and IsSpellInRange(GetSpellInfo(ability.SpellId), targer) == 1 then
-        if CheckInterrupt(target) then
-            return target;
-        end
-    end
+if CheckInterrupt(TargetInfo.Target) then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -7347,8 +7249,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitHealth(ability.Target) > (UnitHealthMax("player")*2) then
-    if not HasDebuff(ability.Target, 1490) then
+if UnitHealth(TargetInfo.Target) > (UnitHealthMax("player")*2) then
+    if not HasDebuff(TargetInfo.Target, 1490) then
         return true;
     end
 end
@@ -7378,11 +7280,11 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and isInRange and power2 > 0 and SpellCD(74434) == 0 then
-    if UnitExists(ability.Target)
-        and UnitCanAttack("player", ability.Target)
-        and not UnitIsDeadOrGhost(ability.Target)
-        and not UnitIsFriend("player", ability.Target) then
-        if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
+    if UnitExists(TargetInfo.Target)
+        and UnitCanAttack("player", TargetInfo.Target)
+        and not UnitIsDeadOrGhost(TargetInfo.Target)
+        and not UnitIsFriend("player", TargetInfo.Target) then
+        if not HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER") then
             -- Горящая душа (без ГКД)
             CastSpellByName(GetSpellInfo(74434));
             return true;
@@ -7394,6 +7296,13 @@ end
       <Ability Name="Обмен душ">
         <SpellID>86121</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -7406,31 +7315,24 @@ if power2 > 0 and SpellCD(74434) == 0 then
         172,    -- Порча
         30108,  -- Нестабильное колдовство
     };
-    for _, target in ipairs(RaidTargetList) do
-        if UnitExists(target)
-        and UnitCanAttack("player", target)
-        and not UnitIsDeadOrGhost(target)
-        and not UnitIsFriend("player", target)
-        --and UnitIsEnemy("player", target) -- не рабоает на манекенах
-        and IsSpellInRange(GetSpellInfo(86121), targer) == 1 then
-            -- Если нету ни одного дебафа
-            -- если у цели меньше 20% здоровья
-            -- если мы двигаемся
-            if HealthByPercent("target") <= 20 or IS_MOVING then
-                -- Проверяем только "Нестабильное колдовство"
-                -- так как маленькая продолжительность и есть время каста
-                -- так же не будем терять ДПС при перебежках.
-                if select(3, HasDebuff(target, 30108, "PLAYER")) < 3 then
-                    -- Горящая душа (без ГКД)
-                    CastSpellByName(GetSpellInfo(74434));
-                    return target;
-                end
-            -- Накладываем через горящую душу когда дотов вообще нету
-            elseif not HasDebuff(target, dotList, "PLAYER") then
+    if IsSpellInRange(GetSpellInfo(86121), TargetInfo.Targer) == 1 then
+        -- Если нету ни одного дебафа
+        -- если у цели меньше 20% здоровья
+        -- если мы двигаемся
+        if HealthByPercent("target") <= 20 or IS_MOVING then
+            -- Проверяем только "Нестабильное колдовство"
+            -- так как маленькая продолжительность и есть время каста
+            -- так же не будем терять ДПС при перебежках.
+            if select(3, HasDebuff(TargetInfo.Targer, 30108, "PLAYER")) < 3 then
                 -- Горящая душа (без ГКД)
                 CastSpellByName(GetSpellInfo(74434));
-                return target;
+                return true;
             end
+        -- Накладываем через горящую душу когда дотов вообще нету
+        elseif not HasDebuff(TargetInfo.Targer, dotList, "PLAYER") then
+            -- Горящая душа (без ГКД)
+            CastSpellByName(GetSpellInfo(74434));
+            return true;
         end
     end
 end
@@ -7438,23 +7340,22 @@ end
       </Ability>
       <Ability Name="Агония">
         <SpellID>980</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
-            return target;
-        end
-    end
+if select(3, HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER")) < 4 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -7468,19 +7369,11 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if power2 > 0 then
-    for _, target in ipairs(RaidTargetList) do
-        if UnitExists(target)
-        and UnitCanAttack("player", target)
-        and not UnitIsDeadOrGhost(target)
-        and not UnitIsFriend("player", target)
-        and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-            if not HasDebuff(ability.Target, ability.SpellId, "PLAYER") then
-                if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
-                and select(3, HasDebuff(target, 172,   "PLAYER")) > 7      -- Порча
-                and select(3, HasDebuff(target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
-                    return target;
-                end
-            end
+    if not HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER") then
+        if  select(3, HasDebuff(TargetInfo.Target, 980,   "PLAYER")) > 7      -- Агония
+        and select(3, HasDebuff(TargetInfo.Target, 172,   "PLAYER")) > 7      -- Порча
+        and select(3, HasDebuff(TargetInfo.Target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
+            return true;
         end
     end
 end
@@ -7488,46 +7381,43 @@ end
       </Ability>
       <Ability Name="Порча">
         <SpellID>172</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
-            return target;
-        end
-    end
+if select(3, HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER")) < 3 then
+    return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Нестабильное колдовство">
         <SpellID>30108</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    -- Для дот, которые имеют время каста
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
-            return target;
-        end
-    end
+if select(3, HasDebuff(TargetInfo.Target, ability.SpellId, "PLAYER")) < 3 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -7555,7 +7445,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HealthByPercent(ability.Target) <= 20 then
+if HealthByPercent(TargetInfo.Target) <= 20 then
     return true;
 end
 ]]></Lua>
@@ -8296,7 +8186,7 @@ FillPartyTables(774);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-return UnitIsDeadOrGhost(ability.Target) and UnitIsPlayer(ability.Target);
+return UnitIsDeadOrGhost(TargetInfo.Target) and UnitIsPlayer(TargetInfo.Target);
 ]]></Lua>
       </Ability>
       <Ability Name="Оживление">
@@ -8308,8 +8198,8 @@ return UnitIsDeadOrGhost(ability.Target) and UnitIsPlayer(ability.Target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if not UnitAffectingCombat("player") and UnitIsPlayer(ability.Target)
-    and (UnitIsDeadOrGhost(ability.Target) or UnitIsCorpse(ability.Target)) then
+if not UnitAffectingCombat("player") and UnitIsPlayer(TargetInfo.Target)
+    and (UnitIsDeadOrGhost(TargetInfo.Target) or UnitIsCorpse(TargetInfo.Target)) then
     return true;
 end
 ]]></Lua>
@@ -8455,7 +8345,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if CheckEnrage(ability.Target) then
+if CheckEnrage(TargetInfo.Target) then
     return true;
 end
 ]]></Lua>
@@ -9914,7 +9804,7 @@ end
         <Lua><![CDATA[
 if UnitExists("target") and UnitIsEnemy("player", "target")
     and GetPetActionCooldown(2) == 0 and GetComboPoints("vehicle") > 2 then
-    CastPetAction(2, ability.Target);
+    CastPetAction(2, TargetInfo.Target);
 end
 ]]></Lua>
       </Ability>
@@ -9929,7 +9819,7 @@ end
         <Lua><![CDATA[
 if UnitExists("target") and UnitIsEnemy("player", "target")
     and GetPetActionCooldown(1) == 0 and GetComboPoints("vehicle") < 3 then
-    CastPetAction(1, ability.Target);
+    CastPetAction(1, TargetInfo.Target);
 end
 ]]></Lua>
       </Ability>
