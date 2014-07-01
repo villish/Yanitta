@@ -106,7 +106,7 @@ namespace Yanitta
                 string.Join(", ", TargetList.Select(n =>
                     string.Format(@"{{ Target = ""{0}"", Guid = nil, LastCastingTime = 0 }}", n.ToString().ToLower()))));
 
-            builder.AppendFormatLine("    Func = function(ability, targetInfo)\n        {0}\n    end",
+            builder.AppendFormatLine("    Func = function(ability, targetInfo, target)\n        {0}\n    end",
                 string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
             builder.Append("}");
 
