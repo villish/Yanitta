@@ -102,9 +102,9 @@ namespace Yanitta
             builder.AppendFormatLine("    CancelCasting     = {0},",     cancelCasting);
             builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
             builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
-            builder.AppendFormatLine(@"    TargetList        = {{ {0} }},",
+            builder.AppendFormatLine("    TargetList        = {{ {0} }},",
                 string.Join(", ", TargetList.Select(n =>
-                    string.Format(@"{{ Target = ""{0}"", Guid = nil, LastCastingTime = 0 }}", n.ToString().ToLower()))));
+                    string.Format("{{ Target = \"{0}\", Guid = nil, LastCastingTime = 0 }}", n.ToString().ToLower()))));
 
             builder.AppendFormatLine("    Func = function(ability, targetInfo, target)\n        {0}\n    end",
                 string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
