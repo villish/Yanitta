@@ -4329,24 +4329,15 @@ return setAoE;
       <Ability Name="Слово Тьмы: Смерть">
         <SpellID>32379</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(RaidTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if HealthByPercent(target) < 20 then
-            return target;
-        end
-    end
-end
+return HealthByPercent(target) < 20;
 ]]></Lua>
       </Ability>
       <Ability Name="Всепожирающая чума">
