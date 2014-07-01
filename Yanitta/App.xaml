@@ -9,7 +9,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/KamillaStyle.xaml" />
-
+                <ResourceDictionary Source="Windows/MultySelectedComboBox.xaml" />
                 <ResourceDictionary>
                     <!--TargetType-->
                     <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="TargetValues">

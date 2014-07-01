@@ -99,6 +99,9 @@
     <Compile Include="Misk\ProcessList.cs" />
     <Compile Include="Misk\ProcessMemory.cs" />
     <Compile Include="Misk\YanittaException.cs" />
+    <Compile Include="Windows\MultySelectedComboBox.xaml.cs">
+      <DependentUpon>MultySelectedComboBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XML\Offsets.cs" />
     <Compile Include="XML\HotKey.cs" />
     <Compile Include="Localization.Designer.cs">
@@ -149,6 +152,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\MultySelectedComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\WinCodeExecute.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -270,6 +277,7 @@
   <ItemGroup>
     <None Include="WowApi.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

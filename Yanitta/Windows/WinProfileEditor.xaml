@@ -175,16 +175,6 @@
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
                                         <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
 
-                                        <GridViewColumn Header="{x:Static yanitta:Localization.Target}" Width="100" x:Name="hTarget">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={yanitta:ResizeConverter}, ElementName=hTarget}"
-                                                              ItemsSource="{Binding Source={StaticResource TargetValues}}" SelectedValue="{Binding Target}"
-                                                              ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-
                                         <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -287,8 +277,12 @@
                                     <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Name="tbAbilityName" ToolTip="{x:Static yanitta:Localization.NameToolTip}"/>
 
                                     <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,0" Text="{x:Static yanitta:Localization.Target}" ToolTip="" VerticalAlignment="Center"/>
-                                    <ComboBox  Grid.Column="1" Grid.Row="2" Margin="5,0" ItemsSource="{Binding Source={StaticResource TargetValues}}"
-                                                          SelectedValue="{Binding Target}" ToolTip="{x:Static yanitta:Localization.TargetToolTip}"/>
+
+                                    <yanitta:MultySelectedComboBox Grid.Column="1" Grid.Row="2" Margin="5,0"
+                                                                   EnumSource="{x:Type yanitta:TargetType}"
+                                                                   SelectedItems="{Binding TargetList}"
+                                                                   ToolTip="{x:Static yanitta:Localization.TargetToolTip}" />
+
                                     <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,0" Text="{x:Static yanitta:Localization.IsMovingCheck}" ToolTip="" VerticalAlignment="Center"/>
                                     <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
                                                           SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
