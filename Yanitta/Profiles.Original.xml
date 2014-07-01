@@ -612,8 +612,13 @@ function AddonFrame_OnEvent(self, event, ...)
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = nil;
                         targetInfo.LastCastingTime = 0;
-                        if param15 == SPELL_FAILED_NOT_BEHIND then
-                            targetInfo.LastNotBehindTime = GetTime();
+
+                        if param15 == SPELL_FAILED_NOT_BEHIND or       -- Вы должны находиться позади цели.
+                           --param15 == SPELL_FAILED_BAD_TARGETS or      -- Нельзя применить к этой цели.
+                           param15 == SPELL_FAILED_UNIT_NOT_INFRONT or -- Цель должна быть перед вами.
+                           param15 == SPELL_FAILED_VISION_OBSCURED or  -- Вы с трудом видите цель
+                           param15 == SPELL_FAILED_LINE_OF_SIGHT then  -- Цель вне поля зрения.
+                            targetInfo[param15] = GetTime();
                         end
                     end
                 end
