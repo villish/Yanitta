@@ -31,7 +31,7 @@ namespace Yanitta
                 {
                     foreach (ComboBoxFlagsItem item in control.ItemsSource)
                     {
-                        item.IsChecked = control.SelectedItems != null && control.SelectedItems.Contains((TargetType)item.Value);
+                        item.IsChecked = control.SelectedItems != null && control.SelectedItems.Contains(item.Value);
                     }
                 }
                 if (control.SelectedItems != null)
@@ -86,7 +86,7 @@ namespace Yanitta
 
     public class ComboBoxFlagsItem : ViewModelBase
     {
-        public ComboBoxFlagsItem(MultySelectedComboBox control, object value, bool isChecked)
+        public ComboBoxFlagsItem(MultySelectedComboBox control, TargetType value, bool isChecked)
         {
             this.control   = control;
             this.isChecked = isChecked;
@@ -97,7 +97,7 @@ namespace Yanitta
 
         private bool isChecked;
 
-        public object Value { get; set; }
+        public TargetType Value { get; set; }
 
         public bool IsChecked
         {
@@ -109,9 +109,9 @@ namespace Yanitta
                     isChecked = value;
                     OnPropertyChanged();
 
-                    control.SelectedItems.Remove((TargetType)this.Value);
+                    control.SelectedItems.Remove(this.Value);
                     if (value)
-                        control.SelectedItems.Add((TargetType)this.Value);
+                        control.SelectedItems.Add(this.Value);
 
                     control.SelectedItemsText = string.Join(", ", control.SelectedItems);
                 }
