@@ -242,17 +242,18 @@ namespace Yanitta
 
             var builder = new StringBuilder();
             builder.AppendLine(ProfileDb.Instance.Lua);
+            builder.AppendLine();
 
-            foreach (var ability in rotation.AbilityList)
-            {
-                var ability_code = ability.ToString();
-                builder.AppendLine(ability_code);
-            }
+            builder.AppendFormatLine("ABILITY_TABLE = {{\n{0}\n}};",
+                string.Join(",\n", rotation.AbilityList));
+            builder.AppendLine();
 
             builder.AppendLine(ProfileDb.Instance[this.Class].Lua);
+            builder.AppendLine();
             // у профилей по умолчанию не должно быть кода профиля.
             //builder.AppendLine(ProfileDb.Instance[WowClass.None].Lua);
             builder.AppendLine(rotation.Lua);
+            builder.AppendLine();
 
             builder.AppendFormatLine(@"DebugMode = {0};", Settings.Default.DebugMode.ToString().ToLower());
             // Запуск ротации
