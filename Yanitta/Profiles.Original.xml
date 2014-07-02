@@ -561,7 +561,7 @@ function CheckAndCastAbility(ability, targetInfo)
         LAST_TARGET = UnitGUID("player");
         CastSpellByName(spellInfo, nil);
     else
-        LAST_TARGET = UnitGUID(target);
+        LAST_TARGET = UnitGUID(targetInfo.Target);
         CastSpellByName(spellInfo, targetInfo.Target);
     end
     return true;
@@ -589,8 +589,8 @@ function AddonFrame_OnEvent(self, event, ...)
             for _,ability in ipairs(ABILITY_TABLE) do
                 for _,targetInfo in ipairs(ability.TargetList) do
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
-                        targetInfo.Guid = destGUID,
-                        targetInfo.LastCastingTime = GetTime() + 1000,
+                        targetInfo.Guid = destGUID;
+                        targetInfo.LastCastingTime = GetTime() + 1000;
                     end
                 end
             end
@@ -598,8 +598,8 @@ function AddonFrame_OnEvent(self, event, ...)
             for _,ability in ipairs(ABILITY_TABLE) do
                 for _,targetInfo in ipairs(ability.TargetList) do
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
-                        targetInfo.Guid = destGUID,
-                        targetInfo.LastCastingTime = GetTime() + 1000 + (select(7, GetSpellInfo(spellId)) or 0),
+                        targetInfo.Guid = destGUID;
+                        targetInfo.LastCastingTime = GetTime() + 1000 + (select(7, GetSpellInfo(spellId)) or 0);
                     end
                 end
             end
