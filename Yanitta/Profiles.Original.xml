@@ -646,7 +646,7 @@ function AddonFrame_OnUpdate(self, elapsed)
                 end
             end
         end
-        AddonFrame.LastTime = GetTime() + 0.2;
+        AddonFrame.LastTime = GetTime() + math.random(150, 250) / 1000;
     end
     if (AddonFrame.Duration or 0) < GetTime() then
         AddonFrame.Msg:SetText("");
