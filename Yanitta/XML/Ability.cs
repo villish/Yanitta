@@ -94,21 +94,21 @@ namespace Yanitta
             var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
 
             var builder = new StringBuilder();
-            builder.AppendFormatLine("{");
-            builder.AppendFormatLine("    SpellId           = {0},",     this.SpellID);
-            builder.AppendFormatLine("    Name              = \"{0}\",", this.Name);
-            builder.AppendFormatLine("    IsMovingCheck     = \"{0}\",", isMovingCheck);
-            builder.AppendFormatLine("    DropChanel        = {0},",     cancelChannel);
-            builder.AppendFormatLine("    CancelCasting     = {0},",     cancelCasting);
-            builder.AppendFormatLine("    IsCheckInCombat   = {0},",     isUseIncombat);
-            builder.AppendFormatLine("    SetRecastDelay    = {0},",     setRecastDelay);
-            builder.AppendFormatLine("    TargetList        = {{ {0} }},",
+            builder.AppendFormatLine("    {");
+            builder.AppendFormatLine("        SpellId           = {0},",     this.SpellID);
+            builder.AppendFormatLine("        Name              = \"{0}\",", this.Name);
+            builder.AppendFormatLine("        IsMovingCheck     = \"{0}\",", isMovingCheck);
+            builder.AppendFormatLine("        DropChanel        = {0},",     cancelChannel);
+            builder.AppendFormatLine("        CancelCasting     = {0},",     cancelCasting);
+            builder.AppendFormatLine("        IsCheckInCombat   = {0},",     isUseIncombat);
+            builder.AppendFormatLine("        SetRecastDelay    = {0},",     setRecastDelay);
+            builder.AppendFormatLine("        TargetList        = {{ {0} }},",
                 string.Join(", ", TargetList.Select(n =>
                     string.Format("{{ Target = \"{0}\", Guid = nil, LastCastingTime = 0 }}", n.ToString().ToLower()))));
 
-            builder.AppendFormatLine("    Func = function(ability, targetInfo, target)\n        {0}\n    end",
-                string.Join("\n        ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
-            builder.Append("}");
+            builder.AppendFormatLine("        Func = function(ability, targetInfo, target)\n            {0}\n        end",
+                string.Join("\n            ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
+            builder.Append("    }");
 
             return builder.ToString();
         }
