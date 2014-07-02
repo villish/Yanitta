@@ -591,7 +591,7 @@ function AddonFrame_OnEvent(self, event, ...)
                 for _,targetInfo in ipairs(ability.TargetList) do
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = destGUID;
-                        targetInfo.LastCastingTime = GetTime() + 1000;
+                        targetInfo.LastCastingTime = GetTime() + 1;
                         print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                     end
                 end
@@ -601,7 +601,7 @@ function AddonFrame_OnEvent(self, event, ...)
                 for _,targetInfo in ipairs(ability.TargetList) do
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = destGUID;
-                        targetInfo.LastCastingTime = GetTime() + 1000 + (select(7, GetSpellInfo(spellId)) or 0);
+                        targetInfo.LastCastingTime = GetTime() + 1 + (select(7, GetSpellInfo(spellId)) or 0) / 1000;
                         print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                     end
                 end
