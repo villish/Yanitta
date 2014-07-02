@@ -494,11 +494,11 @@ function CheckAndCastAbility(ability, targetInfo)
         return;
     end
 
-    local spellInfo = GetSpellInfo(ability.SpellId);
+    local spellName = GetSpellInfo(ability.SpellId);
 
     if ability.SpellId < 1 then
         return ability.Func(ability, targetInfo, targetInfo.Target);
-    elseif not (ability.IsKnown and IsUsableSpell(spellInfo)) then
+    elseif not (ability.IsKnown and IsUsableSpell(spellName)) then
         return;
     end
 
@@ -537,11 +537,11 @@ function CheckAndCastAbility(ability, targetInfo)
     if targetInfo.Target ~= "none" and targetInfo.Target ~= "player" and targetInfo.Target ~= "mouselocation" then
         if not UnitExists(targetInfo.Target) then
             return;
-        elseif SpellHasRange(spellInfo) and IsSpellInRange(spellInfo, targetInfo.Target) == 0 then
+        elseif SpellHasRange(spellName) and IsSpellInRange(spellName, targetInfo.Target) == 0 then
             return;
-        elseif IsHelpfulSpell(spellInfo) and not UnitIsFriend("player", targetInfo.Target) then
+        elseif IsHelpfulSpell(spellName) and not UnitIsFriend("player", targetInfo.Target) then
             return;
-        elseif IsHarmfulSpell(spellInfo) and UnitIsFriend("player", targetInfo.Target) then
+        elseif IsHarmfulSpell(spellName) and UnitIsFriend("player", targetInfo.Target) then
             return;
         elseif not UnitIsFriend("player", targetInfo.Target) then
             if UnitIsDeadOrGhost(targetInfo.Target) or not UnitCanAttack("player", targetInfo.Target) then
@@ -554,16 +554,16 @@ function CheckAndCastAbility(ability, targetInfo)
         SpellStopCasting();
     end
     if targetInfo.Target == "mouselocation" then
-        CastSpellByName(spellInfo, nil);
+        CastSpellByName(spellName, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
-        CastSpellByName(spellInfo, nil);
+        CastSpellByName(spellName, nil);
     elseif targetInfo.Target == "none" then
         LAST_TARGET = UnitGUID("player");
-        CastSpellByName(spellInfo, nil);
+        CastSpellByName(spellName, nil);
     else
         LAST_TARGET = UnitGUID(targetInfo.Target);
-        CastSpellByName(spellInfo, targetInfo.Target);
+        CastSpellByName(spellName, targetInfo.Target);
     end
     return true;
 end
