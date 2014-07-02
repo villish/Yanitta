@@ -592,6 +592,7 @@ function AddonFrame_OnEvent(self, event, ...)
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = destGUID;
                         targetInfo.LastCastingTime = GetTime() + 1000;
+                        print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                     end
                 end
             end
@@ -601,6 +602,7 @@ function AddonFrame_OnEvent(self, event, ...)
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = destGUID;
                         targetInfo.LastCastingTime = GetTime() + 1000 + (select(7, GetSpellInfo(spellId)) or 0);
+                        print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                     end
                 end
             end
@@ -613,7 +615,7 @@ function AddonFrame_OnEvent(self, event, ...)
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = nil;
                         targetInfo.LastCastingTime = 0;
-
+                        print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                         if param15 == SPELL_FAILED_NOT_BEHIND or       -- Вы должны находиться позади цели.
                            --param15 == SPELL_FAILED_BAD_TARGETS or      -- Нельзя применить к этой цели.
                            param15 == SPELL_FAILED_UNIT_NOT_INFRONT or -- Цель должна быть перед вами.
