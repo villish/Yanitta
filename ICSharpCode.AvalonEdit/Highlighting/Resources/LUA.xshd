@@ -3983,6 +3983,7 @@
             <Word>AURA_PROC_LIST</Word>
             <Word>ABILITY_TABLE</Word>
             <Word>EVENT_MODS</Word>
+            <Word>COMBATLOG_MODS</Word>
             <Word>LOSS_TABLE</Word>
             <Word>NOTIFY_CAST_TABLE</Word>
             <Word>LAST_TARGET</Word>

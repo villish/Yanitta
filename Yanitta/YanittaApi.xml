@@ -252,6 +252,9 @@ INVSLOT_*
   <WowApi RawData="0" ImageType="EnumValue" Name="EVENT_MODS">
     <Description><![CDATA[Таблица содержит методы расширения для событий]]></Description>
   </WowApi>
+  <WowApi RawData="0" ImageType="EnumValue" Name="COMBATLOG_MODS">
+    <Description><![CDATA[Таблица содержит методы расширения для события COMBAT_LOG_EVENT_UNFILTERED по подсобытиям]]></Description>
+  </WowApi>
   <WowApi RawData="0" ImageType="EnumValue" Name="NOTIFY_CAST_TABLE">
     <Description><![CDATA[Таблица содержит список заклинаний для сообщения о касте]]></Description>
   </WowApi>

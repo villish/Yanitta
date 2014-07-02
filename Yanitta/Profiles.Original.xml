@@ -3,6 +3,7 @@
   <Lua><![CDATA[
 ABILITY_TABLE = { };
 EVENT_MODS    = { };
+COMBATLOG_MODS= { };
 LOSS_TABLE    = { };
 NOTIFY_CAST_TABLE = { };
 LAST_TARGET   = 0;
@@ -626,6 +627,9 @@ function AddonFrame_OnEvent(self, event, ...)
                     end
                 end
             end
+        end
+        if type(COMBATLOG_MODS[subEvent]) == "function" then
+            COMBATLOG_MODS[subEvent](...);
         end
     end
 
