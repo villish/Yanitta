@@ -489,7 +489,8 @@ function CheckAndCastAbility(ability, targetInfo)
     end
 
     if ability.SetRecastDelay
-    and ability.Guid == UnitGUID(targetInfo.Target) and ability.LastCastingTime >= GetTime() then
+        and targetInfo.Guid == UnitGUID(targetInfo.Target)
+        and targetInfo.LastCastingTime >= GetTime() then
         return;
     end
 
