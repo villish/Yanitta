@@ -7324,7 +7324,7 @@ if power2 > 0 and SpellCD(74434) == 0 then
         172,    -- Порча
         30108,  -- Нестабильное колдовство
     };
-    if IsSpellInRange(GetSpellInfo(86121), TargetInfo.Targer) == 1 then
+    if IsSpellInRange(GetSpellInfo(86121), target) == 1 then
         -- Если нету ни одного дебафа
         -- если у цели меньше 20% здоровья
         -- если мы двигаемся
@@ -7332,13 +7332,13 @@ if power2 > 0 and SpellCD(74434) == 0 then
             -- Проверяем только "Нестабильное колдовство"
             -- так как маленькая продолжительность и есть время каста
             -- так же не будем терять ДПС при перебежках.
-            if select(3, HasDebuff(TargetInfo.Targer, 30108, "PLAYER")) < 3 then
+            if select(3, HasDebuff(target, 30108, "PLAYER")) < 3 then
                 -- Горящая душа (без ГКД)
                 CastSpellByName(GetSpellInfo(74434));
                 return true;
             end
         -- Накладываем через горящую душу когда дотов вообще нету
-        elseif not HasDebuff(TargetInfo.Targer, dotList, "PLAYER") then
+        elseif not HasDebuff(target, dotList, "PLAYER") then
             -- Горящая душа (без ГКД)
             CastSpellByName(GetSpellInfo(74434));
             return true;
