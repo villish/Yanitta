@@ -249,7 +249,6 @@
             <Word>DontDispell</Word>
             <Word>GetDispellInfo</Word>
             <Word>FillPartyTables</Word>
-            <Word>IsBehind</Word>
             <Word>IsNotLineOfSight</Word>
         </Keywords>
 

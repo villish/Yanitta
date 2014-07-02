@@ -108,11 +108,6 @@ function IsMoving()
     return GetUnitSpeed("player") ~= 0 or IsFalling();
 end
 
--- Проверка на нахождение персонажа за спиной цели
-function IsBehind(sec)
-    return (GetTime() - (AddonFrame.LastNotBehindTime or 0)) > (sec or 1);
-end
-
 -- Проверка на нахождение цели в зоне видимости персонажа
 function IsNotLineOfSight(unit, sec)
     local rec = LOSS_TABLE[UnitGUID(unit)];
@@ -187,7 +182,7 @@ end
 
 -- Возвращает ID юнита
 function UnitId(unit)
-    return tonumber((UnitGUID(unit) or "0x0000000000000000"):sub(-12, -9), 16);
+    return tonumber((UnitGUID(unit) or ""):sub(6, 10), 16);
 end
 
 -- Проверяет, надо ли сбивать заклинание текущему юниту.

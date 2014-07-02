@@ -93,12 +93,6 @@ INVSLOT_*
 Если предмет (перчатка, тринька, пояс и т.п) юзабелен и не имеет КД - имитируем клик правой кн. мыши.]]>
     </Description>
   </WowApi>
-  <WowApi ImageType="ExtensionMethod" Name="IsBehind">
-      <Description>
-        <![CDATA[  IsBehind([sec] = 1)
-Проверка на нахождение за спиной противника не менее указаного количества секунд.]]>
-      </Description>
-  </WowApi>
   <WowApi RawData="0" ImageType="EnumValue" Name="INVSLOT_AMMO">
     <Description><![CDATA[INVSLOT_AMMO = 0 (Амуниция)]]></Description>
   </WowApi>
