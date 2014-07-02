@@ -9487,7 +9487,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if combopoint < 5 then
-    if (behindMode == 0 and IsBehind(2)) or behindMode == 1 then
+    if (behindMode == 0 and (targetInfo[SPELL_FAILED_NOT_BEHIND] or 0)<GetTime()+2) or behindMode == 1 then
         return true;
     end
 end
