@@ -549,13 +549,15 @@ function CheckAndCastAbility(ability, targetInfo)
     if ability.CancelCasting or ability.DropChanel then
         SpellStopCasting();
     end
+
+    targetInfo.Guid = UnitGUID(targetInfo.Target);
+    targetInfo.LastCastingTime = GetTime() + 1 + (select(7, GetSpellInfo(ability.SpellId)) or 0) / 1000;
+
     if targetInfo.Target == "mouselocation" then
         CastSpellByName(spellName, nil);
         CameraOrSelectOrMoveStart();
         CameraOrSelectOrMoveStop();
         CastSpellByName(spellName, nil);
-        targetInfo.Guid = UnitGUID(targetInfo.Target);
-        targetInfo.LastCastingTime = GetTime() + 1 + (select(7, GetSpellInfo(ability.SpellId)) or 0) / 1000;
     elseif targetInfo.Target == "none" then
         LAST_TARGET = UnitGUID("player");
         CastSpellByName(spellName, nil);
@@ -594,25 +596,13 @@ function AddonFrame_OnEvent(self, event, ...)
                     end
                 end
             end
-        elseif subEvent == "SPELL_CAST_START" and sourceGUID == UnitGUID("player") then
-            --print("SPELL_CAST_START", ...)
-           -- UnitCastingInfo(
---            for _,ability in ipairs(ABILITY_TABLE) do
---                for _,targetInfo in ipairs(ability.TargetList) do
---                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
---                        targetInfo.Guid = destGUID;
---                        targetInfo.LastCastingTime = GetTime() + 1 + (select(7, GetSpellInfo(spellId)) or 0) / 1000;
---                        print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
---                    end
---                end
---            end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
             end
             for _,ability in ipairs(ABILITY_TABLE) do
                 for _,targetInfo in ipairs(ability.TargetList) do
-                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
+                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == LAST_TARGET then
                         targetInfo.Guid = nil;
                         targetInfo.LastCastingTime = 0;
                         --print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
@@ -637,18 +627,22 @@ function AddonFrame_OnEvent(self, event, ...)
     end
 end
 
+function AddonFrame_AbilityLoop()
+   for _,ability in ipairs(ABILITY_TABLE) do
+        for _,targetInfo in ipairs(ability.TargetList) do
+            if CheckAndCastAbility(ability, targetInfo) then
+                return;
+            end
+        end
+    end
+end
+
 function AddonFrame_OnUpdate(self, elapsed)
     if type(ABILITY_TABLE) == "table" and GetTime() >= (AddonFrame.LastTime or 0) then
         if AddonFrame.CurentRotation and not UnitIsDeadOrGhost("player") and not UnitIsAFK("player") then
             IS_MOVING = IsMoving();
             AddonFrame.ping = select(4, GetNetStats()) / 1000;
-            for _,ability in ipairs(ABILITY_TABLE) do
-                for _,target in ipairs(ability.TargetList) do
-                    if CheckAndCastAbility(ability, target) then
-                        break;
-                    end
-                end
-            end
+            AddonFrame_AbilityLoop();
         end
         AddonFrame.LastTime = GetTime() + math.random(150, 250) / 1000;
     end
@@ -8168,6 +8162,12 @@ NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восст�
         <Lua><![CDATA[
 -- пауза
 if IsModKeyDown(mkLeftShift) then
+    for index = 1, 5 do
+        if not IsRaidMarkerActive(index) then
+            PlaceRaidMarker(index);
+            break;
+        end
+    end
     return true;
 end
 
