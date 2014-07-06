@@ -629,7 +629,7 @@ end
 
 function AddonFrame_AbilityLoop()
    for _,ability in ipairs(ABILITY_TABLE) do
-        for _,targetInfo in ipairs(ability.TargetList) do
+        for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
             if CheckAndCastAbility(ability, targetInfo) then
                 return;
             end
@@ -3447,13 +3447,6 @@ if HasBuff("player", 5384) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(3044), "target") == 1;
-
----- При проке "На изготовку" прерываем чтение "Выстрел кобры"
---if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
---    if HasBuff("player", 56453) then
---        SpellStopCasting();
---    end
---end
 
 -- Установка пета в указанную позицию
 if IsMouseButtonDown(4) then
