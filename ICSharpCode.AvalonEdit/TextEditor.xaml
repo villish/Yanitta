@@ -21,6 +21,11 @@
                     <Separator />
                     <MenuItem Command="AvalonEdit:AvalonEditCommands.Comment"   Header="{x:Static AvalonEdit:Localization.Comment}" />
                     <MenuItem Command="AvalonEdit:AvalonEditCommands.UnComment" Header="{x:Static AvalonEdit:Localization.Uncomment}" />
+                    <Separator />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.ConvertTabsToSpaces"       Header="ConvertTabsToSpaces" />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.RemoveTrailingWhitespace"  Header="RemoveTrailingWhitespace" />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.RemoveLeadingWhitespace"   Header="RemoveLeadingWhitespace" />
+                    <!--<MenuItem IsCheckable="True" IsChecked="{Binding Options.ShowSpaces}"   Header="Show invisible words" />-->
                 </ContextMenu>
             </Setter.Value>
         </Setter>
