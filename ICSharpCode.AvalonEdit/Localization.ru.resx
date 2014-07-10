@@ -141,4 +141,10 @@
   <data name="Uncomment" xml:space="preserve">
     <value>Раскомментировать</value>
   </data>
+  <data name="ConvertTabsToSpaces" xml:space="preserve">
+    <value>Конвертировать знаки табуляции в пробелы</value>
+  </data>
+  <data name="RemoveTrailingWhitespace" xml:space="preserve">
+    <value>Удалить пустые символы в конце строк</value>
+  </data>
 </root>

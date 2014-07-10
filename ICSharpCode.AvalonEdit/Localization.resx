@@ -141,4 +141,10 @@
   <data name="Uncomment" xml:space="preserve">
     <value>Uncomment</value>
   </data>
+  <data name="ConvertTabsToSpaces" xml:space="preserve">
+    <value>Convert Tabs to Spases</value>
+  </data>
+  <data name="RemoveTrailingWhitespace" xml:space="preserve">
+    <value>Remove trailing whitespace</value>
+  </data>
 </root>

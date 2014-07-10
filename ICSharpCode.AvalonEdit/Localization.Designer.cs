@@ -70,6 +70,14 @@ namespace ICSharpCode.AvalonEdit {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Convert Tabs to Spases.
+        /// </summary>
+        public static string ConvertTabsToSpaces {
+            get {
+                return ResourceManager.GetString("ConvertTabsToSpaces", resourceCulture);
+            }
+        }
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy.
         /// </summary>
         public static string Copy {
@@ -114,6 +122,14 @@ namespace ICSharpCode.AvalonEdit {
             }
         }
         
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Remove trailing whitespace.
+        /// </summary>
+        public static string RemoveTrailingWhitespace {
+            get {
+                return ResourceManager.GetString("RemoveTrailingWhitespace", resourceCulture);
+            }
+        }
         /// <summary>
         ///   Ищет локализованную строку, похожую на Uncomment.
         /// </summary>
