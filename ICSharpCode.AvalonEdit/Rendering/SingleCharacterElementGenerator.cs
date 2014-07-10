@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
             else if (ShowTabs && c == '\t')
             {
-                return new TabTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter("\u00BB", CurrentContext));
+                return new TabTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter("\u27F6", CurrentContext));
             }
             else if (ShowBoxForControlCharacters && char.IsControl(c))
             {

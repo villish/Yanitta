@@ -55,6 +55,8 @@ namespace ICSharpCode.AvalonEdit
         public TextEditor()
             : this(new TextArea())
         {
+            Options.ShowTabs = true;
+
             this.ShowLineNumbers = true;
             this.SyntaxHighlighting = ICSharpCode.AvalonEdit.Highlighting.Resources.LUA;
             this.TextArea.DefaultInputHandler.NestedInputHandlers.Add(new SearchInputHandler(this.TextArea));
