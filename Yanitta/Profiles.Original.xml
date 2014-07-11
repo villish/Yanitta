@@ -3682,6 +3682,20 @@ return useCooldown and isInRange;
 return useCooldown and isInRange;
 ]]></Lua>
       </Ability>
+      <Ability Name="Звериный гнев">
+        <SpellID>19574</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInRange and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Залп">
         <SpellID>2643</SpellID>
         <Target>Target</Target>
@@ -3694,7 +3708,7 @@ return useCooldown and isInRange;
 return setAoE;
 ]]></Lua>
       </Ability>
-      <Ability Name="Команда &quot;Взять!&quot;">
+      <Ability Name="Команда Взять!">
         <SpellID>34026</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -3758,14 +3772,14 @@ return useCooldown and isInRange;
       </Ability>
       <Ability Name="Сконцентрированный огонь">
         <SpellID>82692</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInRange and select(2, HasBuff("pet", 19623)) > 4 then
+if isInRange and select(2, HasBuff("player", 19615)) > 4 then
     return true;
 end
 ]]></Lua>
@@ -4642,7 +4656,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
-
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
