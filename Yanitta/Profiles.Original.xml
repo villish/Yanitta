@@ -6237,9 +6237,13 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if setAoE and HasBuff("player", 77756) then
+    return true;
+elseif HasBuff("player", 77756) or not IS_MOVING then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Цепная молния">
@@ -6312,6 +6316,156 @@ end
 -- камень здоровья
 if HealthByPercent("player") < 30 then
     UseItemById(5512);
+end
+
+isInMeele = IsSpellInRange(GetSpellInfo(8050), "target") == 1;
+]]></Lua>
+      </Ability>
+      <Ability Name="Пронизывающий ветер">
+        <SpellID>57994</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt(target);
+]]></Lua>
+      </Ability>
+      <Ability Name="Щит молний">
+        <SpellID>324</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasBuff("player", 324) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Опаляющий тотем">
+        <SpellID>3599</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+
+if isInMeele and UnitExists("target") and (not GetTotemInfo(1)) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Кольцо огня">
+        <SpellID>1535</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if setAoE and HasDebuff(target, 8050, "PLAYER") then
+    return isInMeele;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Молния">
+        <SpellID>403</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(2, HasBuff("player", 53817)) > 4 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар бури">
+        <SpellID>17364</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Огненный шок">
+        <SpellID>8050</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вскипание лавы">
+        <SpellID>60103</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Земной шок">
+        <SpellID>8050</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+      </Ability>
+      <Ability Name="Цепная молния">
+        <SpellID>421</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if setAoE and select(2, HasBuff("player", 53817)) > 0 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Молния">
+        <SpellID>403</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(2, HasBuff("player", 53817)) > 0 then
+    return true;
 end
 ]]></Lua>
       </Ability>
