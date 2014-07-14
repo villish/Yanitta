@@ -225,7 +225,6 @@ end
 -----------------------------------------------
 
 MAIN_CLASS_SPELL = 0;
-FORCE_IN_COMBAT  = nil;
 
 DISPELL_TABLE = { --    Магия         Яд             Болезнь         Проклятие
     PRIEST_HEAL     = { Magic = true, Poison = nil , Disease = true, Curse = nil  },
@@ -355,7 +354,6 @@ end
 -- сформированная таблица будет отсортирована по наименьшему здоровью.
 function FillPartyTables(standartSpellId)
     -- Обнуляем все хиловские глобальные переменные.
-    FORCE_IN_COMBAT  = false;
     MAIN_CLASS_SPELL = standartSpellId;
     LowHP            = { };
     members          = { { Unit = "player", IsInMyParty = true } };
@@ -393,9 +391,6 @@ function FillPartyTables(standartSpellId)
     -- Обновляем статы игроков из пати/рейда
     for index = #members, 1, -1 do
         local member = members[index];
-        if UnitAffectingCombat(member.Unit) then
-            FORCE_IN_COMBAT = true;
-        end
 
         member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
         member.Agro    = UnitThreatSituation(member.Unit) or 0;
@@ -480,7 +475,7 @@ function CheckAllSpells()
 end
 
 function CheckAndCastAbility(ability, targetInfo)
-    if ability.IsCheckInCombat and not (FORCE_IN_COMBAT or UnitAffectingCombat("player")) then
+    if ability.IsCheckInCombat and not UnitAffectingCombat("player") then
         return;
     end
 
@@ -4210,6 +4205,7 @@ end
       <Lua><![CDATA[
 mTempTable = { };
 AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
+AddonFrame:RegisterEvent("LOOT_OPENED");
 
 function EVENT_MODS.UI_ERROR_MESSAGE(msg)
     -- Если моба невозможно обократсть.
@@ -4218,7 +4214,7 @@ function EVENT_MODS.UI_ERROR_MESSAGE(msg)
     if UnitExists("target")
         and (msg == SPELL_FAILED_TARGET_NO_POCKETS
           or msg == ERR_ALREADY_PICKPOCKETED) then
-        mTempTable[UnitGUID("target")] = GetTime();
+        mTempTable[LAST_TARGET] = GetTime();
     end
 end
 
@@ -4237,10 +4233,36 @@ function IsPickPocketed(unit)
         end
     end
 end
+
+function EVENT_MODS.LOOT_OPENED()
+    for i = 1, GetNumLootItems() do
+        local texture, item, quantity = GetLootSlotInfo(i);
+        --print(item, quantity);
+        if quantity == 0 or item == GetItemInfo(16885) then
+            LootSlot(i);
+            --print("Looting: ", item);
+        end
+    end
+end
 ]]></Lua>
+      <Ability Name="Ошеломление">
+        <SpellID>6770</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasDebuff(target, 6770) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Обшаривание карманов">
         <SpellID>921</SpellID>
         <Target>Target</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -4255,9 +4277,17 @@ if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
     CastShapeshiftForm(1);
 end
 
-TargetNearestEnemy();
-if not IsPickPocketed("target") and not UnitIsDeadOrGhost("target") then
-    return true;
+if target == "mouseover" and UnitExists(target) then
+    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
+        return true;
+    end
+end
+
+if target == "target" and UnitExists(target) then
+    TargetNearestEnemy();
+    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -6107,23 +6137,55 @@ end
 
 isInRange = IsSpellInRange(GetSpellInfo(403), "target") == 1;
 
---FillPartyTables(331);
+FillPartyTables(8004);
 ]]></Lua>
       </Ability>
-      <Ability Name="Исцеляющий всплеск">
-        <SpellID>8004</SpellID>
-        <Target>Mouseover</Target>
+      <Ability Name="Щит молний">
+        <SpellID>324</SpellID>
+        <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitIsFriend("player", "mouseover") then
-    if HealthByPercent("mouseover") < 50 then
-        return true;
-    end
+if not HasBuff("player", 324) then
+    return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Пронизывающий ветер">
+        <SpellID>57994</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt(target);
+]]></Lua>
+      </Ability>
+      <Ability Name="Исцеляющий всплеск">
+        <SpellID>8004</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+--if UnitExists("mouseover") and HealthByPercent("mouseover") < 70 and UnitIsFriend("player", "mouseover") then
+--    return true;
+--end
+--for _, member in ipairs(members) do
+--    if member.HP < 70 then
+--        --print(UnitName(member.Unit), member.HP);
+--        return member.Unit;
+--    end
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Опаляющий тотем">
@@ -6140,8 +6202,8 @@ if not setAoE and isInRange and UnitExists("target") and not GetTotemInfo(1) the
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Огненный шок">
-        <SpellID>8050</SpellID>
+      <Ability Name="Земной шок">
+        <SpellID>8042</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -6149,27 +6211,15 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
+if select(2, HasBuff("player", 324)) > 6 or UnitLevel("player") < 20 then
     return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Огненный шок">
         <SpellID>8050</SpellID>
+        <Target>Target</Target>
         <Target>Focus</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Огненный шок">
-        <SpellID>8050</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -6189,23 +6239,9 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Земной шок">
-        <SpellID>8042</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if (select(2, HasBuff("player", 324)) or 0) > 6 then
-    return true;
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Цепная молния">
@@ -6215,7 +6251,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE;
 ]]></Lua>
@@ -6338,7 +6374,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-FillPartyTables(331);
+FillPartyTables(8004);
 ]]></Lua>
       </Ability>
       <Ability Name="Водяной щит">
@@ -6346,7 +6382,7 @@ FillPartyTables(331);
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
@@ -6380,6 +6416,39 @@ for _,member in ipairs(members) do
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Очищение духа">
+        <SpellID>77130</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMouseButtonDown(5) then
+    if UnitExists("mouseover") then
+        return "mouseover";
+    end
+end
+if useAutoDispell then
+    return GetDispellInfo("HEAL");
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Цепное исцеление">
+        <SpellID>1064</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if LowHP.H70 > 2 then
+    return members[1].Unit;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Быстрина">
         <SpellID>61295</SpellID>
         <Target>None</Target>
@@ -6390,7 +6459,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(members) do
-    if member.HP < 70 or (member.IsTank and member.Agro > 2)then
+    if member.HP < 70 or (member.IsTank and member.Agro > 2) then
         if not HasBuff(member.Unit, 61295, "PLAYER") then
             return member.Unit;
         end
@@ -6407,7 +6476,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 70 then
+if members[1].HP < 80 then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -6421,7 +6490,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 70 then
+if members[1].HP < 80 then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -6435,7 +6504,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not GetTotemInfo(3) then
+if LowHP.H80 > 2 and not GetTotemInfo(3) then
     return true;
 end
 ]]></Lua>
@@ -9282,7 +9351,7 @@ end
 -- без ГКД
 if not isCat then
     -- зубы и когти
-    if HasBuff("player", 135288) or agroStatus < 3 or UnitPower("player") > 90 then
+    if HasBuff("player", 135288) then
         return true;
     end
 end
