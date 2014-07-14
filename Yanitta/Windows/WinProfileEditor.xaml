@@ -22,6 +22,7 @@
         <RoutedUICommand x:Key="DeleteRotation" />
         <RoutedUICommand x:Key="MoveRotation" />
         <RoutedUICommand x:Key="MoveAbility" />
+        <RoutedUICommand x:Key="CopyFromRotation" />
     </Window.Resources>
 
     <Window.InputBindings>
@@ -31,16 +32,17 @@
     </Window.InputBindings>
 
     <Window.CommandBindings>
-        <CommandBinding Command="Close"                           Executed="CommandBinding_Executed_Close" />
-        <CommandBinding Command="Save"                            Executed="CommandBinding_Executed_Save" />
-        <CommandBinding Command="{StaticResource AddAbility}"     Executed="CommandBinding_Executed_AddAbility" />
-        <CommandBinding Command="{StaticResource CopyAbility}"    Executed="CommandBinding_Executed_CopyAbility" />
-        <CommandBinding Command="{StaticResource DeleteAbility}"  Executed="CommandBinding_Executed_DeleteAbility" />
-        <CommandBinding Command="{StaticResource AddRotation}"    Executed="CommandBinding_Executed_AddRotation" />
-        <CommandBinding Command="{StaticResource CopyRotation}"   Executed="CommandBinding_Executed_CopyRotation" />
-        <CommandBinding Command="{StaticResource DeleteRotation}" Executed="CommandBinding_Executed_DeleteRotation" />
-        <CommandBinding Command="{StaticResource MoveRotation}"   Executed="CommandBinding_MoveRotation_Executed" />
-        <CommandBinding Command="{StaticResource MoveAbility}"    Executed="CommandBinding_MoveAbility_Executed" />
+        <CommandBinding Command="Close"                             Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="Save"                              Executed="CommandBinding_Executed_Save" />
+        <CommandBinding Command="{StaticResource AddAbility}"       Executed="CommandBinding_Executed_AddAbility" />
+        <CommandBinding Command="{StaticResource CopyAbility}"      Executed="CommandBinding_Executed_CopyAbility" />
+        <CommandBinding Command="{StaticResource DeleteAbility}"    Executed="CommandBinding_Executed_DeleteAbility" />
+        <CommandBinding Command="{StaticResource AddRotation}"      Executed="CommandBinding_Executed_AddRotation" />
+        <CommandBinding Command="{StaticResource CopyRotation}"     Executed="CommandBinding_Executed_CopyRotation" />
+        <CommandBinding Command="{StaticResource DeleteRotation}"   Executed="CommandBinding_Executed_DeleteRotation" />
+        <CommandBinding Command="{StaticResource MoveRotation}"     Executed="CommandBinding_MoveRotation_Executed" />
+        <CommandBinding Command="{StaticResource MoveAbility}"      Executed="CommandBinding_MoveAbility_Executed" />
+        <CommandBinding Command="{StaticResource CopyFromRotation}" Executed="CommandBinding_CopyFromRotation_Executed" />
     </Window.CommandBindings>
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
@@ -156,6 +158,10 @@
                                 </Button>
                                 <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="1">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
+                                </Button>
+                                <Separator />
+                                <Button Foreground="Transparent" Command="{StaticResource CopyFromRotation}">
+                                    <Image Source="/Yanitta;component/Resources/CopyFromRotation.png" />
                                 </Button>
                                 <Separator />
                                 <TextBlock Text="{x:Static yanitta:Localization.Ability_Filter}" VerticalAlignment="Center" HorizontalAlignment="Left" />

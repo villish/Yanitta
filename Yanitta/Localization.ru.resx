@@ -411,4 +411,7 @@
   <data name="RotationDelQuestion" xml:space="preserve">
     <value>Вы действительно хотите удалить текущую ротацию?</value>
   </data>
+  <data name="CopyFromRotation" xml:space="preserve">
+    <value>Копирование способностей</value>
+  </data>
 </root>

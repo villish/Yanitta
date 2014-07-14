@@ -11,8 +11,14 @@ namespace Yanitta
     /// Описывает состав из кода и статических проверок при вычислении на доступность чтения заклинания.
     /// </summary>
     [Serializable]
-    public class Ability : ICloneable
+    public class Ability
     {
+        /// <summary>
+        /// Служебное поле.
+        /// </summary>
+        [XmlIgnore]
+        public bool IsChecked              { get; set; }
+
         /// <summary>
         /// Наименование способности.
         /// </summary>
@@ -116,9 +122,24 @@ namespace Yanitta
         ///
         /// </summary>
         /// <returns></returns>
-        public object Clone()
+        public Ability Clone()
         {
-            return this.MemberwiseClone();
+            var ability = new Ability {
+                Name            = this.Name,
+                SpellID         = this.SpellID,
+                IsMovingCheck   = this.IsMovingCheck,
+                IsUseIncombat   = this.IsUseIncombat,
+                CancelCasting   = this.CancelCasting,
+                CancelChannel   = this.CancelChannel,
+                SetRecastDelay  = this.SetRecastDelay,
+                Lua             = this.Lua,
+                TargetList = new List<TargetType>()
+            };
+
+            foreach (var target in this.TargetList)
+                ability.TargetList.Add(target);
+
+            return ability;
         }
     }
 }

@@ -304,6 +304,15 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Copy rotation.
+        /// </summary>
+        public static string CopyFromRotation {
+            get {
+                return ResourceManager.GetString("CopyFromRotation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Copy current rotation.
         /// </summary>
         public static string CopyRotation {

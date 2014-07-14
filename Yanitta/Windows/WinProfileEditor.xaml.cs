@@ -67,7 +67,7 @@ namespace Yanitta
             if (this.CurrentAbility == null)
                 throw new YanittaException("Не выбрана способность для копирования!");
 
-            this.CurrentRotation.AbilityList.Add((Ability)this.CurrentAbility.Clone());
+            this.CurrentRotation.AbilityList.Add(this.CurrentAbility.Clone());
             this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
             this.tbAbilityName.Focus();
             this.tbAbilityName.SelectAll();
@@ -151,6 +151,22 @@ namespace Yanitta
             {
                 CurrentRotation.AbilityList.Move(index, index + shift);
                 abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            }
+        }
+
+        private void CommandBinding_CopyFromRotation_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (this.CurrentProfile == null)
+                throw new YanittaException("Empty profile");
+
+            var window = new CopyAbilitysWindow(this.CurrentProfile);
+            window.Owner = this;
+            if (window.ShowDialog() == true)
+            {
+                foreach (var ability in window.SelectedAbilitys)
+                {
+                    CurrentRotation.AbilityList.Add(ability);
+                }
             }
         }
 

@@ -93,6 +93,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Windows\CopyAbilitysWindow.xaml.cs">
+      <DependentUpon>CopyAbilitysWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Misk\ConsoleWriter.cs" />
     <Compile Include="Misk\Converters\ConverterBase.cs" />
     <Compile Include="Misk\Converters\YanittaConverters.cs" />
@@ -135,6 +138,10 @@
     <Compile Include="XML\Rotation.cs" />
     <Compile Include="XML\ViewModelBase.cs" />
     <Compile Include="XML\XmlManager.cs" />
+    <Page Include="Windows\CopyAbilitysWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\KamillaStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -289,6 +296,9 @@
     <None Include="offsets.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\CopyFromRotation.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
