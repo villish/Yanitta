@@ -22016,7 +22016,18 @@ Threat information for a pair of units is only returned if the player has threat
     </ReturnList>
   </WowApi>
   <WowApi Name="UnitGetIncomingHeals" Priority="0" ImageType="Method">
-    <Description>This function is not yet documented</Description>
+    <Signature>incomingHeal = UnitGetIncomingHeals("unit", ["caster"])</Signature>
+    <Description>Returns the incoming heal</Description>
+  </WowApi>
+  <WowApi Name="UnitGetTotalAbsorbs" Priority="0" ImageType="Method">
+    <Signature>totalAbsorbs = UnitGetTotalAbsorbs("unit")</Signature>
+    <Description>Returns the total amount of damage the unit can absorb before losing health.</Description>
+    <ArgumentList Name="unit">
+      <Description>String - unit to query absorption shields of.</Description>
+    </ArgumentList>
+    <ReturnList Name="totalAbsorbs">
+      <Description>Number - total amount of damage the unit can take without losing health.</Description>
+    </ReturnList>
   </WowApi>
   <WowApi Name="UnitGroupRolesAssigned" Priority="0" ImageType="Method">
     <Signature>role = UnitGroupRolesAssigned("unit")</Signature>

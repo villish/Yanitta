@@ -2827,6 +2827,7 @@
             <Word>UnitGetGuildLevel</Word>
             <Word>UnitGetGuildXP</Word>
             <Word>UnitGetIncomingHeals</Word>
+            <Word>UnitGetTotalAbsorbs</Word>
             <Word>UnitGroupRolesAssigned</Word>
             <Word>UnitHPPerStamina</Word>
             <Word>UnitHasIncomingResurrection</Word>

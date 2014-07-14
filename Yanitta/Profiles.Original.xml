@@ -362,12 +362,7 @@ function FillPartyTables(standartSpellId)
         LowHP["H"..i] = 0;
     end
 
-    local prefix = "party";
-    if IsInRaid() then
-        prefix = "raid";
-    elseif IsInArenaTeam() then
-        prefix = "arena";
-    end
+    local prefix = IsInRaid() and "raid" or "party";
 
     for index = 1, GetNumGroupMembers() do
         local unit = prefix..index;
@@ -397,8 +392,11 @@ function FillPartyTables(standartSpellId)
 
         local max_hp   = UnitHealthMax(member.Unit) or 0;
         local inc_hp   = UnitGetIncomingHeals(member.Unit) or 0;
+        local inc_abs  = UnitGetTotalAbsorbs(member.Unit) or 0;
         local cur_hp   = UnitHealth(member.Unit) or 0;
-        member.IncHeal = 100 * inc_hp / max_hp;
+
+        member.IncHeal = 100 * inc_hp  / max_hp;
+        member.Absorb  = 100 * inc_abs / max_hp;
         member.HP      = 100 * (cur_hp + inc_hp) / max_hp;
 
         -- логика по особому поведению в рейдах
@@ -2824,6 +2822,18 @@ return setAoE;
 return true;
 ]]></Lua>
       </Ability>
+      <Ability Name="Черная стрела">
+        <SpellID>3674</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not setAoE;
+]]></Lua>
+      </Ability>
       <Ability Name="Убийственный выстрел">
         <SpellID>53351</SpellID>
         <Target>Target</Target>
@@ -2848,18 +2858,6 @@ return true;
 if not setAoE and not HasDebuff(target, 118253, "PLAYER") then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Черная стрела">
-        <SpellID>3674</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not setAoE;
 ]]></Lua>
       </Ability>
       <Ability Name="Бросок глеф">
@@ -6416,6 +6414,20 @@ for _,member in ipairs(members) do
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Пронизывающий ветер">
+        <SpellID>57994</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt(target);
+]]></Lua>
+      </Ability>
       <Ability Name="Очищение духа">
         <SpellID>77130</SpellID>
         <Target>None</Target>
@@ -6505,6 +6517,20 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if LowHP.H80 > 2 and not GetTotemInfo(3) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Опаляющий тотем">
+        <SpellID>3599</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not setAoE and isInRange and UnitExists("target") and not GetTotemInfo(1) then
     return true;
 end
 ]]></Lua>
