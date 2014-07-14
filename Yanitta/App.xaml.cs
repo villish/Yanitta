@@ -33,7 +33,10 @@ namespace Yanitta
             if (e.Args.Length > 0 && e.Args[0] == "/e")
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
             else if (e.Args.Length > 0 && e.Args[0] == "/ex")
+            {
                 StartupUri = new Uri("Windows/WinCodeExecute.xaml", UriKind.Relative);
+                return;
+            }
 
             if (Settings.Default.Language != "auto")
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
@@ -50,40 +53,11 @@ namespace Yanitta
             }
             else
             {
-                try
-                {
-                    ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
+                ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
+                if (File.Exists(fileName))
+                    File.Copy(fileName, fileName + ".bak", true);
 
-                    //Если загрузка прошла удачно - сделаем резервную копию.
-                    if (File.Exists(fileName))
-                        File.Copy(fileName, fileName + ".bak", true);
-
-                    Console.WriteLine("База успешно загружена, резервная копия создана.");
-                }
-                catch (InvalidOperationException ex)
-                {
-                    Console.WriteLine("Ошибка загрузки базы данных, возможно база повреждена.");
-                    Console.WriteLine(ex.Message);
-                    // Попытка загрузить резервную базу.
-                    if (File.Exists(fileName + ".bak"))
-                    {
-                        Console.WriteLine("Найден файл резервной копии...");
-                        File.Copy(fileName + ".bak", fileName, true);
-                    }
-                    else
-                        throw new FileNotFoundException("Файл резервной копии не найден.", fileName + ".bak");
-
-                    try
-                    {
-                        Console.WriteLine("Попытка загрузить базу данных из резервной копии.");
-                        ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
-                        Console.WriteLine("База из резервной копии успешно загружена.");
-                    }
-                    catch (Exception ex_inner)
-                    {
-                        throw new YanittaException("Ошибка загрузки базы из резервной копии.\r\n" + ex_inner.Message);
-                    }
-                }
+                Console.WriteLine("База успешно загружена, резервная копия создана.");
             }
 
             base.OnStartup(e);
