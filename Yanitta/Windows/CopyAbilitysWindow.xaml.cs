@@ -22,7 +22,11 @@ namespace Yanitta
         public CopyAbilitysWindow(Profile profile)
         {
             this.DataContext = profile;
+
             InitializeComponent();
+
+            if (cbRotation.Items.Count > 0)
+                cbRotation.SelectedIndex = 0;
         }
 
         public IEnumerable<Ability> SelectedAbilitys
