@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,6 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -1365,12 +1365,40 @@ namespace ICSharpCode.AvalonEdit
                     }
                 }
             }
+
             if (e.Key == Key.Escape) // cencel
             {
                 if (mToolTip != null && mToolTip.IsOpen)
                 {
                     mToolTip.IsOpen = false;
                     mToolTip = null;
+                }
+            }
+
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Shift)
+            {
+                if (e.Key == Key.D9)
+                {
+                    var keyWordInfo = IntelliSienceManager.IntelliSienceCollection.FirstOrDefault(n => n.Name == CurrentWordToCursor);
+                    if (mToolTip != null && mToolTip.IsOpen)
+                        mToolTip.IsOpen = false;
+                    if (keyWordInfo != null)
+                    {
+                        mToolTip = new ToolTip()
+                        {
+                            Content = keyWordInfo.ToString(),
+                            IsOpen = true,
+                            PlacementTarget = this
+                        };
+                    }
+                }
+                else if (e.Key == Key.D0)
+                {
+                    if (mToolTip != null && mToolTip.IsOpen)
+                    {
+                        mToolTip.IsOpen = false;
+                        mToolTip = null;
+                    }
                 }
             }
         }
