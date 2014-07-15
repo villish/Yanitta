@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Yanitta
 {
@@ -31,21 +22,13 @@ namespace Yanitta
 
         public IEnumerable<Ability> SelectedAbilitys
         {
-            get
-            {
-                if (cbRotation.SelectedValue is Rotation)
-                {
-                    foreach (var ability in (cbRotation.SelectedValue as Rotation).AbilityList)
-                    {
-                        if (ability.IsChecked)
-                            yield return ability.Clone();
-                    }
-                }
-            }
+            get { return cbRotation.SelectedValue<Rotation>().AbilityList.Where(a => a.IsChecked); }
         }
 
         private void CommandBinding_Copy_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            if (cbRotation.SelectedIndex == -1)
+                throw new YanittaException("Not selected rotation");
             this.DialogResult = true;
         }
 
