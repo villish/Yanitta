@@ -6358,9 +6358,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-
-if isInMeele and UnitExists("target") and (not GetTotemInfo(1)) then
-    return true;
+if isInMeele and UnitExists("target") then
+    if not GetTotemInfo(1) and select(3, HasBuff("player", 77657)) < 3 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -6440,6 +6441,9 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
       </Ability>
       <Ability Name="Цепная молния">
         <SpellID>421</SpellID>
