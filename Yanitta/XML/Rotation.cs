@@ -75,13 +75,13 @@ namespace Yanitta
         public object Clone()
         {
             var rotation = new Rotation {
-                Name   = this.Name + " (1)",
+                Name   = this.Name + " (Копия)",
                 Lua    = this.Lua,
                 HotKey = new HotKey(),
             };
 
             foreach (var ability in this.AbilityList)
-                rotation.AbilityList.Add((Ability)ability.Clone());
+                rotation.AbilityList.Add(ability.Clone());
             return rotation;
         }
 

@@ -361,7 +361,7 @@ namespace Yanitta
         /// <summary>
         /// Указывает что главное окно процесса находится на переднем плане.
         /// </summary>
-        public bool IsFocusWindow
+        public bool IsFocusMainWindow
         {
             get { return this.Process.MainWindowHandle == GetForegroundWindow(); }
         }

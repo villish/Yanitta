@@ -42,7 +42,7 @@ namespace Yanitta
         /// </summary>
         public int ProcessId
         {
-            get { return this.Memory.Process.Id; }
+            get { return this.Memory == null ? 0 : this.Memory.Process.Id; }
         }
 
         public IEnumerable<Rotation> Rotations
@@ -165,7 +165,7 @@ namespace Yanitta
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="Yanitta.WowMemory"/>.
         /// </summary>
-        /// <param name="process">Процесс вов.</param>
+        /// <param name="process">Процесс WoW.</param>
         public WowMemory(Process process)
         {
             if (process == null)
@@ -182,7 +182,7 @@ namespace Yanitta
             this.mTimer.Tick += (o, e) => {
                 if (CheckProcess())
                 {
-                    this.IsFocus  = this.Memory.IsFocusWindow;
+                    this.IsFocus  = this.Memory.IsFocusMainWindow;
                     this.IsInGame = this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.IsInGame)) != 0;
                 }
             };
@@ -219,9 +219,9 @@ namespace Yanitta
             try
             {
                 var hotKey   = sender as HotKey;
-                var ratation = hotKey.Tag as Rotation;
+                var rotation = hotKey.Tag as Rotation;
 
-                ExecuteProfile(ratation);
+                ExecuteProfile(rotation);
             }
             catch (Exception ex)
             {
