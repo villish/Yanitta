@@ -9402,7 +9402,7 @@ return CheckInterrupt("target");
 if not isCat then
     if playerHP < 80 and UnitPower("player") > 55 then
         return true;
-    elseif playerHP < 50 and UnitPower("player") > 35 then
+    elseif playerHP < 40 and UnitPower("player") > 35 then
         return true;
     end
 end
@@ -9533,7 +9533,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- без ГКД
-if not isCat then
+if not isCat and playerHP > 50 then
     -- зубы и когти
     if HasBuff("player", 135288) then
         return true;
