@@ -4259,8 +4259,8 @@ end
       </Ability>
       <Ability Name="Обшаривание карманов">
         <SpellID>921</SpellID>
-        <Target>Target</Target>
         <Target>Mouseover</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -8261,7 +8261,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(2, HasBuff("player", 125195)) > 9 then
+if select(2, HasBuff("player", 125195)) > 9 and SpellCD(107428) < 2 then
     return true;
 end
 ]]></Lua>
