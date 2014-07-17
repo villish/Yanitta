@@ -7832,6 +7832,51 @@ end
     </Rotation>
     <Rotation Name="Колдовство">
       <HotKey Key="C" Modifier="Alt" />
+      <Lua><![CDATA[
+function Round(num)
+    return math.floor(num + 0.5);
+end
+
+function GetDotDamage()
+    local ticks, duration, damage, dps;
+    local mastery, haste, crit, spd = GetMastery(), UnitSpellHaste("player"), GetSpellCritChance(6), GetSpellBonusDamage(6);
+    if crit > 100 then crit = 100 end
+
+    local damage_bonus  = (1 + crit / 100) * (1 + mastery / 100);
+    local tick_every    = 2 / (1 + (haste / 100));
+
+    -- Агония
+    ticks           = Round(24 / tick_every);
+    duration        = ticks * tick_every;
+    damage          = ticks * (280 + spd * 0.26) * damage_bonus;
+    dps             = Round(damage / duration);
+    local agony_dps = Round(dps / 100) / 10;
+
+    -- Порча
+    ticks           = Round(18 / tick_every);
+    duration        = ticks * tick_every;
+    damage          = (1926 + ticks * spd * 0.2) * damage_bonus;
+    dps             = Round(damage / duration);
+    local corr_dps  = Round(dps / 100) / 10;
+
+    -- Нестабильное колдовство
+    ticks           = Round(14 / tick_every);
+    duration        = ticks * tick_every;
+    damage          = (1792 + ticks * spd * 0.24) * damage_bonus;
+    dps             = Round(damage / duration);
+    local ua_dps    = Round(dps / 100) / 10;
+
+    return agony_dps, corr_dps, ua_dps;
+end
+
+function NeedRedot(targetInfo, index, percent)
+    local new_dps = select(index, GetDotDamage());
+    local dps = ((new_dps * 100) / (targetInfo.dps or 0)) - 100;
+    if dps > (percent or 1) and targetInfo.Guid == UnitGUID(targetInfo.Target) then
+        return true;
+    end
+end
+]]></Lua>
       <Ability Name="Неистовство тьмы">
         <SpellID>30283</SpellID>
         <Target>MouseLocation</Target>
@@ -7985,6 +8030,11 @@ if power2 > 0 and SpellCD(74434) == 0 then
             -- Горящая душа (без ГКД)
             CastSpellByName(GetSpellInfo(74434));
             return true;
+        -- Если есть проки (проверять будем по Нестабильному колдовству)
+        elseif NeedRedot(targetInfo, 3) then
+            -- Горящая душа (без ГКД)
+            CastSpellByName(GetSpellInfo(74434));
+            return true;
         end
     end
 end
@@ -8006,7 +8056,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
+if NeedRedot(targetInfo, 1)
+    or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
@@ -8047,7 +8098,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
+if NeedRedot(targetInfo, 2)
+    or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
@@ -8068,7 +8120,8 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
+if NeedRedot(targetInfo, 3)
+    or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
