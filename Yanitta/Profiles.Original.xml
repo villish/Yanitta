@@ -4818,20 +4818,6 @@ return IsModKeyDown(mkLeftAlt);
 return setAoE;
 ]]></Lua>
       </Ability>
-      <Ability Name="Слово Тьмы: Смерть">
-        <SpellID>32379</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return HealthByPercent(target) < 20;
-]]></Lua>
-      </Ability>
       <Ability Name="Всепожирающая чума">
         <SpellID>2944</SpellID>
         <Target>Target</Target>
@@ -4842,7 +4828,24 @@ return HealthByPercent(target) < 20;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitPower("player", SPELL_POWER_SHADOW_ORBS) > 2 then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
     return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Пытка разума (Безумие)">
+        <SpellID>15407</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HasDebuff("target", 2944, "PLAYER") then
+    return isInRange;
 end
 ]]></Lua>
       </Ability>
@@ -4855,7 +4858,25 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if not HasDebuff("target", 2944, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Слово Тьмы: Смерть">
+        <SpellID>32379</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasDebuff("target", 2944, "PLAYER") then
+    return HealthByPercent(target) < 20;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Сияние">
@@ -4901,14 +4922,24 @@ end
         <Target>Target</Target>
         <Target>Focus</Target>
         <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IS_MOVING or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 2 then
-    return true;
+-- 18 sec
+local remains = select(3, HasDebuff(target, ability.SpellId, "PLAYER"));
+local orbs = UnitPower("player", SPELL_POWER_SHADOW_ORBS);
+
+if not HasDebuff("target", 2944, "PLAYER") then
+    if SpellCD(8092) < 4 and remains < 8 and orbs > 1 then
+        return true;
+    end
+
+    if NeedRedot(targetInfo, 2) or IS_MOVING or remains < 2 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -4917,14 +4948,24 @@ end
         <Target>Target</Target>
         <Target>Focus</Target>
         <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
+        <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3.5 then
-    return true;
+-- 15 sec
+local remains = select(3, HasDebuff(target, ability.SpellId, "PLAYER"));
+local orbs = UnitPower("player", SPELL_POWER_SHADOW_ORBS);
+
+if not HasDebuff("target", 2944, "PLAYER") then
+    if SpellCD(8092) < 3 and remains < 8 and orbs > 1 then
+        return true;
+    end
+
+    if NeedRedot(targetInfo, 1) or remains < 3.5 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
