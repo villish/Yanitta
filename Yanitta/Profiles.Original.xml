@@ -2656,7 +2656,7 @@ return not HasBuff("player", 77769);
 ]]></Lua>
       </Ability>
       <Ability Name="Взрывная ловушка">
-        <SpellID>82939</SpellID>
+        <SpellID>13813</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2668,7 +2668,7 @@ return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяная ловушка">
-        <SpellID>82941</SpellID>
+        <SpellID>13809</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2680,7 +2680,7 @@ return IsModKeyDown(mkRightAlt);
 ]]></Lua>
       </Ability>
       <Ability Name="Замораживающая ловушка">
-        <SpellID>60192</SpellID>
+        <SpellID>1499</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
