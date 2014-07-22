@@ -414,6 +414,9 @@
   <data name="CopyFromRotation" xml:space="preserve">
     <value>Копирование способностей</value>
   </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
   <data name="OpenLog" xml:space="preserve">
     <value>Открыть лог</value>
   </data>

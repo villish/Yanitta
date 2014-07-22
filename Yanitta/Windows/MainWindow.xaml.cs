@@ -71,11 +71,11 @@ namespace Yanitta
             try
             {
                 var fileName = (string)e.Parameter;
-                new Process { StartInfo = new ProcessStartInfo(fileName) }.Start();
+                Process.Start(fileName);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message, Localization.Error, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

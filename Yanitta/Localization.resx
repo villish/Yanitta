@@ -414,6 +414,9 @@
   <data name="CopyFromRotation" xml:space="preserve">
     <value>Copy rotation</value>
   </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
   <data name="OpenLog" xml:space="preserve">
     <value>Open LOG</value>
   </data>
