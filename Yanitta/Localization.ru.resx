@@ -414,4 +414,10 @@
   <data name="CopyFromRotation" xml:space="preserve">
     <value>Копирование способностей</value>
   </data>
+  <data name="OpenLog" xml:space="preserve">
+    <value>Открыть лог</value>
+  </data>
+  <data name="OpenLuaCode" xml:space="preserve">
+    <value>Открыть луа код</value>
+  </data>
 </root>

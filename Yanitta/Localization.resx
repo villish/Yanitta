@@ -414,4 +414,10 @@
   <data name="CopyFromRotation" xml:space="preserve">
     <value>Copy rotation</value>
   </data>
+  <data name="OpenLog" xml:space="preserve">
+    <value>Open LOG</value>
+  </data>
+  <data name="OpenLuaCode" xml:space="preserve">
+    <value>Open Lua code</value>
+  </data>
 </root>

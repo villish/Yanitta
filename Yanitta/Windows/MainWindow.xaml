@@ -30,6 +30,7 @@
         <CommandBinding Command="{StaticResource OpenCodeExec}"   Executed="CommandBinding_Executed_ShowExecuteWindow" />
         <CommandBinding Command="{StaticResource OpenProfiles}"   Executed="CommandBinding_Executed_ShowProfileWindow" />
         <CommandBinding Command="{StaticResource OpenSettings}"   Executed="CommandBinding_Executed_ShowSettingWindow" />
+        <CommandBinding Command="Open"                            Executed="CommandBinding_Executed_OpenFile" />
     </Window.CommandBindings>
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyle}">
@@ -75,5 +76,7 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
+        <Button Width="100" Height="24" Margin="37,544,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="Open" CommandParameter="Yanitta.log" Content="{x:Static yanitta:Localization.OpenLog}" />
+        <Button Width="100" Height="24" Margin="151,544,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Open" CommandParameter="InjectedLuaCode.lua" Content="{x:Static yanitta:Localization.OpenLuaCode}" />
     </Grid>
 </Window>

@@ -583,6 +583,24 @@ namespace Yanitta {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Open LOG.
+        /// </summary>
+        public static string OpenLog {
+            get {
+                return ResourceManager.GetString("OpenLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Open Lua code.
+        /// </summary>
+        public static string OpenLuaCode {
+            get {
+                return ResourceManager.GetString("OpenLuaCode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Process: .
         /// </summary>
         public static string ProcessName {

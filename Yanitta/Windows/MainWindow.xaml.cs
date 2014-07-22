@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -62,6 +64,19 @@ namespace Yanitta
         private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
         {
             this.WindowState = WindowState.Minimized;
+        }
+
+        private void CommandBinding_Executed_OpenFile(object sender, ExecutedRoutedEventArgs e)
+        {
+            try
+            {
+                var fileName = (string)e.Parameter;
+                new Process { StartInfo = new ProcessStartInfo(fileName) }.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
