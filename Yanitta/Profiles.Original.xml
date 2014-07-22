@@ -4740,6 +4740,7 @@ function GetDotDamage()
 end
 
 function NeedRedot(targetInfo, index, percent)
+    return;-- temp
     local new_dps = select(index, GetDotDamage());
     if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
         and targetInfo.Guid == UnitGUID(targetInfo.Target) then
@@ -4754,7 +4755,7 @@ function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
         local spellId = select(12, ...);
         for _, ability in ipairs() do
             for _, targetInfo in ipairs(ability.TargetList) do
-                if ability.SpellId = spellId and destGUID == UnitGUID(targetInfo.Target) then
+                if ability.SpellId == spellId and destGUID == UnitGUID(targetInfo.Target) then
                     targetInfo.Guid = destGUID;
                     if spellId == 589 then -- Слово тьммы: Боль
                         targetInfo.dps = select(1, GetDotDamage());
