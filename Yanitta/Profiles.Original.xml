@@ -6657,6 +6657,19 @@ end
 FillPartyTables(8004);
 ]]></Lua>
       </Ability>
+      <Ability Name="Целительный ливень">
+        <SpellID>73920</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+-- Колеcико мышки
+return IsMouseButtonDown(3);
+]]></Lua>
+      </Ability>
       <Ability Name="Водяной щит">
         <SpellID>52127</SpellID>
         <Target>Player</Target>
@@ -9090,7 +9103,7 @@ return IsMouseButtonDown(3);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() 
+if IsMounted() or IsStealthed() or HasBuff("player", 104270)
     or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6) then
     return true;
 end
