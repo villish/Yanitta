@@ -95,12 +95,13 @@ namespace Yanitta
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
             var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
             var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
+            var name              = this.Name.Replace("'", "\'").Replace("\"", @"\""");
 
             // код
             var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
 
             var builder = new StringBuilder();
-            builder.AppendFormatLine("    {{   SpellId = {0,6}, Name = \"{1}\",", this.SpellID, this.Name);
+            builder.AppendFormatLine("    {{   SpellId = {0,6}, Name = \"{1}\",", this.SpellID, name);
             builder.AppendFormatLine("        IsMovingCheck     = \"{0}\",", isMovingCheck);
             builder.AppendFormatLine("        DropChanel        = {0},",     cancelChannel);
             builder.AppendFormatLine("        CancelCasting     = {0},",     cancelCasting);
