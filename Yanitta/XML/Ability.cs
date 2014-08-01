@@ -95,7 +95,7 @@ namespace Yanitta
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
             var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
             var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
-            var name              = this.Name.Replace("'", "\'").Replace("\"", @"\""");
+            var name              = this.Name.Replace("\"", @"\""");
 
             // код
             var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
