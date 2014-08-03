@@ -4361,7 +4361,7 @@ end
 
 FillPartyTables(2061);
 
-isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
+isInRange = IsSpellInRange(GetSpellInfo(2061), "target") == 1;
 myMana    = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
@@ -4450,8 +4450,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if myMana < 80 then
-    return true;
+if IsSpellInRange(GetSpellInfo(585), "target") == 1 then
+    return myMana < 80;
 end
 ]]></Lua>
       </Ability>
@@ -4506,13 +4506,14 @@ end
 if IsModKeyDown(mkLeftControl)
 and UnitExists("mouseover")
 and UnitHealth("mouseover") > 100
-and UnitCanAssist("player", "mouseover")
+and UnitIsFriend("player", "mouseover")
 and not HasDebuff("mouseover", 6788) then
     return "mouseover";
 end
 
-for _,member in ipairs(members) do
-    if not HasDebuff(member.Unit, 6788) or HasBuff("player", 123266) then
+for _, member in ipairs(members) do
+    if (not HasDebuff(member.Unit, 6788) and not HasBuff(member.Unit, 17))
+        or HasBuff("player", 123266) then
         if (member.IsTank and member.Agro > 2) or IsModKeyDown(mkLeftControl) then
             return member.Unit;
         end
@@ -4620,7 +4621,11 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if not UnitIsFriend("target", "player") then
+    return true;
+elseif members[1].HP < 85 then
+    return members[1].Unit;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Священный огонь">
@@ -4635,9 +4640,11 @@ return true;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Слово Тьмы: Смерть (Target)">
+      <Ability Name="Слово Тьмы: Смерть">
         <SpellID>32379</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>true</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -4650,6 +4657,8 @@ return HealthByPercent("target") < 20;
       <Ability Name="Слово тьмы: Боль">
         <SpellID>589</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -4740,12 +4749,12 @@ function GetDotDamage()
 end
 
 function NeedRedot(targetInfo, index, percent)
-    return;-- temp
-    local new_dps = select(index, GetDotDamage());
-    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
-        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
-        return true;
-    end
+--    return;-- temp
+--    local new_dps = select(index, GetDotDamage());
+--    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
+--        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
+--        return true;
+--    end
 end
 
 function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
@@ -9323,7 +9332,7 @@ local buffs = { 774, 8936 };
 
 if HasGlyph(145529) then
     for _,member in ipairs(members) do
-        if member.HP < 70 and HasBuff(member.Unit, buffs, "PLAYER") then
+        if member.HP < 80 and HasBuff(member.Unit, buffs, "PLAYER") then
             return member.Unit;
         end
     end
