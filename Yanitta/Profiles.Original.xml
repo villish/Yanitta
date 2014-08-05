@@ -4361,8 +4361,7 @@ end
 
 FillPartyTables(2061);
 
-isInRange = IsSpellInRange(GetSpellInfo(2061), "target") == 1;
-myMana    = PowerByPercent("player", SPELL_POWER_MANA);
+myMana = PowerByPercent("player", SPELL_POWER_MANA);
 
 if myMana < 75 then
     --UseItemBySlot(INVSLOT_TRINKET1);
@@ -8925,7 +8924,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and playerHP < 90 then
+if playerHP < 80 then
     return true;
 end
 ]]></Lua>
@@ -9598,11 +9597,10 @@ playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;
 
-if GetShapeshiftForm() == 1 and not UnitExists("target") then
-    TargetUnit("Зандаларский завоеватель");
-    if UnitName("target") == "Зандаларский завоеватель" and SpellCD(770) == 0 then
-        CastSpellByName(GetSpellInfo(770), "target");
-    end
+if useCooldown and SpellCD(33878) == 0 then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
 end
 ]]></Lua>
       </Ability>
