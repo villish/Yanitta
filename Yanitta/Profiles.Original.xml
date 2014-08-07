@@ -9597,7 +9597,7 @@ playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;
 
-if useCooldown and SpellCD(33878) == 0 and UnitAffectingCombat("player") then
+if isInMeele and useCooldown and SpellCD(33878) == 0 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
