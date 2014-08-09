@@ -7909,6 +7909,27 @@ if IsSpellInRange(GetSpellInfo(1490), target) == 1 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Поджигаие">
+        <SpellID>17962</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInRange and ChaosCount < 3 then
+    -- Если нету бафа обратного потока
+    if not HasBuff("player", 117828) and GetSpellCount(GetSpellInfo(17962)) == 2 then
+        if FireAndBrimstone then
+            return power2 > 1;
+        else
+            return true;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Стрела хаоса">
         <SpellID>116858</SpellID>
         <Target>Target</Target>
@@ -8024,6 +8045,7 @@ function NeedRedot(targetInfo, index, percent)
     local new_dps = select(index, GetDotDamage());
     if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
         and targetInfo.Guid == UnitGUID(targetInfo.Target) then
+        print(string.format("Redot: %d -> %d", targetInfo.dps, new_dps));
         return true;
     end
 end
@@ -8378,6 +8400,8 @@ useCooldown = true;
 setAoE = false;
 useCooldown = true;
 
+ftable = { };
+
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -8396,6 +8420,22 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+
+function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
+          sourceGUID,srcName,  sourceFlags,sourceFlags2,
+          destGUID,  destName, destFlags,  destFlags2,
+          spellId,   spellName,spellSchool,amount,   overkill,school,
+          resisted,  blocked,  absorbed,   critical, glancing,crushing)
+    if subEvent == "SPELL_CAST_SUCCESS" then
+        if sourceGUID == UnitGUID("player") and spellId == 137639 then
+            if ftable[destGUID] then
+                ftable[destGUID] = nil;
+            else
+                ftable[destGUID] = GetTime();
+            end
         end
     end
 end
@@ -8429,6 +8469,21 @@ end
 
 energy = UnitPower("player");     -- energy
 chi    = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
+]]></Lua>
+      </Ability>
+      <Ability Name="Буря, земля и огонь">
+        <SpellID>137639</SpellID>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftShift) then
+
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Смертельное касание">
@@ -9050,7 +9105,7 @@ NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восст�
         <Lua><![CDATA[
 -- пауза
 if IsModKeyDown(mkLeftShift) then
-    for index = 1, 5 do
+    for index = 1, NUM_WORLD_RAID_MARKERS do
         if not IsRaidMarkerActive(index) then
             PlaceRaidMarker(index);
             break;
