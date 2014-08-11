@@ -2810,6 +2810,20 @@ end
 return setAoE;
 ]]></Lua>
       </Ability>
+      <Ability Name="Укус змеи">
+        <SpellID>1978</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not setAoE and not HasDebuff(target, 118253, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Разрывной выстрел">
         <SpellID>53301</SpellID>
         <Target>Target</Target>
@@ -2844,20 +2858,6 @@ return not setAoE;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Укус змеи">
-        <SpellID>1978</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not setAoE and not HasDebuff(target, 118253, "PLAYER") then
-    return true;
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Бросок глеф">
@@ -7660,7 +7660,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Огненный ливень">
-        <SpellID>104232</SpellID>
+        <SpellID>5740</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -7883,7 +7883,7 @@ if UnitHealth(target) < UnitHealthMax("player") then
     return;
 end
 
-if FireAndBrimstone and power2 > 0 and isInRange and ChaosCount < 3
+if setAoE and FireAndBrimstone and power2 > 0 and isInRange and ChaosCount < 3
     and IsSpellKnown(108683) then
     if select(3, HasDebuff(target, 108686, "PLAYER")) < 3 then
         return true;
@@ -8021,11 +8021,11 @@ function GetDotDamage()
 end
 
 function NeedRedot(targetInfo, index, percent)
-    local new_dps = select(index, GetDotDamage());
-    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
-        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
-        return true;
-    end
+--    local new_dps = select(index, GetDotDamage());
+--    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
+--        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
+--        return true;
+--    end
 end
 
 function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
@@ -8035,7 +8035,7 @@ function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
         local spellId = select(12, ...);
         for _, ability in ipairs() do
             for _, targetInfo in ipairs(ability.TargetList) do
-                if ability.SpellId = spellId and destGUID == UnitGUID(targetInfo.Target) then
+                if ability.SpellId == spellId and destGUID == UnitGUID(targetInfo.Target) then
                     targetInfo.Guid = destGUID;
                     if spellId == 980 then -- Агония
                         targetInfo.dps = select(1, GetDotDamage());
@@ -8428,7 +8428,7 @@ if HealthByPercent("player") < 30 then
 end
 
 energy = UnitPower("player");     -- energy
-chi    = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
+chi    = UnitPower("player",  12); -- chi
 ]]></Lua>
       </Ability>
       <Ability Name="Смертельное касание">
@@ -8616,11 +8616,15 @@ end
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HealthByPercent("player") < 75 then
+if UnitAffectingCombat("player") and HealthByPercent("player") < 75 then
+    return true;
+end
+
+if not UnitAffectingCombat("player") and IsInRaid() and chi < 5 then
     return true;
 end
 ]]></Lua>
