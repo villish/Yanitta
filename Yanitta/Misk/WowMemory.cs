@@ -191,6 +191,7 @@ namespace Yanitta
                 {
                     if (rotation.HotKey.Modifier == Keyboard.Modifiers && rotation.HotKey.Key == key)
                     {
+                        Console.WriteLine("{0}: Запуск ротации \"{1}\"", rotation.HotKey, rotation.Name);
                         ExecuteProfile(rotation);
                         return new IntPtr(1);
                     }
