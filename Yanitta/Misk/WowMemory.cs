@@ -187,13 +187,18 @@ namespace Yanitta
                 var VkCode = Marshal.ReadInt32(lParam);
                 var key = KeyInterop.KeyFromVirtualKey(VkCode);
 
-                foreach (var rotation in this.Rotations)
+                // не будем обрабатывать, если просто зажат модификатор [116...121]
+                if (!(key >= Key.LeftShift && key <= Key.RightAlt))
                 {
-                    if (rotation.HotKey.Modifier == Keyboard.Modifiers && rotation.HotKey.Key == key)
+                    foreach (var rotation in this.Rotations)
                     {
-                        Console.WriteLine("{0}: Запуск ротации \"{1}\"", rotation.HotKey, rotation.Name);
-                        ExecuteProfile(rotation);
-                        return new IntPtr(1);
+                        if (rotation.HotKey.Modifier == Keyboard.Modifiers
+                            && rotation.HotKey.Key == key)
+                        {
+                            Console.WriteLine("{0}: Запуск ротации \"{1}\"", rotation.HotKey, rotation.Name);
+                            ExecuteProfile(rotation);
+                            return new IntPtr(1);
+                        }
                     }
                 }
                 return IntPtr.Zero;
