@@ -84,14 +84,5 @@ namespace Yanitta
                 rotation.AbilityList.Add(ability.Clone());
             return rotation;
         }
-
-        /// <summary>
-        /// Снимает регистрацию гарячих клавиш для текущей ротации.
-        /// </summary>
-        public void Unregister()
-        {
-            if (this.HotKey.IsRegistered)
-                this.HotKey.Unregister();
-        }
     }
 }

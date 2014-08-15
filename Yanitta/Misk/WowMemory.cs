@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -16,14 +18,37 @@ namespace Yanitta
     public delegate void WowMemoryHandler(WowMemory memory);
 
     /// <summary>
+    /// The HOOKPROC type defines a pointer to this callback function.
+    /// </summary>
+    /// <param name="code">A code the hook procedure uses to determine how to process the message.</param>
+    /// <param name="wParam">Keyboard action.</param>
+    /// <param name="lParam">The virtual-key code of the key that generated the keystroke message.</param>
+    /// <returns></returns>
+    delegate IntPtr KeyboardProc(int code, IntPtr wParam, IntPtr lParam);
+
+    /// <summary>
     /// Посредник для взаимодействия с процессом.
     /// </summary>
     public class WowMemory : ViewModelBase, IDisposable
     {
+        #region Win API
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern IntPtr SetWindowsHookEx(int idHook, KeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+        #endregion
+
         /// <summary>
         /// Событие для обработки закрытия процесса.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
+        [SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event WowMemoryHandler GameExited;
 
         private bool isInGame;
@@ -34,6 +59,7 @@ namespace Yanitta
         /// </summary>
         public ProcessMemory Memory { get; private set; }
 
+        private IntPtr keyboardHook;
         private bool IsDisposed;
         private DispatcherTimer mTimer;
 
@@ -95,8 +121,6 @@ namespace Yanitta
                     ProfileDb.Instance[this.Class].RotationList.CollectionChanged -= OnRotationListChange;
                     ProfileDb.Instance[this.Class].RotationList.CollectionChanged += OnRotationListChange;
 
-                    ChangeHotKeys();
-
                     this.OnPropertyChanged("Class");
                     this.OnPropertyChanged("Name");
                     this.OnPropertyChanged("Rotations");
@@ -115,7 +139,6 @@ namespace Yanitta
                 if (this.isFocus != value)
                 {
                     this.isFocus = value;
-                    ChangeHotKeys();
                     this.OnPropertyChanged();
                 }
             }
@@ -124,42 +147,6 @@ namespace Yanitta
         private void OnRotationListChange(object sender, EventArgs e)
         {
             OnPropertyChanged("Rotations");
-        }
-
-        private void ChangeHotKeys()
-        {
-            if (this.isFocus && this.isInGame)
-            {
-                // Немного разъяснений, чтобы самому в следующий раз не запутатся:
-                // Когда окно становится в фокусе и персонаж находится в игровоом мире
-                // сначала надо снять регистрацию всех гарячих клавиш со всех доступных профилей.
-                // Возможно это будут профили других процессов.
-                ProfileDb.Instance.ProfileList.ForEach(
-                    profile => profile.RotationList.ForEach(
-                        rotation => rotation.Unregister()));
-
-                // И только тогда делаем регистрацию новых гарячих клавиш на текущие ротации
-                this.Rotations.ForEach(rotation => {
-                    if (!rotation.HotKey.IsRegistered)
-                    {
-                        rotation.HotKey.Tag = rotation;
-                        rotation.HotKey.Pressed -= HotKeyPressed;
-                        rotation.HotKey.Pressed += HotKeyPressed;
-                        try
-                        {
-                            rotation.HotKey.Register();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("HotKey Error: " + ex.Message);
-                        }
-                    }
-                });
-            }
-            else
-            {
-                this.Rotations.ForEach(rotation => rotation.Unregister());
-            }
         }
 
         /// <summary>
@@ -187,8 +174,30 @@ namespace Yanitta
                 }
             };
 
+            keyboardHook = SetWindowsHookEx(13, HookCallback, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
+
             this.mTimer.IsEnabled = true;
             this.mTimer.Start();
+        }
+
+        private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            if (Memory.IsFocusMainWindow && wParam.ToInt32() == 0x104)
+            {
+                var VkCode = Marshal.ReadInt32(lParam);
+                var key = KeyInterop.KeyFromVirtualKey(VkCode);
+
+                foreach (var rotation in this.Rotations)
+                {
+                    if (rotation.HotKey.Modifier == Keyboard.Modifiers && rotation.HotKey.Key == key)
+                    {
+                        ExecuteProfile(rotation);
+                        return new IntPtr(1);
+                    }
+                }
+                return IntPtr.Zero;
+            }
+            return CallNextHookEx(keyboardHook, nCode, wParam, lParam);
         }
 
         /// <summary>
@@ -208,27 +217,6 @@ namespace Yanitta
                 return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Обработчик нажатия гарячих клавиш.
-        /// </summary>
-        private void HotKeyPressed(object sender, HandledEventArgs e)
-        {
-            Debug.Assert(sender != null);
-            try
-            {
-                var hotKey   = sender as HotKey;
-                var rotation = hotKey.Tag as Rotation;
-
-                ExecuteProfile(rotation);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error when injected rotation: {0}", ex.Message);
-            }
-
-            e.Handled = true;
         }
 
         /// <summary>
@@ -326,7 +314,8 @@ namespace Yanitta
                 this.mTimer.IsEnabled = false;
             }
 
-            this.Rotations.ForEach(rotation => rotation.Unregister());
+            if (keyboardHook != IntPtr.Zero)
+                UnhookWindowsHookEx(keyboardHook);
 
             if (this.Memory != null && !this.Memory.Process.HasExited)
             {
@@ -335,6 +324,8 @@ namespace Yanitta
                     this.LuaExecute(StopCode);
                 }
             }
+
+            this.keyboardHook = IntPtr.Zero;
             this.Memory     = null;
             this.IsDisposed = true;
         }
