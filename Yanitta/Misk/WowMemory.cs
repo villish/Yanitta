@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Input;
@@ -24,7 +25,8 @@ namespace Yanitta
     /// <param name="wParam">Keyboard action.</param>
     /// <param name="lParam">The virtual-key code of the key that generated the keystroke message.</param>
     /// <returns></returns>
-    delegate IntPtr KeyboardProc(int code, IntPtr wParam, IntPtr lParam);
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    delegate IntPtr KeyBoardProc(int code, IntPtr wParam, IntPtr lParam);
 
     /// <summary>
     /// Посредник для взаимодействия с процессом.
@@ -34,7 +36,7 @@ namespace Yanitta
         #region Win API
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        static extern IntPtr SetWindowsHookEx(int idHook, KeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+        static extern IntPtr SetWindowsHookEx(int idHook, KeyBoardProc lpfn, IntPtr hMod, uint dwThreadId);
 
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -50,6 +52,9 @@ namespace Yanitta
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event WowMemoryHandler GameExited;
+
+        // Сохраним ссылку на обработчик, чтобы ее не трогал CG.
+        private KeyBoardProc KeyBoardProck;
 
         private bool isInGame;
         private bool isFocus;
@@ -174,34 +179,43 @@ namespace Yanitta
                 }
             };
 
-            keyboardHook = SetWindowsHookEx(13, HookCallback, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
+            // Мы должны сохранить ссылку на делегат, чтобы его не трогал сборщик мусора
+            this.KeyBoardProck = new KeyBoardProc(HookCallback);
+            this.keyboardHook = SetWindowsHookEx(13, this.KeyBoardProck, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
 
             this.mTimer.IsEnabled = true;
             this.mTimer.Start();
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            if (Memory.IsFocusMainWindow && wParam.ToInt32() == 0x104)
+            if (nCode == 0
+                && Keyboard.Modifiers != ModifierKeys.None
+                && this.Memory.IsFocusMainWindow
+                && this.IsInGame
+                && (wParam.ToInt32() == 0x104 || wParam.ToInt32() == 0x100))
             {
-                var VkCode = Marshal.ReadInt32(lParam);
-                var key = KeyInterop.KeyFromVirtualKey(VkCode);
+                var vkCode = Marshal.ReadInt32(lParam);
+                var key    = KeyInterop.KeyFromVirtualKey(vkCode);
 
                 // не будем обрабатывать, если просто зажат модификатор [116...121]
                 if (!(key >= Key.LeftShift && key <= Key.RightAlt))
                 {
+                    //Debug.WriteLine("[{3}] Mod: {0}, Key: {1} ({2})", Keyboard.Modifiers, key, VkCode, nCode);
                     foreach (var rotation in this.Rotations)
                     {
                         if (rotation.HotKey.Modifier == Keyboard.Modifiers
                             && rotation.HotKey.Key == key)
                         {
-                            Console.WriteLine("{0}: Запуск ротации \"{1}\"", rotation.HotKey, rotation.Name);
+                            Console.WriteLine("Процесс: [{0}] {1} <{2}> Запуск ротации \"{3}\" ({4})",
+                                this.ProcessId, this.Class, this.Name, rotation.Name, rotation.HotKey);
+
                             ExecuteProfile(rotation);
-                            return new IntPtr(1);
+                            return (IntPtr)1;
                         }
                     }
                 }
-                return IntPtr.Zero;
             }
             return CallNextHookEx(keyboardHook, nCode, wParam, lParam);
         }
@@ -320,8 +334,9 @@ namespace Yanitta
                 this.mTimer.IsEnabled = false;
             }
 
-            if (keyboardHook != IntPtr.Zero)
-                UnhookWindowsHookEx(keyboardHook);
+            if (this.keyboardHook != IntPtr.Zero)
+                UnhookWindowsHookEx(this.keyboardHook);
+            this.KeyBoardProck = null;
 
             if (this.Memory != null && !this.Memory.Process.HasExited)
             {
