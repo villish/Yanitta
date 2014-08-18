@@ -19,21 +19,22 @@ namespace Yanitta
     public delegate void WowMemoryHandler(WowMemory memory);
 
     /// <summary>
-    /// The HOOKPROC type defines a pointer to this callback function.
-    /// </summary>
-    /// <param name="code">A code the hook procedure uses to determine how to process the message.</param>
-    /// <param name="wParam">Keyboard action.</param>
-    /// <param name="lParam">The virtual-key code of the key that generated the keystroke message.</param>
-    /// <returns></returns>
-    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
-    delegate IntPtr KeyBoardProc(int code, IntPtr wParam, IntPtr lParam);
-
-    /// <summary>
     /// Посредник для взаимодействия с процессом.
     /// </summary>
     public class WowMemory : ViewModelBase, IDisposable
     {
         #region Win API
+
+        /// <summary>
+        /// The HOOKPROC type defines a pointer to this callback function.
+        /// </summary>
+        /// <param name="code">A code the hook procedure uses to determine how to process the message.</param>
+        /// <param name="wParam">Keyboard action.</param>
+        /// <param name="lParam">The virtual-key code of the key that generated the keystroke message.</param>
+        /// <returns></returns>
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+        delegate IntPtr KeyBoardProc(int code, IntPtr wParam, IntPtr lParam);
+
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern IntPtr SetWindowsHookEx(int idHook, KeyBoardProc lpfn, IntPtr hMod, uint dwThreadId);
@@ -45,6 +46,7 @@ namespace Yanitta
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
         #endregion
 
         /// <summary>
@@ -53,11 +55,10 @@ namespace Yanitta
         [SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event WowMemoryHandler GameExited;
 
-        // Сохраним ссылку на обработчик, чтобы ее не трогал CG.
+        // Сохраним ссылку на обработчик, чтобы ее не трогал сборщик мусора.
         private KeyBoardProc KeyBoardProck;
 
         private bool isInGame;
-        private bool isFocus;
 
         /// <summary>
         /// Текущий процесс <see cref="Yanitta.ProcessMemory"/>
@@ -133,22 +134,6 @@ namespace Yanitta
             }
         }
 
-        /// <summary>
-        /// Указывает, активно ли основное окно процесса.
-        /// </summary>
-        public bool IsFocus
-        {
-            get { return this.isFocus; }
-            private set
-            {
-                if (this.isFocus != value)
-                {
-                    this.isFocus = value;
-                    this.OnPropertyChanged();
-                }
-            }
-        }
-
         private void OnRotationListChange(object sender, EventArgs e)
         {
             OnPropertyChanged("Rotations");
@@ -173,10 +158,7 @@ namespace Yanitta
             this.mTimer.Interval = TimeSpan.FromMilliseconds(500);
             this.mTimer.Tick += (o, e) => {
                 if (CheckProcess())
-                {
-                    this.IsFocus  = this.Memory.IsFocusMainWindow;
                     this.IsInGame = this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.IsInGame)) != 0;
-                }
             };
 
             // Мы должны сохранить ссылку на делегат, чтобы его не трогал сборщик мусора
