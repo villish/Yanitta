@@ -193,7 +193,7 @@ namespace Yanitta
                             Console.WriteLine("Процесс: [{0}] {1} <{2}> Запуск ротации \"{3}\" ({4})",
                                 this.ProcessId, this.Class, this.Name, rotation.Name, rotation.HotKey);
 
-                            ExecuteProfile(rotation);
+                            this.ExecuteProfile(rotation);
                             return (IntPtr)1;
                         }
                     }

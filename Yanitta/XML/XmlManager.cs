@@ -46,8 +46,8 @@ namespace Yanitta
         /// <param name="obj">Объект для сериализации.</param>
         public static void Save<T>(string path, T obj) where T : class
         {
-            if (!File.Exists(path))
-                throw new FileNotFoundException("File not found", path);
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException("path");
 
             if (obj == null)
                 throw new ArgumentNullException("obj");
