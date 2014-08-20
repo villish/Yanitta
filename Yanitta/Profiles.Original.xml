@@ -6362,6 +6362,21 @@ if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Высвободить чары стихий">
+        <SpellID>73680</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Освобожденная ярость
+if IsTalentSpell(GetSpellInfo(117012)) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Выброс лавы">
         <SpellID>51505</SpellID>
         <Target>Target</Target>
@@ -6376,6 +6391,18 @@ if setAoE and HasBuff("player", 77756) then
 elseif HasBuff("player", 77756) or not IS_MOVING then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар духов стихии">
+        <SpellID>117014</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Цепная молния">
