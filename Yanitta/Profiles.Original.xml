@@ -4162,6 +4162,20 @@ if not (UnitAffectingCombat("player") or HasBuff("player", 2823)) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Веер клинков">
+        <SpellID>51723</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Заживление ран">
         <SpellID>73651</SpellID>
         <Target>None</Target>
@@ -4212,6 +4226,74 @@ if UnitExists("target") and GetComboPoints("player", "target") > 4 then
         return true;
     end
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вендетта">
+        <SpellID>79140</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and IsSpellInRange(GetSpellInfo(1329), "target") == 1 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Рваная рана">
+        <SpellID>1943</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") > 4 then
+    if select(3, HasDebuff(target, 1943, "PLAYER")) < 2 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Отравнеие">
+        <SpellID>32645</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") > 4 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Устранение">
+        <SpellID>111240</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Расправа">
+        <SpellID>1329</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -4396,6 +4478,26 @@ return IsMouseButtonDown(4);-- IsModKeyDown(mkLeftAlt);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftControl);
+]]></Lua>
+      </Ability>
+      <Ability Name="Левитация">
+        <SpellID>1706</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- надо тестировать
+if not IsFalling() then
+    falingStartTime = 0;
+elseif IsFalling() and (falingStartTime or 0) == 0 then
+    falingStartTime = GetTime();
+elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 111759) then
+    falingStartTime = 0;
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Разсеивание заклинаний (Авто)">
@@ -4621,8 +4723,8 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitIsFriend("target", "player") then
-    return true;
-elseif members[1].HP < 85 then
+    return "target";
+elseif members[1].HP < 60 then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -6818,7 +6920,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 80 then
+if members[1].HP < 60 then
     return members[1].Unit;
 end
 ]]></Lua>
