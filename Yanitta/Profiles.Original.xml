@@ -6434,6 +6434,20 @@ if not setAoE and isInRange and UnitExists("target") and not GetTotemInfo(1) the
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Перерождение">
+        <SpellID>114049</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if isInRange and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Земной шок">
         <SpellID>8042</SpellID>
         <Target>Target</Target>
@@ -6444,7 +6458,9 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(2, HasBuff("player", 324)) > 6 or UnitLevel("player") < 20 then
-    return true;
+    if select(3, HasDebuff(target, 8050, "PLAYER")) < 5 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
