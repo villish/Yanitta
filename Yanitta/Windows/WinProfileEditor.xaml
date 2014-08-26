@@ -10,6 +10,7 @@
         Width="1280"
         Height="900"
         FontFamily="../Resources/#MORPHEUS"
+        KeyDown="TextBox_KeyDown"
         Style="{DynamicResource KamillaStyle}"
         Icon="/Yanitta;component/Resources/BNUpdate.png">
 
@@ -260,8 +261,8 @@
                         <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
                             <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="100*"/>
-                                    <ColumnDefinition Width="100*"/>
+                                    <ColumnDefinition Width="344*"/>
+                                    <ColumnDefinition Width="321*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -301,7 +302,7 @@
                                     </ComboBox>
                                 </Grid>
 
-                                <StackPanel Grid.Column="2">
+                                <StackPanel Grid.Column="1">
                                     <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"  Content="{x:Static yanitta:Localization.IsUseIncombat}"  ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}" Content="{x:Static yanitta:Localization.SetRecastDelay}" ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="{x:Static yanitta:Localization.CancelCasting}"  ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>

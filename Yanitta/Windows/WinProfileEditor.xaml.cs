@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using Yanitta.Windows;
 
 namespace Yanitta
 {
@@ -213,6 +214,34 @@ namespace Yanitta
                             return ability.Name.IndexOf(tbAbilityFilter.Text, StringComparison.CurrentCultureIgnoreCase) > -1;
                         });
                     }
+                }
+            }
+        }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            // http://media.blizzard.com/wow/icons/56/icon_name.jpg
+            // https://us.api.battle.net/wow/spell/8056?locale=en_US&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue
+            //CurrentAbility.SpellID
+            if (e.Key == Key.F1)
+            {
+                if (CurrentAbility.SpellID != 0)
+                {
+                    var window = App.Current.Windows.OfType<HelpWindow>().FirstOrDefault();
+                    if (window == null)
+                    {
+                        window = new HelpWindow();
+                        window.Owner = this;
+                    }
+
+                    window.GetSpellData(CurrentAbility.SpellID);
+                    window.Show();
+
+                    if (!window.IsActive)
+                        window.Activate();
+
+                    if (window.WindowState == WindowState.Minimized)
+                        window.WindowState = WindowState.Normal;
                 }
             }
         }

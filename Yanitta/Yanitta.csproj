@@ -74,6 +74,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -93,6 +94,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="JSON\Spell.cs" />
     <Compile Include="Windows\CopyAbilitysWindow.xaml.cs">
       <DependentUpon>CopyAbilitysWindow.xaml</DependentUpon>
     </Compile>
@@ -102,6 +104,9 @@
     <Compile Include="Misk\ProcessList.cs" />
     <Compile Include="Misk\ProcessMemory.cs" />
     <Compile Include="Misk\YanittaException.cs" />
+    <Compile Include="Windows\HelpWindow.xaml.cs">
+      <DependentUpon>HelpWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MultySelectedComboBox.xaml.cs">
       <DependentUpon>MultySelectedComboBox.xaml</DependentUpon>
     </Compile>
@@ -143,6 +148,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\KamillaStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\HelpWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
