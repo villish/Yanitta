@@ -8806,7 +8806,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if energy < 40 then
+if energy < 40 and chi < 2 and IsSpellInRange(GetSpellInfo(100787), "target") == 1 then
     return true;
 end
 ]]></Lua>
