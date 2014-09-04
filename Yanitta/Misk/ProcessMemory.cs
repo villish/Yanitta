@@ -243,12 +243,13 @@ namespace Yanitta
         /// <summary>
         /// Выполняет функцию по указанному адрессу с указанным списком аргуметов.
         /// </summary>
-        /// <param name="address">Относительный адресс выполняемой функции.</param>
+        /// <param name="injAddress">Адрес в памяти куда записывается исполнимый байткод.</param>
+        /// <param name="callAddress">Относительный адресс выполняемой функции.</param>
         /// <param name="funcArgs">
         /// Параметры функции.
         /// Параметрами могут выступать как и значения так и указатели на значения.
         /// </param>
-        public void Call(IntPtr address, params int[] funcArgs)
+        public void Call(IntPtr injAddress, IntPtr callAddress, params int[] funcArgs)
         {
             var tHandle = OpenThread(ThreadAccess.All, false, this.Process.Threads[0].Id);
             if (SuspendThread(tHandle) == 0xFFFFFFFF)
@@ -284,14 +285,14 @@ namespace Yanitta
                 }
                 else
                 {
-                    // push address
+                    // push param address
                     bytes.Add(0x68);
                     bytes.AddRange(BitConverter.GetBytes(funcArgs[i]));
                 }
             }
 
-            // mov eax, address
-            var addr = this.Process.MainModule.BaseAddress.ToInt32() + address.ToInt32();
+            // mov eax, callAddress
+            var addr = this.Process.MainModule.BaseAddress.ToInt32() + callAddress.ToInt32();
             bytes.Add(0xB8);
             bytes.AddRange(BitConverter.GetBytes(addr));
 
@@ -317,7 +318,6 @@ namespace Yanitta
 
             #endregion
 
-            var injAddress = new IntPtr(this.Process.MainModule.BaseAddress.ToInt32() + Offsets.Default.InjectedAddress);
             var oldProtect = MemoryProtection.ReadOnly;
 
             // Save original code and disable protect
