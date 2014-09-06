@@ -269,7 +269,9 @@ namespace Yanitta
             var len   = bytes.Length - 1;
             try
             {
-                this.Memory.Call(new IntPtr(Offsets.Default.ExecuteBuffer),
+                var injAddress = new IntPtr(this.Memory.Process.MainModule.BaseAddress.ToInt32() + Offsets.Default.InjectedAddress);
+                this.Memory.Call(injAddress,
+                    new IntPtr(Offsets.Default.ExecuteBuffer),
                     code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
             }
             catch (Exception ex)
