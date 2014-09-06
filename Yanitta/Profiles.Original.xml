@@ -8187,12 +8187,12 @@ function GetDotDamage()
 end
 
 function NeedRedot(targetInfo, index, percent)
-    local new_dps = select(index, GetDotDamage());
-    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
-        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
-        print(string.format("Redot: %d -> %d", targetInfo.dps, new_dps));
-        return true;
-    end
+--    local new_dps = select(index, GetDotDamage());
+--    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
+--        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
+--        print(string.format("Redot: %d -> %d", targetInfo.dps, new_dps));
+--        return true;
+--    end
 end
 
 function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
@@ -8806,7 +8806,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if energy < 40 and chi < 2 and IsSpellInRange(GetSpellInfo(100787), "target") == 1 then
+if energy < 40 and chi < 3 and IsSpellInRange(GetSpellInfo(100787), "target") == 1 then
     return true;
 end
 ]]></Lua>
@@ -11060,6 +11060,25 @@ end
         <Lua><![CDATA[
 if GetPetActionCooldown(3) == 0 then
     CastPetAction(3);
+end
+]]></Lua>
+      </Ability>
+    </Rotation>
+    <Rotation Name="Волчеры (Сбежавшая курица)">
+      <HotKey Key="K" Modifier="Alt Shift" />
+      <Ability Name="Сбежавшая курица">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+ClearTarget();
+TargetUnit("Сбежавшая курица");
+if UnitExists("target") and CheckInteractDistance("target", 2) then
+    InteractUnit("target");
 end
 ]]></Lua>
       </Ability>
