@@ -1,4 +1,4 @@
-yanitta
+Бот для игры World of WarCraft
 =======
-
-yanitta
+Бот выполняет боевую ротацию.
+Текущая версия Warlord's of Drenor
