@@ -20,7 +20,6 @@ mkRightAlt      = 6;
 moving_spell_table = {
     97128,  -- Опаляющее перо (Алисразор)
     79206,  -- Благосклонность предков (Шанам)
-    110806, -- Благосклонность предков (Друид: Симбиоз)
     108839, -- Плавучая льдина
 };
 
@@ -231,7 +230,6 @@ DISPELL_TABLE = { --    Магия         Яд             Болезнь      
     PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = nil  },
     DRUID_HEAL      = { Magic = true, Poison = true, Disease = nil , Curse = true },
     DRUID_NONE      = { Magic = nil , Poison = true, Disease = nil , Curse = true },
-    DRUID_SIMBIOS   = { Magic = nil , Poison = true, Disease = true, Curse = true },
     PALADIN_HEAL    = { Magic = true, Poison = true, Disease = true, Curse = nil  },
     PALADIN_NONE    = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
     MONK_HEAL       = { Magic = true, Poison = true, Disease = true, Curse = nil  },
@@ -9216,7 +9214,6 @@ useAutoDispell = true;
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 useAutoDispell = true;
-useDamage = false;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -9228,14 +9225,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useAutoDispell = true;
             AddonFrame.print("|cff00ff00Автодиспел включен", true);
-        end
-    elseif modifier == "RALT" then
-        if useDamage then
-            useDamage = false;
-            AddonFrame.print("|cffff0000Нанесение урона выключено", true);
-        else
-            useDamage = true;
-            AddonFrame.print("|cff00ff00Нанесение урона включено", true);
         end
     end
 end
@@ -9364,35 +9353,6 @@ if useAutoDispell then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Очищение (Симбоз)">
-        <SpellID>122288</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useAutoDispell then
-    return GetDispellInfo("SIMBIOS");
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Озарение">
-        <SpellID>29166</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PowerByPercent("player", SPELL_POWER_MANA) <= 70
-    and (GetShapeshiftForm() == 0 or GetShapeshiftForm() == 6) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Железная кора">
         <SpellID>102342</SpellID>
         <Target>None</Target>
@@ -9446,7 +9406,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if LowHP.H80 > 3 then
     return members[1].Unit;
@@ -9614,19 +9574,13 @@ for _,member in ipairs(members) do
     end
 end
 
--- если рейд проседает, то держим 1 стак жизнецвета на танке
-local lb_count = LowHP.H50 > 3 and 1 or 3;
-
 -- В рейде накладываем жизнецвет только на танка
 -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
 for _,member in ipairs(members) do
     if member.Agro > 2 and (not hasTank or member.IsTank) then
-        local name,count,rem = HasBuff(member.Unit, 33763, "PLAYER");
-        -- Обновим стаки жизнецвета
-        if name and (count < lb_count or rem < 3) then
+        if not HasBuff(member.Unit, 33763, "PLAYER")) then
             return member.Unit;
-        -- Если жизнецвет уже есть, тогда дальше не продолжаем.
-        elseif count >= lb_count and rem > 3 then
+        else
             return;
         end
     end
@@ -9672,22 +9626,6 @@ for _,member in ipairs(members) do
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Покровительство природы">
-        <SpellID>50464</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
---if LowHP.H80 < 3 then
---    if members[1].HP < 80 or select(3, HasBuff("player", 100977)) < 2 then
---        return members[1].Unit;
---    end
---end
-]]></Lua>
-      </Ability>
       <Ability Name="Знак дикой природы">
         <SpellID>1126</SpellID>
         <Target>Player</Target>
@@ -9709,32 +9647,6 @@ elseif not UnitAffectingCombat("player") then
         return true;
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Лунный огонь">
-        <SpellID>8921</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useDamage and select(3, HasDebuff("target", 8921, "PLAYER")) < 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Гнев">
-        <SpellID>5176</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return useDamage;
 ]]></Lua>
       </Ability>
     </Rotation>
