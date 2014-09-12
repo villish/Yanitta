@@ -9653,7 +9653,7 @@ end
     <Rotation Name="Страж">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
-setAoE = false;
+setAoE = 0;
 isAltMod = true;
 useCooldown = true;
 
@@ -9661,12 +9661,16 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
-        if setAoE then
-            setAoE = false;
-            AddonFrame.print("|cff00ff00 Одиночная цель", true);
+        setAoE = setAoE or 0;
+        if setAoE == 0 then
+            setAoE = 1;
+            AddonFrame.print("|cff6f0a9aКливы", true);
+        elseif setAoE == 1 then
+            setAoE = 2;
+            AddonFrame.print("|cffff0000AOE", true);
         else
-            setAoE = true;
-            AddonFrame.print("|cffff0000 AOE", true);
+            setAoE = 0;
+            AddonFrame.print("|cff00ff00Одиночная цель", true);
         end
     elseif modifier == "RALT" then
         if isAltMod then
@@ -9696,6 +9700,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if type(setAoE) ~= "number" then
+    setAoE = 0;
+end
+
 -- если персонаж на маунте, или в инвизе или не в форме медведа или кота
 if IsModKeyDown(mkLeftAlt) or IsMounted()
     or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1)
@@ -9744,7 +9752,7 @@ return CheckInterrupt("target");
 if not isCat then
     if playerHP < 80 and UnitPower("player") > 55 then
         return true;
-    elseif playerHP < 40 and UnitPower("player") > 35 then
+    elseif playerHP < 30 and UnitPower("player") > 35 then
         return true;
     end
 end
@@ -9831,23 +9839,9 @@ end
         <Lua><![CDATA[
 if isInMeele and not isCat then
     -- надо проверить ИД кровотечения.
-    if setAoE or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
+    if setAoE == 2 or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
         return true;
     end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Размах">
-        <SpellID>779</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE and isInMeele and not isCat then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -9875,7 +9869,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- без ГКД
-if not isCat and playerHP > 50 then
+if not isCat and playerHP > 30 then
     -- зубы и когти
     if HasBuff("player", 135288) then
         return true;
@@ -9893,12 +9887,18 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not isCat then
-    return true;
+    if setAoE == 1 then -- Кливы
+        if select(2, HasDebuff("target", 33745, "PLAYER")) < 3 then
+            return true;
+        end
+    else
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Волшебный огонь">
-        <SpellID>770</SpellID>
+      <Ability Name="Взбучка">
+        <SpellID>77758</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -9906,7 +9906,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if isInMeele and not isCat then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Взбучка (Кот)">
@@ -9923,20 +9925,6 @@ if isCat and setAoE and not HasDebuff("target", 106830, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Размах (Кот)">
-        <SpellID>62078</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and setAoE and HasDebuff("target", 106830, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Глубокая рана (Кот)">
         <SpellID>1822</SpellID>
         <Target>Target</Target>
@@ -9948,22 +9936,6 @@ end
         <Lua><![CDATA[
 if isCat and select(3, HasDebuff("target", 1822, "PLAYER")) < 2 and not setAoE then
     return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Разорвать (Кот)">
-        <SpellID>1079</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and not setAoE and select(3, HasDebuff("target", 1079, "PLAYER")) < 2 then
-    if UnitHealth("target") > (UnitHealthMax("player") / 5) and GetComboPoints("player") > 4 then
-        return true;
-    end
 end
 ]]></Lua>
       </Ability>
@@ -9995,27 +9967,16 @@ if isCat and not setAoE then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Знак дикой природы">
-        <SpellID>1126</SpellID>
-        <Target>Player</Target>
+      <Ability Name="Волшебный огонь">
+        <SpellID>770</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local params_buff = { 1126, 115921, 20217, 90363 };
-if type(members) == "table" and GetShapeshiftForm() == 0 then
-    for _,member in ipairs(members) do
-        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
-            return true;
-        end
-    end
-elseif not UnitAffectingCombat("player") then
-    if not HasBuff("player", params_buff) then
-        return true;
-    end
-end
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
