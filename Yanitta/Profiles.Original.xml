@@ -10224,7 +10224,6 @@ end
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
-behindMode = 0; -- 0 - Автоопределение, 1 - Полоснуть, 2 - Увечье
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -10244,18 +10243,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
-        end
-    elseif modifier == "RALT" then
-        behindMode = behindMode or 0;
-        if behindMode == 0 then
-            behindMode = 1;
-            AddonFrame.print("|cff6f0a9aИспользуем \"Полоснуть\"", true);
-        elseif behindMode == 1 then
-            behindMode = 2;
-            AddonFrame.print("|cffff0000Используем \"Увечье\"", true);
-        else
-            behindMode = 0;
-            AddonFrame.print("|cff00ff00Автоматический режим определения (\"За спиной\")", true);
         end
     end
 end
@@ -10443,25 +10430,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if combopoint < 5 then
-    if (behindMode == 0 and (targetInfo[SPELL_FAILED_NOT_BEHIND] or 0)<GetTime()+2) or behindMode == 1 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Увечье">
-        <SpellID>33876</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if combopoint < 5 then
-    if (behindMode == 0 and energy >= 40) or behindMode == 2 then
-        return true;
-    end
+    return true;
 end
 ]]></Lua>
       </Ability>
