@@ -1148,22 +1148,6 @@ elseif not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Это заклинание не затрагивает ГКД
--- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if setAoE and (HasBuff("player", 122510) or rage > 90 or agroStatus < 2) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Удар грома (SOLO)">
         <SpellID>6343</SpellID>
         <Target>Target</Target>
@@ -1175,41 +1159,6 @@ end
         <Lua><![CDATA[
 if not HasDebuff("target", 115798) then
     return isInMeele;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Командирский крик">
-        <SpellID>469</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local ap_buffs = {
-    6673,   -- Боевой крик (Воин)
-    57330,  -- Зимний горн (Рыцарь смерти)
-    19506   -- Аура меткого выстрела (Охотник)
-};
-if rage < 70 and not koloss then
-    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Боевой крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if rage < 70 then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -1475,34 +1424,6 @@ if isInMeele then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар героя">
-        <SpellID>78</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE == 0 and targetHP >= 20 and (koloss or rage > 100) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE == 1 and targetHP >= 20 and (koloss or rage > 100) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Казнь">
         <SpellID>5308</SpellID>
         <Target>Target</Target>
@@ -1570,39 +1491,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Командирский крик">
-        <SpellID>469</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local ap_buffs = {
-    6673,   -- Боевой крик (Воин)
-    57330,  -- Зимний горн (Рыцарь смерти)
-    19506   -- Аура меткого выстрела (Охотник)
-};
-if rage < 70 then
-    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Боевой крик ">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return rage < 70;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -1902,18 +1790,6 @@ end
 return setAoE == 0 and rage > 80;
 ]]></Lua>
       </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return setAoE == 1 and rage > 80;
-]]></Lua>
-      </Ability>
       <Ability Name="Казнь">
         <SpellID>5308</SpellID>
         <Target>Target</Target>
@@ -1924,23 +1800,6 @@ return setAoE == 1 and rage > 80;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Превосходство">
-        <SpellID>7384</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
-    -- Под бафом кроводажности не используем превосходство
-    if not HasBuff("player", 1719) then
-        return true;
-    end
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Мощный удар">
@@ -1954,39 +1813,6 @@ end
         <Lua><![CDATA[
 return (rage > 40 or HasBuff("player", 1719))
     and HealthByPercent(target) > 20;
-]]></Lua>
-      </Ability>
-      <Ability Name="Командирский крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local ap_buffs = {
-    6673,   -- Боевой крик (Воин)
-    57330,  -- Зимний горн (Рыцарь смерти)
-    19506   -- Аура меткого выстрела (Охотник)
-};
-if rage < 70 then
-    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Боевой крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return rage < 70;
 ]]></Lua>
       </Ability>
     </Rotation>
