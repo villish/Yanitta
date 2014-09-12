@@ -10495,7 +10495,7 @@ end
 --UseItemById(64399);
 TargetNearestEnemy();
 -- and string.match(UnitName("target"), "^(.+).жных морей$")
-if UnitExists("target") and not UnitIsDeadOrGhost("target") and (IsMoving() or not HasDebuff("target", 8921)) then
+if UnitExists("target") and not UnitIsDeadOrGhost("target") and (IS_MOVING or not HasDebuff("target", 8921)) then
     return true;
 end
 ]]></Lua>
