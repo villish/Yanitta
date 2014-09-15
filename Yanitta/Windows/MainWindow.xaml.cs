@@ -18,19 +18,6 @@ namespace Yanitta
             InitializeComponent();
         }
 
-        private void ShowWindow<T>() where T : Window, new()
-        {
-            var window = App.Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
-
-            window.Show();
-
-            if (!window.IsActive)
-                window.Activate();
-
-            if (window.WindowState == WindowState.Minimized)
-                window.WindowState = WindowState.Normal;
-        }
-
         private void Image_MouseDown(object o, RoutedEventArgs e)
         {
             this.DragMove();
@@ -48,17 +35,17 @@ namespace Yanitta
 
         private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            this.ShowWindow<WinCodeExecute>();
+            App.ShowWindow<WinCodeExecute>();
         }
 
         private void CommandBinding_Executed_ShowProfileWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            this.ShowWindow<WinProfileEditor>();
+            App.ShowWindow<WinProfileEditor>();
         }
 
         private void CommandBinding_Executed_ShowSettingWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            this.ShowWindow<WindowSettings>();
+            App.ShowWindow<WindowSettings>();
         }
 
         private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)

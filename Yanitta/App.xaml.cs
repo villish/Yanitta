@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Linq;
 using System.Windows;
 using Yanitta.Properties;
 
@@ -61,6 +62,21 @@ namespace Yanitta
             }
 
             base.OnStartup(e);
+        }
+
+        public static T ShowWindow<T>() where T : Window, new()
+        {
+            var window = App.Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
+
+            window.Show();
+
+            if (!window.IsActive)
+                window.Activate();
+
+            if (window.WindowState == WindowState.Minimized)
+                window.WindowState = WindowState.Normal;
+
+            return window;
         }
 
         protected override void OnExit(ExitEventArgs e)

@@ -220,29 +220,9 @@ namespace Yanitta
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            // http://media.blizzard.com/wow/icons/56/icon_name.jpg
-            // https://us.api.battle.net/wow/spell/8056?locale=en_US&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue
-            //CurrentAbility.SpellID
-            if (e.Key == Key.F1)
+            if (e.Key == Key.F1 && CurrentAbility.SpellID != 0)
             {
-                if (CurrentAbility.SpellID != 0)
-                {
-                    var window = App.Current.Windows.OfType<HelpWindow>().FirstOrDefault();
-                    if (window == null)
-                    {
-                        window = new HelpWindow();
-                        window.Owner = this;
-                    }
-
-                    window.GetSpellData(CurrentAbility.SpellID);
-                    window.Show();
-
-                    if (!window.IsActive)
-                        window.Activate();
-
-                    if (window.WindowState == WindowState.Minimized)
-                        window.WindowState = WindowState.Normal;
-                }
+                App.ShowWindow<HelpWindow>().GetSpellData(CurrentAbility.SpellID);
             }
         }
     }
