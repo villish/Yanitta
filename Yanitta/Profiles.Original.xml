@@ -430,6 +430,12 @@ function CheckKnownAbility(ability)
     local spellName = GetSpellInfo(ability.SpellId);
     ability.IsKnown = false;
 
+    if not spellName then
+        print("|cff15bd05Invalid spell for id ", ability.SpellId.."|r")
+        return;
+    end
+    --assert(spellName, "Invalid spell for id "..ability.SpellId);
+
     -- Основная проверка
     if IsPlayerSpell(ability.SpellId)
         or IsSpellKnown(ability.SpellId) or IsSpellKnown(ability.SpellId, true)
@@ -482,6 +488,9 @@ function CheckAndCastAbility(ability, targetInfo)
     end
 
     local spellName = GetSpellInfo(ability.SpellId);
+    if not spellName and ability.SpellId > 0 then
+        return;
+    end
 
     if ability.SpellId < 1 then
         return ability.Func(ability, targetInfo, targetInfo.Target);
@@ -9214,6 +9223,43 @@ end
 return members[1].HP < 35;
 ]]></Lua>
       </Ability>
+      <Ability Name="Жизнецвет">
+        <SpellID>33763</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local hasTank = false;
+for _,member in ipairs(members) do
+    if member.IsTank then
+        hasTank = true;
+        break;
+    end
+end
+
+-- В рейде накладываем жизнецвет только на танка
+-- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
+for _,member in ipairs(members) do
+    if member.Agro > 2 and (not hasTank or member.IsTank) then
+        if not HasBuff(member.Unit, 33763, "PLAYER") then
+            return member.Unit;
+        else
+            return;
+        end
+    end
+end
+
+-- Накладываем жизнецвет на юнита с агро или если в рейде то на танка
+for _,member in ipairs(members) do
+    if member.Agro > 2 and (not hasTank or member.IsTank) then
+        return member.Unit;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Восстановление">
         <SpellID>8936</SpellID>
         <Target>None</Target>
@@ -9239,43 +9285,6 @@ if not HasBuff("player", 132158) then
         if GetShapeshiftForm() == 6 or not IS_MOVING then
             return members[1].Unit;
         end
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Жизнецвет">
-        <SpellID>33763</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local hasTank = false;
-for _,member in ipairs(members) do
-    if member.IsTank then
-        hasTank = true;
-        break;
-    end
-end
-
--- В рейде накладываем жизнецвет только на танка
--- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
-for _,member in ipairs(members) do
-    if member.Agro > 2 and (not hasTank or member.IsTank) then
-        if not HasBuff(member.Unit, 33763, "PLAYER")) then
-            return member.Unit;
-        else
-            return;
-        end
-    end
-end
-
--- Накладываем жизнецвет на юнита с агро или если в рейде то на танка
-for _,member in ipairs(members) do
-    if member.Agro > 2 and (not hasTank or member.IsTank) then
-        return member.Unit;
     end
 end
 ]]></Lua>
@@ -9404,10 +9413,10 @@ end
 
 agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
-isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
+isInMeele  = IsSpellInRange(GetSpellInfo(33917), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;
 
-if isInMeele and useCooldown and SpellCD(33878) == 0 and UnitAffectingCombat("player") then
+if isInMeele and useCooldown and SpellCD(33917) == 0 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
@@ -9415,7 +9424,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Лобовая атака">
-        <SpellID>80964</SpellID>
+        <SpellID>106839</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -9486,22 +9495,8 @@ if not isCat and useCooldown and playerHP < 35 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Мощь урсока">
-        <SpellID>106922</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and playerHP < 25 then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Увечье">
-        <SpellID>33878</SpellID>
+        <SpellID>33917</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -9528,20 +9523,6 @@ if isInMeele and not isCat then
     if setAoE == 2 or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
         return true;
     end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Исступление">
-        <SpellID>5229</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not isCat and UnitPower("player") < 70 then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -9635,20 +9616,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isCat and not setAoE and UnitPower("player") > 30 and GetComboPoints("player") > 4 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Увечье (Кот)">
-        <SpellID>33876</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and not setAoE then
     return true;
 end
 ]]></Lua>
