@@ -10233,7 +10233,9 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-isInMeele  = IsSpellInRange(GetSpellInfo(33878), "target") == 1;
+-- 69369d
+
+isInMeele  = IsSpellInRange(GetSpellInfo(5221), "target") == 1;
 isCat      = GetShapeshiftForm() == 3;
 energy     = UnitPower("player");
 combopoint = GetComboPoints("player");
@@ -10334,7 +10336,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 16974) then
+if HasBuff("player", 69369) and HealthByPercent("player") < 90 then
      return true;
 end
 ]]></Lua>
