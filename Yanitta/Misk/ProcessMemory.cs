@@ -38,6 +38,9 @@ namespace Yanitta
         static extern bool SetThreadContext(IntPtr thandle, ref CONTEXT context);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("user32")]
         static extern IntPtr GetForegroundWindow();
+        [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
 
         #endregion
 
@@ -364,6 +367,17 @@ namespace Yanitta
         public bool IsFocusMainWindow
         {
             get { return this.Process.MainWindowHandle == GetForegroundWindow(); }
+        }
+
+        public bool IsX64
+        {
+            get
+            {
+                bool wow64Proxess;
+                var ver = Environment.OSVersion.Version;
+                IsWow64Process(this.Process.Handle, out wow64Proxess);
+                return wow64Proxess && (ver.Major > 5 || (ver.Major == 5 && ver.Minor >= 1));
+            }
         }
     }
 

@@ -32,47 +32,56 @@ namespace Yanitta
 
         private void CheckProcess()
         {
-            var wowProcessList = Process.GetProcessesByName(Settings.Default.ProcessName);
+            if (string.IsNullOrWhiteSpace(Settings.Default.ProcessName))
+                throw new Exception("ProcessName is empty");
 
-            if (!wowProcessList.Any())
+            var nameList = Settings.Default.ProcessName.Split(new[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var wowProcName in nameList)
             {
-                foreach (var process in this)
+                var wowProcessList = Process.GetProcessesByName(wowProcName);
+
+                if (!wowProcessList.Any())
                 {
-                    Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
-                    process.Dispose();
+                    foreach (var process in this)
+                    {
+                        Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
+                        process.Dispose();
+                    }
+                    this.Clear();
                 }
-                this.Clear();
-            }
 
-            for (int i = this.Count - 1; i >= 0; --i)
-            {
-                if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
+                for (int i = this.Count - 1; i >= 0; --i)
                 {
-                    Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
-                    this[i].Dispose();
-                    this.RemoveAt(i);
+                    if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
+                    {
+                        Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
+                        this[i].Dispose();
+                        this.RemoveAt(i);
+                    }
                 }
-            }
 
-            foreach (var wowProcess in wowProcessList)
-            {
-                if (this.Any(n => n.ProcessId == wowProcess.Id))
-                    continue;
-
-                try
+                foreach (var wowProcess in wowProcessList)
                 {
-                    var wowMemory = new WowMemory(wowProcess);
+                    if (this.Any(n => n.ProcessId == wowProcess.Id))
+                        continue;
 
-                    wowMemory.GameExited += (memory) => {
-                        if (this.Contains(memory))
-                            this.Remove(memory);
-                        memory.Dispose();
-                    };
-                    this.Add(wowMemory);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error WowMemory: " + ex.Message);
+                    try
+                    {
+                        var wowMemory = new WowMemory(wowProcess);
+
+                        wowMemory.GameExited += (memory) =>
+                        {
+                            if (this.Contains(memory))
+                                this.Remove(memory);
+                            memory.Dispose();
+                        };
+                        this.Add(wowMemory);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error WowMemory: " + ex.Message);
+                    }
                 }
             }
         }

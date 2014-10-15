@@ -253,10 +253,12 @@
         </Keywords>
 
         <Keywords color="WowFunctions">
+            <Word>-- Build 18935</Word>
+
             <Word>AbandonQuest</Word>
             <Word>AbandonSkill</Word>
+            <Word>AbbreviateLargeNumbers</Word>
             <Word>AcceptAreaSpiritHeal</Word>
-            <Word>AcceptArenaTeam</Word>
             <Word>AcceptBattlefieldPort</Word>
             <Word>AcceptDuel</Word>
             <Word>AcceptGroup</Word>
@@ -269,11 +271,17 @@
             <Word>AcceptSpellConfirmationPrompt</Word>
             <Word>AcceptTrade</Word>
             <Word>AcceptXPLoss</Word>
+            <Word>AceGUIEditBoxInsertLink</Word>
+            <Word>AceGUIMultiLineEditBoxInsertLink</Word>
             <Word>AcknowledgeAutoAcceptQuest</Word>
+            <Word>AcknowledgeSurvey</Word>
+            <Word>ActionButtonDown</Word>
+            <Word>ActionButtonUp</Word>
             <Word>ActionHasRange</Word>
             <Word>AddAutoQuestPopUp</Word>
             <Word>AddChatWindowChannel</Word>
             <Word>AddChatWindowMessages</Word>
+            <Word>AddFrameLock</Word>
             <Word>AddFriend</Word>
             <Word>AddIgnore</Word>
             <Word>AddMute</Word>
@@ -281,24 +289,22 @@
             <Word>AddOrDelMute</Word>
             <Word>AddOrRemoveFriend</Word>
             <Word>AddQuestWatch</Word>
+            <Word>AddToAutoHide</Word>
             <Word>AddTrackedAchievement</Word>
             <Word>AddTradeMoney</Word>
+            <Word>Ambiguate</Word>
+            <Word>AnimateTexCoords</Word>
+            <Word>AntiAliasingSupported</Word>
             <Word>ApplyBarberShopStyle</Word>
             <Word>ApplyTransmogrifications</Word>
             <Word>ArchaeologyGetIconInfo</Word>
             <Word>ArchaeologyMapUpdateAll</Word>
             <Word>ArcheologyGetVisibleBlobID</Word>
             <Word>AreAccountAchievementsHidden</Word>
-            <Word>ArenaTeamDisband</Word>
-            <Word>ArenaTeamInviteByName</Word>
-            <Word>ArenaTeamLeave</Word>
-            <Word>ArenaTeamRoster</Word>
-            <Word>ArenaTeamSetLeaderByName</Word>
-            <Word>ArenaTeamUninviteByName</Word>
-            <Word>ArenaTeam_GetTeamSizeID</Word>
             <Word>AscendStop</Word>
             <Word>AssistUnit</Word>
             <Word>AttackTarget</Word>
+            <Word>AutoChooseCurrentGraphicsSetting</Word>
             <Word>AutoEquipCursorItem</Word>
             <Word>AutoLootMailItem</Word>
             <Word>AutoStoreGuildBankItem</Word>
@@ -340,6 +346,7 @@
             <Word>BNInviteToConversation</Word>
             <Word>BNIsBlocked</Word>
             <Word>BNIsFriend</Word>
+            <Word>BNIsFriendConversationValid</Word>
             <Word>BNIsSelf</Word>
             <Word>BNIsToonBlocked</Word>
             <Word>BNLeaveConversation</Word>
@@ -351,6 +358,7 @@
             <Word>BNSendConversationMessage</Word>
             <Word>BNSendFriendInvite</Word>
             <Word>BNSendFriendInviteByID</Word>
+            <Word>BNSendGameData</Word>
             <Word>BNSendSoR</Word>
             <Word>BNSendVerifiedBattleTagInvite</Word>
             <Word>BNSendWhisper</Word>
@@ -365,6 +373,7 @@
             <Word>BNSetSelectedFriend</Word>
             <Word>BNSetSelectedToonBlock</Word>
             <Word>BNSetToonBlocked</Word>
+            <Word>BNSummonFriendByIndex</Word>
             <Word>BNTokenFindName</Word>
             <Word>BankButtonIDToInvSlotID</Word>
             <Word>BarberShopReset</Word>
@@ -372,14 +381,24 @@
             <Word>BattlefieldMgrExitRequest</Word>
             <Word>BattlefieldMgrQueueInviteResponse</Word>
             <Word>BattlefieldMgrQueueRequest</Word>
+            <Word>BeginActionBarTransition</Word>
             <Word>BeginTrade</Word>
+            <Word>BetterDate</Word>
             <Word>BindEnchant</Word>
-            <Word>Blizzard_CombatLog_Update_QuickButtons</Word>
+            <Word>BreakUpLargeNumbers</Word>
+            <Word>BuildColoredListString</Word>
+            <Word>BuildListString</Word>
+            <Word>BuildMultilineTooltip</Word>
+            <Word>BuildNewLineListString</Word>
+            <Word>ButtonInventorySlot</Word>
             <Word>BuyGuildBankTab</Word>
             <Word>BuyGuildCharter</Word>
             <Word>BuyMerchantItem</Word>
+            <Word>BuyReagentBank</Word>
             <Word>BuyTrainerService</Word>
             <Word>BuybackItem</Word>
+            <Word>CRFFlowFilterFunc</Word>
+            <Word>CRFGroupFilterFunc</Word>
             <Word>C_BlackMarket.Close</Word>
             <Word>C_BlackMarket.GetHotItem</Word>
             <Word>C_BlackMarket.GetItemInfoByID</Word>
@@ -387,17 +406,221 @@
             <Word>C_BlackMarket.GetNumItems</Word>
             <Word>C_BlackMarket.ItemPlaceBid</Word>
             <Word>C_BlackMarket.RequestItems</Word>
+            <Word>C_Garrison.AddFollowerToMission</Word>
+            <Word>C_Garrison.AssignFollowerToBuilding</Word>
+            <Word>C_Garrison.CanGenerateRecruits</Word>
+            <Word>C_Garrison.CanOpenMissionChest</Word>
+            <Word>C_Garrison.CanSetRecruitmentPreference</Word>
+            <Word>C_Garrison.CanUpgradeGarrison</Word>
+            <Word>C_Garrison.CancelConstruction</Word>
+            <Word>C_Garrison.CastSpellOnFollower</Word>
+            <Word>C_Garrison.CloseArchitect</Word>
+            <Word>C_Garrison.CloseGarrisonTradeskillNPC</Word>
+            <Word>C_Garrison.CloseMissionNPC</Word>
+            <Word>C_Garrison.CloseRecruitmentNPC</Word>
+            <Word>C_Garrison.CloseTradeskillCrafter</Word>
+            <Word>C_Garrison.GenerateRecruits</Word>
+            <Word>C_Garrison.GetAvailableMissions</Word>
+            <Word>C_Garrison.GetAvailableRecruits</Word>
+            <Word>C_Garrison.GetBasicMissionInfo</Word>
+            <Word>C_Garrison.GetBuffedFollowersForMission</Word>
+            <Word>C_Garrison.GetBuildingInfo</Word>
+            <Word>C_Garrison.GetBuildingLockInfo</Word>
+            <Word>C_Garrison.GetBuildingSizes</Word>
+            <Word>C_Garrison.GetBuildingSpecInfo</Word>
+            <Word>C_Garrison.GetBuildingTimeRemaining</Word>
+            <Word>C_Garrison.GetBuildingTooltip</Word>
+            <Word>C_Garrison.GetBuildingUpgradeInfo</Word>
+            <Word>C_Garrison.GetBuildings</Word>
+            <Word>C_Garrison.GetBuildingsForPlot</Word>
+            <Word>C_Garrison.GetBuildingsForSize</Word>
+            <Word>C_Garrison.GetCompleteMissions</Word>
+            <Word>C_Garrison.GetFollowerAbilities</Word>
+            <Word>C_Garrison.GetFollowerAbilityAtIndex</Word>
+            <Word>C_Garrison.GetFollowerAbilityAtIndexByID</Word>
+            <Word>C_Garrison.GetFollowerAbilityCounterMechanicInfo</Word>
+            <Word>C_Garrison.GetFollowerAbilityDescription</Word>
+            <Word>C_Garrison.GetFollowerAbilityIcon</Word>
+            <Word>C_Garrison.GetFollowerAbilityIsTrait</Word>
+            <Word>C_Garrison.GetFollowerAbilityLink</Word>
+            <Word>C_Garrison.GetFollowerAbilityName</Word>
+            <Word>C_Garrison.GetFollowerActivationCost</Word>
+            <Word>C_Garrison.GetFollowerBiasForMission</Word>
+            <Word>C_Garrison.GetFollowerClassSpec</Word>
+            <Word>C_Garrison.GetFollowerClassSpecAtlas</Word>
+            <Word>C_Garrison.GetFollowerClassSpecByID</Word>
+            <Word>C_Garrison.GetFollowerClassSpecName</Word>
+            <Word>C_Garrison.GetFollowerDisplayID</Word>
+            <Word>C_Garrison.GetFollowerDisplayIDByID</Word>
+            <Word>C_Garrison.GetFollowerInfo</Word>
+            <Word>C_Garrison.GetFollowerInfoForBuilding</Word>
+            <Word>C_Garrison.GetFollowerItemLevelAverage</Word>
+            <Word>C_Garrison.GetFollowerItems</Word>
+            <Word>C_Garrison.GetFollowerLevel</Word>
+            <Word>C_Garrison.GetFollowerLevelXP</Word>
+            <Word>C_Garrison.GetFollowerLink</Word>
+            <Word>C_Garrison.GetFollowerLinkByID</Word>
+            <Word>C_Garrison.GetFollowerMissionCompleteInfo</Word>
+            <Word>C_Garrison.GetFollowerModelItems</Word>
+            <Word>C_Garrison.GetFollowerName</Word>
+            <Word>C_Garrison.GetFollowerNameByID</Word>
+            <Word>C_Garrison.GetFollowerPortraitIconIDByID</Word>
+            <Word>C_Garrison.GetFollowerQuality</Word>
+            <Word>C_Garrison.GetFollowerQualityTable</Word>
+            <Word>C_Garrison.GetFollowerSoftCap</Word>
+            <Word>C_Garrison.GetFollowerSourceTextByID</Word>
+            <Word>C_Garrison.GetFollowerStatus</Word>
+            <Word>C_Garrison.GetFollowerTraitAtIndex</Word>
+            <Word>C_Garrison.GetFollowerTraitAtIndexByID</Word>
+            <Word>C_Garrison.GetFollowerXP</Word>
+            <Word>C_Garrison.GetFollowerXPTable</Word>
+            <Word>C_Garrison.GetFollowers</Word>
+            <Word>C_Garrison.GetFollowersTraitsForMission</Word>
+            <Word>C_Garrison.GetGarrisonInfo</Word>
+            <Word>C_Garrison.GetGarrisonUpgradeCost</Word>
+            <Word>C_Garrison.GetInProgressMissions</Word>
+            <Word>C_Garrison.GetLandingPageItems</Word>
+            <Word>C_Garrison.GetLandingPageShipmentCount</Word>
+            <Word>C_Garrison.GetLandingPageShipmentInfo</Word>
+            <Word>C_Garrison.GetMissionCompleteEncounters</Word>
+            <Word>C_Garrison.GetMissionDisplayIDs</Word>
+            <Word>C_Garrison.GetMissionInfo</Word>
+            <Word>C_Garrison.GetMissionLink</Word>
+            <Word>C_Garrison.GetMissionMaxFollowers</Word>
+            <Word>C_Garrison.GetMissionName</Word>
+            <Word>C_Garrison.GetMissionRewardInfo</Word>
+            <Word>C_Garrison.GetMissionTimes</Word>
+            <Word>C_Garrison.GetMissionUncounteredMechanics</Word>
+            <Word>C_Garrison.GetNumActiveFollowers</Word>
+            <Word>C_Garrison.GetNumFollowerActivationsRemaining</Word>
+            <Word>C_Garrison.GetNumFollowerDailyActivations</Word>
+            <Word>C_Garrison.GetNumFollowers</Word>
+            <Word>C_Garrison.GetNumFollowersOnMission</Word>
+            <Word>C_Garrison.GetNumPendingShipments</Word>
+            <Word>C_Garrison.GetNumShipmentReagents</Word>
+            <Word>C_Garrison.GetOwnedBuildingInfo</Word>
+            <Word>C_Garrison.GetOwnedBuildingInfoAbbrev</Word>
+            <Word>C_Garrison.GetPartyBuffs</Word>
+            <Word>C_Garrison.GetPartyMissionInfo</Word>
+            <Word>C_Garrison.GetPendingShipmentInfo</Word>
+            <Word>C_Garrison.GetPlots</Word>
+            <Word>C_Garrison.GetPlotsForBuilding</Word>
+            <Word>C_Garrison.GetPossibleFollowersForBuilding</Word>
+            <Word>C_Garrison.GetRecruitAbilities</Word>
+            <Word>C_Garrison.GetRecruiterAbilityCategories</Word>
+            <Word>C_Garrison.GetRecruiterAbilityList</Word>
+            <Word>C_Garrison.GetRecruitmentPreferences</Word>
+            <Word>C_Garrison.GetRewardChance</Word>
+            <Word>C_Garrison.GetShipmentContainerInfo</Word>
+            <Word>C_Garrison.GetShipmentItemInfo</Word>
+            <Word>C_Garrison.GetShipmentReagentCurrencyInfo</Word>
+            <Word>C_Garrison.GetShipmentReagentInfo</Word>
+            <Word>C_Garrison.GetShipmentReagentItemLink</Word>
+            <Word>C_Garrison.GetSpecChangeCost</Word>
+            <Word>C_Garrison.GetTabForPlot</Word>
+            <Word>C_Garrison.IsAboveFollowerSoftCap</Word>
+            <Word>C_Garrison.IsFollowerCollected</Word>
+            <Word>C_Garrison.IsFollowerUnique</Word>
+            <Word>C_Garrison.IsInvasionAvailable</Word>
+            <Word>C_Garrison.IsOnGarrisonMap</Word>
+            <Word>C_Garrison.IsUsingPartyGarrison</Word>
+            <Word>C_Garrison.IsVisitGarrisonAvailable</Word>
+            <Word>C_Garrison.MarkMissionComplete</Word>
+            <Word>C_Garrison.MissionBonusRoll</Word>
+            <Word>C_Garrison.PlaceBuilding</Word>
+            <Word>C_Garrison.RecruitFollower</Word>
+            <Word>C_Garrison.RemoveFollower</Word>
+            <Word>C_Garrison.RemoveFollowerFromBuilding</Word>
+            <Word>C_Garrison.RemoveFollowerFromMission</Word>
+            <Word>C_Garrison.RequestGarrisonUpgradeable</Word>
+            <Word>C_Garrison.RequestLandingPageShipmentInfo</Word>
+            <Word>C_Garrison.RequestShipmentCreation</Word>
+            <Word>C_Garrison.RequestShipmentInfo</Word>
+            <Word>C_Garrison.SearchForFollower</Word>
+            <Word>C_Garrison.SetBuildingActive</Word>
+            <Word>C_Garrison.SetBuildingSpecialization</Word>
+            <Word>C_Garrison.SetFollowerFavorite</Word>
+            <Word>C_Garrison.SetFollowerInactive</Word>
+            <Word>C_Garrison.SetRecruitmentPreferences</Word>
+            <Word>C_Garrison.SetUsingPartyGarrison</Word>
+            <Word>C_Garrison.StartMission</Word>
+            <Word>C_Garrison.SwapBuildings</Word>
+            <Word>C_Garrison.UpgradeBuilding</Word>
+            <Word>C_Garrison.UpgradeGarrison</Word>
+            <Word>C_LFGList.AcceptInvite</Word>
+            <Word>C_LFGList.ApplyToGroup</Word>
+            <Word>C_LFGList.CancelApplication</Word>
+            <Word>C_LFGList.ClearSearchResults</Word>
+            <Word>C_LFGList.CreateListing</Word>
+            <Word>C_LFGList.DeclineApplicant</Word>
+            <Word>C_LFGList.DeclineInvite</Word>
+            <Word>C_LFGList.GetActiveEntryInfo</Word>
+            <Word>C_LFGList.GetActivityGroupInfo</Word>
+            <Word>C_LFGList.GetActivityInfo</Word>
+            <Word>C_LFGList.GetActivityInfoExpensive</Word>
+            <Word>C_LFGList.GetApplicantInfo</Word>
+            <Word>C_LFGList.GetApplicantMemberInfo</Word>
+            <Word>C_LFGList.GetApplicantMemberStats</Word>
+            <Word>C_LFGList.GetApplicants</Word>
+            <Word>C_LFGList.GetApplicationInfo</Word>
+            <Word>C_LFGList.GetApplications</Word>
+            <Word>C_LFGList.GetAvailableActivities</Word>
+            <Word>C_LFGList.GetAvailableActivityGroups</Word>
+            <Word>C_LFGList.GetAvailableCategories</Word>
+            <Word>C_LFGList.GetAvailableRoles</Word>
+            <Word>C_LFGList.GetCategoryInfo</Word>
+            <Word>C_LFGList.GetNumApplicants</Word>
+            <Word>C_LFGList.GetNumApplications</Word>
+            <Word>C_LFGList.GetNumInvitedApplicantMembers</Word>
+            <Word>C_LFGList.GetRoleCheckInfo</Word>
+            <Word>C_LFGList.GetSearchResultEncounterInfo</Word>
+            <Word>C_LFGList.GetSearchResultFriends</Word>
+            <Word>C_LFGList.GetSearchResultInfo</Word>
+            <Word>C_LFGList.GetSearchResultMemberCounts</Word>
+            <Word>C_LFGList.GetSearchResultMemberInfo</Word>
+            <Word>C_LFGList.GetSearchResults</Word>
+            <Word>C_LFGList.HasActivityList</Word>
+            <Word>C_LFGList.InviteApplicant</Word>
+            <Word>C_LFGList.IsCurrentlyApplying</Word>
+            <Word>C_LFGList.RefreshApplicants</Word>
+            <Word>C_LFGList.RemoveApplicant</Word>
+            <Word>C_LFGList.RemoveListing</Word>
+            <Word>C_LFGList.ReportApplicant</Word>
+            <Word>C_LFGList.ReportSearchResult</Word>
+            <Word>C_LFGList.RequestAvailableActivities</Word>
+            <Word>C_LFGList.Search</Word>
+            <Word>C_LFGList.SetApplicantMemberRole</Word>
+            <Word>C_LFGList.UpdateListing</Word>
             <Word>C_LootHistory.CanMasterLoot</Word>
             <Word>C_LootHistory.GetExpiration</Word>
             <Word>C_LootHistory.GetItem</Word>
             <Word>C_LootHistory.GetNumItems</Word>
             <Word>C_LootHistory.GetPlayerInfo</Word>
-            <Word>C_LootHistory.GiveMasterLoot</Word>
             <Word>C_LootHistory.SetExpiration</Word>
             <Word>C_LossOfControl.GetEventInfo</Word>
             <Word>C_LossOfControl.GetNumEvents</Word>
+            <Word>C_MapBar.BarIsShown</Word>
+            <Word>C_MapBar.GetCurrentValue</Word>
+            <Word>C_MapBar.GetMaxValue</Word>
+            <Word>C_MapBar.GetParticipationPercentage</Word>
+            <Word>C_MapBar.GetPhaseIndex</Word>
+            <Word>C_MapBar.GetTag</Word>
+            <Word>C_MountJournal.Dismiss</Word>
+            <Word>C_MountJournal.GetCollectedFilterSetting</Word>
+            <Word>C_MountJournal.GetIsFavorite</Word>
+            <Word>C_MountJournal.GetMountInfo</Word>
+            <Word>C_MountJournal.GetMountInfoExtra</Word>
+            <Word>C_MountJournal.GetNumMounts</Word>
+            <Word>C_MountJournal.Pickup</Word>
+            <Word>C_MountJournal.SetCollectedFilterSetting</Word>
+            <Word>C_MountJournal.SetIsFavorite</Word>
+            <Word>C_MountJournal.Summon</Word>
+            <Word>C_NewItems.ClearAll</Word>
+            <Word>C_NewItems.IsNewItem</Word>
+            <Word>C_NewItems.RemoveNewItem</Word>
             <Word>C_PetBattles.AcceptPVPDuel</Word>
             <Word>C_PetBattles.AcceptQueuedPVPMatch</Word>
+            <Word>C_PetBattles.CanAcceptQueuedPVPMatch</Word>
             <Word>C_PetBattles.CanActivePetSwapOut</Word>
             <Word>C_PetBattles.CanPetSwapIn</Word>
             <Word>C_PetBattles.CancelPVPDuel</Word>
@@ -418,6 +641,7 @@
             <Word>C_PetBattles.GetBattleState</Word>
             <Word>C_PetBattles.GetBreedQuality</Word>
             <Word>C_PetBattles.GetDisplayID</Word>
+            <Word>C_PetBattles.GetForfeitPenalty</Word>
             <Word>C_PetBattles.GetHealth</Word>
             <Word>C_PetBattles.GetIcon</Word>
             <Word>C_PetBattles.GetLevel</Word>
@@ -431,7 +655,6 @@
             <Word>C_PetBattles.GetPlayerTrapAbility</Word>
             <Word>C_PetBattles.GetPower</Word>
             <Word>C_PetBattles.GetSelectedAction</Word>
-            <Word>C_PetBattles.GetSpeed</Word>
             <Word>C_PetBattles.GetStateValue</Word>
             <Word>C_PetBattles.GetTurnTimeInfo</Word>
             <Word>C_PetBattles.GetXP</Word>
@@ -465,6 +688,7 @@
             <Word>C_PetJournal.GetOwnedBattlePetString</Word>
             <Word>C_PetJournal.GetPetAbilityInfo</Word>
             <Word>C_PetJournal.GetPetAbilityList</Word>
+            <Word>C_PetJournal.GetPetCooldownByGUID</Word>
             <Word>C_PetJournal.GetPetInfoByIndex</Word>
             <Word>C_PetJournal.GetPetInfoByPetID</Word>
             <Word>C_PetJournal.GetPetInfoBySpeciesID</Word>
@@ -501,12 +725,69 @@
             <Word>C_PetJournal.SetSearchFilter</Word>
             <Word>C_PetJournal.SummonPetByGUID</Word>
             <Word>C_PetJournal.SummonRandomPet</Word>
+            <Word>C_ProductChoice.GetChoices</Word>
+            <Word>C_ProductChoice.GetNumSuppressed</Word>
+            <Word>C_ProductChoice.GetProducts</Word>
+            <Word>C_ProductChoice.MakeSelection</Word>
+            <Word>C_Questline.GetNumAvailableQuestlines</Word>
+            <Word>C_Questline.GetQuestlineInfoByIndex</Word>
+            <Word>C_RecruitAFriend.CheckEmailEnabled</Word>
+            <Word>C_RecruitAFriend.GetRecruitInfo</Word>
+            <Word>C_RecruitAFriend.IsSendingEnabled</Word>
+            <Word>C_RecruitAFriend.SendRecruit</Word>
+            <Word>C_Scenario.GetBonusStepRewardQuestID</Word>
+            <Word>C_Scenario.GetBonusSteps</Word>
             <Word>C_Scenario.GetCriteriaInfo</Word>
+            <Word>C_Scenario.GetCriteriaInfoByStep</Word>
             <Word>C_Scenario.GetInfo</Word>
+            <Word>C_Scenario.GetProvingGroundsInfo</Word>
             <Word>C_Scenario.GetScenarioIconInfo</Word>
             <Word>C_Scenario.GetStepInfo</Word>
+            <Word>C_Scenario.GetSupersededObjectives</Word>
             <Word>C_Scenario.IsChallengeMode</Word>
             <Word>C_Scenario.IsInScenario</Word>
+            <Word>C_Scenario.TreatScenarioAsDungeon</Word>
+            <Word>C_StorePublic.IsDisabledByParentalControls</Word>
+            <Word>C_StorePublic.IsEnabled</Word>
+            <Word>C_TaskQuest.GetQuestObjectiveStrByQuestID</Word>
+            <Word>C_TaskQuest.GetQuestTitleByQuestID</Word>
+            <Word>C_TaskQuest.GetQuestsForPlayerByMapID</Word>
+            <Word>C_Timer.After</Word>
+            <Word>C_Timer.NewTicker</Word>
+            <Word>C_Timer.NewTimer</Word>
+            <Word>C_ToyBox.ClearAllSourceTypesFiltered</Word>
+            <Word>C_ToyBox.FilterToys</Word>
+            <Word>C_ToyBox.GetFilterCollected</Word>
+            <Word>C_ToyBox.GetFilterUncollected</Word>
+            <Word>C_ToyBox.GetIsFavorite</Word>
+            <Word>C_ToyBox.GetNumFilteredToys</Word>
+            <Word>C_ToyBox.GetNumLearnedDisplayedToys</Word>
+            <Word>C_ToyBox.GetNumTotalDisplayedToys</Word>
+            <Word>C_ToyBox.GetNumToys</Word>
+            <Word>C_ToyBox.GetToyFromIndex</Word>
+            <Word>C_ToyBox.GetToyInfo</Word>
+            <Word>C_ToyBox.GetToyLink</Word>
+            <Word>C_ToyBox.HasFavorites</Word>
+            <Word>C_ToyBox.IsSourceTypeFiltered</Word>
+            <Word>C_ToyBox.PickupToyBoxItem</Word>
+            <Word>C_ToyBox.SetAllSourceTypesFiltered</Word>
+            <Word>C_ToyBox.SetFilterCollected</Word>
+            <Word>C_ToyBox.SetFilterSourceType</Word>
+            <Word>C_ToyBox.SetFilterString</Word>
+            <Word>C_ToyBox.SetFilterUncollected</Word>
+            <Word>C_ToyBox.SetIsFavorite</Word>
+            <Word>C_Trophy.MonumentChangeAppearanceToTrophyID</Word>
+            <Word>C_Trophy.MonumentCloseMonumentUI</Word>
+            <Word>C_Trophy.MonumentGetCount</Word>
+            <Word>C_Trophy.MonumentGetSelectedTrophyID</Word>
+            <Word>C_Trophy.MonumentGetTrophyInfoByIndex</Word>
+            <Word>C_Trophy.MonumentLoadList</Word>
+            <Word>C_Trophy.MonumentLoadSelectedTrophyID</Word>
+            <Word>C_Trophy.MonumentRevertAppearanceToSaved</Word>
+            <Word>C_Trophy.MonumentSaveSelection</Word>
+            <Word>C_Vignettes.GetNumVignettes</Word>
+            <Word>C_Vignettes.GetVignetteGUID</Word>
+            <Word>C_Vignettes.GetVignetteInfoFromInstanceID</Word>
             <Word>CalculateAuctionDeposit</Word>
             <Word>CalendarAddEvent</Word>
             <Word>CalendarCanAddEvent</Word>
@@ -597,7 +878,6 @@
             <Word>CalendarGetRaidInfo</Word>
             <Word>CalendarGetWeekdayNames</Word>
             <Word>CalendarIsActionPending</Word>
-            <Word>CalendarMassInviteArenaTeam</Word>
             <Word>CalendarMassInviteGuild</Word>
             <Word>CalendarNewEvent</Word>
             <Word>CalendarNewGuildAnnouncement</Word>
@@ -608,6 +888,7 @@
             <Word>CalendarSetMonth</Word>
             <Word>CalendarUpdateEvent</Word>
             <Word>CallCompanion</Word>
+            <Word>CallRestrictedClosure</Word>
             <Word>CameraOrSelectOrMoveStart</Word>
             <Word>CameraOrSelectOrMoveStop</Word>
             <Word>CameraZoomIn</Word>
@@ -620,6 +901,8 @@
             <Word>CanChangePlayerDifficulty</Word>
             <Word>CanComplainChat</Word>
             <Word>CanComplainInboxItem</Word>
+            <Word>CanCooperateWithToon</Word>
+            <Word>CanCreateFilters</Word>
             <Word>CanEditGuildBankTabInfo</Word>
             <Word>CanEditGuildEvent</Word>
             <Word>CanEditGuildInfo</Word>
@@ -630,6 +913,8 @@
             <Word>CanEjectPassengerFromSeat</Word>
             <Word>CanExitVehicle</Word>
             <Word>CanGrantLevel</Word>
+            <Word>CanGroupInvite</Word>
+            <Word>CanGroupWithAccount</Word>
             <Word>CanGuildBankRepair</Word>
             <Word>CanGuildDemote</Word>
             <Word>CanGuildInvite</Word>
@@ -640,21 +925,28 @@
             <Word>CanInspect</Word>
             <Word>CanItemBeSocketedToArtifact</Word>
             <Word>CanJoinBattlefieldAsGroup</Word>
+            <Word>CanLootUnit</Word>
             <Word>CanMapChangeDifficulty</Word>
             <Word>CanMerchantRepair</Word>
+            <Word>CanOpenPanels</Word>
             <Word>CanPartyLFGBackfill</Word>
             <Word>CanQueueForWintergrasp</Word>
             <Word>CanReplaceGuildMaster</Word>
             <Word>CanResetTutorials</Word>
+            <Word>CanScanResearchSite</Word>
             <Word>CanSendAuctionQuery</Word>
             <Word>CanSendSoRByText</Word>
             <Word>CanShowAchievementUI</Word>
+            <Word>CanShowCenterUIPanel</Word>
             <Word>CanShowResetInstances</Word>
+            <Word>CanShowRightUIPanel</Word>
+            <Word>CanShowUIPanels</Word>
             <Word>CanSignPetition</Word>
             <Word>CanSolveArtifact</Word>
             <Word>CanSummonFriend</Word>
             <Word>CanSwitchVehicleSeat</Word>
             <Word>CanSwitchVehicleSeats</Word>
+            <Word>CanTrackBattlePets</Word>
             <Word>CanTransmogrifyItemWithItem</Word>
             <Word>CanUpgradeExpansion</Word>
             <Word>CanUseEquipmentSets</Word>
@@ -663,6 +955,7 @@
             <Word>CanViewGuildRecipes</Word>
             <Word>CanViewOfficerNote</Word>
             <Word>CanWithdrawGuildBankMoney</Word>
+            <Word>CancelAnimations</Word>
             <Word>CancelAreaSpiritHeal</Word>
             <Word>CancelAuction</Word>
             <Word>CancelBarberShop</Word>
@@ -692,6 +985,7 @@
             <Word>CastSpellByName</Word>
             <Word>ChangeActionBarPage</Word>
             <Word>ChangeChatColor</Word>
+            <Word>ChangeMultiCastActionPage</Word>
             <Word>ChannelBan</Word>
             <Word>ChannelInvite</Word>
             <Word>ChannelKick</Word>
@@ -707,23 +1001,23 @@
             <Word>ChannelUnmute</Word>
             <Word>ChannelVoiceOff</Word>
             <Word>ChannelVoiceOn</Word>
-            <Word>ChatFrame_AddMessageEventFilter</Word>
-            <Word>ChatFrame_GetMessageEventFilters</Word>
-            <Word>ChatFrame_RemoveMessageEventFilter</Word>
-            <Word>ChatHistory_GetAccessID</Word>
-            <Word>ChatHistory_GetChatType</Word>
+            <Word>ChatChannelPasswordHandler</Word>
+            <Word>CheckBagSettingsTutorial</Word>
             <Word>CheckBinderDist</Word>
             <Word>CheckInbox</Word>
             <Word>CheckInteractDistance</Word>
             <Word>CheckSpiritHealerDist</Word>
             <Word>CheckTalentMasterDist</Word>
+            <Word>CheckToggleDifficulty</Word>
+            <Word>ClaimRaidFrame</Word>
+            <Word>ClampUIPanelY</Word>
             <Word>ClearAchievementComparisonUnit</Word>
             <Word>ClearAllLFGDungeons</Word>
             <Word>ClearAllTracking</Word>
             <Word>ClearAutoAcceptQuestSound</Word>
             <Word>ClearBattlemaster</Word>
             <Word>ClearBlacklistMap</Word>
-            <Word>ClearChannelWatch</Word>
+            <Word>ClearClampedTextureRotation</Word>
             <Word>ClearCursor</Word>
             <Word>ClearFocus</Word>
             <Word>ClearInspectPlayer</Word>
@@ -747,9 +1041,15 @@
             <Word>ClickVoidStorageSlot</Word>
             <Word>ClickVoidTransferDepositSlot</Word>
             <Word>ClickVoidTransferWithdrawalSlot</Word>
-            <Word>CloseArenaTeamRoster</Word>
+            <Word>CloseAllBags</Word>
+            <Word>CloseAllWindows</Word>
             <Word>CloseAuctionHouse</Word>
+            <Word>CloseBackpack</Word>
+            <Word>CloseBag</Word>
+            <Word>CloseBankBagFrames</Word>
             <Word>CloseBankFrame</Word>
+            <Word>CloseChildWindows</Word>
+            <Word>CloseDropDownMenus</Word>
             <Word>CloseGossip</Word>
             <Word>CloseGuildBankFrame</Word>
             <Word>CloseGuildRegistrar</Word>
@@ -758,13 +1058,16 @@
             <Word>CloseItemUpgrade</Word>
             <Word>CloseLoot</Word>
             <Word>CloseMail</Word>
+            <Word>CloseMenus</Word>
             <Word>CloseMerchant</Word>
             <Word>ClosePetStables</Word>
             <Word>ClosePetition</Word>
             <Word>CloseQuest</Word>
-            <Word>CloseReforge</Word>
+            <Word>CloseQuestChoice</Word>
             <Word>CloseResearch</Word>
+            <Word>CloseSideDressUpFrame</Word>
             <Word>CloseSocketInfo</Word>
+            <Word>CloseSpecialWindows</Word>
             <Word>CloseTabardCreation</Word>
             <Word>CloseTaxiMap</Word>
             <Word>CloseTrade</Word>
@@ -772,6 +1075,9 @@
             <Word>CloseTrainer</Word>
             <Word>CloseTransmogrifyFrame</Word>
             <Word>CloseVoidStorageFrame</Word>
+            <Word>CloseWindows</Word>
+            <Word>ClosestGameObjectPosition</Word>
+            <Word>ClosestUnitPosition</Word>
             <Word>CollapseAllFactionHeaders</Word>
             <Word>CollapseChannelHeader</Word>
             <Word>CollapseFactionHeader</Word>
@@ -779,6 +1085,7 @@
             <Word>CollapseQuestHeader</Word>
             <Word>CollapseTradeSkillSubClass</Word>
             <Word>CollapseWarGameHeader</Word>
+            <Word>ColorPaperDollStat</Word>
             <Word>CombatLogAddFilter</Word>
             <Word>CombatLogAdvanceEntry</Word>
             <Word>CombatLogClearEntries</Word>
@@ -788,26 +1095,13 @@
             <Word>CombatLogResetFilter</Word>
             <Word>CombatLogSetCurrentEntry</Word>
             <Word>CombatLogSetRetentionTime</Word>
-            <Word>CombatLog_Color_ColorArrayByEventType</Word>
-            <Word>CombatLog_Color_ColorArrayBySchool</Word>
-            <Word>CombatLog_Color_ColorArrayByUnitType</Word>
-            <Word>CombatLog_Color_ColorStringByEventType</Word>
-            <Word>CombatLog_Color_ColorStringBySchool</Word>
-            <Word>CombatLog_Color_ColorStringByUnitType</Word>
-            <Word>CombatLog_Color_FloatToText</Word>
-            <Word>CombatLog_Color_HighlightColorArray</Word>
-            <Word>CombatLog_Object_IsA</Word>
-            <Word>CombatLog_OnEvent</Word>
-            <Word>CombatLog_String_DamageResultString</Word>
-            <Word>CombatLog_String_GetIcon</Word>
-            <Word>CombatLog_String_GetToken</Word>
-            <Word>CombatLog_String_PowerType</Word>
-            <Word>CombatLog_String_SchoolString</Word>
             <Word>CombatTextSetActiveUnit</Word>
-            <Word>CommentatorAddPlayer</Word>
+            <Word>ComboPointShineFadeIn</Word>
+            <Word>ComboPointShineFadeOut</Word>
             <Word>CommentatorEnterInstance</Word>
             <Word>CommentatorExitInstance</Word>
             <Word>CommentatorFollowPlayer</Word>
+            <Word>CommentatorFollowUnit</Word>
             <Word>CommentatorGetCamera</Word>
             <Word>CommentatorGetCurrentMapID</Word>
             <Word>CommentatorGetInstanceInfo</Word>
@@ -815,26 +1109,14 @@
             <Word>CommentatorGetMode</Word>
             <Word>CommentatorGetNumMaps</Word>
             <Word>CommentatorGetNumPlayers</Word>
-            <Word>CommentatorGetPartyInfo</Word>
             <Word>CommentatorGetPlayerInfo</Word>
-            <Word>CommentatorGetSkirmishMode</Word>
-            <Word>CommentatorGetSkirmishQueueCount</Word>
-            <Word>CommentatorGetSkirmishQueuePlayerInfo</Word>
             <Word>CommentatorLookatPlayer</Word>
-            <Word>CommentatorRemovePlayer</Word>
-            <Word>CommentatorRequestSkirmishMode</Word>
-            <Word>CommentatorRequestSkirmishQueueData</Word>
-            <Word>CommentatorSetBattlemaster</Word>
             <Word>CommentatorSetCamera</Word>
             <Word>CommentatorSetCameraCollision</Word>
             <Word>CommentatorSetMapAndInstanceIndex</Word>
             <Word>CommentatorSetMode</Word>
             <Word>CommentatorSetMoveSpeed</Word>
-            <Word>CommentatorSetPlayerIndex</Word>
-            <Word>CommentatorSetSkirmishMatchmakingMode</Word>
             <Word>CommentatorSetTargetHeightOffset</Word>
-            <Word>CommentatorStartInstance</Word>
-            <Word>CommentatorStartSkirmishMatch</Word>
             <Word>CommentatorStartWargame</Word>
             <Word>CommentatorToggleMode</Word>
             <Word>CommentatorUpdateMapInfo</Word>
@@ -844,43 +1126,56 @@
             <Word>ComplainInboxItem</Word>
             <Word>CompleteLFGRoleCheck</Word>
             <Word>CompleteQuest</Word>
+            <Word>ComputePetBonus</Word>
             <Word>ConfirmAcceptQuest</Word>
             <Word>ConfirmBindOnUse</Word>
             <Word>ConfirmBinder</Word>
             <Word>ConfirmLootRoll</Word>
             <Word>ConfirmLootSlot</Word>
             <Word>ConfirmOnUse</Word>
+            <Word>ConfirmOrLeaveBattlefield</Word>
+            <Word>ConfirmOrLeaveLFGParty</Word>
             <Word>ConfirmReadyCheck</Word>
             <Word>ConfirmSummon</Word>
             <Word>ConfirmTalentWipe</Word>
             <Word>ConsoleAddMessage</Word>
             <Word>ConsoleExec</Word>
+            <Word>ConsolePrint</Word>
             <Word>ContainerIDToInventoryID</Word>
             <Word>ContainerRefundItemPurchase</Word>
+            <Word>ControlCheckCapTargets</Word>
+            <Word>ControlGetActiveCvarValue</Word>
+            <Word>ControlGetCurrentCvarValue</Word>
+            <Word>ControlSetValue</Word>
+            <Word>ConvertRGBtoColorString</Word>
             <Word>ConvertToParty</Word>
             <Word>ConvertToRaid</Word>
-            <Word>CreateArenaTeam</Word>
+            <Word>CopyTable</Word>
+            <Word>CreateChatChannelList</Word>
             <Word>CreateFont</Word>
             <Word>CreateFrame</Word>
             <Word>CreateMacro</Word>
-            <Word>CreateMiniWorldMapArrowFrame</Word>
             <Word>CreateNewRaidProfile</Word>
-            <Word>CreateWorldMapArrowFrame</Word>
             <Word>CursorCanGoInSlot</Word>
             <Word>CursorHasItem</Word>
             <Word>CursorHasMacro</Word>
             <Word>CursorHasMoney</Word>
             <Word>CursorHasSpell</Word>
-            <Word>DeclineArenaTeam</Word>
+            <Word>CursorOnUpdate</Word>
+            <Word>CursorUpdate</Word>
+            <Word>DeathKnniggetThrobFunction</Word>
+            <Word>DeclineChannelInvite</Word>
             <Word>DeclineGroup</Word>
             <Word>DeclineGuild</Word>
             <Word>DeclineGuildApplicant</Word>
-            <Word>DeclineInvite</Word>
             <Word>DeclineLevelGrant</Word>
             <Word>DeclineName</Word>
             <Word>DeclineQuest</Word>
             <Word>DeclineResurrect</Word>
             <Word>DeclineSpellConfirmationPrompt</Word>
+            <Word>DecodeResolution</Word>
+            <Word>DefaultCompactMiniFrameSetup</Word>
+            <Word>DefaultCompactUnitFrameSetup</Word>
             <Word>DelIgnore</Word>
             <Word>DelMute</Word>
             <Word>DeleteCursorItem</Word>
@@ -891,6 +1186,7 @@
             <Word>DeleteRaidProfile</Word>
             <Word>DemoteAssistant</Word>
             <Word>DepositGuildBankMoney</Word>
+            <Word>DepositReagentBank</Word>
             <Word>DescendStop</Word>
             <Word>DestroyTotem</Word>
             <Word>DetectWowMouse</Word>
@@ -906,40 +1202,15 @@
             <Word>DoMasterLootRoll</Word>
             <Word>DoReadyCheck</Word>
             <Word>DoTradeSkill</Word>
-            <Word>DownloadSettings</Word>
+            <Word>DrawOneHopLines</Word>
+            <Word>DrawRouteLine</Word>
+            <Word>DressUpBattlePet</Word>
+            <Word>DressUpItemLink</Word>
+            <Word>DressUpTexturePath</Word>
             <Word>DropCursorMoney</Word>
             <Word>DropItemOnUnit</Word>
             <Word>DungeonUsesTerrainMap</Word>
-            <Word>EJ_ClearSearch</Word>
-            <Word>EJ_GetCreatureInfo</Word>
-            <Word>EJ_GetCurrentInstance</Word>
-            <Word>EJ_GetCurrentTier</Word>
-            <Word>EJ_GetDifficulty</Word>
-            <Word>EJ_GetEncounterInfo</Word>
-            <Word>EJ_GetEncounterInfoByIndex</Word>
-            <Word>EJ_GetInstanceByIndex</Word>
-            <Word>EJ_GetInstanceInfo</Word>
-            <Word>EJ_GetLootFilter</Word>
-            <Word>EJ_GetLootInfo</Word>
-            <Word>EJ_GetLootInfoByIndex</Word>
-            <Word>EJ_GetMapEncounter</Word>
-            <Word>EJ_GetNumLoot</Word>
-            <Word>EJ_GetNumSearchResults</Word>
-            <Word>EJ_GetNumTiers</Word>
-            <Word>EJ_GetSearchResult</Word>
-            <Word>EJ_GetSectionInfo</Word>
-            <Word>EJ_GetSectionPath</Word>
-            <Word>EJ_GetTierInfo</Word>
-            <Word>EJ_HandleLinkPath</Word>
-            <Word>EJ_InstanceIsRaid</Word>
-            <Word>EJ_IsValidInstanceDifficulty</Word>
-            <Word>EJ_ResetLootFilter</Word>
-            <Word>EJ_SelectEncounter</Word>
-            <Word>EJ_SelectInstance</Word>
-            <Word>EJ_SelectTier</Word>
-            <Word>EJ_SetDifficulty</Word>
-            <Word>EJ_SetLootFilter</Word>
-            <Word>EJ_SetSearch</Word>
+            <Word>EasyMenu</Word>
             <Word>EditMacro</Word>
             <Word>EjectPassengerFromSeat</Word>
             <Word>EnableAddOn</Word>
@@ -956,9 +1227,9 @@
             <Word>EquipmentManagerIgnoreSlotForSave</Word>
             <Word>EquipmentManagerIsSlotIgnoredForSave</Word>
             <Word>EquipmentManagerUnignoreSlotForSave</Word>
-            <Word>EquipmentManager_UnpackLocation</Word>
             <Word>EquipmentSetContainsLockedItems</Word>
             <Word>ExecuteVoidTransfer</Word>
+            <Word>ExhaustionToolTipText</Word>
             <Word>ExpandAllFactionHeaders</Word>
             <Word>ExpandChannelHeader</Word>
             <Word>ExpandCurrencyList</Word>
@@ -967,6 +1238,7 @@
             <Word>ExpandQuestHeader</Word>
             <Word>ExpandTradeSkillSubClass</Word>
             <Word>ExpandWarGameHeader</Word>
+            <Word>ExtraActionButtonKey</Word>
             <Word>FactionToggleAtWar</Word>
             <Word>FillLocalizedClassList</Word>
             <Word>FindSpellBookSlotBySpellID</Word>
@@ -978,7 +1250,13 @@
             <Word>ForceGossip</Word>
             <Word>ForceLogout</Word>
             <Word>ForceQuit</Word>
-            <Word>FrameXML_Debug</Word>
+            <Word>FormatPaperDollTooltipStat</Word>
+            <Word>FormatProfession</Word>
+            <Word>GMError</Word>
+            <Word>GMEuropaBugsEnabled</Word>
+            <Word>GMEuropaComplaintsEnabled</Word>
+            <Word>GMEuropaSuggestionsEnabled</Word>
+            <Word>GMEuropaTicketsEnabled</Word>
             <Word>GMItemRestorationButtonEnabled</Word>
             <Word>GMQuickTicketSystemEnabled</Word>
             <Word>GMQuickTicketSystemThrottled</Word>
@@ -1020,31 +1298,33 @@
             <Word>GetActionTexture</Word>
             <Word>GetActiveArtifactByRace</Word>
             <Word>GetActiveLevel</Word>
+            <Word>GetActiveLootRollIDs</Word>
+            <Word>GetActiveRaidProfile</Word>
             <Word>GetActiveSpecGroup</Word>
             <Word>GetActiveTitle</Word>
             <Word>GetActiveVoiceChannel</Word>
             <Word>GetAddOnCPUUsage</Word>
             <Word>GetAddOnDependencies</Word>
+            <Word>GetAddOnEnableState</Word>
             <Word>GetAddOnInfo</Word>
             <Word>GetAddOnMemoryUsage</Word>
             <Word>GetAddOnMetadata</Word>
             <Word>GetAddOnOptionalDependencies</Word>
             <Word>GetAllowLowLevelRaid</Word>
             <Word>GetAlternatePowerInfoByID</Word>
+            <Word>GetAmplify</Word>
             <Word>GetArchaeologyInfo</Word>
             <Word>GetArchaeologyRaceInfo</Word>
+            <Word>GetArchaeologyRaceInfoByID</Word>
             <Word>GetAreaMapInfo</Word>
             <Word>GetAreaMaps</Word>
             <Word>GetAreaSpiritHealerTime</Word>
             <Word>GetArenaOpponentSpec</Word>
-            <Word>GetArenaTeam</Word>
-            <Word>GetArenaTeamGdfInfo</Word>
-            <Word>GetArenaTeamRosterInfo</Word>
-            <Word>GetArenaTeamRosterSelection</Word>
-            <Word>GetArenaTeamRosterShowOffline</Word>
+            <Word>GetArmorEffectiveness</Word>
             <Word>GetArmorPenetration</Word>
             <Word>GetArtifactInfoByRace</Word>
             <Word>GetArtifactProgress</Word>
+            <Word>GetAtlasInfo</Word>
             <Word>GetAttackPowerForStat</Word>
             <Word>GetAuctionHouseDepositRate</Word>
             <Word>GetAuctionInvTypes</Word>
@@ -1057,21 +1337,31 @@
             <Word>GetAuctionSellItemInfo</Word>
             <Word>GetAuctionSort</Word>
             <Word>GetAutoCompletePresenceID</Word>
+            <Word>GetAutoCompleteRealms</Word>
             <Word>GetAutoCompleteResults</Word>
             <Word>GetAutoDeclineGuildInvites</Word>
             <Word>GetAutoQuestPopUp</Word>
+            <Word>GetAvailableAudioLocales</Word>
             <Word>GetAvailableBandwidth</Word>
             <Word>GetAvailableLevel</Word>
             <Word>GetAvailableLocales</Word>
             <Word>GetAvailableQuestInfo</Word>
             <Word>GetAvailableTitle</Word>
             <Word>GetAverageItemLevel</Word>
+            <Word>GetAvoidance</Word>
             <Word>GetBackgroundLoadingStatus</Word>
+            <Word>GetBackgroundTexCoordsForRole</Word>
+            <Word>GetBackpackAutosortDisabled</Word>
             <Word>GetBackpackCurrencyInfo</Word>
+            <Word>GetBackpackFrame</Word>
             <Word>GetBagName</Word>
+            <Word>GetBagSlotFlag</Word>
+            <Word>GetBankAutosortDisabled</Word>
+            <Word>GetBankBagSlotFlag</Word>
             <Word>GetBankSlotCost</Word>
             <Word>GetBarberShopStyleInfo</Word>
             <Word>GetBarberShopTotalCost</Word>
+            <Word>GetBattlePetAbilityHyperlink</Word>
             <Word>GetBattlefieldArenaFaction</Word>
             <Word>GetBattlefieldEstimatedWaitTime</Word>
             <Word>GetBattlefieldFlagPosition</Word>
@@ -1088,6 +1378,8 @@
             <Word>GetBattlefieldVehicleInfo</Word>
             <Word>GetBattlefieldWinner</Word>
             <Word>GetBattlegroundInfo</Word>
+            <Word>GetBattlegroundPoints</Word>
+            <Word>GetBestFlexRaidChoice</Word>
             <Word>GetBestRFChoice</Word>
             <Word>GetBidderAuctionItems</Word>
             <Word>GetBillingTimeRested</Word>
@@ -1095,8 +1387,12 @@
             <Word>GetBinding</Word>
             <Word>GetBindingAction</Word>
             <Word>GetBindingByKey</Word>
+            <Word>GetBindingFromClick</Word>
             <Word>GetBindingKey</Word>
+            <Word>GetBindingText</Word>
             <Word>GetBlacklistMap</Word>
+            <Word>GetBlacklistMapName</Word>
+            <Word>GetBladedArmorEffect</Word>
             <Word>GetBlockChance</Word>
             <Word>GetBonusBarIndex</Word>
             <Word>GetBonusBarOffset</Word>
@@ -1132,6 +1428,7 @@
             <Word>GetChannelName</Word>
             <Word>GetChannelRosterInfo</Word>
             <Word>GetChatTypeIndex</Word>
+            <Word>GetChatUnitColor</Word>
             <Word>GetChatWindowChannels</Word>
             <Word>GetChatWindowInfo</Word>
             <Word>GetChatWindowMessages</Word>
@@ -1139,10 +1436,12 @@
             <Word>GetChatWindowSavedPosition</Word>
             <Word>GetClassInfo</Word>
             <Word>GetClassInfoByID</Word>
+            <Word>GetCleave</Word>
             <Word>GetClickFrame</Word>
             <Word>GetCoinIcon</Word>
             <Word>GetCoinText</Word>
             <Word>GetCoinTextureString</Word>
+            <Word>GetColoredName</Word>
             <Word>GetCombatRating</Word>
             <Word>GetCombatRatingBonus</Word>
             <Word>GetComboPoints</Word>
@@ -1166,10 +1465,12 @@
             <Word>GetContainerNumSlots</Word>
             <Word>GetContinentMapInfo</Word>
             <Word>GetContinentMaps</Word>
+            <Word>GetContinentName</Word>
             <Word>GetCorpseMapPosition</Word>
             <Word>GetCorpseRecoveryDelay</Word>
             <Word>GetCritChance</Word>
             <Word>GetCritChanceFromAgility</Word>
+            <Word>GetCritChanceProvidesParryEffect</Word>
             <Word>GetCriteriaSpell</Word>
             <Word>GetCurrencyInfo</Word>
             <Word>GetCurrencyLink</Word>
@@ -1179,19 +1480,20 @@
             <Word>GetCurrentArenaSeason</Word>
             <Word>GetCurrentBindingSet</Word>
             <Word>GetCurrentEventID</Word>
+            <Word>GetCurrentGraphicsSetting</Word>
             <Word>GetCurrentGuildBankTab</Word>
-            <Word>GetCurrentGuildPerkIndex</Word>
             <Word>GetCurrentKeyBoardFocus</Word>
+            <Word>GetCurrentLevelDraenorTalent</Word>
             <Word>GetCurrentLevelFeatures</Word>
             <Word>GetCurrentLevelSpells</Word>
             <Word>GetCurrentMapAreaID</Word>
             <Word>GetCurrentMapContinent</Word>
             <Word>GetCurrentMapDungeonLevel</Word>
+            <Word>GetCurrentMapHeaderIndex</Word>
             <Word>GetCurrentMapLevelRange</Word>
             <Word>GetCurrentMapZone</Word>
-            <Word>GetCurrentMultisampleFormat</Word>
-            <Word>GetCurrentRaidDifficulty</Word>
             <Word>GetCurrentRefresh</Word>
+            <Word>GetCurrentRegion</Word>
             <Word>GetCurrentResolution</Word>
             <Word>GetCurrentTitle</Word>
             <Word>GetCursorInfo</Word>
@@ -1205,9 +1507,12 @@
             <Word>GetDebugZoneMap</Word>
             <Word>GetDefaultLanguage</Word>
             <Word>GetDefaultVideoOptions</Word>
+            <Word>GetDefaultVideoQualityOption</Word>
             <Word>GetDemotionRank</Word>
-            <Word>GetDestinationReforgeStats</Word>
+            <Word>GetDenominationsFromCopper</Word>
             <Word>GetDetailColumnString</Word>
+            <Word>GetDifficultyInfo</Word>
+            <Word>GetDisplayedAllyFrames</Word>
             <Word>GetDistanceSqToQuest</Word>
             <Word>GetDodgeChance</Word>
             <Word>GetDownloadedPercentage</Word>
@@ -1216,14 +1521,18 @@
             <Word>GetDungeonInfo</Word>
             <Word>GetDungeonMapInfo</Word>
             <Word>GetDungeonMaps</Word>
+            <Word>GetDungeonNameWithDifficulty</Word>
             <Word>GetEclipseDirection</Word>
+            <Word>GetEnemyDodgeChance</Word>
+            <Word>GetEnemyParryChance</Word>
+            <Word>GetEquipmentSetIconInfo</Word>
+            <Word>GetEquipmentSetIgnoreSlots</Word>
             <Word>GetEquipmentSetInfo</Word>
             <Word>GetEquipmentSetInfoByName</Word>
             <Word>GetEquipmentSetItemIDs</Word>
             <Word>GetEquipmentSetLocations</Word>
             <Word>GetEventCPUUsage</Word>
             <Word>GetEventTime</Word>
-            <Word>GetExistingLocales</Word>
             <Word>GetExistingSocketInfo</Word>
             <Word>GetExistingSocketLink</Word>
             <Word>GetExpansionLevel</Word>
@@ -1235,15 +1544,20 @@
             <Word>GetFactionInfoByID</Word>
             <Word>GetFileStreamingStatus</Word>
             <Word>GetFirstTradeSkill</Word>
+            <Word>GetFixedLink</Word>
+            <Word>GetFlexRaidDungeonInfo</Word>
             <Word>GetFlyoutID</Word>
             <Word>GetFlyoutInfo</Word>
             <Word>GetFlyoutSlotInfo</Word>
             <Word>GetFrameCPUUsage</Word>
+            <Word>GetFrameHandle</Word>
+            <Word>GetFrameHandleFrame</Word>
             <Word>GetFramerate</Word>
             <Word>GetFramesRegisteredForEvent</Word>
             <Word>GetFriendInfo</Word>
             <Word>GetFriendshipReputation</Word>
             <Word>GetFriendshipReputationRanks</Word>
+            <Word>GetFullRaidList</Word>
             <Word>GetFunctionCPUUsage</Word>
             <Word>GetGMStatus</Word>
             <Word>GetGMTicket</Word>
@@ -1261,6 +1575,7 @@
             <Word>GetGossipText</Word>
             <Word>GetGraphicsAPIs</Word>
             <Word>GetGreetingText</Word>
+            <Word>GetGroupMemberCounts</Word>
             <Word>GetGuildAchievementMemberInfo</Word>
             <Word>GetGuildAchievementMembers</Word>
             <Word>GetGuildAchievementNumMembers</Word>
@@ -1287,7 +1602,6 @@
             <Word>GetGuildFactionInfo</Word>
             <Word>GetGuildInfo</Word>
             <Word>GetGuildInfoText</Word>
-            <Word>GetGuildLevel</Word>
             <Word>GetGuildLevelEnabled</Word>
             <Word>GetGuildLogoInfo</Word>
             <Word>GetGuildMemberRecipes</Word>
@@ -1304,10 +1618,8 @@
             <Word>GetGuildRecruitmentSettings</Word>
             <Word>GetGuildRenameRequired</Word>
             <Word>GetGuildRewardInfo</Word>
-            <Word>GetGuildRosterContribution</Word>
             <Word>GetGuildRosterInfo</Word>
             <Word>GetGuildRosterLargestAchievementPoints</Word>
-            <Word>GetGuildRosterLargestContribution</Word>
             <Word>GetGuildRosterLastOnline</Word>
             <Word>GetGuildRosterMOTD</Word>
             <Word>GetGuildRosterSelection</Word>
@@ -1315,8 +1627,10 @@
             <Word>GetGuildTabardFileNames</Word>
             <Word>GetGuildTradeSkillInfo</Word>
             <Word>GetHairCustomization</Word>
+            <Word>GetHaste</Word>
             <Word>GetHitModifier</Word>
             <Word>GetHolidayBGHonorCurrencyBonuses</Word>
+            <Word>GetHolidayBGInfo</Word>
             <Word>GetHomePartyInfo</Word>
             <Word>GetIgnoreName</Word>
             <Word>GetInboxHeaderInfo</Word>
@@ -1325,7 +1639,8 @@
             <Word>GetInboxItemLink</Word>
             <Word>GetInboxNumItems</Word>
             <Word>GetInboxText</Word>
-            <Word>GetInspectArenaTeamData</Word>
+            <Word>GetInsertItemsLeftToRight</Word>
+            <Word>GetInspectArenaData</Word>
             <Word>GetInspectGlyph</Word>
             <Word>GetInspectGuildInfo</Word>
             <Word>GetInspectHonorData</Word>
@@ -1333,7 +1648,6 @@
             <Word>GetInspectSpecialization</Word>
             <Word>GetInspectTalent</Word>
             <Word>GetInstanceBootTimeRemaining</Word>
-            <Word>GetInstanceDifficulty</Word>
             <Word>GetInstanceInfo</Word>
             <Word>GetInstanceLockTimeRemaining</Word>
             <Word>GetInstanceLockTimeRemainingEncounter</Word>
@@ -1342,6 +1656,7 @@
             <Word>GetInventoryItemCooldown</Word>
             <Word>GetInventoryItemCount</Word>
             <Word>GetInventoryItemDurability</Word>
+            <Word>GetInventoryItemEquippedUnusable</Word>
             <Word>GetInventoryItemGems</Word>
             <Word>GetInventoryItemID</Word>
             <Word>GetInventoryItemLink</Word>
@@ -1353,16 +1668,19 @@
             <Word>GetItemCount</Word>
             <Word>GetItemFamily</Word>
             <Word>GetItemGem</Word>
+            <Word>GetItemIDFromHyperlink</Word>
             <Word>GetItemIcon</Word>
             <Word>GetItemInfo</Word>
             <Word>GetItemLevelIncrement</Word>
             <Word>GetItemQualityColor</Word>
+            <Word>GetItemSpecInfo</Word>
             <Word>GetItemSpell</Word>
             <Word>GetItemStatDelta</Word>
             <Word>GetItemStats</Word>
             <Word>GetItemTransmogrifyInfo</Word>
             <Word>GetItemUniqueness</Word>
             <Word>GetItemUpdateLevel</Word>
+            <Word>GetItemUpgradeEffect</Word>
             <Word>GetItemUpgradeItemInfo</Word>
             <Word>GetItemUpgradeStats</Word>
             <Word>GetLFDChoiceCollapseState</Word>
@@ -1371,6 +1689,9 @@
             <Word>GetLFDChoiceOrder</Word>
             <Word>GetLFDLockInfo</Word>
             <Word>GetLFDLockPlayerCount</Word>
+            <Word>GetLFDRoleLockInfo</Word>
+            <Word>GetLFDRoleRestrictions</Word>
+            <Word>GetLFGBonusFactionID</Word>
             <Word>GetLFGBootProposal</Word>
             <Word>GetLFGCategoryForID</Word>
             <Word>GetLFGCompletionReward</Word>
@@ -1387,6 +1708,8 @@
             <Word>GetLFGDungeonShortageRewardInfo</Word>
             <Word>GetLFGDungeonShortageRewardLink</Word>
             <Word>GetLFGInfoServer</Word>
+            <Word>GetLFGInviteRoleAvailability</Word>
+            <Word>GetLFGInviteRoleRestrictions</Word>
             <Word>GetLFGMode</Word>
             <Word>GetLFGProposal</Word>
             <Word>GetLFGProposalEncounter</Word>
@@ -1397,21 +1720,29 @@
             <Word>GetLFGRandomDungeonInfo</Word>
             <Word>GetLFGRoleShortageRewards</Word>
             <Word>GetLFGRoleUpdate</Word>
+            <Word>GetLFGRoleUpdateBattlegroundInfo</Word>
             <Word>GetLFGRoleUpdateMember</Word>
             <Word>GetLFGRoleUpdateSlot</Word>
             <Word>GetLFGRoles</Word>
+            <Word>GetLFGSuspendedPlayers</Word>
             <Word>GetLFGTypes</Word>
             <Word>GetLFRChoiceOrder</Word>
             <Word>GetLanguageByIndex</Word>
+            <Word>GetLastDraenorSpellTexture</Word>
             <Word>GetLatestCompletedAchievements</Word>
             <Word>GetLatestCompletedComparisonAchievements</Word>
             <Word>GetLatestThreeSenders</Word>
             <Word>GetLatestUpdatedComparisonStats</Word>
             <Word>GetLatestUpdatedStats</Word>
+            <Word>GetLegacyRaidDifficultyID</Word>
             <Word>GetLevelUpInstances</Word>
+            <Word>GetLifesteal</Word>
             <Word>GetLocale</Word>
             <Word>GetLookingForGuildComment</Word>
             <Word>GetLookingForGuildSettings</Word>
+            <Word>GetLooseMacroIcons</Word>
+            <Word>GetLooseMacroItemIcons</Word>
+            <Word>GetLootInfo</Word>
             <Word>GetLootMethod</Word>
             <Word>GetLootRollItemInfo</Word>
             <Word>GetLootRollItemLink</Word>
@@ -1420,7 +1751,9 @@
             <Word>GetLootSlotLink</Word>
             <Word>GetLootSlotType</Word>
             <Word>GetLootSourceInfo</Word>
+            <Word>GetLootSpecialization</Word>
             <Word>GetLootThreshold</Word>
+            <Word>GetLowBit</Word>
             <Word>GetMacroBody</Word>
             <Word>GetMacroIcons</Word>
             <Word>GetMacroIndexByName</Word>
@@ -1429,25 +1762,30 @@
             <Word>GetMacroItemIcons</Word>
             <Word>GetMacroSpell</Word>
             <Word>GetManaRegen</Word>
+            <Word>GetManagedEnvironment</Word>
             <Word>GetMapContinents</Word>
             <Word>GetMapDebugObjectInfo</Word>
+            <Word>GetMapHierarchy</Word>
             <Word>GetMapInfo</Word>
             <Word>GetMapLandmarkInfo</Word>
             <Word>GetMapNameByID</Word>
             <Word>GetMapOverlayInfo</Word>
+            <Word>GetMapSubzones</Word>
             <Word>GetMapZones</Word>
             <Word>GetMasterLootCandidate</Word>
             <Word>GetMastery</Word>
             <Word>GetMasteryEffect</Word>
+            <Word>GetMaterialTextColors</Word>
             <Word>GetMaxAnimFramerate</Word>
             <Word>GetMaxArenaCurrency</Word>
             <Word>GetMaxBattlefieldID</Word>
             <Word>GetMaxCombatRatingBonus</Word>
-            <Word>GetMaxMultisampleFormatOnCvar</Word>
             <Word>GetMaxNumCUFProfiles</Word>
             <Word>GetMaxPlayerLevel</Word>
+            <Word>GetMaxRewardCurrencies</Word>
             <Word>GetMaxSpellStartRecoveryOffset</Word>
             <Word>GetMaxTalentTier</Word>
+            <Word>GetMaxUIPanelsWidth</Word>
             <Word>GetMeleeHaste</Word>
             <Word>GetMerchantCurrencies</Word>
             <Word>GetMerchantFilter</Word>
@@ -1457,8 +1795,8 @@
             <Word>GetMerchantItemLink</Word>
             <Word>GetMerchantItemMaxStack</Word>
             <Word>GetMerchantNumItems</Word>
-            <Word>GetMinigameState</Word>
-            <Word>GetMinigameType</Word>
+            <Word>GetMessageTypeColor</Word>
+            <Word>GetMessageTypeState</Word>
             <Word>GetMinimapZoneText</Word>
             <Word>GetMirrorTimerInfo</Word>
             <Word>GetMirrorTimerProgress</Word>
@@ -1468,6 +1806,7 @@
             <Word>GetModifiedClick</Word>
             <Word>GetModifiedClickAction</Word>
             <Word>GetMoney</Word>
+            <Word>GetMoneyString</Word>
             <Word>GetMonitorAspectRatio</Word>
             <Word>GetMonitorCount</Word>
             <Word>GetMonitorName</Word>
@@ -1477,23 +1816,23 @@
             <Word>GetMovieDownloadProgress</Word>
             <Word>GetMultiCastBarIndex</Word>
             <Word>GetMultiCastTotemSpells</Word>
-            <Word>GetMultisampleFormats</Word>
+            <Word>GetMultistrike</Word>
+            <Word>GetMultistrikeEffect</Word>
             <Word>GetMuteName</Word>
             <Word>GetMuteStatus</Word>
             <Word>GetNamePlateMotionType</Word>
             <Word>GetNetIpTypes</Word>
             <Word>GetNetStats</Word>
+            <Word>GetNewActionHighlightMark</Word>
             <Word>GetNewSocketInfo</Word>
             <Word>GetNewSocketLink</Word>
             <Word>GetNextAchievement</Word>
             <Word>GetNextCompleatedTutorial</Word>
-            <Word>GetNextGuildPerkIndex</Word>
             <Word>GetNumActiveQuests</Word>
             <Word>GetNumAddOns</Word>
             <Word>GetNumArchaeologyRaces</Word>
             <Word>GetNumArenaOpponentSpecs</Word>
             <Word>GetNumArenaOpponents</Word>
-            <Word>GetNumArenaTeamMembers</Word>
             <Word>GetNumArtifactsByRace</Word>
             <Word>GetNumAuctionItems</Word>
             <Word>GetNumAutoQuestPopUps</Word>
@@ -1519,6 +1858,7 @@
             <Word>GetNumDungeonMapLevels</Word>
             <Word>GetNumEquipmentSets</Word>
             <Word>GetNumFactions</Word>
+            <Word>GetNumFlexRaidDungeons</Word>
             <Word>GetNumFlyouts</Word>
             <Word>GetNumFrames</Word>
             <Word>GetNumFriends</Word>
@@ -1541,6 +1881,7 @@
             <Word>GetNumGuildRewards</Word>
             <Word>GetNumGuildTradeSkill</Word>
             <Word>GetNumIgnores</Word>
+            <Word>GetNumItemUpgradeEffects</Word>
             <Word>GetNumLanguages</Word>
             <Word>GetNumLootItems</Word>
             <Word>GetNumMacros</Word>
@@ -1564,6 +1905,7 @@
             <Word>GetNumQuestLogRewardCurrencies</Word>
             <Word>GetNumQuestLogRewardFactions</Word>
             <Word>GetNumQuestLogRewards</Word>
+            <Word>GetNumQuestLogTasks</Word>
             <Word>GetNumQuestPOIWorldEffects</Word>
             <Word>GetNumQuestRewards</Word>
             <Word>GetNumQuestWatches</Word>
@@ -1572,10 +1914,10 @@
             <Word>GetNumRandomDungeons</Word>
             <Word>GetNumRandomScenarios</Word>
             <Word>GetNumRecruitingGuilds</Word>
-            <Word>GetNumReforgeOptions</Word>
             <Word>GetNumRewardCurrencies</Word>
             <Word>GetNumRoutes</Word>
             <Word>GetNumSavedInstances</Word>
+            <Word>GetNumSavedWorldBosses</Word>
             <Word>GetNumScenarios</Word>
             <Word>GetNumShapeshiftForms</Word>
             <Word>GetNumSoRRemaining</Word>
@@ -1586,7 +1928,6 @@
             <Word>GetNumSpellTabs</Word>
             <Word>GetNumStationeries</Word>
             <Word>GetNumSubgroupMembers</Word>
-            <Word>GetNumTalents</Word>
             <Word>GetNumTitles</Word>
             <Word>GetNumTrackedAchievements</Word>
             <Word>GetNumTrackingTypes</Word>
@@ -1598,11 +1939,13 @@
             <Word>GetNumVoidTransferDeposit</Word>
             <Word>GetNumVoidTransferWithdrawal</Word>
             <Word>GetNumWarGameTypes</Word>
+            <Word>GetNumWatchedTokens</Word>
             <Word>GetNumWhoResults</Word>
             <Word>GetNumWorldPVPAreas</Word>
             <Word>GetNumWorldStateUI</Word>
             <Word>GetNumberOfDetailTiles</Word>
             <Word>GetOSLocale</Word>
+            <Word>GetObjectIconTextureCoords</Word>
             <Word>GetObjectiveText</Word>
             <Word>GetOptOutOfLoot</Word>
             <Word>GetOutdoorPVPWaitTime</Word>
@@ -1614,9 +1957,8 @@
             <Word>GetPOITextureCoords</Word>
             <Word>GetPVPDesired</Word>
             <Word>GetPVPLifetimeStats</Word>
-            <Word>GetPVPRankInfo</Word>
-            <Word>GetPVPRankProgress</Word>
             <Word>GetPVPRewards</Word>
+            <Word>GetPVPRoles</Word>
             <Word>GetPVPSessionStats</Word>
             <Word>GetPVPTimer</Word>
             <Word>GetPVPYesterdayStats</Word>
@@ -1625,8 +1967,7 @@
             <Word>GetPartyAssignment</Word>
             <Word>GetPartyLFGBackfillInfo</Word>
             <Word>GetPartyLFGID</Word>
-            <Word>GetPersonalRatedArenaInfo</Word>
-            <Word>GetPersonalRatedBGInfo</Word>
+            <Word>GetPersonalRatedInfo</Word>
             <Word>GetPetActionCooldown</Word>
             <Word>GetPetActionInfo</Word>
             <Word>GetPetActionSlotUsable</Word>
@@ -1641,6 +1982,7 @@
             <Word>GetPetitionInfo</Word>
             <Word>GetPetitionNameInfo</Word>
             <Word>GetPlayerFacing</Word>
+            <Word>GetPlayerFactionGroup</Word>
             <Word>GetPlayerInfoByGUID</Word>
             <Word>GetPlayerMapPosition</Word>
             <Word>GetPlayerTradeCurrency</Word>
@@ -1657,8 +1999,15 @@
             <Word>GetPvpPowerDamage</Word>
             <Word>GetPvpPowerHealing</Word>
             <Word>GetQuestBackgroundMaterial</Word>
+            <Word>GetQuestChoiceInfo</Word>
+            <Word>GetQuestChoiceOptionInfo</Word>
+            <Word>GetQuestChoiceRewardCurrency</Word>
+            <Word>GetQuestChoiceRewardFaction</Word>
+            <Word>GetQuestChoiceRewardInfo</Word>
+            <Word>GetQuestChoiceRewardItem</Word>
             <Word>GetQuestCurrencyInfo</Word>
             <Word>GetQuestDifficultyColor</Word>
+            <Word>GetQuestFactionGroup</Word>
             <Word>GetQuestGreenRange</Word>
             <Word>GetQuestID</Word>
             <Word>GetQuestIndexForTimer</Word>
@@ -1694,52 +2043,62 @@
             <Word>GetQuestLogSpecialItemCooldown</Word>
             <Word>GetQuestLogSpecialItemInfo</Word>
             <Word>GetQuestLogSpellLink</Word>
+            <Word>GetQuestLogTaskInfo</Word>
             <Word>GetQuestLogTimeLeft</Word>
             <Word>GetQuestLogTitle</Word>
             <Word>GetQuestMoneyToGet</Word>
+            <Word>GetQuestObjectiveInfo</Word>
+            <Word>GetQuestPOIBlobCount</Word>
             <Word>GetQuestPOILeaderBoard</Word>
             <Word>GetQuestPOIWorldEffectInfo</Word>
+            <Word>GetQuestPOIs</Word>
             <Word>GetQuestPortraitGiver</Word>
             <Word>GetQuestPortraitTurnIn</Word>
+            <Word>GetQuestProgressBarPercent</Word>
             <Word>GetQuestResetTime</Word>
             <Word>GetQuestReward</Word>
             <Word>GetQuestSortIndex</Word>
             <Word>GetQuestSpellLink</Word>
+            <Word>GetQuestTagInfo</Word>
             <Word>GetQuestText</Word>
             <Word>GetQuestTimers</Word>
             <Word>GetQuestWatchIndex</Word>
+            <Word>GetQuestWatchInfo</Word>
             <Word>GetQuestWorldMapAreaID</Word>
             <Word>GetQuestsCompleted</Word>
             <Word>GetRFDungeonInfo</Word>
             <Word>GetRaidBuffInfo</Word>
             <Word>GetRaidBuffTrayAuraInfo</Word>
-            <Word>GetRaidDifficulty</Word>
+            <Word>GetRaidDifficultyID</Word>
             <Word>GetRaidProfileFlattenedOptions</Word>
             <Word>GetRaidProfileName</Word>
             <Word>GetRaidProfileOption</Word>
             <Word>GetRaidProfileSavedPosition</Word>
             <Word>GetRaidRosterInfo</Word>
             <Word>GetRaidTargetIndex</Word>
+            <Word>GetRandomArgument</Word>
             <Word>GetRandomBGHonorCurrencyBonuses</Word>
+            <Word>GetRandomBGInfo</Word>
             <Word>GetRandomDungeonBestChoice</Word>
             <Word>GetRandomScenarioBestChoice</Word>
             <Word>GetRandomScenarioInfo</Word>
             <Word>GetRangedCritChance</Word>
             <Word>GetRangedHaste</Word>
             <Word>GetRatedBattleGroundInfo</Word>
+            <Word>GetReadiness</Word>
+            <Word>GetReadonlyRestrictedTable</Word>
             <Word>GetReadyCheckStatus</Word>
             <Word>GetReadyCheckTimeLeft</Word>
+            <Word>GetReagentBankCost</Word>
             <Word>GetRealZoneText</Word>
             <Word>GetRealmName</Word>
             <Word>GetRecruitingGuildInfo</Word>
             <Word>GetRecruitingGuildSelection</Word>
             <Word>GetRecruitingGuildSettings</Word>
             <Word>GetRecruitingGuildTabardInfo</Word>
-            <Word>GetReforgeItemInfo</Word>
-            <Word>GetReforgeItemStats</Word>
-            <Word>GetReforgeOptionInfo</Word>
             <Word>GetRefreshRates</Word>
             <Word>GetRegisteredAddonMessagePrefixes</Word>
+            <Word>GetRelativeDifficultyColor</Word>
             <Word>GetReleaseTimeRemaining</Word>
             <Word>GetRepairAllCost</Word>
             <Word>GetResSicknessDuration</Word>
@@ -1762,10 +2121,14 @@
             <Word>GetSavedInstanceChatLink</Word>
             <Word>GetSavedInstanceEncounterInfo</Word>
             <Word>GetSavedInstanceInfo</Word>
+            <Word>GetSavedWorldBossInfo</Word>
             <Word>GetScenariosChoiceOrder</Word>
+            <Word>GetSchoolString</Word>
             <Word>GetScreenHeight</Word>
+            <Word>GetScreenHeightScale</Word>
             <Word>GetScreenResolutions</Word>
             <Word>GetScreenWidth</Word>
+            <Word>GetScreenWidthScale</Word>
             <Word>GetScriptCPUUsage</Word>
             <Word>GetSecondsUntilParentalControlsKick</Word>
             <Word>GetSelectedArtifactInfo</Word>
@@ -1784,26 +2147,31 @@
             <Word>GetSendMailMoney</Word>
             <Word>GetSendMailPrice</Word>
             <Word>GetSessionTime</Word>
+            <Word>GetSetBonusesForSpecializationByItemID</Word>
             <Word>GetShapeshiftForm</Word>
             <Word>GetShapeshiftFormCooldown</Word>
             <Word>GetShapeshiftFormID</Word>
             <Word>GetShapeshiftFormInfo</Word>
             <Word>GetSheathState</Word>
             <Word>GetShieldBlock</Word>
+            <Word>GetSmoothProgressChange</Word>
             <Word>GetSocketItemBoundTradeable</Word>
             <Word>GetSocketItemInfo</Word>
             <Word>GetSocketItemRefundable</Word>
             <Word>GetSocketTypes</Word>
-            <Word>GetSourceReforgeStats</Word>
+            <Word>GetSortBagsRightToLeft</Word>
             <Word>GetSpecialization</Word>
             <Word>GetSpecializationInfo</Word>
             <Word>GetSpecializationInfoByID</Word>
             <Word>GetSpecializationInfoForClassID</Word>
             <Word>GetSpecializationMasterySpells</Word>
+            <Word>GetSpecializationNameForSpecID</Word>
+            <Word>GetSpecializationReadinessSpell</Word>
             <Word>GetSpecializationRole</Word>
             <Word>GetSpecializationRoleByID</Word>
             <Word>GetSpecializationSpells</Word>
             <Word>GetSpecsForSpell</Word>
+            <Word>GetSpeed</Word>
             <Word>GetSpellAutocast</Word>
             <Word>GetSpellAvailableLevel</Word>
             <Word>GetSpellBaseCooldown</Word>
@@ -1813,6 +2181,7 @@
             <Word>GetSpellBookItemName</Word>
             <Word>GetSpellBookItemTexture</Word>
             <Word>GetSpellCharges</Word>
+            <Word>GetSpellConfirmationPromptsInfo</Word>
             <Word>GetSpellCooldown</Word>
             <Word>GetSpellCount</Word>
             <Word>GetSpellCritChance</Word>
@@ -1822,14 +2191,18 @@
             <Word>GetSpellInfo</Word>
             <Word>GetSpellLevelLearned</Word>
             <Word>GetSpellLink</Word>
+            <Word>GetSpellLossOfControlCooldown</Word>
+            <Word>GetSpellNameColor</Word>
             <Word>GetSpellPenetration</Word>
             <Word>GetSpellTabInfo</Word>
             <Word>GetSpellTexture</Word>
+            <Word>GetSpellsForCharacterUpgradeTier</Word>
             <Word>GetStablePetFoodTypes</Word>
             <Word>GetStablePetInfo</Word>
             <Word>GetStationeryInfo</Word>
             <Word>GetStatistic</Word>
             <Word>GetStatisticsCategoryList</Word>
+            <Word>GetSturdiness</Word>
             <Word>GetSubZoneText</Word>
             <Word>GetSuggestedGroupNum</Word>
             <Word>GetSummonConfirmAreaName</Word>
@@ -1839,17 +2212,28 @@
             <Word>GetSuperTrackedQuestID</Word>
             <Word>GetTabardCreationCost</Word>
             <Word>GetTabardInfo</Word>
+            <Word>GetTableColor</Word>
             <Word>GetTalentClearInfo</Word>
             <Word>GetTalentInfo</Word>
+            <Word>GetTalentInfoByID</Word>
+            <Word>GetTalentInfoBySpecialization</Word>
             <Word>GetTalentLink</Word>
             <Word>GetTalentRowSelectionInfo</Word>
             <Word>GetTargetTradeCurrency</Word>
             <Word>GetTargetTradeMoney</Word>
+            <Word>GetTaskInfo</Word>
+            <Word>GetTaskPOIs</Word>
+            <Word>GetTasksTable</Word>
             <Word>GetTaxiBenchmarkMode</Word>
             <Word>GetTempShapeshiftBarIndex</Word>
+            <Word>GetTexCoordsByGrid</Word>
+            <Word>GetTexCoordsForRole</Word>
+            <Word>GetTexCoordsForRoleSmall</Word>
+            <Word>GetTexCoordsForRoleSmallCircle</Word>
             <Word>GetText</Word>
             <Word>GetThreatStatusColor</Word>
             <Word>GetTime</Word>
+            <Word>GetTimeStringFromSeconds</Word>
             <Word>GetTimeToWellRested</Word>
             <Word>GetTitleName</Word>
             <Word>GetTitleText</Word>
@@ -1904,6 +2288,10 @@
             <Word>GetTrainerTradeskillRankValues</Word>
             <Word>GetTransmogrifyCost</Word>
             <Word>GetTransmogrifySlotInfo</Word>
+            <Word>GetTutorialsEnabled</Word>
+            <Word>GetUIPanel</Word>
+            <Word>GetUIPanelHeight</Word>
+            <Word>GetUIPanelWidth</Word>
             <Word>GetUnitHealthModifier</Word>
             <Word>GetUnitManaRegenRateFromSpirit</Word>
             <Word>GetUnitMaxHealthModifier</Word>
@@ -1914,6 +2302,7 @@
             <Word>GetVehicleBarIndex</Word>
             <Word>GetVehicleUIIndicator</Word>
             <Word>GetVehicleUIIndicatorSeat</Word>
+            <Word>GetVersatilityBonus</Word>
             <Word>GetVideoCaps</Word>
             <Word>GetVideoOptions</Word>
             <Word>GetVoiceCurrentSessionID</Word>
@@ -1922,6 +2311,7 @@
             <Word>GetVoiceStatus</Word>
             <Word>GetVoidItemHyperlinkString</Word>
             <Word>GetVoidItemInfo</Word>
+            <Word>GetVoidStorageSlotPageIndex</Word>
             <Word>GetVoidTransferCost</Word>
             <Word>GetVoidTransferDepositInfo</Word>
             <Word>GetVoidTransferWithdrawalInfo</Word>
@@ -1930,6 +2320,7 @@
             <Word>GetWarGameTypeInfo</Word>
             <Word>GetWatchedFactionInfo</Word>
             <Word>GetWeaponEnchantInfo</Word>
+            <Word>GetWebTicket</Word>
             <Word>GetWhoInfo</Word>
             <Word>GetWorldEffectTextureCoords</Word>
             <Word>GetWorldElapsedTime</Word>
@@ -1942,10 +2333,17 @@
             <Word>GetWorldStateUIInfo</Word>
             <Word>GetXPExhaustion</Word>
             <Word>GetZonePVPInfo</Word>
+            <Word>GetZoneStoryID</Word>
             <Word>GetZoneText</Word>
             <Word>GiveMasterLoot</Word>
             <Word>GlyphMatchesSocket</Word>
+            <Word>GossipFrameActiveQuestsUpdate</Word>
+            <Word>GossipFrameAvailableQuestsUpdate</Word>
+            <Word>GossipFrameOptionsUpdate</Word>
+            <Word>GossipFrameUpdate</Word>
+            <Word>GossipResize</Word>
             <Word>GrantLevel</Word>
+            <Word>GroupHasOfflineMember</Word>
             <Word>GuildControlAddRank</Word>
             <Word>GuildControlDelRank</Word>
             <Word>GuildControlGetAllowedShifts</Word>
@@ -1972,42 +2370,69 @@
             <Word>GuildRosterSetPublicNote</Word>
             <Word>GuildSetLeader</Word>
             <Word>GuildSetMOTD</Word>
-            <Word>GuildUIEnabled</Word>
             <Word>GuildUninvite</Word>
+            <Word>HandleModifiedItemClick</Word>
+            <Word>HasAPEffectsSpellPower</Word>
             <Word>HasAction</Word>
             <Word>HasAlternateForm</Word>
             <Word>HasBonusActionBar</Word>
+            <Word>HasBoundGemProposed</Word>
             <Word>HasCompletedAnyAchievement</Word>
             <Word>HasDebugZoneMap</Word>
+            <Word>HasDraenorZoneAbility</Word>
+            <Word>HasDraenorZoneSpellOnBar</Word>
+            <Word>HasDualWieldPenalty</Word>
             <Word>HasExtraActionBar</Word>
             <Word>HasFullControl</Word>
             <Word>HasInspectHonorData</Word>
             <Word>HasKey</Word>
             <Word>HasLFGRestrictions</Word>
             <Word>HasLoadedCUFProfiles</Word>
+            <Word>HasMessageType</Word>
+            <Word>HasMessageTypeGroup</Word>
+            <Word>HasMultiCastActionBar</Word>
+            <Word>HasMultiCastActionPage</Word>
             <Word>HasNewMail</Word>
             <Word>HasOverrideActionBar</Word>
             <Word>HasPetSpells</Word>
             <Word>HasPetUI</Word>
+            <Word>HasSPEffectsAttackPower</Word>
             <Word>HasSoulstone</Word>
             <Word>HasTempShapeshiftActionBar</Word>
             <Word>HasTravelPass</Word>
             <Word>HasVehicleActionBar</Word>
             <Word>HasWandEquipped</Word>
+            <Word>HaveQuestData</Word>
             <Word>HearthAndResurrectFromArea</Word>
+            <Word>HelpReportLag</Word>
+            <Word>HideDropDownMenu</Word>
+            <Word>HideKnowledgeBase</Word>
+            <Word>HideMultiCastActionBar</Word>
+            <Word>HideParentPanel</Word>
+            <Word>HidePartyFrame</Word>
+            <Word>HidePetActionBar</Word>
+            <Word>HidePreviewFrame</Word>
             <Word>HideRepairCursor</Word>
+            <Word>HideTextStatusBarText</Word>
+            <Word>HideUIPanel</Word>
+            <Word>HideWatchedReputationBarText</Word>
             <Word>InActiveBattlefield</Word>
             <Word>InCinematic</Word>
             <Word>InCombatLockdown</Word>
+            <Word>InGlue</Word>
             <Word>InGuildParty</Word>
             <Word>InRepairMode</Word>
+            <Word>InboxGetMoreMail</Word>
             <Word>InboxItemCanDelete</Word>
+            <Word>InboxNextPage</Word>
+            <Word>InboxPrevPage</Word>
             <Word>InitWorldMapPing</Word>
             <Word>InitiateRolePoll</Word>
             <Word>InitiateTrade</Word>
+            <Word>InspectAchievements</Word>
+            <Word>InspectUnit</Word>
             <Word>InteractUnit</Word>
-            <Word>InterfaceOptionsFrame_OpenToCategory</Word>
-            <Word>InterfaceOptions_AddCategory</Word>
+            <Word>InviteToGroup</Word>
             <Word>InviteUnit</Word>
             <Word>Is64BitClient</Word>
             <Word>IsAchievementEligible</Word>
@@ -2018,7 +2443,10 @@
             <Word>IsAddOnLoadOnDemand</Word>
             <Word>IsAddOnLoaded</Word>
             <Word>IsAddonMessagePrefixRegistered</Word>
+            <Word>IsAddonVersionCheckEnabled</Word>
+            <Word>IsAllowedToUserTeleport</Word>
             <Word>IsAltKeyDown</Word>
+            <Word>IsArenaSkirmish</Word>
             <Word>IsArenaTeamCaptain</Word>
             <Word>IsArtifactCompletionHistoryAvailable</Word>
             <Word>IsAtStableMaster</Word>
@@ -2029,11 +2457,19 @@
             <Word>IsAutoRepeatSpell</Word>
             <Word>IsAvailableQuestTrivial</Word>
             <Word>IsBNLogin</Word>
+            <Word>IsBagOpen</Word>
+            <Word>IsBagSlotFlagEnabledOnOtherBags</Word>
+            <Word>IsBagSlotFlagEnabledOnOtherBankBags</Word>
             <Word>IsBarberShopStyleValid</Word>
+            <Word>IsBattlePayItem</Word>
             <Word>IsBlizzCon</Word>
+            <Word>IsBreadcrumbQuest</Word>
             <Word>IsCemeterySelectionAvailable</Word>
+            <Word>IsCharacterNewlyBoosted</Word>
             <Word>IsChatAFK</Word>
             <Word>IsChatDND</Word>
+            <Word>IsClassColoringMessageType</Word>
+            <Word>IsCombatLog</Word>
             <Word>IsConsumableAction</Word>
             <Word>IsConsumableItem</Word>
             <Word>IsConsumableSpell</Word>
@@ -2062,6 +2498,9 @@
             <Word>IsFishingLoot</Word>
             <Word>IsFlyableArea</Word>
             <Word>IsFlying</Word>
+            <Word>IsFrameHandle</Word>
+            <Word>IsFrameLockActive</Word>
+            <Word>IsFrameSmartShown</Word>
             <Word>IsGMClient</Word>
             <Word>IsGlyphFlagSet</Word>
             <Word>IsGuildLeader</Word>
@@ -2083,18 +2522,25 @@
             <Word>IsInScenarioGroup</Word>
             <Word>IsIndoors</Word>
             <Word>IsInventoryItemLocked</Word>
+            <Word>IsInventoryItemProfessionBag</Word>
             <Word>IsItemAction</Word>
             <Word>IsItemInRange</Word>
             <Word>IsLFGComplete</Word>
             <Word>IsLFGDungeonJoinable</Word>
+            <Word>IsLFGModeActive</Word>
             <Word>IsLeftAltKeyDown</Word>
             <Word>IsLeftControlKeyDown</Word>
             <Word>IsLeftShiftKeyDown</Word>
+            <Word>IsLegacyDifficulty</Word>
             <Word>IsLinuxClient</Word>
+            <Word>IsListeningForMessageType</Word>
             <Word>IsLoggedIn</Word>
             <Word>IsLoggingOut</Word>
             <Word>IsMacClient</Word>
+            <Word>IsMapGarrisonMap</Word>
             <Word>IsMasterLooter</Word>
+            <Word>IsMessageDoneBy</Word>
+            <Word>IsMessageDoneTo</Word>
             <Word>IsModifiedClick</Word>
             <Word>IsModifierKeyDown</Word>
             <Word>IsMounted</Word>
@@ -2103,7 +2549,11 @@
             <Word>IsMovieLocal</Word>
             <Word>IsMoviePlayable</Word>
             <Word>IsMuted</Word>
+            <Word>IsNPCCrafting</Word>
+            <Word>IsNormalActionBarState</Word>
+            <Word>IsOnGlueScreen</Word>
             <Word>IsOnTournamentRealm</Word>
+            <Word>IsOptionFrameOpen</Word>
             <Word>IsOutOfBounds</Word>
             <Word>IsOutdoors</Word>
             <Word>IsPVPTimerRunning</Word>
@@ -2112,23 +2562,32 @@
             <Word>IsPetActive</Word>
             <Word>IsPetAttackAction</Word>
             <Word>IsPetAttackActive</Word>
+            <Word>IsPlayerInMicroDungeon</Word>
             <Word>IsPlayerInWorld</Word>
+            <Word>IsPlayerMoving</Word>
             <Word>IsPlayerNeutral</Word>
             <Word>IsPlayerSpell</Word>
             <Word>IsPossessBarVisible</Word>
             <Word>IsQuestCompletable</Word>
+            <Word>IsQuestComplete</Word>
             <Word>IsQuestFlaggedCompleted</Word>
+            <Word>IsQuestHardWatched</Word>
             <Word>IsQuestLogSpecialItemInRange</Word>
+            <Word>IsQuestSequenced</Word>
+            <Word>IsQuestTask</Word>
             <Word>IsQuestWatched</Word>
             <Word>IsRaidMarkerActive</Word>
             <Word>IsRangedWeapon</Word>
             <Word>IsRatedBattleground</Word>
             <Word>IsRatedMap</Word>
+            <Word>IsReagentBankUnlocked</Word>
             <Word>IsReferAFriendLinked</Word>
             <Word>IsResting</Word>
+            <Word>IsRestrictedAccount</Word>
             <Word>IsRightAltKeyDown</Word>
             <Word>IsRightControlKeyDown</Word>
             <Word>IsRightShiftKeyDown</Word>
+            <Word>IsSecureCmd</Word>
             <Word>IsSelectedSpellBookItem</Word>
             <Word>IsShiftKeyDown</Word>
             <Word>IsSilenced</Word>
@@ -2139,31 +2598,39 @@
             <Word>IsStackableAction</Word>
             <Word>IsStealthed</Word>
             <Word>IsStereoVideoAvailable</Word>
+            <Word>IsStoryQuest</Word>
             <Word>IsSubZonePVPPOI</Word>
             <Word>IsSubmerged</Word>
             <Word>IsSwimming</Word>
             <Word>IsTalentSpell</Word>
+            <Word>IsTestBuild</Word>
             <Word>IsThreatWarningEnabled</Word>
             <Word>IsTitleKnown</Word>
             <Word>IsTrackedAchievement</Word>
+            <Word>IsTrackingBattlePets</Word>
             <Word>IsTradeSkillGuild</Word>
             <Word>IsTradeSkillLinked</Word>
+            <Word>IsTradeSkillReady</Word>
             <Word>IsTradeSkillRepeating</Word>
             <Word>IsTradeskillTrainer</Word>
             <Word>IsTrialAccount</Word>
             <Word>IsTutorialFlagged</Word>
             <Word>IsUnitOnQuest</Word>
+            <Word>IsUnitOnQuestByQuestID</Word>
             <Word>IsUsableAction</Word>
             <Word>IsUsableItem</Word>
             <Word>IsUsableSpell</Word>
             <Word>IsUsingVehicleControls</Word>
+            <Word>IsValid</Word>
             <Word>IsVehicleAimAngleAdjustable</Word>
             <Word>IsVehicleAimPowerAdjustable</Word>
             <Word>IsVoiceChatAllowed</Word>
             <Word>IsVoiceChatAllowedByServer</Word>
             <Word>IsVoiceChatEnabled</Word>
             <Word>IsVoidStorageReady</Word>
+            <Word>IsWargame</Word>
             <Word>IsWindowsClient</Word>
+            <Word>IsWritableRestrictedTable</Word>
             <Word>IsXPUserDisabled</Word>
             <Word>IsZoomOutAvailable</Word>
             <Word>ItemAddedToArtifact</Word>
@@ -2182,53 +2649,57 @@
             <Word>JoinLFG</Word>
             <Word>JoinPermanentChannel</Word>
             <Word>JoinRatedBattlefield</Word>
+            <Word>JoinSingleLFG</Word>
+            <Word>JoinSkirmish</Word>
             <Word>JoinTemporaryChannel</Word>
             <Word>JumpOrAscendStart</Word>
-            <Word>KBArticle_BeginLoading</Word>
-            <Word>KBArticle_GetData</Word>
-            <Word>KBArticle_IsLoaded</Word>
-            <Word>KBQuery_BeginLoading</Word>
-            <Word>KBQuery_GetArticleHeaderCount</Word>
-            <Word>KBQuery_GetArticleHeaderData</Word>
-            <Word>KBQuery_GetTotalArticleCount</Word>
-            <Word>KBQuery_IsLoaded</Word>
-            <Word>KBSetup_BeginLoading</Word>
-            <Word>KBSetup_GetArticleHeaderCount</Word>
-            <Word>KBSetup_GetArticleHeaderData</Word>
-            <Word>KBSetup_GetCategoryCount</Word>
-            <Word>KBSetup_GetCategoryData</Word>
-            <Word>KBSetup_GetLanguageCount</Word>
-            <Word>KBSetup_GetLanguageData</Word>
-            <Word>KBSetup_GetSubCategoryCount</Word>
-            <Word>KBSetup_GetSubCategoryData</Word>
-            <Word>KBSetup_GetTotalArticleCount</Word>
-            <Word>KBSetup_IsLoaded</Word>
-            <Word>KBSystem_GetMOTD</Word>
-            <Word>KBSystem_GetServerNotice</Word>
-            <Word>KBSystem_GetServerStatus</Word>
+            <Word>LFDCheckRolesRestricted</Word>
+            <Word>LFDGetNumDungeons</Word>
+            <Word>LFDPopupCheckRoleSelectionValid</Word>
+            <Word>LFDQueueCheckRoleSelectionValid</Word>
+            <Word>LFGConstructDeclinedMessage</Word>
+            <Word>LFGDebug</Word>
+            <Word>LFGIsIDHeader</Word>
+            <Word>LFGListFilterChoices</Word>
+            <Word>LFGListRemoveCollapsedChildren</Word>
+            <Word>LFGListRemoveHeadersWithoutChildren</Word>
+            <Word>LFGListUpdateHeaderEnabledAndLockedStates</Word>
             <Word>LFGTeleport</Word>
+            <Word>LFRGetNumDungeons</Word>
             <Word>LearnTalent</Word>
             <Word>LearnTalents</Word>
             <Word>LeaveBattlefield</Word>
             <Word>LeaveChannelByName</Word>
             <Word>LeaveLFG</Word>
             <Word>LeaveParty</Word>
+            <Word>LeaveSingleLFG</Word>
             <Word>ListChannelByName</Word>
             <Word>ListChannels</Word>
             <Word>LoadAddOn</Word>
             <Word>LoadBindings</Word>
+            <Word>LoadMicroButtonTextures</Word>
             <Word>LoadURLIndex</Word>
+            <Word>Localize</Word>
+            <Word>LocalizeFrames</Word>
+            <Word>LocalizePost</Word>
+            <Word>LockMultiCastActionBar</Word>
+            <Word>LockPetActionBar</Word>
             <Word>LoggingChat</Word>
             <Word>LoggingCombat</Word>
             <Word>Logout</Word>
             <Word>LootSlot</Word>
             <Word>LootSlotHasItem</Word>
-            <Word>MacOptions_AreOSShortcutsDisabled</Word>
-            <Word>MacOptions_IsUniversalAccessEnabled</Word>
-            <Word>MacOptions_OpenUniversalAccess</Word>
-            <Word>MacOptions_SetOSShortcutsDisabled</Word>
-            <Word>MakeMinigameMove</Word>
+            <Word>LowerFrameLevel</Word>
+            <Word>ManageBackpackTokenFrame</Word>
+            <Word>MarkNewActionHighlight</Word>
+            <Word>MicroButtonPulse</Word>
+            <Word>MicroButtonPulseStop</Word>
+            <Word>MicroButtonTooltipText</Word>
+            <Word>MiniMapTrackingShineFadeIn</Word>
+            <Word>MiniMapTrackingShineFadeOut</Word>
+            <Word>MinimapMailFrameUpdate</Word>
             <Word>ModifyEquipmentSet</Word>
+            <Word>MouseIsOver</Word>
             <Word>MouseOverrideCinematicDisable</Word>
             <Word>MouselookStart</Word>
             <Word>MouselookStop</Word>
@@ -2238,6 +2709,7 @@
             <Word>MoveBackwardStop</Word>
             <Word>MoveForwardStart</Word>
             <Word>MoveForwardStop</Word>
+            <Word>MoveMicroButtons</Word>
             <Word>MoveViewDownStart</Word>
             <Word>MoveViewDownStop</Word>
             <Word>MoveViewInStart</Word>
@@ -2250,44 +2722,44 @@
             <Word>MoveViewRightStop</Word>
             <Word>MoveViewUpStart</Word>
             <Word>MoveViewUpStop</Word>
-            <Word>MovieRecording_Cancel</Word>
-            <Word>MovieRecording_DataRate</Word>
-            <Word>MovieRecording_DeleteMovie</Word>
-            <Word>MovieRecording_GetAspectRatio</Word>
-            <Word>MovieRecording_GetMovieFullPath</Word>
-            <Word>MovieRecording_GetProgress</Word>
-            <Word>MovieRecording_GetTime</Word>
-            <Word>MovieRecording_GetViewportWidth</Word>
-            <Word>MovieRecording_IsCodecSupported</Word>
-            <Word>MovieRecording_IsCompressing</Word>
-            <Word>MovieRecording_IsCursorRecordingSupported</Word>
-            <Word>MovieRecording_IsRecording</Word>
-            <Word>MovieRecording_IsSupported</Word>
-            <Word>MovieRecording_MaxLength</Word>
-            <Word>MovieRecording_QueueMovieToCompress</Word>
-            <Word>MovieRecording_SearchUncompressedMovie</Word>
-            <Word>MovieRecording_Toggle</Word>
-            <Word>MovieRecording_ToggleGUI</Word>
-            <Word>MusicPlayer_BackTrack</Word>
-            <Word>MusicPlayer_NextTrack</Word>
-            <Word>MusicPlayer_PlayPause</Word>
-            <Word>MusicPlayer_VolumeDown</Word>
-            <Word>MusicPlayer_VolumeUp</Word>
+            <Word>MultiActionButtonDown</Word>
+            <Word>MultiActionButtonUp</Word>
+            <Word>MultiCastActionButtonDown</Word>
+            <Word>MultiCastActionButtonUp</Word>
+            <Word>MultiCastRecallSpellButtonUp</Word>
+            <Word>MultiCastSummonSpellButtonUp</Word>
             <Word>NeutralPlayerSelectFaction</Word>
             <Word>NewGMTicket</Word>
             <Word>NextView</Word>
             <Word>NoPlayTime</Word>
+            <Word>NormalizeLegacyDifficultyID</Word>
             <Word>NotWhileDeadError</Word>
             <Word>NotifyInspect</Word>
             <Word>NumTaxiNodes</Word>
             <Word>OfferPetition</Word>
             <Word>OffhandHasWeapon</Word>
+            <Word>OnMenuLoad</Word>
+            <Word>OpenAllBags</Word>
+            <Word>OpenBackpack</Word>
+            <Word>OpenBag</Word>
             <Word>OpenCalendar</Word>
+            <Word>OpenCoinPickupFrame</Word>
+            <Word>OpenColorPicker</Word>
+            <Word>OpenFriendsFrame</Word>
+            <Word>OpenGlyphFrame</Word>
+            <Word>OpenStackSplitFrame</Word>
             <Word>OpenTrainer</Word>
             <Word>OpeningCinematic</Word>
+            <Word>PaperDollBgDesaturate</Word>
+            <Word>PaperDollFormatStat</Word>
+            <Word>PaperDollStatTooltip</Word>
             <Word>PartialPlayTime</Word>
             <Word>PartyLFGStartBackfill</Word>
+            <Word>PartyMemberHealthCheck</Word>
+            <Word>PassClickToParent</Word>
             <Word>PetAbandon</Word>
+            <Word>PetActionButtonDown</Word>
+            <Word>PetActionButtonUp</Word>
             <Word>PetAggressiveMode</Word>
             <Word>PetAssistMode</Word>
             <Word>PetAttack</Word>
@@ -2335,19 +2807,18 @@
             <Word>PlaceGlyphInSocket</Word>
             <Word>PlaceRaidMarker</Word>
             <Word>PlayAutoAcceptQuestSound</Word>
-            <Word>PlayDance</Word>
             <Word>PlayMusic</Word>
             <Word>PlaySound</Word>
             <Word>PlaySoundFile</Word>
             <Word>PlaySoundKitID</Word>
             <Word>PlayerCanTeleport</Word>
             <Word>PlayerHasHearthstone</Word>
+            <Word>PlayerHasToy</Word>
             <Word>PlayerIsPVPInactive</Word>
             <Word>PortGraveyard</Word>
-            <Word>PositionMiniWorldMapArrowFrame</Word>
-            <Word>PositionWorldMapArrowFrame</Word>
             <Word>PreloadMovie</Word>
             <Word>PrevView</Word>
+            <Word>PrintLootSpecialization</Word>
             <Word>ProcessMapClick</Word>
             <Word>ProcessQuestLogRewardFactions</Word>
             <Word>PromoteToAssistant</Word>
@@ -2356,6 +2827,7 @@
             <Word>PutItemInBackpack</Word>
             <Word>PutItemInBag</Word>
             <Word>QueryAuctionItems</Word>
+            <Word>QueryCastSequence</Word>
             <Word>QueryGuildBankLog</Word>
             <Word>QueryGuildBankTab</Word>
             <Word>QueryGuildBankText</Word>
@@ -2363,12 +2835,12 @@
             <Word>QueryGuildMembersForRecipe</Word>
             <Word>QueryGuildNews</Word>
             <Word>QueryGuildRecipes</Word>
-            <Word>QueryGuildXP</Word>
             <Word>QueryWorldCountdownTimer</Word>
             <Word>QuestChooseRewardError</Word>
             <Word>QuestFlagsPVP</Word>
             <Word>QuestGetAutoAccept</Word>
             <Word>QuestGetAutoLaunched</Word>
+            <Word>QuestHasPOIInfo</Word>
             <Word>QuestIsDaily</Word>
             <Word>QuestIsFromAreaTrigger</Word>
             <Word>QuestIsWeekly</Word>
@@ -2378,24 +2850,42 @@
             <Word>QuestPOIGetIconInfo</Word>
             <Word>QuestPOIGetQuestIDByIndex</Word>
             <Word>QuestPOIGetQuestIDByVisibleIndex</Word>
+            <Word>QuestPOIGetSecondaryLocations</Word>
             <Word>QuestPOIUpdateIcons</Word>
             <Word>Quit</Word>
+            <Word>RGBTableToColorCode</Word>
+            <Word>RGBToColorCode</Word>
             <Word>RaidProfileExists</Word>
             <Word>RaidProfileHasUnsavedChanges</Word>
+            <Word>RaiseFrameLevel</Word>
+            <Word>RaiseFrameLevelByTwo</Word>
             <Word>RandomRoll</Word>
-            <Word>ReforgeItem</Word>
+            <Word>ReagentBankButtonIDToInvSlotID</Word>
+            <Word>ReagentButtonInventorySlot</Word>
+            <Word>RealPartyIsFull</Word>
+            <Word>RecalculateGearManagerDialogPopup</Word>
+            <Word>RecentTimeDate</Word>
+            <Word>RefreshAuras</Word>
+            <Word>RefreshBuffs</Word>
+            <Word>RefreshDebuffs</Word>
+            <Word>RefreshEquipmentSetIconInfo</Word>
             <Word>RefreshLFGList</Word>
+            <Word>RefreshMoneyFrame</Word>
             <Word>RefreshWorldMap</Word>
             <Word>RegisterAddonMessagePrefix</Word>
+            <Word>RegisterAttributeDriver</Word>
+            <Word>RegisterAutoHide</Word>
             <Word>RegisterCVar</Word>
-            <Word>RegisterForSave</Word>
-            <Word>RegisterForSavePerCharacter</Word>
+            <Word>RegisterStateDriver</Word>
             <Word>RegisterStaticConstants</Word>
+            <Word>RegisterUnitWatch</Word>
             <Word>RejectProposal</Word>
             <Word>ReloadUI</Word>
             <Word>RemoveAutoQuestPopUp</Word>
             <Word>RemoveChatWindowChannel</Word>
             <Word>RemoveChatWindowMessages</Word>
+            <Word>RemoveExtraSpaces</Word>
+            <Word>RemoveFrameLock</Word>
             <Word>RemoveFriend</Word>
             <Word>RemoveGlyphFromSocket</Word>
             <Word>RemoveItemFromArtifact</Word>
@@ -2431,10 +2921,12 @@
             <Word>RequestPVPOptionsEnabled</Word>
             <Word>RequestPVPRewards</Word>
             <Word>RequestRaidInfo</Word>
-            <Word>RequestRatedArenaInfo</Word>
-            <Word>RequestRatedBattlegroundInfo</Word>
+            <Word>RequestRandomBattlegroundInstanceInfo</Word>
+            <Word>RequestRatedInfo</Word>
             <Word>RequestRecruitingGuildsList</Word>
             <Word>RequestTimePlayed</Word>
+            <Word>RequeueSkirmish</Word>
+            <Word>ResetAddOns</Word>
             <Word>ResetCPUUsage</Word>
             <Word>ResetChallengeMode</Word>
             <Word>ResetChatColors</Word>
@@ -2461,11 +2953,15 @@
             <Word>RunMacro</Word>
             <Word>RunMacroText</Word>
             <Word>RunScript</Word>
+            <Word>SaveAddOns</Word>
             <Word>SaveBindings</Word>
             <Word>SaveEquipmentSet</Word>
             <Word>SaveRaidProfileCopy</Word>
             <Word>SaveView</Word>
+            <Word>ScenariosGetNumDungeons</Word>
             <Word>Screenshot</Word>
+            <Word>SearchBagsForItem</Word>
+            <Word>SearchBagsForItemLink</Word>
             <Word>SearchGuildRecipes</Word>
             <Word>SearchLFGGetEncounterResults</Word>
             <Word>SearchLFGGetJoinedID</Word>
@@ -2476,7 +2972,15 @@
             <Word>SearchLFGLeave</Word>
             <Word>SearchLFGSort</Word>
             <Word>SecondsToTime</Word>
+            <Word>SecondsToTimeAbbrev</Word>
+            <Word>SecureCapsuleGet</Word>
+            <Word>SecureCmdItemParse</Word>
             <Word>SecureCmdOptionParse</Word>
+            <Word>SecureCmdUseItem</Word>
+            <Word>SecureHandlerExecute</Word>
+            <Word>SecureHandlerSetFrameRef</Word>
+            <Word>SecureHandlerUnwrapScript</Word>
+            <Word>SecureHandlerWrapScript</Word>
             <Word>SelectActiveQuest</Word>
             <Word>SelectAvailableQuest</Word>
             <Word>SelectGossipActiveQuest</Word>
@@ -2487,9 +2991,11 @@
             <Word>SelectStationery</Word>
             <Word>SelectTradeSkill</Word>
             <Word>SelectTrainerService</Word>
+            <Word>SelectedRealmName</Word>
             <Word>SendAddonMessage</Word>
             <Word>SendChatMessage</Word>
             <Word>SendMail</Word>
+            <Word>SendQuestChoiceResponse</Word>
             <Word>SendSoRByText</Word>
             <Word>SendSystemMessage</Word>
             <Word>SendWho</Word>
@@ -2498,15 +3004,19 @@
             <Word>SetAchievementComparisonUnit</Word>
             <Word>SetActionBarToggles</Word>
             <Word>SetActionUIButton</Word>
+            <Word>SetActiveRaidProfile</Word>
             <Word>SetActiveSpecGroup</Word>
             <Word>SetActiveVoiceChannel</Word>
             <Word>SetActiveVoiceChannelBySessionID</Word>
+            <Word>SetAddonVersionCheck</Word>
             <Word>SetAllowLowLevelRaid</Word>
-            <Word>SetArenaTeamRosterSelection</Word>
-            <Word>SetArenaTeamRosterShowOffline</Word>
             <Word>SetAuctionsTabShowing</Word>
             <Word>SetAutoDeclineGuildInvites</Word>
+            <Word>SetBackpackAutosortDisabled</Word>
             <Word>SetBagPortraitTexture</Word>
+            <Word>SetBagSlotFlag</Word>
+            <Word>SetBankAutosortDisabled</Word>
+            <Word>SetBankBagSlotFlag</Word>
             <Word>SetBarSlotFromIntro</Word>
             <Word>SetBarberShopAlternateFormFrame</Word>
             <Word>SetBattlefieldScoreFaction</Word>
@@ -2516,13 +3026,15 @@
             <Word>SetBindingMacro</Word>
             <Word>SetBindingSpell</Word>
             <Word>SetBlacklistMap</Word>
+            <Word>SetButtonPulse</Word>
             <Word>SetCVar</Word>
             <Word>SetCVarBitfield</Word>
             <Word>SetCemeteryPreference</Word>
             <Word>SetChannelOwner</Word>
             <Word>SetChannelPassword</Word>
-            <Word>SetChannelWatch</Word>
             <Word>SetChatColorNameByClass</Word>
+            <Word>SetChatMouseOverDelay</Word>
+            <Word>SetChatUnitColor</Word>
             <Word>SetChatWindowAlpha</Word>
             <Word>SetChatWindowColor</Word>
             <Word>SetChatWindowDocked</Word>
@@ -2533,13 +3045,19 @@
             <Word>SetChatWindowShown</Word>
             <Word>SetChatWindowSize</Word>
             <Word>SetChatWindowUninteractable</Word>
+            <Word>SetCheckButtonIsRadio</Word>
+            <Word>SetClampedTextureRotation</Word>
             <Word>SetConsoleKey</Word>
             <Word>SetCurrencyBackpack</Word>
             <Word>SetCurrencyUnused</Word>
+            <Word>SetCurrentGraphicsSetting</Word>
             <Word>SetCurrentGuildBankTab</Word>
             <Word>SetCurrentTitle</Word>
             <Word>SetCursor</Word>
             <Word>SetDefaultVideoOptions</Word>
+            <Word>SetDesaturation</Word>
+            <Word>SetDoubleGuildTabardTextures</Word>
+            <Word>SetDressUpBackground</Word>
             <Word>SetDungeonDifficultyID</Word>
             <Word>SetDungeonMapLevel</Word>
             <Word>SetEuropeanNumbers</Word>
@@ -2564,22 +3082,37 @@
             <Word>SetGuildRecruitmentSettings</Word>
             <Word>SetGuildRosterSelection</Word>
             <Word>SetGuildRosterShowOffline</Word>
+            <Word>SetGuildTabardTextures</Word>
             <Word>SetGuildTradeSkillCategoryFilter</Word>
             <Word>SetGuildTradeSkillItemNameFilter</Word>
+            <Word>SetInsertItemsLeftToRight</Word>
             <Word>SetInventoryPortraitTexture</Word>
+            <Word>SetItemButtonCount</Word>
+            <Word>SetItemButtonDesaturated</Word>
+            <Word>SetItemButtonNameFrameVertexColor</Word>
+            <Word>SetItemButtonNormalTextureVertexColor</Word>
+            <Word>SetItemButtonSlotVertexColor</Word>
+            <Word>SetItemButtonStock</Word>
+            <Word>SetItemButtonTexture</Word>
+            <Word>SetItemButtonTextureVertexColor</Word>
+            <Word>SetItemRef</Word>
             <Word>SetItemSearch</Word>
             <Word>SetItemUpgradeFromCursorItem</Word>
+            <Word>SetLFGBonusFactionID</Word>
             <Word>SetLFGBootVote</Word>
             <Word>SetLFGComment</Word>
             <Word>SetLFGDungeon</Word>
             <Word>SetLFGDungeonEnabled</Word>
             <Word>SetLFGHeaderCollapsed</Word>
             <Word>SetLFGRoles</Word>
+            <Word>SetLargeGuildTabardTextures</Word>
             <Word>SetLayoutMode</Word>
+            <Word>SetLegacyRaidDifficultyID</Word>
             <Word>SetLookingForGuildComment</Word>
             <Word>SetLookingForGuildSettings</Word>
             <Word>SetLootMethod</Word>
             <Word>SetLootPortrait</Word>
+            <Word>SetLootSpecialization</Word>
             <Word>SetLootThreshold</Word>
             <Word>SetMacroItem</Word>
             <Word>SetMacroSpell</Word>
@@ -2589,9 +3122,9 @@
             <Word>SetMaxAnimFramerate</Word>
             <Word>SetMerchantFilter</Word>
             <Word>SetModifiedClick</Word>
+            <Word>SetMoneyFrameColor</Word>
             <Word>SetMouselookOverrideBinding</Word>
             <Word>SetMultiCastSpell</Word>
-            <Word>SetMultisampleFormat</Word>
             <Word>SetNamePlateMotionType</Word>
             <Word>SetNextBarberShopStyle</Word>
             <Word>SetOptOutOfLoot</Word>
@@ -2603,6 +3136,8 @@
             <Word>SetPOIIconOverlapDistance</Word>
             <Word>SetPOIIconOverlapPushDistance</Word>
             <Word>SetPVP</Word>
+            <Word>SetPVPRoles</Word>
+            <Word>SetPaperDollBackground</Word>
             <Word>SetPartyAssignment</Word>
             <Word>SetPendingReportPetTarget</Word>
             <Word>SetPendingReportTarget</Word>
@@ -2610,14 +3145,16 @@
             <Word>SetPetStablePaperdoll</Word>
             <Word>SetPortraitTexture</Word>
             <Word>SetPortraitToTexture</Word>
-            <Word>SetRaidDifficulty</Word>
+            <Word>SetRaidDifficulties</Word>
+            <Word>SetRaidDifficultyID</Word>
             <Word>SetRaidProfileOption</Word>
             <Word>SetRaidProfileSavedPosition</Word>
             <Word>SetRaidSubgroup</Word>
             <Word>SetRaidTarget</Word>
+            <Word>SetRaidTargetIcon</Word>
+            <Word>SetRaidTargetIconTexture</Word>
             <Word>SetRaidTargetProtected</Word>
             <Word>SetRecruitingGuildSelection</Word>
-            <Word>SetReforgeFromCursorItem</Word>
             <Word>SetRefresh</Word>
             <Word>SetSavedInstanceExtend</Word>
             <Word>SetScreenResolution</Word>
@@ -2630,14 +3167,24 @@
             <Word>SetSelectedMute</Word>
             <Word>SetSelectedScreenResolutionIndex</Word>
             <Word>SetSelectedWarGameType</Word>
+            <Word>SetSelfMuteState</Word>
             <Word>SetSendMailCOD</Word>
             <Word>SetSendMailMoney</Word>
             <Word>SetSendMailShowing</Word>
+            <Word>SetSmallGuildTabardTextures</Word>
+            <Word>SetSortBagsRightToLeft</Word>
             <Word>SetSpecialization</Word>
+            <Word>SetSpellNameColor</Word>
             <Word>SetSpellbookPetAction</Word>
             <Word>SetSuperTrackedQuestID</Word>
+            <Word>SetTableColor</Word>
             <Word>SetTaxiBenchmarkMode</Word>
             <Word>SetTaxiMap</Word>
+            <Word>SetTextStatusBarText</Word>
+            <Word>SetTextStatusBarTextPrefix</Word>
+            <Word>SetTextStatusBarTextZeroText</Word>
+            <Word>SetTitleByName</Word>
+            <Word>SetTooltipMoney</Word>
             <Word>SetTracking</Word>
             <Word>SetTradeCurrency</Word>
             <Word>SetTradeMoney</Word>
@@ -2647,59 +3194,74 @@
             <Word>SetTradeSkillItemNameFilter</Word>
             <Word>SetTradeSkillRepeatCount</Word>
             <Word>SetTrainerServiceTypeFilter</Word>
+            <Word>SetUIPanelAttribute</Word>
             <Word>SetUIVisibility</Word>
+            <Word>SetUpAnimation</Word>
+            <Word>SetUpSideDressUpFrame</Word>
             <Word>SetView</Word>
             <Word>SetWatchedFactionIndex</Word>
             <Word>SetWhoToUI</Word>
+            <Word>SetZoneText</Word>
             <Word>SetupFullscreenScale</Word>
-            <Word>ShiftQuestWatches</Word>
+            <Word>ShouldHideTalentsTab</Word>
+            <Word>ShouldShowConsolidatedBuffFrame</Word>
             <Word>ShowAccountAchievements</Word>
             <Word>ShowBuybackSellCursor</Word>
             <Word>ShowCloak</Word>
             <Word>ShowContainerSellCursor</Word>
             <Word>ShowFriends</Word>
+            <Word>ShowFriendshipReputationTooltip</Word>
             <Word>ShowHelm</Word>
+            <Word>ShowInspectCursor</Word>
             <Word>ShowInventorySellCursor</Word>
+            <Word>ShowKnowledgeBase</Word>
+            <Word>ShowMacroFrame</Word>
             <Word>ShowMerchantSellCursor</Word>
-            <Word>ShowMiniWorldMapArrowFrame</Word>
+            <Word>ShowMultiCastActionBar</Word>
+            <Word>ShowNumericThreat</Word>
+            <Word>ShowPartyFrame</Word>
+            <Word>ShowPetActionBar</Word>
             <Word>ShowQuestComplete</Word>
+            <Word>ShowQuestLog</Word>
             <Word>ShowQuestOffer</Word>
+            <Word>ShowQuickButton</Word>
+            <Word>ShowReadyCheck</Word>
             <Word>ShowRepairCursor</Word>
-            <Word>ShowWorldMapArrowFrame</Word>
+            <Word>ShowResurrectRequest</Word>
+            <Word>ShowTextStatusBarText</Word>
+            <Word>ShowUIPanel</Word>
+            <Word>ShowWatchedReputationBarText</Word>
+            <Word>ShowWhoPanel</Word>
             <Word>ShowingCloak</Word>
             <Word>ShowingHelm</Word>
             <Word>SignPetition</Word>
             <Word>SitStandOrDescendStart</Word>
+            <Word>SmartHide</Word>
+            <Word>SmartShow</Word>
             <Word>SocketContainerItem</Word>
             <Word>SocketInventoryItem</Word>
             <Word>SocketItemToArtifact</Word>
             <Word>SolveArtifact</Word>
-            <Word>SortArenaTeamRoster</Word>
             <Word>SortAuctionApplySort</Word>
             <Word>SortAuctionClearSort</Word>
             <Word>SortAuctionItems</Word>
             <Word>SortAuctionSetSort</Word>
             <Word>SortBGList</Word>
+            <Word>SortBags</Word>
+            <Word>SortBankBags</Word>
             <Word>SortBattlefieldScoreData</Word>
             <Word>SortGuildRoster</Word>
             <Word>SortGuildTradeSkill</Word>
             <Word>SortQuestWatches</Word>
+            <Word>SortReagentBankBags</Word>
             <Word>SortWho</Word>
-            <Word>Sound_ChatSystem_GetInputDriverNameByIndex</Word>
-            <Word>Sound_ChatSystem_GetNumInputDrivers</Word>
-            <Word>Sound_ChatSystem_GetNumOutputDrivers</Word>
-            <Word>Sound_ChatSystem_GetOutputDriverNameByIndex</Word>
-            <Word>Sound_GameSystem_GetInputDriverNameByIndex</Word>
-            <Word>Sound_GameSystem_GetNumInputDrivers</Word>
-            <Word>Sound_GameSystem_GetNumOutputDrivers</Word>
-            <Word>Sound_GameSystem_GetOutputDriverNameByIndex</Word>
-            <Word>Sound_GameSystem_RestartSoundSystem</Word>
             <Word>SpellCanTargetGlyph</Word>
             <Word>SpellCanTargetItem</Word>
             <Word>SpellCanTargetUnit</Word>
             <Word>SpellCancelQueuedSpell</Word>
             <Word>SpellGetVisibilityInfo</Word>
             <Word>SpellHasRange</Word>
+            <Word>SpellIsAlwaysShown</Word>
             <Word>SpellIsSelfBuff</Word>
             <Word>SpellIsTargeting</Word>
             <Word>SpellStopCasting</Word>
@@ -2711,37 +3273,38 @@
             <Word>StartAttack</Word>
             <Word>StartAuction</Word>
             <Word>StartDuel</Word>
-            <Word>StartUnratedArena</Word>
+            <Word>StartSpectatorWarGame</Word>
             <Word>StartWarGame</Word>
+            <Word>StartWarGameByName</Word>
             <Word>StopAttack</Word>
             <Word>StopCinematic</Word>
             <Word>StopMacro</Word>
             <Word>StopMusic</Word>
             <Word>StopSound</Word>
             <Word>StopTradeSkillRepeat</Word>
-            <Word>Stopwatch_Clear</Word>
-            <Word>Stopwatch_FinishCountdown</Word>
-            <Word>Stopwatch_IsPlaying</Word>
-            <Word>Stopwatch_Pause</Word>
-            <Word>Stopwatch_Play</Word>
-            <Word>Stopwatch_StartCountdown</Word>
-            <Word>Stopwatch_Toggle</Word>
+            <Word>StoreShowPreview</Word>
             <Word>StrafeLeftStart</Word>
             <Word>StrafeLeftStop</Word>
             <Word>StrafeRightStart</Word>
             <Word>StrafeRightStop</Word>
+            <Word>StringToBoolean</Word>
             <Word>Stuck</Word>
             <Word>SubmitRequiredGuildRename</Word>
+            <Word>SubstituteChatMessageBeforeSend</Word>
             <Word>SummonFriend</Word>
             <Word>SummonRandomCritter</Word>
             <Word>SwapRaidSubgroup</Word>
+            <Word>SynchronizeBNetStatus</Word>
+            <Word>TEXT</Word>
             <Word>TakeInboxItem</Word>
             <Word>TakeInboxMoney</Word>
             <Word>TakeInboxTextItem</Word>
+            <Word>TakeScreenshot</Word>
             <Word>TakeTaxiNode</Word>
             <Word>TargetDirectionEnemy</Word>
             <Word>TargetDirectionFinished</Word>
             <Word>TargetDirectionFriend</Word>
+            <Word>TargetHealthCheck</Word>
             <Word>TargetLastEnemy</Word>
             <Word>TargetLastFriend</Word>
             <Word>TargetLastTarget</Word>
@@ -2754,32 +3317,81 @@
             <Word>TargetNearestRaidMember</Word>
             <Word>TargetTotem</Word>
             <Word>TargetUnit</Word>
+            <Word>TargetofTargetHealthCheck</Word>
             <Word>TaxiGetDestX</Word>
             <Word>TaxiGetDestY</Word>
+            <Word>TaxiGetNodeSlot</Word>
             <Word>TaxiGetSrcX</Word>
             <Word>TaxiGetSrcY</Word>
             <Word>TaxiNodeCost</Word>
             <Word>TaxiNodeGetType</Word>
             <Word>TaxiNodeName</Word>
+            <Word>TaxiNodeOnButtonEnter</Word>
             <Word>TaxiNodePosition</Word>
             <Word>TaxiNodeSetCurrent</Word>
             <Word>TeleportToDebugObject</Word>
+            <Word>TextEmoteSort</Word>
+            <Word>TimeoutResurrect</Word>
+            <Word>ToggleAchievementFrame</Word>
+            <Word>ToggleAllBags</Word>
             <Word>ToggleAnimKitDisplay</Word>
             <Word>ToggleAutoRun</Word>
+            <Word>ToggleBackpack</Word>
+            <Word>ToggleBag</Word>
+            <Word>ToggleBattlefieldMinimap</Word>
+            <Word>ToggleCalendar</Word>
+            <Word>ToggleCharacter</Word>
+            <Word>ToggleChatChannel</Word>
+            <Word>ToggleChatColorNamesByClassGroup</Word>
+            <Word>ToggleChatMessageGroup</Word>
             <Word>ToggleCollision</Word>
             <Word>ToggleCollisionDisplay</Word>
+            <Word>ToggleDropDownMenu</Word>
+            <Word>ToggleEncounterJournal</Word>
+            <Word>ToggleFrame</Word>
+            <Word>ToggleFramerate</Word>
+            <Word>ToggleFriendsFrame</Word>
+            <Word>ToggleFriendsPanel</Word>
+            <Word>ToggleGameMenu</Word>
+            <Word>ToggleGarrisonBuildingUI</Word>
+            <Word>ToggleGarrisonMissionUI</Word>
             <Word>ToggleGlyphFilter</Word>
+            <Word>ToggleGlyphFrame</Word>
+            <Word>ToggleGuildFinder</Word>
+            <Word>ToggleGuildFrame</Word>
+            <Word>ToggleHelpFrame</Word>
+            <Word>ToggleIgnorePanel</Word>
+            <Word>ToggleLFDParentFrame</Word>
+            <Word>ToggleLootHistoryFrame</Word>
+            <Word>ToggleMapFramerate</Word>
+            <Word>ToggleMessageDest</Word>
+            <Word>ToggleMessageSource</Word>
+            <Word>ToggleMessageType</Word>
+            <Word>ToggleMessageTypeGroup</Word>
+            <Word>ToggleMiniMapRotation</Word>
+            <Word>ToggleMinimap</Word>
             <Word>TogglePVP</Word>
-            <Word>TogglePerformanceDisplay</Word>
+            <Word>TogglePVPUI</Word>
             <Word>TogglePerformancePause</Word>
             <Word>TogglePerformanceValues</Word>
             <Word>TogglePetAutocast</Word>
+            <Word>TogglePetJournal</Word>
             <Word>TogglePlayerBounds</Word>
             <Word>TogglePortals</Word>
+            <Word>ToggleQuestLog</Word>
+            <Word>ToggleRaidBrowser</Word>
+            <Word>ToggleRaidFrame</Word>
             <Word>ToggleRun</Word>
             <Word>ToggleSheath</Word>
             <Word>ToggleSpellAutocast</Word>
+            <Word>ToggleSpellBook</Word>
+            <Word>ToggleStats</Word>
+            <Word>ToggleStoreUI</Word>
+            <Word>ToggleTalentFrame</Word>
+            <Word>ToggleTimeManager</Word>
             <Word>ToggleTris</Word>
+            <Word>ToggleWorldMap</Word>
+            <Word>ToggleWorldStateScoreFrame</Word>
             <Word>TradeSkillOnlyShowMakeable</Word>
             <Word>TradeSkillOnlyShowSkillUps</Word>
             <Word>TriggerTutorial</Word>
@@ -2790,6 +3402,16 @@
             <Word>TurnOrActionStop</Word>
             <Word>TurnRightStart</Word>
             <Word>TurnRightStop</Word>
+            <Word>UIDoFramesIntersect</Word>
+            <Word>UIFrameFade</Word>
+            <Word>UIFrameFadeIn</Word>
+            <Word>UIFrameFadeOut</Word>
+            <Word>UIFrameFadeRemoveFrame</Word>
+            <Word>UIFrameFlash</Word>
+            <Word>UIFrameFlashStop</Word>
+            <Word>UIFrameIsFading</Word>
+            <Word>UIFrameIsFlashing</Word>
+            <Word>UIParentLoadAddOn</Word>
             <Word>UninviteUnit</Word>
             <Word>UnitAffectingCombat</Word>
             <Word>UnitAlternatePowerCounterInfo</Word>
@@ -2803,6 +3425,7 @@
             <Word>UnitBattlePetLevel</Word>
             <Word>UnitBattlePetSpeciesID</Word>
             <Word>UnitBattlePetType</Word>
+            <Word>UnitBonusArmor</Word>
             <Word>UnitBuff</Word>
             <Word>UnitCanAssist</Word>
             <Word>UnitCanAttack</Word>
@@ -2820,19 +3443,21 @@
             <Word>UnitDebuff</Word>
             <Word>UnitDefense</Word>
             <Word>UnitDetailedThreatSituation</Word>
+            <Word>UnitDistanceSquared</Word>
             <Word>UnitExists</Word>
             <Word>UnitFactionGroup</Word>
+            <Word>UnitFullName</Word>
             <Word>UnitGUID</Word>
             <Word>UnitGetAvailableRoles</Word>
-            <Word>UnitGetGuildLevel</Word>
-            <Word>UnitGetGuildXP</Word>
             <Word>UnitGetIncomingHeals</Word>
             <Word>UnitGetTotalAbsorbs</Word>
+            <Word>UnitGetTotalHealAbsorbs</Word>
             <Word>UnitGroupRolesAssigned</Word>
             <Word>UnitHPPerStamina</Word>
             <Word>UnitHasIncomingResurrection</Word>
             <Word>UnitHasLFGDeserter</Word>
             <Word>UnitHasLFGRandomCooldown</Word>
+            <Word>UnitHasMana</Word>
             <Word>UnitHasRelicSlot</Word>
             <Word>UnitHasVehiclePlayerFrameUI</Word>
             <Word>UnitHasVehicleUI</Word>
@@ -2880,6 +3505,7 @@
             <Word>UnitIsTappedByAllThreatList</Word>
             <Word>UnitIsTappedByPlayer</Word>
             <Word>UnitIsTrivial</Word>
+            <Word>UnitIsUnconscious</Word>
             <Word>UnitIsUnit</Word>
             <Word>UnitIsVisible</Word>
             <Word>UnitIsWildBattlePet</Word>
@@ -2891,10 +3517,10 @@
             <Word>UnitNumPowerBarTimers</Word>
             <Word>UnitOnTaxi</Word>
             <Word>UnitPVPName</Word>
-            <Word>UnitPVPRank</Word>
             <Word>UnitPlayerControlled</Word>
             <Word>UnitPlayerOrPetInParty</Word>
             <Word>UnitPlayerOrPetInRaid</Word>
+            <Word>UnitPosition</Word>
             <Word>UnitPower</Word>
             <Word>UnitPowerBarTimerInfo</Word>
             <Word>UnitPowerMax</Word>
@@ -2904,11 +3530,13 @@
             <Word>UnitRangedAttackPower</Word>
             <Word>UnitRangedDamage</Word>
             <Word>UnitReaction</Word>
+            <Word>UnitRealmRelationship</Word>
             <Word>UnitResistance</Word>
             <Word>UnitSelectionColor</Word>
             <Word>UnitSetRole</Word>
             <Word>UnitSex</Word>
             <Word>UnitSpellHaste</Word>
+            <Word>UnitStagger</Word>
             <Word>UnitStat</Word>
             <Word>UnitSwitchToVehicleSeat</Word>
             <Word>UnitTargetsVehicleInRaidUI</Word>
@@ -2918,19 +3546,38 @@
             <Word>UnitVehicleSeatCount</Word>
             <Word>UnitVehicleSeatInfo</Word>
             <Word>UnitVehicleSkin</Word>
+            <Word>UnitWatchRegistered</Word>
             <Word>UnitXP</Word>
             <Word>UnitXPMax</Word>
             <Word>UnlearnSpecialization</Word>
+            <Word>UnlockMultiCastActionBar</Word>
+            <Word>UnlockPetActionBar</Word>
             <Word>UnlockVoidStorage</Word>
+            <Word>UnregisterAttributeDriver</Word>
+            <Word>UnregisterAutoHide</Word>
+            <Word>UnregisterStateDriver</Word>
+            <Word>UnregisterUnitWatch</Word>
             <Word>UpdateAddOnCPUUsage</Word>
             <Word>UpdateAddOnMemoryUsage</Word>
+            <Word>UpdateBagButtonHighlight</Word>
+            <Word>UpdateBagSlotStatus</Word>
+            <Word>UpdateCoinPickupFrame</Word>
+            <Word>UpdateContainerFrameAnchors</Word>
+            <Word>UpdateFrameLock</Word>
             <Word>UpdateGMTicket</Word>
             <Word>UpdateInventoryAlertStatus</Word>
             <Word>UpdateMapHighlight</Word>
+            <Word>UpdateMenuBarTop</Word>
+            <Word>UpdateMicroButtons</Word>
+            <Word>UpdateMicroButtonsParent</Word>
+            <Word>UpdateNewItemList</Word>
+            <Word>UpdatePartyMemberBackground</Word>
+            <Word>UpdateProfessionButton</Word>
+            <Word>UpdateStackSplitFrame</Word>
+            <Word>UpdateUIPanelPositions</Word>
             <Word>UpdateWarGamesList</Word>
-            <Word>UpdateWorldMapArrowFrames</Word>
+            <Word>UpdateWorldMapArrow</Word>
             <Word>UpgradeItem</Word>
-            <Word>UploadSettings</Word>
             <Word>UseAction</Word>
             <Word>UseContainerItem</Word>
             <Word>UseEquipmentSet</Word>
@@ -2940,7 +3587,14 @@
             <Word>UseItemForTransmogrify</Word>
             <Word>UseQuestLogSpecialItem</Word>
             <Word>UseSoulstone</Word>
+            <Word>UseToy</Word>
+            <Word>UseToyByName</Word>
+            <Word>UseVoidItemForTransmogrify</Word>
+            <Word>UsesGUID</Word>
+            <Word>ValidateActionBarTransition</Word>
+            <Word>ValidateFramePosition</Word>
             <Word>ValidateTransmogrifications</Word>
+            <Word>ValueToBoolean</Word>
             <Word>VehicleAimDecrement</Word>
             <Word>VehicleAimDownStart</Word>
             <Word>VehicleAimDownStop</Word>
@@ -2958,17 +3612,10 @@
             <Word>VehicleExit</Word>
             <Word>VehicleNextSeat</Word>
             <Word>VehiclePrevSeat</Word>
+            <Word>VideoOptionsValueChanged</Word>
             <Word>ViewGuildRecipes</Word>
-            <Word>VoiceChat_ActivatePrimaryCaptureCallback</Word>
-            <Word>VoiceChat_GetCurrentMicrophoneSignalLevel</Word>
-            <Word>VoiceChat_IsPlayingLoopbackSound</Word>
-            <Word>VoiceChat_IsRecordingLoopbackSound</Word>
-            <Word>VoiceChat_PlayLoopbackSound</Word>
-            <Word>VoiceChat_RecordLoopbackSound</Word>
-            <Word>VoiceChat_StartCapture</Word>
-            <Word>VoiceChat_StopCapture</Word>
-            <Word>VoiceChat_StopPlayingLoopbackSound</Word>
-            <Word>VoiceChat_StopRecordingLoopbackSound</Word>
+            <Word>VoiceChatShineFadeIn</Word>
+            <Word>VoiceChatShineFadeOut</Word>
             <Word>VoiceEnumerateCaptureDevices</Word>
             <Word>VoiceEnumerateOutputDevices</Word>
             <Word>VoiceGetCurrentCaptureDevice</Word>
@@ -3027,6 +3674,7 @@
             <Word>PLAYER_MONEY</Word>
             <Word>PLAYER_DAMAGE_DONE_MODS</Word>
             <Word>PLAYER_TOTEM_UPDATE</Word>
+            <Word>PLAYER_AVG_ITEM_LEVEL_UPDATE</Word>
             <Word>ZONE_CHANGED</Word>
             <Word>ZONE_CHANGED_INDOORS</Word>
             <Word>ZONE_CHANGED_NEW_AREA</Word>
@@ -3041,6 +3689,7 @@
             <Word>ACTIONBAR_UPDATE_STATE</Word>
             <Word>ACTIONBAR_UPDATE_USABLE</Word>
             <Word>ACTIONBAR_UPDATE_COOLDOWN</Word>
+            <Word>ACTIONBAR_SHOW_BOTTOMLEFT</Word>
             <Word>UPDATE_SUMMONPETS_ACTION</Word>
             <Word>UPDATE_BONUS_ACTIONBAR</Word>
             <Word>UPDATE_OVERRIDE_ACTIONBAR</Word>
@@ -3052,6 +3701,7 @@
             <Word>PARTY_MEMBER_ENABLE</Word>
             <Word>PARTY_MEMBER_DISABLE</Word>
             <Word>PARTY_LOOT_METHOD_CHANGED</Word>
+            <Word>PARTY_REFER_A_FRIEND_UPDATED</Word>
             <Word>SYSMSG</Word>
             <Word>UI_ERROR_MESSAGE</Word>
             <Word>UI_INFO_MESSAGE</Word>
@@ -3120,6 +3770,7 @@
             <Word>SKILL_LINES_CHANGED</Word>
             <Word>ITEM_PUSH</Word>
             <Word>LOOT_OPENED</Word>
+            <Word>LOOT_READY</Word>
             <Word>LOOT_SLOT_CLEARED</Word>
             <Word>LOOT_SLOT_CHANGED</Word>
             <Word>LOOT_CLOSED</Word>
@@ -3194,6 +3845,7 @@
             <Word>BAG_UPDATE_COOLDOWN</Word>
             <Word>BAG_NEW_ITEMS_UPDATED</Word>
             <Word>BAG_SLOT_FLAGS_UPDATED</Word>
+            <Word>BANK_BAG_SLOT_FLAGS_UPDATED</Word>
             <Word>LOCALPLAYER_PET_RENAMED</Word>
             <Word>UNIT_ATTACK</Word>
             <Word>UNIT_DEFENSE</Word>
@@ -3216,9 +3868,12 @@
             <Word>PLAYER_GUILD_UPDATE</Word>
             <Word>QUEST_ACCEPT_CONFIRM</Word>
             <Word>PLAYERBANKSLOTS_CHANGED</Word>
+            <Word>PLAYERREAGENTBANKSLOTS_CHANGED</Word>
             <Word>BANKFRAME_OPENED</Word>
             <Word>BANKFRAME_CLOSED</Word>
             <Word>PLAYERBANKBAGSLOTS_CHANGED</Word>
+            <Word>REAGENTBANK_PURCHASED</Word>
+            <Word>REAGENTBANK_UPDATE</Word>
             <Word>FRIENDLIST_UPDATE</Word>
             <Word>IGNORELIST_UPDATE</Word>
             <Word>MUTELIST_UPDATE</Word>
@@ -3346,6 +4001,17 @@
             <Word>UPDATE_LFG_LIST</Word>
             <Word>UPDATE_LFG_LIST_INCREMENTAL</Word>
             <Word>LFG_LIST_AVAILABILITY_UPDATE</Word>
+            <Word>LFG_LIST_ACTIVE_ENTRY_UPDATE</Word>
+            <Word>LFG_LIST_ENTRY_CREATION_FAILED</Word>
+            <Word>LFG_LIST_SEARCH_RESULTS_RECEIVED</Word>
+            <Word>LFG_LIST_SEARCH_RESULT_UPDATED</Word>
+            <Word>LFG_LIST_SEARCH_FAILED</Word>
+            <Word>LFG_LIST_APPLICANT_UPDATED</Word>
+            <Word>LFG_LIST_APPLICANT_LIST_UPDATED</Word>
+            <Word>LFG_LIST_JOINED_GROUP</Word>
+            <Word>LFG_LIST_ENTRY_EXPIRED_TOO_MANY_PLAYERS</Word>
+            <Word>LFG_LIST_ENTRY_EXPIRED_TIMEOUT</Word>
+            <Word>LFG_LIST_APPLICATION_STATUS_UPDATED</Word>
             <Word>READY_CHECK</Word>
             <Word>READY_CHECK_CONFIRM</Word>
             <Word>READY_CHECK_FINISHED</Word>
@@ -3392,6 +4058,7 @@
             <Word>LFG_OPEN_FROM_GOSSIP</Word>
             <Word>LFG_COMPLETION_REWARD</Word>
             <Word>LFG_INVALID_ERROR_MESSAGE</Word>
+            <Word>LFG_ROLE_CHECK_DECLINED</Word>
             <Word>PARTY_LFG_RESTRICTED</Word>
             <Word>PLAYER_ROLES_ASSIGNED</Word>
             <Word>COMBAT_RATING_UPDATE</Word>
@@ -3504,9 +4171,11 @@
             <Word>PVPQUEUE_ANYWHERE_SHOW</Word>
             <Word>PVPQUEUE_ANYWHERE_UPDATE_AVAILABLE</Word>
             <Word>QUEST_ACCEPTED</Word>
+            <Word>QUEST_TURNED_IN</Word>
             <Word>PLAYER_SPECIALIZATION_CHANGED</Word>
             <Word>PLAYER_TALENT_UPDATE</Word>
             <Word>ACTIVE_TALENT_GROUP_CHANGED</Word>
+            <Word>PLAYER_CHARACTER_UPGRADE_TALENT_COUNT_CHANGED</Word>
             <Word>PET_SPECIALIZATION_CHANGED</Word>
             <Word>PREVIEW_TALENT_POINTS_CHANGED</Word>
             <Word>PREVIEW_TALENT_PRIMARY_TREE_CHANGED</Word>
@@ -3531,6 +4200,8 @@
             <Word>BATTLEFIELD_MGR_QUEUE_REQUEST_RESPONSE</Word>
             <Word>BATTLEFIELD_MGR_EJECT_PENDING</Word>
             <Word>BATTLEFIELD_MGR_EJECTED</Word>
+            <Word>BATTLEFIELD_MGR_DROP_TIMER_STARTED</Word>
+            <Word>BATTLEFIELD_MGR_DROP_TIMER_CANCELED</Word>
             <Word>BATTLEFIELD_MGR_QUEUE_INVITE</Word>
             <Word>BATTLEFIELD_MGR_STATE_CHANGE</Word>
             <Word>PVP_TYPES_ENABLED</Word>
@@ -3664,8 +4335,6 @@
             <Word>CHAT_MSG_COMBAT_GUILD_XP_GAIN</Word>
             <Word>UNIT_GUILD_LEVEL</Word>
             <Word>GUILD_PARTY_STATE_UPDATED</Word>
-            <Word>PLAYER_AVG_ITEM_LEVEL_READY</Word>
-            <Word>ECLIPSE_DIRECTION_CHANGE</Word>
             <Word>GET_ITEM_INFO_RECEIVED</Word>
             <Word>MAX_SPELL_START_RECOVERY_OFFSET_CHANGED</Word>
             <Word>UNIT_HEALTH_FREQUENT</Word>
@@ -3692,6 +4361,7 @@
             <Word>TRIAL_CAP_REACHED_LEVEL</Word>
             <Word>REQUIRED_GUILD_RENAME_RESULT</Word>
             <Word>GUILD_RENAME_REQUIRED</Word>
+            <Word>ECLIPSE_DIRECTION_CHANGE</Word>
             <Word>TRANSMOGRIFY_OPEN</Word>
             <Word>TRANSMOGRIFY_CLOSE</Word>
             <Word>TRANSMOGRIFY_UPDATE</Word>
@@ -3719,6 +4389,7 @@
             <Word>PET_JOURNAL_PET_DELETED</Word>
             <Word>PET_JOURNAL_PET_REVOKED</Word>
             <Word>PET_JOURNAL_PET_RESTORED</Word>
+            <Word>PET_JOURNAL_CAGE_FAILED</Word>
             <Word>PET_JOURNAL_PETS_HEALED</Word>
             <Word>PET_JOURNAL_TRAP_LEVEL_SET</Word>
             <Word>BATTLE_PET_CURSOR_CLEAR</Word>
@@ -3752,6 +4423,8 @@
             <Word>PET_BATTLE_QUEUE_PROPOSAL_DECLINED</Word>
             <Word>PET_BATTLE_QUEUE_PROPOSAL_ACCEPTED</Word>
             <Word>CHALLENGE_MODE_MAPS_UPDATE</Word>
+            <Word>CHALLENGE_MODE_START</Word>
+            <Word>CHALLENGE_MODE_RESET</Word>
             <Word>CHALLENGE_MODE_COMPLETED</Word>
             <Word>CHALLENGE_MODE_NEW_RECORD</Word>
             <Word>CHALLENGE_MODE_LEADERS_UPDATE</Word>
@@ -3763,6 +4436,8 @@
             <Word>BONUS_ROLL_FAILED</Word>
             <Word>BONUS_ROLL_RESULT</Word>
             <Word>SHOW_LOOT_TOAST</Word>
+            <Word>SHOW_LOOT_TOAST_UPGRADE</Word>
+            <Word>SHOW_PVP_FACTION_LOOT_TOAST</Word>
             <Word>BLACK_MARKET_OPEN</Word>
             <Word>BLACK_MARKET_CLOSE</Word>
             <Word>BLACK_MARKET_UNAVAILABLE</Word>
@@ -3779,6 +4454,7 @@
             <Word>SCENARIO_UPDATE</Word>
             <Word>SCENARIO_CRITERIA_UPDATE</Word>
             <Word>SCENARIO_POI_UPDATE</Word>
+            <Word>SCENARIO_COMPLETED</Word>
             <Word>LOOT_HISTORY_FULL_UPDATE</Word>
             <Word>LOOT_HISTORY_ROLL_COMPLETE</Word>
             <Word>LOOT_HISTORY_ROLL_CHANGED</Word>
@@ -3799,6 +4475,7 @@
             <Word>LOSS_OF_CONTROL_ADDED</Word>
             <Word>LOSS_OF_CONTROL_UPDATE</Word>
             <Word>QUEST_CHOICE_UPDATE</Word>
+            <Word>QUEST_CHOICE_CLOSE</Word>
             <Word>PET_BATTLE_LOOT_RECEIVED</Word>
             <Word>UNIT_ABSORB_AMOUNT_CHANGED</Word>
             <Word>UNIT_HEAL_ABSORB_AMOUNT_CHANGED</Word>
@@ -3836,23 +4513,56 @@
             <Word>GARRISON_BUILDING_PLACED</Word>
             <Word>GARRISON_BUILDING_REMOVED</Word>
             <Word>GARRISON_BUILDING_LIST_UPDATE</Word>
+            <Word>GARRISON_BUILDING_ERROR</Word>
             <Word>GARRISON_ARCHITECT_OPENED</Word>
             <Word>GARRISON_ARCHITECT_CLOSED</Word>
+            <Word>GARRISON_TRADESKILL_NPC_CLOSED</Word>
+            <Word>GARRISON_MISSION_NPC_OPENED</Word>
+            <Word>GARRISON_MISSION_NPC_CLOSED</Word>
             <Word>GARRISON_BUILDING_ACTIVATED</Word>
             <Word>GARRISON_BUILDING_ACTIVATABLE</Word>
             <Word>GARRISON_MONUMENT_SHOW_UI</Word>
             <Word>GARRISON_MONUMENT_CLOSE_UI</Word>
             <Word>GARRISON_MONUMENT_LIST_LOADED</Word>
+            <Word>GARRISON_MONUMENT_SELECTED_TROPHY_ID_LOADED</Word>
             <Word>GARRISON_MONUMENT_REPLACED</Word>
             <Word>GARRISON_MISSION_LIST_UPDATE</Word>
+            <Word>GARRISON_MISSION_STARTED</Word>
+            <Word>GARRISON_MISSION_COMPLETED</Word>
+            <Word>GARRISON_MISSION_FINISHED</Word>
+            <Word>GARRISON_MISSION_BONUS_ROLL_COMPLETE</Word>
+            <Word>GARRISON_MISSION_BONUS_ROLL_LOOT</Word>
             <Word>GARRISON_FOLLOWER_LIST_UPDATE</Word>
+            <Word>GARRISON_FOLLOWER_ADDED</Word>
+            <Word>GARRISON_FOLLOWER_REMOVED</Word>
+            <Word>GARRISON_FOLLOWER_XP_CHANGED</Word>
+            <Word>GARRISON_SHOW_LANDING_PAGE</Word>
+            <Word>GARRISON_HIDE_LANDING_PAGE</Word>
+            <Word>GARRISON_LANDINGPAGE_SHIPMENTS</Word>
             <Word>SHIPMENT_CRAFTER_OPENED</Word>
             <Word>SHIPMENT_CRAFTER_CLOSED</Word>
             <Word>SHIPMENT_CRAFTER_INFO</Word>
+            <Word>SHIPMENT_CRAFTER_REAGENT_UPDATE</Word>
             <Word>SHIPMENT_UPDATE</Word>
-            <Word>ASSIGN_FOLLOWER_TO_BUILDING_RESULT</Word>
-            <Word>REMOVE_FOLLOWER_FROM_BUILDING_RESULT</Word>
+            <Word>GARRISON_RECRUITMENT_NPC_OPENED</Word>
+            <Word>GARRISON_RECRUITMENT_NPC_CLOSED</Word>
+            <Word>GARRISON_RECRUITMENT_FOLLOWERS_GENERATED</Word>
+            <Word>GARRISON_RECRUITMENT_READY</Word>
+            <Word>GARRISON_RECRUIT_FOLLOWER_RESULT</Word>
             <Word>QUESTLINE_UPDATE</Word>
+            <Word>QUESTTASK_UPDATE</Word>
+            <Word>TOYS_UPDATED</Word>
+            <Word>HEIRLOOMS_UPDATED</Word>
+            <Word>CHARACTER_UPGRADE_SPELL_TIER_SET</Word>
+            <Word>GARRISON_USE_PARTY_GARRISON_CHANGED</Word>
+            <Word>GARRISON_BUILDINGS_SWAPPED</Word>
+            <Word>GARRISON_RECALL_PORTAL_LAST_USED_TIME</Word>
+            <Word>GARRISON_RECALL_PORTAL_USED</Word>
+            <Word>GARRISON_INVASION_AVAILABLE</Word>
+            <Word>GARRISON_INVASION_UNAVAILABLE</Word>
+            <Word>GARRISON_UPGRADEABLE_RESULT</Word>
+            <Word>HEARTHSTONE_BOUND</Word>
+            <Word>NPE_TUTORIAL_UPDATE</Word>
             <Word>SET_GLUE_SCREEN</Word>
             <Word>START_GLUE_MUSIC</Word>
             <Word>DISCONNECTED_FROM_SERVER</Word>
@@ -3903,11 +4613,12 @@
             <Word>LOGIN_STOPPED</Word>
             <Word>SCREEN_FIRST_DISPLAYED</Word>
             <Word>CHARACTER_UPGRADE_STARTED</Word>
-            <Word>CHARACTER_UPGRADE_COMPLETE</Word>
             <Word>CHARACTER_UPGRADE_ABORTED</Word>
             <Word>CHAR_RESTORE_COMPLETE</Word>
             <Word>ACCOUNT_CHARACTER_LIST_RECIEVED</Word>
             <Word>ACCOUNT_DATA_RESTORED</Word>
+            <Word>CHARACTER_UNDELETE_STATUS_CHANGED</Word>
+            <Word>CHARACTER_UNDELETE_FINISHED</Word>
             <Word>STORE_PRODUCTS_UPDATED</Word>
             <Word>STORE_CONFIRM_PURCHASE</Word>
             <Word>STORE_STATUS_CHANGED</Word>

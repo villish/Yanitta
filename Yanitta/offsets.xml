@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <Offsets>
-  <Build>18935</Build>
-  <PlayerName>16737960</PlayerName>
-  <PlayerClass>16738361</PlayerClass>
-  <IsInGame>15417790</IsInGame>
-  <ExecuteBuffer>172240</ExecuteBuffer>
-  <InjectedAddress>177733</InjectedAddress>
+  <Build>19033</Build>
+  <PlayerName>15546664</PlayerName>
+  <PlayerClass>15547065</PlayerClass>
+  <IsInGame>14226238</IsInGame>
+  <ExecuteBuffer>147041</ExecuteBuffer>
+  <InjectedAddress>151608</InjectedAddress>
 </Offsets>

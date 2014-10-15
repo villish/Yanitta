@@ -1157,22 +1157,6 @@ elseif not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Это заклинание не затрагивает ГКД
--- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if setAoE and (HasBuff("player", 122510) or rage > 90 or agroStatus < 2) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Удар грома (SOLO)">
         <SpellID>6343</SpellID>
         <Target>Target</Target>
@@ -1184,41 +1168,6 @@ end
         <Lua><![CDATA[
 if not HasDebuff("target", 115798) then
     return isInMeele;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Командирский крик">
-        <SpellID>469</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local ap_buffs = {
-    6673,   -- Боевой крик (Воин)
-    57330,  -- Зимний горн (Рыцарь смерти)
-    19506   -- Аура меткого выстрела (Охотник)
-};
-if rage < 70 and not koloss then
-    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Боевой крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if rage < 70 then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -1303,10 +1252,8 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-koloss     = HasDebuff("target", 86346, "PLAYER"); -- дебафф колосса
-koloss_CD  = SpellCD(86346); -- кулдаун колосса
 playerHP   = HealthByPercent("player");
-isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
+isInMeele  = IsSpellInRange(GetSpellInfo(23881), "target") == 1;
 rage       = UnitPower("player");
 targetHP   = HealthByPercent("target");
 ]]></Lua>
@@ -1388,7 +1335,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
+if useCooldown and isInMeele then
     return true;
 end
 ]]></Lua>
@@ -1402,24 +1349,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and koloss_remains < 1
-    and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
+if useCooldown and isInMeele and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Знамя с черепом">
-        <SpellID>114207</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
     return true;
 end
 ]]></Lua>
@@ -1436,18 +1368,6 @@ end
 return rage < 100;
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар колосса">
-        <SpellID>86346</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
       <Ability Name="Удар громовержца">
         <SpellID>107570</SpellID>
         <Target>Target</Target>
@@ -1457,9 +1377,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if koloss then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
@@ -1484,34 +1402,6 @@ if isInMeele then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар героя">
-        <SpellID>78</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE == 0 and targetHP >= 20 and (koloss or rage > 100) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE == 1 and targetHP >= 20 and (koloss or rage > 100) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Казнь">
         <SpellID>5308</SpellID>
         <Target>Target</Target>
@@ -1533,11 +1423,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Стаки Яросного выпада!
-local count, remains = select(2, HasBuff("player", 131116));
-if koloss or (count > 1 and koloss_CD <= 3 or remains < 3) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Зверский удар">
@@ -1550,7 +1436,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local buff = HasBuff("player", 46916); -- прилив крови
-if targetHP >= 20 or buff or rage >= 110 or koloss or (koloss_CD > 6 and rage > 30) then
+if targetHP >= 20 or buff or rage >= 110 then
     return true;
 end
 ]]></Lua>
@@ -1564,7 +1450,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and not koloss and HasBuff("player", 12292) then
+if isInMeele then
     return true;
 end
 ]]></Lua>
@@ -1579,39 +1465,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Командирский крик">
-        <SpellID>469</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local ap_buffs = {
-    6673,   -- Боевой крик (Воин)
-    57330,  -- Зимний горн (Рыцарь смерти)
-    19506   -- Аура меткого выстрела (Охотник)
-};
-if rage < 70 then
-    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Боевой крик ">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return rage < 70;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -1911,18 +1764,6 @@ end
 return setAoE == 0 and rage > 80;
 ]]></Lua>
       </Ability>
-      <Ability Name="Разсекающий удар">
-        <SpellID>845</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return setAoE == 1 and rage > 80;
-]]></Lua>
-      </Ability>
       <Ability Name="Казнь">
         <SpellID>5308</SpellID>
         <Target>Target</Target>
@@ -1933,23 +1774,6 @@ return setAoE == 1 and rage > 80;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Превосходство">
-        <SpellID>7384</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if rage >= 10 and targetHP >= 20 or HasBuff("player", 29725) then
-    -- Под бафом кроводажности не используем превосходство
-    if not HasBuff("player", 1719) then
-        return true;
-    end
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Мощный удар">
@@ -1963,39 +1787,6 @@ end
         <Lua><![CDATA[
 return (rage > 40 or HasBuff("player", 1719))
     and HealthByPercent(target) > 20;
-]]></Lua>
-      </Ability>
-      <Ability Name="Командирский крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local ap_buffs = {
-    6673,   -- Боевой крик (Воин)
-    57330,  -- Зимний горн (Рыцарь смерти)
-    19506   -- Аура меткого выстрела (Охотник)
-};
-if rage < 70 then
-    if HasBuff("player", ap_buffs) and not HasBuff("player", 6673, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Боевой крик">
-        <SpellID>6673</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return rage < 70;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -4821,69 +4612,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
-
-function Round(num)
-    return math.floor(num + 0.5);
-end
-
-function GetDotDamage()
-    local ticks, duration, damage, dps;
-    local mastery, haste, crit, spd = GetMastery(), UnitSpellHaste("player"), GetSpellCritChance(6), GetSpellBonusDamage(6);
-    if crit > 100 then crit = 100 end
-
-    local damage_bonus  = (1 + crit / 100) * (1 + mastery / 100);
-    local tick_every    = 2 / (1 + (haste / 100));
-
-    -- Слово тьмы: Боль
-    -- Слово Тьмы, мгновенно наносящее 780 (+ 36.6% of Spell power) ед. урона от темной магии и
-    -- дополнительно [4680 ( + 219.6% of Spell power) -  780 ( + 36.6% of Spell power)] ед. урона от темной магии за 18 сек.
-    -- Слово Тьмы, мгновенно наносящее $s1 ед. урона от темной магии и дополнительно ${$o1-$m1} ед. урона от темной магии за $d.
-    ticks           = Round(18 / tick_every);
-    duration        = ticks * tick_every;
-    damage          = (1926 + ticks * spd * 0.2) * damage_bonus;
-    dps             = Round(damage / duration);
-    local corr_dps  = Round(dps / 100) / 10;
-
-    -- Прикосновение вампира
-    -- Наносит 375 (+ 207.5% of Spell power) ед. урона от темной магии в течение 15 сек.
-    -- Наносит $34914o2 ед. урона от темной магии в течение $34914d.
-    ticks           = Round(15 / tick_every);
-    duration        = ticks * tick_every;
-    damage          = (1792 + ticks * spd * 0.24) * damage_bonus;
-    dps             = Round(damage / duration);
-    local ua_dps    = Round(dps / 100) / 10;
-
-    return agony_dps, corr_dps, ua_dps;
-end
-
-function NeedRedot(targetInfo, index, percent)
---    return;-- temp
---    local new_dps = select(index, GetDotDamage());
---    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
---        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
---        return true;
---    end
-end
-
-function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
-    local sourceGUID = select(4, ...);
-    if sourceGUID == UnitGUID("player") then
-        local destGUID = select(8, ...);
-        local spellId = select(12, ...);
-        for _, ability in ipairs() do
-            for _, targetInfo in ipairs(ability.TargetList) do
-                if ability.SpellId == spellId and destGUID == UnitGUID(targetInfo.Target) then
-                    targetInfo.Guid = destGUID;
-                    if spellId == 589 then -- Слово тьммы: Боль
-                        targetInfo.dps = select(1, GetDotDamage());
-                    elseif spellId == 34914 then -- Прикосновение вампира
-                        targetInfo.dps = select(2, GetDotDamage());
-                    end
-                end
-            end
-        end
-    end
-end
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -5075,7 +4803,7 @@ if not HasDebuff("target", 2944, "PLAYER") then
         return true;
     end
 
-    if NeedRedot(targetInfo, 2) or IS_MOVING or remains < 2 then
+    if IS_MOVING or remains < 2 then
         return true;
     end
 end
@@ -5101,7 +4829,7 @@ if not HasDebuff("target", 2944, "PLAYER") then
         return true;
     end
 
-    if NeedRedot(targetInfo, 1) or remains < 3.5 then
+    if remains < 3.5 then
         return true;
     end
 end
@@ -8150,80 +7878,6 @@ end
     </Rotation>
     <Rotation Name="Колдовство">
       <HotKey Key="C" Modifier="Alt" />
-      <Lua><![CDATA[
-function Round(num)
-    return math.floor(num + 0.5);
-end
-
-function GetDotDamage()
-    local ticks, duration, damage, dps;
-    local mastery, haste, crit, spd = GetMastery(), UnitSpellHaste("player"), GetSpellCritChance(6), GetSpellBonusDamage(6);
-    if crit > 100 then crit = 100 end
-
-    local damage_bonus  = (1 + crit / 100) * (1 + mastery / 100);
-    local tick_every    = 2 / (1 + (haste / 100));
-
-    -- Агония
-    -- Цель получает до [324 ( + 30.6% of Spell power) * 10] ед. урона от темной магии за 24 сек.
-    -- Цель получает от ${($m1+$SP*0.035)*75} до ${($m1+$SP*0.035)*120} ед. урона от темной магии за $d.
-    ticks           = Round(24 / tick_every);
-    duration        = ticks * tick_every;
-    damage          = ticks * (324 + spd * 0.35) * damage_bonus;
-    dps             = Round(damage / duration);
-    local agony_dps = Round(dps / 100) / 10;
-
-    -- Порча
-    -- Наводит на цель порчу, нанося ей 1584 (+ 148.5% of Spell power) ед. урона от темной магии в течение 18 сек.
-    -- Наводит на цель порчу, нанося ей ${($m1+$SP*0.3)*6} ед. урона от темной магии в течение $d.$?a104315
-    ticks           = Round(18 / tick_every);
-    duration        = ticks * tick_every;
-    damage          = (1926 + ticks * spd * 0.3) * damage_bonus;
-    dps             = Round(damage / duration);
-    local corr_dps  = Round(dps / 100) / 10;
-
-    -- Нестабильное колдовство
-    -- Энергия Тьмы медленно уничтожает цель, нанося ей 2170 (+ 203% of Spell power) ед. урона в течение 14 сек.
-    -- Наносит цели ${($30108m1+$SP*0.2)*5} ед. урона в течение $30108d.
-    ticks           = Round(14 / tick_every);
-    duration        = ticks * tick_every;
-    damage          = (1792 + ticks * spd * 0.2) * damage_bonus;
-    dps             = Round(damage / duration);
-    local ua_dps    = Round(dps / 100) / 10;
-
-    return agony_dps, corr_dps, ua_dps;
-end
-
-function NeedRedot(targetInfo, index, percent)
---    local new_dps = select(index, GetDotDamage());
---    if targetInfo.dps and new_dps > (targetInfo.dps + (percent or 1))
---        and targetInfo.Guid == UnitGUID(targetInfo.Target) then
---        print(string.format("Redot: %d -> %d", targetInfo.dps, new_dps));
---        return true;
---    end
-end
-
-function COMBATLOG_MODS:SPELL_CAST_SUCCESS(...)
-    local sourceGUID = select(4, ...);
-    if sourceGUID == UnitGUID("player") then
-        local destGUID = select(8, ...);
-        local spellId = select(12, ...);
-        for _, ability in ipairs() do
-            for _, targetInfo in ipairs(ability.TargetList) do
-                if ability.SpellId == spellId and destGUID == UnitGUID(targetInfo.Target) then
-                    targetInfo.Guid = destGUID;
-                    if spellId == 980 then -- Агония
-                        targetInfo.dps = select(1, GetDotDamage());
-                    elseif spellId == 172 then -- Порча
-                        targetInfo.dps = select(2, GetDotDamage());
-                    elseif spellId == 30108 then -- Нестабильное колдовство
-                        targetInfo.dps = select(3, GetDotDamage());
-                    end
-                end
-            end
-        end
-    end
-end
-]]></Lua>
       <Ability Name="Неистовство тьмы">
         <SpellID>30283</SpellID>
         <Target>MouseLocation</Target>
@@ -8353,7 +8007,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if power2 > 0 and SpellCD(74434) == 0 then
+if power2 > 1 and SpellCD(74434) == 0 then
     local dotList = {
         980,    -- Агония
         172,    -- Порча
@@ -8403,8 +8057,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if NeedRedot(targetInfo, 1)
-    or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
@@ -8445,8 +8098,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if NeedRedot(targetInfo, 2)
-    or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
@@ -8467,8 +8119,7 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if NeedRedot(targetInfo, 3)
-    or select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
