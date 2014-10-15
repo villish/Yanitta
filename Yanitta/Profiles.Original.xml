@@ -2608,20 +2608,6 @@ end
 return setAoE;
 ]]></Lua>
       </Ability>
-      <Ability Name="Укус змеи">
-        <SpellID>1978</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not setAoE and not HasDebuff(target, 118253, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Разрывной выстрел">
         <SpellID>53301</SpellID>
         <Target>Target</Target>
@@ -4235,7 +4221,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
@@ -4312,20 +4298,6 @@ if useAutoDispell then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Вхождение в бездну">
-        <SpellID>108968</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and members[1].HP < 20 and HealthByPercent("player") > 95 then
-    return members[1].Unit;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Подавление боли">
         <SpellID>33206</SpellID>
         <Target>None</Target>
@@ -4378,20 +4350,6 @@ return LowHP.H50 > 3;
 return LowHP.H70 > 3;
 ]]></Lua>
       </Ability>
-      <Ability Name="Каскад">
-        <SpellID>120785</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if LowHP.H70 > 3 then
-    return members[1].Unit;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Слово силы: Щит">
         <SpellID>17</SpellID>
         <Target>None</Target>
@@ -4441,7 +4399,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if LowHP.H90 > 2 and members[1].HP < 85 then
    return members[1].Unit;
@@ -4495,22 +4453,6 @@ for _,member in ipairs(members) do
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Исцеление">
-        <SpellID>2050</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if not UnitCanAttack("player", "target") then
-    if members[1].HP < 90 then
-        return members[1].Unit;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Исповедь">
         <SpellID>47540</SpellID>
         <Target>Target</Target>
@@ -4527,8 +4469,8 @@ elseif members[1].HP < 60 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Священный огонь">
-        <SpellID>14914</SpellID>
+      <Ability Name="Слово тьмы: Утешение">
+        <SpellID>129250</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
