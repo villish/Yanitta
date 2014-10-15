@@ -1252,10 +1252,8 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-koloss     = HasDebuff("target", 86346, "PLAYER"); -- дебафф колосса
-koloss_CD  = SpellCD(86346); -- кулдаун колосса
 playerHP   = HealthByPercent("player");
-isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
+isInMeele  = IsSpellInRange(GetSpellInfo(23881), "target") == 1;
 rage       = UnitPower("player");
 targetHP   = HealthByPercent("target");
 ]]></Lua>
@@ -1337,7 +1335,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
+if useCooldown and isInMeele then
     return true;
 end
 ]]></Lua>
@@ -1351,24 +1349,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and koloss_remains < 1
-    and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
+if useCooldown and isInMeele and (HasBuff("player", 1719) or SpellCD(1719) > 60) then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Знамя с черепом">
-        <SpellID>114207</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and isInMeele and (koloss_CD < 3 or koloss) then
     return true;
 end
 ]]></Lua>
@@ -1385,18 +1368,6 @@ end
 return rage < 100;
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар колосса">
-        <SpellID>86346</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
       <Ability Name="Удар громовержца">
         <SpellID>107570</SpellID>
         <Target>Target</Target>
@@ -1406,9 +1377,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if koloss then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
@@ -1454,11 +1423,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Стаки Яросного выпада!
-local count, remains = select(2, HasBuff("player", 131116));
-if koloss or (count > 1 and koloss_CD <= 3 or remains < 3) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Зверский удар">
@@ -1471,7 +1436,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local buff = HasBuff("player", 46916); -- прилив крови
-if targetHP >= 20 or buff or rage >= 110 or koloss or (koloss_CD > 6 and rage > 30) then
+if targetHP >= 20 or buff or rage >= 110 then
     return true;
 end
 ]]></Lua>
@@ -1485,7 +1450,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and not koloss and HasBuff("player", 12292) then
+if isInMeele then
     return true;
 end
 ]]></Lua>
