@@ -8903,12 +8903,12 @@ NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восст�
         <Lua><![CDATA[
 -- пауза
 if IsModKeyDown(mkLeftShift) then
-    for index = 1, NUM_WORLD_RAID_MARKERS do
-        if not IsRaidMarkerActive(index) then
-            PlaceRaidMarker(index);
-            break;
-        end
-    end
+    --for index = 1, NUM_WORLD_RAID_MARKERS do
+    --    if not IsRaidMarkerActive(index) then
+    --        PlaceRaidMarker(index);
+    --        break;
+    --    end
+    --end
     return true;
 end
 
@@ -9132,7 +9132,7 @@ end
         <Lua><![CDATA[
 local count = 0;
 for _,member in ipairs(members) do
-    if member.HP < 85 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 3 then
+    if member.HP < 55 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 3 then
         count = count + 1;
         if count > 2 then
             print("|cff00ff00 >> Кастую сотворение <<")
@@ -9278,7 +9278,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(members) do
-    if member.HP < 82 or ((not IsInRaid() or member.IsTank) and member.Agro > 2)then
+    if member.HP < 82 or ((not IsInRaid() or member.IsTank) and member.Agro > 2) then
         if not HasBuff(member.Unit, 774, "PLAYER") then
             return member.Unit;
         end
