@@ -1356,18 +1356,6 @@ if useCooldown and isInMeele and (HasBuff("player", 1719) or SpellCD(1719) > 60)
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Кровожадность">
-        <SpellID>23881</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return rage < 100;
-]]></Lua>
-      </Ability>
       <Ability Name="Удар громовержца">
         <SpellID>107570</SpellID>
         <Target>Target</Target>
@@ -1453,6 +1441,18 @@ end
 if isInMeele then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Кровожадность">
+        <SpellID>23881</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return rage < 100;
 ]]></Lua>
       </Ability>
       <Ability Name="Героический бросок">
@@ -2407,40 +2407,6 @@ if IsMouseButtonDown(4) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Дух ястреба">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitAffectingCombat("player") or IsMounted() then
-    if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
-        CastShapeshiftForm(1);
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Дух гепарда">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not UnitAffectingCombat("player") and not IsMounted() then
-    if GetShapeshiftForm() ~= 2 and GetShapeshiftFormCooldown(2) == 0 then
-        CastShapeshiftForm(2);
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Метание ловушки">
         <SpellID>77769</SpellID>
         <Target>None</Target>
@@ -2632,18 +2598,6 @@ return true;
 return not setAoE;
 ]]></Lua>
       </Ability>
-      <Ability Name="Убийственный выстрел">
-        <SpellID>53351</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>true</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
       <Ability Name="Бросок глеф">
         <SpellID>117050</SpellID>
         <Target>Target</Target>
@@ -2658,30 +2612,6 @@ return true;
       </Ability>
       <Ability Name="Ужасный зверь">
         <SpellID>120679</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return useCooldown and isInRange;
-]]></Lua>
-      </Ability>
-      <Ability Name="Быстрая стрельба">
-        <SpellID>3045</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return useCooldown and isInRange;
-]]></Lua>
-      </Ability>
-      <Ability Name="Звериный натиск">
-        <SpellID>121818</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2713,14 +2643,7 @@ return useCooldown and isInRange;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local focus = UnitPower("player");
-if not setAoE and focus > 40 then
-    -- Если Стая воронов скоро откатится, копим для нее концентрацию
-    if useCooldown and IsPlayerSpell(131894) and SpellCD(131894) < 2 and focus < 80 then
-        return;
-    end
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Выстрел кобры">
@@ -6939,18 +6862,6 @@ end
 return not HasBuff("player", 1463);
 ]]></Lua>
       </Ability>
-      <Ability Name="Ожoг">
-        <SpellID>2948</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>Moving</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
       <Ability Name="Огненный шар">
         <SpellID>133</SpellID>
         <Target>Target</Target>
@@ -6973,20 +6884,6 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not HasBuff("player", 1459);
-]]></Lua>
-      </Ability>
-      <Ability Name="Раскаленный доспех">
-        <SpellID>30482</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasBuff("player", 30482) then
-    return true;
-end
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -7442,7 +7339,7 @@ if IsModKeyDown(mkLeftAlt) then
     return true;
 end
 
-isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
+isInRange = IsSpellInRange(GetSpellInfo(17962), "target") == 1;
 
 -- заклинание не проходит проверку на IsUsableSpell
 if not setAoE and HasBuff("player", 108683) then
@@ -7565,7 +7462,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(target);
+--return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Запрет чар">
@@ -7577,26 +7474,10 @@ return CheckInterrupt(target);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt(target);
+--return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Проклятие стихий">
-        <SpellID>1490</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitHealth(target) > (UnitHealthMax("player")*2) then
-    if not HasDebuff(target, 1490, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ожоги тьмы">
+      <Ability Name="Ожог тьмы">
         <SpellID>17877</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -7605,9 +7486,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if power2 > 0 and useChaosBold and HealthByPercent(target) < 20 then
-    return true;
-end
+--if power2 > 0 and useChaosBold and HealthByPercent(target) < 20 then
+--    return true;
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Черная душа: Изменчивость">
@@ -7619,23 +7500,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if isInRange and useCooldown and power2 > 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Завеса сумерек">
-        <SpellID>6229</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasBuff("player", 6229) then
-    return true;
-end
+--if isInRange and useCooldown and power2 > 3 then
+--    return true;
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Хаос">
@@ -7724,7 +7591,7 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if IsSpellInRange(GetSpellInfo(1490), target) == 1 then
+if IsSpellInRange(GetSpellInfo(17962), target) == 1 then
     if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
         return true;
     end
@@ -7798,22 +7665,6 @@ end
         <Lua><![CDATA[
 if IS_MOVING or IsPlayerSpell(137587) then
     return isInRange;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Пламя скверны">
-        <SpellID>77799</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>Moving</IsMovingCheck>
-        <Lua><![CDATA[
-if PowerByPercent("player") > 30 then
-    if select(2, HasBuff("player", 80240)) < 3 then
-        return true;
-    end
 end
 ]]></Lua>
       </Ability>
