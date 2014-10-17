@@ -30,11 +30,11 @@ namespace Yanitta.Windows
             var url = string.Format("https://eu.api.battle.net/wow/spell/{0}?locale=ru_RU&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue", spellId);
             var spell = Extensions.GetJSONObject<Spell>(url);
 
-            spellName.Text          = "Наименование: " + spell.Name;
-            spellRange.Text         = "Радиус действия: " + spell.Range;
+            spellName.Text          = spell.Name;
+            spellRange.Text         = string.IsNullOrWhiteSpace(spell.Range) ? "" : "Радиус действия: " + spell.Range;
             spellCost.Text          = spell.PowerCost;
             spellCastTime.Text      = spell.CastTime;
-            spellDescription.Text   = "Описание: " + spell.Description;
+            spellDescription.Text   = spell.Description;
 
             var bi3 = new BitmapImage();
             bi3.BeginInit();

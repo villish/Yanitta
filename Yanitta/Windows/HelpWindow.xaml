@@ -19,13 +19,13 @@
         <Image Name="spellIcon" Margin="3"/>
         
         <StackPanel Grid.Column="1">
-            <TextBlock Name="spellName"/>
-            <TextBlock Name="spellRange"/>
-            <TextBlock Name="spellCost"/>
-            <TextBlock Name="spellCastTime"/>
+            <TextBlock Name="spellName" FontWeight="Bold" Foreground="Cyan"/>
+            <TextBlock Name="spellRange" FontWeight="Bold" Foreground="Cyan"/>
+            <TextBlock Name="spellCost" FontWeight="Bold" Foreground="Cyan"/>
+            <TextBlock Name="spellCastTime" FontWeight="Bold" Foreground="Cyan"/>
         </StackPanel>
-        
-        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Name="spellDescription" TextWrapping="Wrap" />
+
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Name="spellDescription" TextWrapping="Wrap" Margin="0,5,0,0" />
 
     </Grid>
 </Window>
