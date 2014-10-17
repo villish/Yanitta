@@ -6783,10 +6783,10 @@ end
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and HasBuff("player", 48108) then
+if useCooldown and HasBuff("player", 48108) and not HasBuff("player", 108978) then
     return true;
 end
 ]]></Lua>
@@ -6850,16 +6850,16 @@ if isInRange and (HasBuff("player", 48107) or HasDebuff("target", 11129)) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Щит заклинателя">
-        <SpellID>1463</SpellID>
-        <Target>Player</Target>
+      <Ability Name="Ожег">
+        <SpellID>2948</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>Moving</IsMovingCheck>
         <Lua><![CDATA[
-return not HasBuff("player", 1463);
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Огненный шар">
