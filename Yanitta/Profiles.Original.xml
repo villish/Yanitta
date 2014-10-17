@@ -7731,22 +7731,6 @@ if CheckInterrupt(target) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Проклятие стихий">
-        <SpellID>1490</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitHealth(target) > (UnitHealthMax("player")*2) then
-    if not HasDebuff(target, 1490) then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Черная душа: Страдание">
         <SpellID>113860</SpellID>
         <Target>Target</Target>
@@ -7821,11 +7805,6 @@ if power2 > 1 and SpellCD(74434) == 0 then
             end
         -- Накладываем через горящую душу когда дотов вообще нету
         elseif not HasDebuff(target, dotList, "PLAYER") then
-            -- Горящая душа (без ГКД)
-            CastSpellByName(GetSpellInfo(74434));
-            return true;
-        -- Если есть проки (проверять будем по Нестабильному колдовству)
-        elseif NeedRedot(targetInfo, 3) then
             -- Горящая душа (без ГКД)
             CastSpellByName(GetSpellInfo(74434));
             return true;
@@ -7933,7 +7912,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Похищение души">
-        <SpellID>1120</SpellID>
+        <SpellID>103103</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -7954,18 +7933,6 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Пламя Скверны">
-        <SpellID>77799</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>Moving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
 ]]></Lua>
