@@ -6535,20 +6535,6 @@ if members[1].HP < 60 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Волна исцеления">
-        <SpellID>331</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if members[1].HP < 80 then
-    return members[1].Unit;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Тотем исцеляющего потока">
         <SpellID>5394</SpellID>
         <Target>None</Target>
@@ -8628,12 +8614,12 @@ NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восст�
         <Lua><![CDATA[
 -- пауза
 if IsModKeyDown(mkLeftShift) then
-    --for index = 1, NUM_WORLD_RAID_MARKERS do
-    --    if not IsRaidMarkerActive(index) then
-    --        PlaceRaidMarker(index);
-    --        break;
-    --    end
-    --end
+    for index = 1, NUM_WORLD_RAID_MARKERS do
+        if not IsRaidMarkerActive(index) then
+            PlaceRaidMarker(index);
+            break;
+        end
+    end
     return true;
 end
 
