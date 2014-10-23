@@ -41,6 +41,9 @@ namespace Yanitta
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool IsWow64Process([In] IntPtr process, [Out] out bool wow64Process);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool FlushInstructionCache(IntPtr hProcess, IntPtr lpBaseAddress, int dwSize);
 
         #endregion
 
@@ -345,6 +348,10 @@ namespace Yanitta
 
             // restore protection and original code
             this.Write(injAddress, oldCode);
+
+            if (!FlushInstructionCache(this.Process.Handle, injAddress, bytes.Count))
+                throw new Win32Exception();
+
             if (!VirtualProtectEx(this.Process.Handle, injAddress, bytes.Count, oldProtect, out oldProtect))
                 throw new Win32Exception();
 
