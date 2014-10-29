@@ -2875,7 +2875,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown and isInRange and UnitPower("player") > 80;
+return useCooldown and isInRange and UnitPower("player") > 50;
 ]]></Lua>
       </Ability>
       <Ability Name="Залп">
@@ -7532,11 +7532,9 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if IS_MOVING or IsPlayerSpell(137587) then
-    return isInRange;
-end
+return isInRange;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -8518,15 +8516,15 @@ NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восст�
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- пауза
--- if IsModKeyDown(mkLeftShift) then
---     for index = 1, NUM_WORLD_RAID_MARKERS do
---         if not IsRaidMarkerActive(index) then
---             PlaceRaidMarker(index);
---             break;
---         end
---     end
---     return true;
--- end
+if IsModKeyDown(mkLeftShift) then
+    for index = 1, NUM_WORLD_RAID_MARKERS do
+        if not IsRaidMarkerActive(index) then
+            PlaceRaidMarker(index);
+            break;
+        end
+    end
+    return true;
+end
 
 if IsModKeyDown(mkLeftAlt) then
     return true;
@@ -8773,25 +8771,9 @@ end
         <Lua><![CDATA[
 local buffs = { 774, 8936 };
 
-if HasGlyph(145529) then
-    for _,member in ipairs(members) do
-        if member.HP < 80 and HasBuff(member.Unit, buffs, "PLAYER") then
-            return member.Unit;
-        end
-    end
-elseif LowHP.H80 <= 3 then
-    for _,member in ipairs(members) do
-        if member.HP < 90 and HasBuff(member.Unit, buffs, "PLAYER") then
-            local count = 0;
-            for _,unit in ipairs(members) do
-                if unit.HP < 90 and (GetDistance(unit, member) or 0xff) < 10 then
-                    count = count + 1;
-                end
-            end
-            if count > 2 then
-                return member.Unit;
-            end
-        end
+for _,member in ipairs(members) do
+    if member.HP < 80 and HasBuff(member.Unit, buffs, "PLAYER") then
+        return member.Unit;
     end
 end
 ]]></Lua>
