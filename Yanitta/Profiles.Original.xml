@@ -3596,6 +3596,12 @@ if HealthByPercent("player") < 30 then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(1752), "target") == 1;
+
+if not UnitAffectingCombat("player") and GetShapeshiftForm(1) ~= 1 then
+    if GetShapeshiftFormCooldown(1) == 0 then
+        CastShapeshiftForm(1);
+    end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Веер клинков">
@@ -3621,7 +3627,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsStealthed() then
+if IsStealthed() and IsModKeyDown(mkLeftShift) then
     return true;
 end
 ]]></Lua>
@@ -3785,7 +3791,9 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if not HasBuff("player", 2823) then
+local buffs = { 2823, 108211, 3408, 8679 };
+
+if not HasBuff("player", buffs) then
     return true;
 end
 ]]></Lua>
@@ -8613,13 +8621,17 @@ NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восст�
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- пауза
-if IsModKeyDown(mkLeftShift) then
-    for index = 1, NUM_WORLD_RAID_MARKERS do
-        if not IsRaidMarkerActive(index) then
-            PlaceRaidMarker(index);
-            break;
-        end
-    end
+-- if IsModKeyDown(mkLeftShift) then
+--     for index = 1, NUM_WORLD_RAID_MARKERS do
+--         if not IsRaidMarkerActive(index) then
+--             PlaceRaidMarker(index);
+--             break;
+--         end
+--     end
+--     return true;
+-- end
+
+if IsModKeyDown(mkLeftAlt) then
     return true;
 end
 
