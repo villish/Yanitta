@@ -14,7 +14,6 @@ namespace Yanitta
 
         private void CommandBinding_Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            Offsets.Save();
             Settings.Default.Save();
             this.Close();
         }

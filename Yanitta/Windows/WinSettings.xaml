@@ -6,7 +6,7 @@
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="WindowSettings"
         Width="470"
-        Height="400"
+        Height="141"
         ShowInTaskbar="False"
         Style="{DynamicResource KamillaStyle}"
         Icon="/Yanitta;component/Resources/Background_Downloader.png"
@@ -52,35 +52,8 @@
         </StackPanel>
 
         <Separator />
-
-        <StackPanel DataContext="{Binding Source={x:Static yanitta:Offsets.Default}}">
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="Build:" />
-                <TextBox Width="250" Text="{Binding Build}" TextAlignment="Right" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="PlayerName" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerName, Converter={yanitta:StringToIntConverter}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="PlayerClass" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding PlayerClass, Converter={yanitta:StringToIntConverter}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="IsInGame" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding IsInGame, Converter={yanitta:StringToIntConverter}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="ExecuteBuffer" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding ExecuteBuffer, Converter={yanitta:StringToIntConverter}}" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Label Width="200" Content="Injected address" />
-                <TextBox Width="250" TextAlignment="Right" Text="{Binding InjectedAddress, Converter={yanitta:StringToIntConverter}}" />
-            </StackPanel>
-        </StackPanel>
-
         <Separator />
+
         <Button Width="123" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="{StaticResource Save}" Content="Save" />
     </StackPanel>
 </Window>

@@ -1,16 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Xml.Serialization;
+using System.Runtime.InteropServices;
 
 namespace Yanitta
 {
-    [Serializable]
     public class Offsets
     {
-        private const string fileName = "offsets.xml";
-
-        [XmlElement]
-        public int Build            { get; set; }
+        private const string fileName = "offsets.ini";
 
         /// <summary>
         /// Имя персонажа.
@@ -21,8 +17,7 @@ namespace Yanitta
         /// sub_4C72F7(a1);
         /// return 2;
         /// </summary>
-        [XmlElement]
-        public long PlayerName      { get; set; }
+        public long PlayerName;
 
         /// <summary>
         /// Класс персонажа
@@ -36,8 +31,7 @@ namespace Yanitta
         ///    v6 = sub_73EB65(v4, (unsigned __int8)v5, 0);
         ///  }
         /// </summary>
-        [XmlElement]
-        public long PlayerClass     { get; set; }
+        public long PlayerClass;
 
         /// <summary>
         /// Нахождение в мире
@@ -45,16 +39,14 @@ namespace Yanitta
         /// Lua function PlaySound
         ///   if ( !(unsigned __int8)sub_40B039() && (!sub_7D875E() || byte_12AB65E /*IsInWorld*/) )
         /// </summary>
-        [XmlElement]
-        public long IsInGame        { get; set; }
+        public long IsInGame;
 
         /// <summary>
         /// Адрес функции FrameScript::ExecuteBuffer
         ///
         /// Lua function RunScript
         /// </summary>
-        [XmlElement]
-        public long ExecuteBuffer   { get; set; }
+        public long ExecuteBuffer;
 
         /// <summary>
         /// Адресс вставки байт кода
@@ -62,22 +54,43 @@ namespace Yanitta
         /// По строке 'compat.lua' ищем функцию инициализации Lua
         /// Начало этой функции и есть адресом.
         /// </summary>
-        [XmlElement]
-        public long InjectedAddress { get; set; }
+        public long InjectedAddress;
 
-        static Offsets()
+        public Offsets(string section)
         {
-            if (File.Exists(fileName))
-                Default = XmlManager.Load<Offsets>(fileName);
-            else
-                Default = new Offsets();
+            var file = Path.Combine(Environment.CurrentDirectory, fileName);
+
+            if (!File.Exists(file))
+                throw new FileNotFoundException("File not found", file);
+
+            PlayerName      = GetValue(section, "UnitName", file);
+            PlayerClass     = GetValue(section, "UnitClas", file);
+            IsInGame        = GetValue(section, "IsInGame", file);
+            ExecuteBuffer   = GetValue(section, "ExecBuff", file);
+            InjectedAddress = GetValue(section, "Inj_Addr", file);
         }
 
-        public static Offsets Default { get; set; }
+        #region WinApi
 
-        public static void Save()
+        [DllImport("kernel32.dll")]
+        static extern int GetPrivateProfileInt(string lpAppName, string lpKeyName, int nDefault, string lpFileName);
+
+        private long GetValue(string section, string key, string file)
         {
-            XmlManager.Save(fileName, Default);
+            if (string.IsNullOrWhiteSpace(section))
+                throw new ArgumentNullException("section");
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException("key");
+
+            var val = GetPrivateProfileInt(section, key, 0, file);
+
+            if (val == 0L)
+                throw new NullReferenceException("key");
+
+            return val;
         }
+
+        #endregion
     }
 }

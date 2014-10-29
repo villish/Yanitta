@@ -363,9 +363,9 @@ namespace Yanitta
         /// </summary>
         /// <param name="offset">Относительный аддресс.</param>
         /// <returns>абсолютный аддресс в процессе.</returns>
-        public IntPtr Rebase(IntPtr offset)
+        public IntPtr Rebase(long offset)
         {
-            return new IntPtr(offset.ToInt64() + this.Process.MainModule.BaseAddress.ToInt64());
+            return new IntPtr(offset + this.Process.MainModule.BaseAddress.ToInt64());
         }
 
         /// <summary>
