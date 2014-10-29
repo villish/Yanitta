@@ -298,9 +298,8 @@ namespace Yanitta
             }
 
             // mov eax, callAddress
-            var addr = this.Process.MainModule.BaseAddress.ToInt32() + callAddress.ToInt32();
             bytes.Add(0xB8);
-            bytes.AddRange(BitConverter.GetBytes(addr));
+            bytes.AddRange(BitConverter.GetBytes(callAddress.ToInt32()));
 
             // call eax
             bytes.Add(0xFF);
