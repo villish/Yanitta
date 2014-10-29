@@ -110,7 +110,7 @@
     <Compile Include="Windows\MultySelectedComboBox.xaml.cs">
       <DependentUpon>MultySelectedComboBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="XML\Offsets.cs" />
+    <Compile Include="Misk\Offsets.cs" />
     <Compile Include="XML\HotKey.cs" />
     <Compile Include="Localization.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -206,6 +206,9 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
+    <None Include="offsets.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
@@ -298,11 +301,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="YanittaApi.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="offsets.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

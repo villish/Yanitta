@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -65,6 +64,8 @@ namespace Yanitta
         /// </summary>
         public ProcessMemory Memory { get; private set; }
 
+        public Offsets Offsets { get; private set; }
+
         private IntPtr keyboardHook;
         private bool IsDisposed;
         private DispatcherTimer mTimer;
@@ -117,8 +118,8 @@ namespace Yanitta
 
                     if (value)
                     {
-                        this.Class = (WowClass)this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.PlayerClass));
-                        this.Name  = this.Memory.ReadString(Memory.Rebase((IntPtr)Offsets.Default.PlayerName));
+                        this.Class = (WowClass)this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.PlayerClass));
+                        this.Name  = this.Memory.ReadString(this.Memory.Rebase(this.Offsets.PlayerName));
                     }
 
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
@@ -148,9 +149,11 @@ namespace Yanitta
             if (process == null)
                 throw new ArgumentNullException("process");
 
-            int build = process.MainModule.FileVersionInfo.FilePrivatePart;
-            if (build != Offsets.Default.Build)
-                throw new Exception(string.Format("Current build [{0}] WoW is not supported [{1}]", build, Offsets.Default.Build));
+            var section = string.Format("{0}_x86", process.MainModule.FileVersionInfo.FilePrivatePart);
+
+            this.Offsets = new Offsets(section);
+            if (this.Offsets == null)
+                throw new NullReferenceException(string.Format("Current build {0}_x86 not supported!", section));
 
             this.Memory = new ProcessMemory(process);
 
@@ -158,7 +161,7 @@ namespace Yanitta
             this.mTimer.Interval = TimeSpan.FromMilliseconds(500);
             this.mTimer.Tick += (o, e) => {
                 if (CheckProcess())
-                    this.IsInGame = this.Memory.Read<byte>(Memory.Rebase((IntPtr)Offsets.Default.IsInGame)) != 0;
+                    this.IsInGame = this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.IsInGame)) != 0;
             };
 
             // Мы должны сохранить ссылку на делегат, чтобы его не трогал сборщик мусора
@@ -269,17 +272,20 @@ namespace Yanitta
             var len   = bytes.Length - 1;
             try
             {
-                var injAddress = new IntPtr(this.Memory.Process.MainModule.BaseAddress.ToInt32() + Offsets.Default.InjectedAddress);
-                this.Memory.Call(injAddress,
-                    new IntPtr(Offsets.Default.ExecuteBuffer),
-                    code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
+                var injAddress  = this.Memory.Rebase(this.Offsets.InjectedAddress);
+                var funcAddress = this.Memory.Rebase(this.Offsets.ExecuteBuffer);
+
+                this.Memory.Call(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
-            this.Memory.Free(code);
-            this.Memory.Free(path);
+            finally
+            {
+                this.Memory.Free(code);
+                this.Memory.Free(path);
+            }
         }
 
         public override string ToString()
