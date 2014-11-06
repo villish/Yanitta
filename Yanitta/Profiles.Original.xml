@@ -1144,7 +1144,7 @@ return true;
 -- есть баф на использование бесплатного удара (Ультиматум - 122510)
 if UnitIsPlayer(target) and HealthByPercent(target) > 20 then
     return true;
-elseif not setAoE and (HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308))) then
+elseif HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308)) then
     return true;
 end
 ]]></Lua>
@@ -1266,7 +1266,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return HealthByPercent("player") <= 90;
+return HealthByPercent("player") < 90;
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -1290,9 +1290,7 @@ return CheckInterrupt("target");
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and CheckInterrupt("target") then
-    return true;
-end
+return isInMeele and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Сокрушительный Бросок">
@@ -1331,6 +1329,7 @@ CONFUSE
 POSSESS
 ]]
 
+-- надо правильно определить типы снимаемого контроля
 local t = C_LossOfControl.GetEventInfo(1);
 if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSESS' then
     return true;
@@ -1347,6 +1346,8 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele then
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
     return true;
 end
 ]]></Lua>
@@ -1381,9 +1382,7 @@ if isInMeele then
     if setAoE == 2 then
         return true;
     elseif setAoE == 1 then
-        if select(2, HasBuff("player", 12950)) < 2 then
-            return true;
-        end
+        return select(2, HasBuff("player", 12950)) < 2;
     end
 end
 ]]></Lua>
@@ -1421,7 +1420,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return setAoE < 2;
 ]]></Lua>
       </Ability>
       <Ability Name="Рев дракона">
@@ -1445,7 +1444,7 @@ return isInMeele;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return setAoE < 2;
 ]]></Lua>
       </Ability>
       <Ability Name="Кровожадность">
@@ -9171,20 +9170,6 @@ if not isCat then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Взбучка">
-        <SpellID>77758</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and not isCat then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Взбучка (Кот)">
         <SpellID>106830</SpellID>
         <Target>Target</Target>
@@ -9660,7 +9645,7 @@ end
 local rip = select(3, HasDebuff("target", 1079, "PLAYER"));
 
 if combopoint > 4 and UnitExists("target")
-    and UnitHealth("target") * 2 < UnitHealth("target") then
+    and UnitHealthMax("target") * 2 < UnitHealthMax("target") then
     return true;
 elseif rip > 8 and energy >= 50 and combopoint > 4 then
     return true;
@@ -9680,7 +9665,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitExists("target") and UnitHealth("target") * 2 > UnitHealth("target") then
+if UnitExists("target") and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
     if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 2 then
         return true;
     end
