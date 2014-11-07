@@ -1141,10 +1141,8 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Это заклинание не затрагивает ГКД
--- есть баф на использование бесплатного удара (Ультиматум - 122510)
-if UnitIsPlayer(target) and HealthByPercent(target) > 20 then
-    return true;
-elseif HasBuff("player", 122510) or ((rage > 90 or agroStatus < 2) and not IsUsableSpell(5308)) then
+-- (Ультиматум - 122510)
+if HasBuff("player", 122510) then
     return true;
 end
 ]]></Lua>
