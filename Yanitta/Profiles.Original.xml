@@ -1293,18 +1293,6 @@ return CheckInterrupt("target");
 return isInMeele and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
-      <Ability Name="Сокрушительный Бросок">
-        <SpellID>64382</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkRightControl);
-]]></Lua>
-      </Ability>
       <Ability Name="Ярость берсерка">
         <SpellID>18499</SpellID>
         <Target>None</Target>
@@ -8579,9 +8567,9 @@ FillPartyTables(774);
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 69369) then
+--if HasBuff("player", 69369) then
     return UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
-end
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Оживление">
@@ -9556,7 +9544,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and useCooldown and energy <= 35 then
+if isInMeele and energy <= 35 then
     return true;
 end
 ]]></Lua>
@@ -9571,20 +9559,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown and energy < 35 and not HasBuff("player", 106952) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Природная чуткость">
-        <SpellID>124974</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and useCooldown then
     return true;
 end
 ]]></Lua>
