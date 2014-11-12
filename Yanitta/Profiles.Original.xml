@@ -9499,11 +9499,8 @@ return isBear;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and not isBear then
-    -- надо проверить ИД кровотечения.
-    if select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
-        return true;
-    end
+if isBear and IsSpellInRange(GetSpellInfo(33917), "target") == 1 then
+    return true;
 end
 ]]></Lua>
       </Ability>
