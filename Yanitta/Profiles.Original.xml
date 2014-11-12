@@ -922,17 +922,30 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if rage > 55 and agroStatus > 2 then
-    if not HasBuff("player", 112048) then
-        local vengens = select(5, HasBuff("player", 93098)) or 0;
-        if isAltMod then
-            return true;
-        elseif playerHP < 60 then
-            return true;
-        elseif vengens > 100000 then
-            return true;
-        end
+if not not HasBuff("player", 112048) then
+    -- Если есть здоровье - набираем ярость для большей эфективности щита
+    -- Надо еще добавить проверку на наличе бафа "Решимости"
+    if rage > 55 and playerHP > 40 then
+        return true;
+    -- Если здоровья мало - используем щит когда это возможно
+    -- Надо подкорректировать количество минимального здоровья
+    elseif rage > 30 then
+        return true;
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Блок щитом">
+        <SpellID>2565</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if rage >= 60 and agroStatus > 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -988,20 +1001,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if playerHP <= 50 and isInMeele and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Блок щитом">
-        <SpellID>2565</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if rage >= 60 and agroStatus > 2 then
     return true;
 end
 ]]></Lua>
@@ -1128,6 +1127,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- дает 20 ярости
 return true;
 ]]></Lua>
       </Ability>
