@@ -9297,6 +9297,20 @@ if HasBuff("player", 69369) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Снятие порчи">
+        <SpellID>2782</SpellID>
+        <Target>Focus</Target>
+        <Target>Player</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return false;-- надо доработать
+]]></Lua>
+      </Ability>
       <Ability Name="Лобовая атака">
         <SpellID>106839</SpellID>
         <Target>Target</Target>
@@ -9356,13 +9370,15 @@ end
       <Ability Name="Целительное прикосновение">
         <SpellID>5185</SpellID>
         <Target>Player</Target>
+        <Target>Mouseover</Target>
+        <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 69369) and HealthByPercent("player") < 90 then
+if HasBuff("player", 69369) and HealthByPercent(terget) < 90 then
      return true;
 end
 ]]></Lua>
@@ -9475,7 +9491,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return isBear and HealthByPercent("player") < 80;
+return isBear and UnitPower("player") > 40 and HealthByPercent("player") < 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Увечте">
@@ -9500,6 +9516,23 @@ return isBear;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isBear and IsSpellInRange(GetSpellInfo(33917), "target") == 1 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Омоложеине">
+        <SpellID>774</SpellID>
+        <Target>Player</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsSpellKnown(157280) -- перк "Усиленное омоложение"
+    and HealthByPercent(target) < 80
+    and not HasBuff(target, 774, "PLAYER") then
     return true;
 end
 ]]></Lua>
