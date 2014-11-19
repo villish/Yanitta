@@ -9426,7 +9426,7 @@ if isCat then
     local rip = select(3, HasDebuff("target", 1079, "PLAYER"));
 
     if combopoint > 4 and UnitExists("target")
-        and UnitHealthMax("target") * 2 < UnitHealthMax("target") then
+        and (UnitHealth("target") * 2) < UnitHealthMax("player") then
         return true;
     elseif rip > 8 and energy >= 50 and combopoint > 4 then
         return true;
@@ -9447,7 +9447,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and UnitExists("target") and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
+if isCat and UnitExists("target") and UnitHealth("target") * 2 > UnitHealthMax("player") then
     if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 2 then
         return true;
     end
@@ -9524,6 +9524,7 @@ end
         <SpellID>774</SpellID>
         <Target>Player</Target>
         <Target>Mouseover</Target>
+        <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
