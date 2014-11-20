@@ -937,7 +937,7 @@ if not not HasBuff("player", 112048) then
         return true;
     -- Если здоровья мало - используем щит когда это возможно
     -- Надо подкорректировать количество минимального здоровья
-    elseif rage > 30 then
+    elseif rage > 30 and playerHP <= 40 then
         return true;
     end
 end
