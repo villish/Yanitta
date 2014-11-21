@@ -922,7 +922,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not not HasBuff("player", 112048) then
+if not HasBuff("player", 112048) then
     -- Величина решимости в %, максимум 350%
     -- Необходимо вычислить, надо ли делать проверку на наличие решимости
     -- чтобы накладывать щит.
@@ -937,7 +937,7 @@ if not not HasBuff("player", 112048) then
         return true;
     -- Если здоровья мало - используем щит когда это возможно
     -- Надо подкорректировать количество минимального здоровья
-    elseif rage > 30 then
+    elseif rage > 30 and playerHP <= 40 then
         return true;
     end
 end
@@ -9362,16 +9362,16 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and isInMeele and useCooldown and energy < 50 then
+if isCat and isInMeele and useCooldown and energy < 70 then
     return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Целительное прикосновение">
         <SpellID>5185</SpellID>
+        <Target>Focus</Target>
         <Target>Player</Target>
         <Target>Mouseover</Target>
-        <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -9447,7 +9447,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and UnitExists("target") and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
+if isCat and UnitExists("target")
+    and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
     if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 2 then
         return true;
     end
@@ -9464,7 +9465,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isCat and select(3, HasDebuff("target", 1822)) < 3 then
-    return true;
+    return UnitIsPVP("player") or UnitHealth("target") < (UnitHealth("player") or 0 / 2);
 end
 ]]></Lua>
       </Ability>
