@@ -261,7 +261,7 @@ namespace Yanitta
             if (SuspendThread(tHandle) == 0xFFFFFFFF)
                 throw new Win32Exception();
 
-            var context = new CONTEXT { ContextFlags = ContextFlags.Control };
+            var context = new CONTEXT { ContextFlags = 0x10001 /*CONTROL*/ };
             if (!GetThreadContext(tHandle, ref context))
                 throw new Win32Exception();
 
@@ -283,18 +283,9 @@ namespace Yanitta
             // pushed to the stack function arguments
             for (int i = funcArgs.Length - 1; i >= 0; --i)
             {
-                if (funcArgs[i] == 0)
-                {
-                    // push 0
-                    bytes.Add(0x6A);
-                    bytes.Add(0x00);
-                }
-                else
-                {
-                    // push param address
-                    bytes.Add(0x68);
-                    bytes.AddRange(BitConverter.GetBytes(funcArgs[i]));
-                }
+                // push param address
+                bytes.Add(0x68);
+                bytes.AddRange(BitConverter.GetBytes(funcArgs[i]));
             }
 
             // mov eax, callAddress
@@ -332,8 +323,7 @@ namespace Yanitta
 
             this.Write(injAddress, bytes.ToArray());
 
-            context.Eip          = (uint)injAddress.ToInt32();
-            context.ContextFlags = ContextFlags.Control;
+            context.Eip = (uint)injAddress.ToInt32();
 
             if (!SetThreadContext(tHandle, ref context) || ResumeThread(tHandle) == 0xFFFFFFFF)
                 throw new Win32Exception();
@@ -453,57 +443,24 @@ namespace Yanitta
         All                 = 0x1F03FF
     }
 
-    [Flags]
-    public enum ContextFlags : uint
-    {
-        i386              = 0x10000,
-        Control           = i386    | 0x01, // SS:SP, CS:IP, FLAGS, BP
-        Integer           = i386    | 0x02, // AX, BX, CX, DX, SI, DI
-        Segments          = i386    | 0x04, // DS, ES, FS, GS
-        FloatingPoint     = i386    | 0x08, // 387 state
-        DebugRegisters    = i386    | 0x10, // DB 0-3,6,7
-        ExtendedRegisters = i386    | 0x20, // cpu specific extensions
-        Full              = Control | Integer | Segments,
-        All               = Control | Integer | Segments | FloatingPoint | DebugRegisters | ExtendedRegisters
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
+    /// <summary>
+    /// Contains processor-specific register data.
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Size = 716)]
     public struct CONTEXT
     {
-        public ContextFlags ContextFlags; //set this to an appropriate value
-        // Retrieved by CONTEXT_DEBUG_REGISTERS
-        public uint Dr0;
-        public uint Dr1;
-        public uint Dr2;
-        public uint Dr3;
-        public uint Dr6;
-        public uint Dr7;
-        // Retrieved by CONTEXT_FLOATING_POINT
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst=112)]//512
-        public byte[] FloatSave;
-        // Retrieved by CONTEXT_SEGMENTS
-        public uint SegGs;
-        public uint SegFs;
-        public uint SegEs;
-        public uint SegDs;
-        // Retrieved by CONTEXT_INTEGER
-        public uint Edi;
-        public uint Esi;
-        public uint Ebx;
-        public uint Edx;
-        public uint Ecx;
-        public uint Eax;
-        // Retrieved by CONTEXT_CONTROL
-        public uint Ebp;
+        /// <summary>
+        /// Context flag.
+        /// </summary>
+        [FieldOffset(0x00)]
+        public uint ContextFlags;
+
+        /// <summary>
+        /// Next instruction pointer.
+        /// </summary>
+        [FieldOffset(0xB8)]
         public uint Eip;
-        public uint SegCs;
-        public uint EFlags;
-        public uint Esp;
-        public uint SegSs;
-        // Retrieved by CONTEXT_EXTENDED_REGISTERS
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 512)]
-        public byte[] ExtendedRegisters;
-    }
+    };
 
     #endregion
 }
