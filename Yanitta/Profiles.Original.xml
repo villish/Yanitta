@@ -8758,7 +8758,7 @@ if IsModKeyDown(mkLeftControl)
     and UnitHealth("mouseover") > 100
     and UnitCanAssist("player", "mouseover") then
     local buff, count, rem = HasBuff("mouseover", 774, "PLAYER");
-    if cont < 1 or (hasBring and (count < 2 or rem < 2) then
+    if cont < 1 or (hasBring and (count < 2 or rem < 2)) then
         return "mouseover";
     end
 end
