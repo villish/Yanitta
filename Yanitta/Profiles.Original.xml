@@ -219,6 +219,10 @@ function CheckEnrage(unit, ...)
     end
 end
 
+function IsMountedEx()
+   return IsMounted() and not HasBuff("player", 165803); 
+end
+
 -----------------------------------------------
 --                    HEAL                   --
 -----------------------------------------------
@@ -768,6 +772,7 @@ end
       <Lua><![CDATA[
 setAoE = false;
 isAltMod = true;
+useInterrupt = true;
 useCooldown = true;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
@@ -788,6 +793,14 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             isAltMod = true;
             AddonFrame.print("|cff00ff00Используется непроницаемый щит", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
         end
     elseif modifier == "RSHIFT" then
         if useCooldown then
@@ -822,7 +835,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -852,7 +865,7 @@ rage       = UnitPower("player");
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt("target");
+return useInterrupt and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Разрушительный крик">
@@ -922,22 +935,23 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not not HasBuff("player", 112048) then
+if isAltMod and not HasBuff("player", 112048) then
     -- Величина решимости в %, максимум 350%
     -- Необходимо вычислить, надо ли делать проверку на наличие решимости
     -- чтобы накладывать щит.
 
     -- Провести расчеты по определению эфективности использования "Блок щитом" / "Непроницаемый щит"
-    --local value = select(4, HasBuff("player", 158300));
-
+    local value = select(5, HasBuff("player", 158300));
+    local def_val = IsInRaid() and 100 or 50;
+    
     -- Если есть здоровье - набираем ярость для большей эфективности щита
     -- Надо еще добавить проверку на наличе бафа "Решимости"
-    if rage > 55 and playerHP > 40 then
-        --return value > 100;
-        return true;
+    if rage > 55 and playerHP > 30 then
+        return value > def_val;
+        --return true;
     -- Если здоровья мало - используем щит когда это возможно
     -- Надо подкорректировать количество минимального здоровья
-    elseif rage > 30 and playerHP <= 40 then
+    elseif rage > 30 and playerHP <= 30 then
         return true;
     end
 end
@@ -952,7 +966,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if rage >= 60 and agroStatus > 2 then
+-- 132404 Блок щитом
+if rage >= 60 and agroStatus > 2 and not HasBuff("player", 132404) then
     return true;
 end
 ]]></Lua>
@@ -1037,10 +1052,24 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and agroStatus > 2 then
+if useCooldown and isInMeele then
     if UnitHealth(target) > (UnitHealthMax("player") * 3) then
         return true;
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар грома (AOE)">
+        <SpellID>6343</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and setAoE then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -1112,20 +1141,6 @@ if UnitIsPlayer(target) and not HasDebuff(target, 1715) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар грома (AOE)">
-        <SpellID>6343</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and setAoE then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Реванш">
         <SpellID>6572</SpellID>
         <Target>Target</Target>
@@ -1150,22 +1165,8 @@ return true;
         <Lua><![CDATA[
 -- Это заклинание не затрагивает ГКД
 -- (Ультиматум - 122510)
-if HasBuff("player", 122510) then
+if HasBuff("player", 122510) or rage > 70 then
     return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар грома (SOLO)">
-        <SpellID>6343</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasDebuff("target", 115798) then
-    return isInMeele;
 end
 ]]></Lua>
       </Ability>
@@ -1187,6 +1188,7 @@ return isInMeele;
       <Lua><![CDATA[
 setAoE = 0;
 useCooldown = true;
+useInterrupt = true;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -1202,6 +1204,14 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             setAoE = 0;
             AddonFrame.print("|cff00ff00Одиночная цель", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
         end
     elseif modifier == "RSHIFT" then
         if useCooldown then
@@ -1251,7 +1261,7 @@ if IsMouseButtonDown(4) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -1284,7 +1294,7 @@ return HealthByPercent("player") < 90;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt("target");
+return useInterrupt and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Разрушительный крик">
@@ -1471,6 +1481,7 @@ return true;
       <Lua><![CDATA[
 setAoE = 0;
 useCooldown = true;
+useInterrupt = true;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -1486,6 +1497,14 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             setAoE = 0;
             AddonFrame.print("|cff00ff00Одиночная цель", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
         end
     elseif modifier == "RSHIFT" then
         if useCooldown then
@@ -1563,7 +1582,7 @@ return playerHP <= 80;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt("target");
+return useInterrupt and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Отражение заклинания">
@@ -1785,6 +1804,246 @@ return true;
         <Lua><![CDATA[
 return (rage > 40 or HasBuff("player", 1719))
     and HealthByPercent(target) > 20;
+]]></Lua>
+      </Ability>
+    </Rotation>
+    <Rotation Name="Гладиатор">
+      <HotKey Key="V" Modifier="Alt" />
+      <Lua><![CDATA[
+setAoE = false;
+useInterrupt = true;
+useCooldown = true;
+
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000AOE", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+]]></Lua>
+      <Ability Name="Героический прыжок">
+        <SpellID>6544</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
+      <Ability Name="Инициализация">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Пауза в ротации
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+    return true;
+end
+
+-- Перейти в стойку защиты
+if GetSpecialization() == 3 and GetShapeshiftForm() ~= 1 then
+    CastShapeshiftForm(1);
+end
+
+-- камень здоровья
+if HealthByPercent("player") < 30 then
+    UseItemById(5512);
+end
+
+agroStatus = UnitThreatSituation("player") or 0;
+isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
+hasAPbuff  = HasBuff("player", { 57330, 19506});
+playerHP   = HealthByPercent("player");
+rage       = UnitPower("player");
+]]></Lua>
+      </Ability>
+      <Ability Name="Зуботычина">
+        <SpellID>6552</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useInterrupt and CheckInterrupt("target");
+]]></Lua>
+      </Ability>
+      <Ability Name="Победный раж">
+        <SpellID>34428</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if playerHP <= 80 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ярость берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+--[[
+STUN_MECHANIC
+SCHOOL_INTERRUPT
+DISARM
+PACIFYSILENCE
+SILENCE
+ROOT
+PACIFY
+STUN
+FEAR
+CHARM
+CONFUSE
+POSSESS
+]]
+
+local t = C_LossOfControl.GetEventInfo(1);
+if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSESS' then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Кровавая баня">
+        <SpellID>12292</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and isInMeele then
+    if UnitHealth(target) > (UnitHealthMax("player") * 3) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Атака щитом">
+        <SpellID>156321</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- 
+if isInMeele and not HasBuff("player", 169667) then
+    if rage > 25 and SpellCD(23922) <= 1.5 then
+        -- 169686 Неприклонные удары
+        --if select(2, HasBuff("", 169686)) > 1 then
+            return true;
+        --end
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар грома (AOE)">
+        <SpellID>6343</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and setAoE then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Мощный удар щитом">
+        <SpellID>23922</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Реванш">
+        <SpellID>6572</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- дает 20 ярости
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар героя">
+        <SpellID>78</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Это заклинание не затрагивает ГКД
+-- (Ультиматум - 122510)
+if HasBuff("player", 122510) or rage > 70 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Сокрушение">
+        <SpellID>20243</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInMeele;
 ]]></Lua>
       </Ability>
     </Rotation>
