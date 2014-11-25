@@ -942,7 +942,7 @@ if isAltMod and not HasBuff("player", 112048) then
 
     -- Провести расчеты по определению эфективности использования "Блок щитом" / "Непроницаемый щит"
     local value = select(5, HasBuff("player", 158300));
-    local def_val = IsInRaid() and 100 or 50;
+    local def_val = IsInRaid() and 150 or 100;
     
     -- Если есть здоровье - набираем ярость для большей эфективности щита
     -- Надо еще добавить проверку на наличе бафа "Решимости"
@@ -8816,10 +8816,6 @@ if IsModKeyDown(mkLeftShift) then
     return true;
 end
 
-if IsModKeyDown(mkLeftAlt) then
-    return true;
-end
-
 FillPartyTables(774);
 ]]></Lua>
       </Ability>
@@ -8830,11 +8826,12 @@ FillPartyTables(774);
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---if HasBuff("player", 69369) then
+-- Перк "Усиленное возрождение" (157301)
+if not IS_MOVING or (IS_MOVING and IsSpellKnown(157301)) then
     return UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
---end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Оживление">
@@ -8875,7 +8872,7 @@ return IsMouseButtonDown(3);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() or HasBuff("player", 104270)
+if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() or HasBuff("player", 104270)
     or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6) then
     return true;
 end
@@ -8978,7 +8975,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if LowHP.H80 > 3 then
+-- Очень дорогой АОЕ-хил,
+-- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
+if (#members > 5 and LowHP.H70 > 4) or LowHP.H70 > 3 then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -9011,19 +9010,25 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+local hasBring = IsTalentSpell(GetSpellInfo(155675));
+
 if IsModKeyDown(mkLeftControl)
-and UnitExists("mouseover")
-and UnitHealth("mouseover") > 100
-and UnitCanAssist("player", "mouseover")
-and not HasBuff("mouseover", 774, "PLAYER") then
-    return "mouseover";
+    and UnitExists("mouseover")
+    and UnitHealth("mouseover") > 100
+    and UnitCanAssist("player", "mouseover") then
+    local buff, count, rem = HasBuff("mouseover", 774, "PLAYER");
+    if cont < 1 or (hasBring and (count < 2 or rem < 2)) then
+        return "mouseover";
+    end
 end
 
 if LowHP.H60 > 3 or IsModKeyDown(mkLeftControl) then -- Опытным путем надо определить условие
     for _,member in ipairs(members) do
-        if member.HP < 60  or (member.Agro > 2 and member.IsTank)
-            or IsModKeyDown(mkLeftControl) then
-            if not HasBuff(member.Unit, 774, "PLAYER") then
+        local buff, count, rem = HasBuff(member.Unit, 774, "PLAYER");
+        if IsModKeyDown(mkLeftControl)
+            or member.HP < 60
+            or ((not IsInRaid() or member.IsTank) and member.Agro > 2) then
+            if count < 1 or (hasBring and (count < 2 or rem < 2)) then
                 return member.Unit;
             end
         end
@@ -9042,7 +9047,7 @@ end
         <Lua><![CDATA[
 local count = 0;
 for _,member in ipairs(members) do
-    if member.HP < 55 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 3 then
+    if member.HP < 30 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 3 then
         count = count + 1;
         if count > 2 then
             print("|cff00ff00 >> Кастую сотворение <<")
@@ -9062,7 +9067,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local buffs = { 774, 8936 };
-
 for _,member in ipairs(members) do
     if member.HP < 80 and HasBuff(member.Unit, buffs, "PLAYER") then
         return member.Unit;
@@ -9140,7 +9144,8 @@ if not HasBuff("player", 132158) then
     local harmony = select(3, HasBuff("player", 100977));
 
     local hp = members[1].HP;
-    if hp <= 50 or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
+    if hp <= 30
+        or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
         if GetShapeshiftForm() == 6 or not IS_MOVING then
             return members[1].Unit;
         end
@@ -9171,9 +9176,14 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- 155675 Зарождение
+local hasBring = IsTalentSpell(GetSpellInfo(155675));
+
 for _,member in ipairs(members) do
     if member.HP < 82 or ((not IsInRaid() or member.IsTank) and member.Agro > 2) then
-        if not HasBuff(member.Unit, 774, "PLAYER") then
+        local buff, count, rem = HasBuff(member.Unit, 774, "PLAYER");
+        if count < 1
+            or (member.HP < 60 and (count < 2 or rem < 2) and hasBring) then
             return member.Unit;
         end
     end
@@ -9621,16 +9631,16 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and isInMeele and useCooldown and energy < 50 then
+if isCat and isInMeele and useCooldown and energy < 70 then
     return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Целительное прикосновение">
         <SpellID>5185</SpellID>
+        <Target>Focus</Target>
         <Target>Player</Target>
         <Target>Mouseover</Target>
-        <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -9706,7 +9716,8 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and UnitExists("target") and UnitHealth("target") * 2 > UnitHealthMax("player") then
+if isCat and UnitExists("target")
+    and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
     if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 2 then
         return true;
     end
@@ -9723,7 +9734,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isCat and select(3, HasDebuff("target", 1822)) < 3 then
-    return true;
+    return UnitIsPVP("player") or UnitHealth("target") < (UnitHealth("player") or 0 / 2);
 end
 ]]></Lua>
       </Ability>
