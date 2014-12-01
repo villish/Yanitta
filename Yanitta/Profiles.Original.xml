@@ -21,6 +21,7 @@ moving_spell_table = {
     97128,  -- Опаляющее перо (Алисразор)
     79206,  -- Благосклонность предков (Шанам)
     108839, -- Плавучая льдина
+    165803, -- Награнд (талбук)
 };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
@@ -220,7 +221,7 @@ function CheckEnrage(unit, ...)
 end
 
 function IsMountedEx()
-   return IsMounted() and not HasBuff("player", 165803); 
+   return IsMounted() and not HasBuff("player", 165803);
 end
 
 -----------------------------------------------
@@ -601,6 +602,9 @@ function AddonFrame_OnEvent(self, event, ...)
                 end
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
+            if DebugMode then
+                print("|cff15bd05[%d - %s]|r - |cfff5360c%s|r", spellId, spellName, param15);
+            end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
             end
@@ -2964,10 +2968,6 @@ SteadyShot = 0;
 if IsModKeyDown(mkLeftAlt) or IsStealthed() then
     StopAttack();
     PetStopAttack();
-    -- перейдем в аспект ястребя
-    if GetShapeshiftForm() ~= 1 then
-        CastShapeshiftForm(1);
-    end
     return true;
 end
 
@@ -2977,13 +2977,6 @@ if HasBuff("player", 5384) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(3044), "target") == 1;
-
----- При проке "На изготовку" прерываем чтение "Выстрел кобры"
---if not setAoE and UnitCastingInfo("player") == GetSpellInfo(77767) then
---    if HasBuff("player", 56453) then
---        SpellStopCasting();
---    end
---end
 
 -- Установка пета в указанную позицию
 if IsMouseButtonDown(4) then
@@ -3004,6 +2997,18 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not HasBuff("player", 77769);
+]]></Lua>
+      </Ability>
+      <Ability Name="Взрывная ловушка">
+        <SpellID>13813</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяная ловушка">
@@ -3163,7 +3168,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown and isInRange and UnitPower("player") > 50;
+if useCooldown and isInRange and UnitPower("player") > 50 then
+    UseItemBySlot(INVSLOT_HAND);
+    UseItemBySlot(INVSLOT_TRINKET1);
+    UseItemBySlot(INVSLOT_TRINKET2);
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Залп">
@@ -8971,9 +8981,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if CheckEnrage(target) then
-    return true;
-end
+return CheckEnrage(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Быстрое восстановление">
@@ -8995,7 +9003,7 @@ local harmonyRemains = select(3, HasBuff("player", 100977));
 
 for _,member in ipairs(members) do
     -- Накладнываем так же когда надо обновить Гармонию (100977)
-    if member.HP < 80 or harmonyRemains < 4 then
+    if member.HP < 80 or harmonyRemains < 2 then
         if HasBuff(member.Unit, buffs, "PLAYER") then
             return member.Unit;
         end
