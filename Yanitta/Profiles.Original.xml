@@ -8985,10 +8985,17 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local buffs = { 774, 8936 };
+local buffs = {
+    774, -- Омоложение
+    8936 -- Восстановление
+};
+
+-- Искусность: Бафф гармонии, усиливает хоты - держим 100% аптайм.
+local harmonyRemains = select(3, HasBuff("player", 100977));
+
 for _,member in ipairs(members) do
     -- Накладнываем так же когда надо обновить Гармонию (100977)
-    if member.HP < 80 or select(3, HasBuff("player", 100977)) < 4 then
+    if member.HP < 80 or harmonyRemains < 4 then
         if HasBuff(member.Unit, buffs, "PLAYER") then
             return member.Unit;
         end
@@ -9012,37 +9019,6 @@ if (#members > 5 and LowHP.H70 > 4) or LowHP.H70 > 3 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Омоложение">
-        <SpellID>774</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local hasBring = IsSpellKnown(155675); -- Зарождеине
-
-if IsModKeyDown(mkLeftControl)
-    and UnitExists("mouseover")
-    and UnitHealth("mouseover") > 100
-    and UnitCanAssist("player", "mouseover") then
-    if not HasBuff("mouseover", 774, "PLAYER") then
-        return "mouseover";
-    end
-end
-
-for _,member in ipairs(members) do
-    if member.HP < 80 or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
-        local rejuv  = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
-        local rejuv2 = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (зарождение)
-        if not rejuv or (hasBring and ( not rejuv2)) then
-            return member.Unit;
-        end
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Сотворение">
         <SpellID>145518</SpellID>
         <Target>Player</Target>
@@ -9054,11 +9030,48 @@ end
         <Lua><![CDATA[
 local count = 0;
 for _,member in ipairs(members) do
-    if member.HP < 30 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 3 then
+    if member.HP < 30 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
         count = count + 1;
         if count > 2 then
             print("|cff00ff00 >> Кастую сотворение <<")
             return true;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Омоложение">
+        <SpellID>774</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local hasGermination = IsSpellKnown(155675); -- Зарождеине (Талант)
+
+if IsModKeyDown(mkLeftControl)
+    and UnitExists("mouseover")
+    and UnitHealth("mouseover") > 100 -- это хаковая проверка на призывных юнитов (гриб друида и т.п.)
+    and UnitCanAssist("player", "mouseover") then
+    if not HasBuff("mouseover", 774, "PLAYER") then
+        return "mouseover";
+    end
+end
+
+-- ВАЖНО:
+-- Накладыввя второй раз Омоложение при активном таланте "Зарождение" мы накладываем
+-- бафф "155777 - Зарождение", которое не обновляет время действия "774 - Омоложения".
+-- Да и вообще бафы друг друга не обновляют.
+
+for _,member in ipairs(members) do
+    if member.HP < 80 or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
+        local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
+        local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
+        -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
+        if not rejuvenation or (hasGermination and (member.HP < 60 and not germination)) then
+            return member.Unit;
         end
     end
 end
@@ -9151,10 +9164,13 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP <= 60 then
-    return members[1].Unit;
+-- 132158 Природная стремительность
+if not IS_MOVING or HasBuff("player", 132158) then
+    if members[1].HP <= 60 then
+        return members[1].Unit;
+    end
 end
 ]]></Lua>
       </Ability>
