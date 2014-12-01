@@ -389,7 +389,9 @@ function FillPartyTables(standartSpellId)
     -- Обновляем статы игроков из пати/рейда
     for index = #members, 1, -1 do
         local member = members[index];
-
+        if UnitGroupRolesAssigned(member.Unit) == "TANK" then
+            members.HasTank = true;
+        end
         member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
         member.Agro    = UnitThreatSituation(member.Unit) or 0;
 
@@ -9108,30 +9110,19 @@ return members[1].HP < 35;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local hasTank = false;
-for _,member in ipairs(members) do
-    if member.IsTank then
-        hasTank = true;
-        break;
-    end
-end
-
--- В рейде накладываем жизнецвет только на танка
+-- Проверяем наличе уже повешенного жизнецвета
 -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
 for _,member in ipairs(members) do
-    if member.Agro > 2 and (not hasTank or member.IsTank) then
-        if not HasBuff(member.Unit, 33763, "PLAYER") then
-            return member.Unit;
-        else
-            return;
-        end
+    if member.Agro > 2 and HasBuff(member.Unit, 33763, "PLAYER") then
+        return;
     end
 end
 
--- Накладываем жизнецвет на юнита с агро или если в рейде то на танка
 for _,member in ipairs(members) do
-    if member.Agro > 2 and (not hasTank or member.IsTank) then
-        return member.Unit;
+    if member.Agro > 2 and (not members.HasTank or member.IsTank) then
+        if not HasBuff(member.Unit, 33763, "PLAYER") then
+            return member.Unit;
+        end
     end
 end
 ]]></Lua>
@@ -9154,12 +9145,11 @@ if not HasBuff("player", 132158) then
         return "mouseover";
     end
 
-    local name,_,rem = HasBuff("player", 16870); -- 16870 Ясность мысли
-    local harmony = select(3, HasBuff("player", 100977));
-
+    local ooc,_,oocRem = HasBuff("player", 16870); -- 16870 Ясность мысли
     local hp = members[1].HP;
-    if hp <= 30
-        or (name and ((hp <= 80 and rem < 5) or (hp <= 65 and rem >= 5) or (harmony < 2 and rem < 5))) then
+
+    if hp <= 30 or (ooc and ((hp <= 80 and oocRem < 4) or (hp <= 65 and oocRem >= 4))) then
+        -- В дереве хилим на ходу
         if GetShapeshiftForm() == 6 or not IS_MOVING then
             return members[1].Unit;
         end
@@ -9712,7 +9702,7 @@ end
         <Lua><![CDATA[
 if isCat and UnitExists("target")
     and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
-    if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 2 then
+    if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 5 then
         return true;
     end
 end
