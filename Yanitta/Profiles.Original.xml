@@ -8981,7 +8981,7 @@ end
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
@@ -9021,7 +9021,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local hasBring = IsTalentSpell(GetSpellInfo(155675));
+local hasBring = IsSpellKnown(155675); -- Зарождеине
 
 if IsModKeyDown(mkLeftControl)
     and UnitExists("mouseover")
@@ -9036,7 +9036,7 @@ for _,member in ipairs(members) do
     if member.HP < 80 or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
         local rejuv  = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
         local rejuv2 = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (зарождение)
-        if not rejuv or (hasBring and (member.HP < 60 and not rejuv2)) then
+        if not rejuv or (hasBring and ( not rejuv2)) then
             return member.Unit;
         end
     end
