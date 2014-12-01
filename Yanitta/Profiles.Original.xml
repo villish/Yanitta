@@ -3134,10 +3134,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local pethp = HealthByPercent("pet");
-if pethp ~= 0 and pethp < 75 then
-    if not HasBuff("pet", 136) then
-        return true;
+if UnitExists("pet") then
+    local pethp = HealthByPercent("pet");
+    if pethp ~= 0 and pethp < 75 then
+        if not HasBuff("pet", 136) then
+            return true;
+        end
     end
 end
 ]]></Lua>
@@ -3153,7 +3155,7 @@ end
         <Lua><![CDATA[
 -- Накапливаем концентрацию перед использованием быстрой стрельбы
 if useCooldown and UnitPower("player") < 80 then
-    if HealthByPercent("target") < 80 and SpellCD(3045) == 0 then
+    if HealthByPercent("target") < 80 and SpellCD(3045) < 4 then
         return true;
     end
 end
