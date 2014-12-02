@@ -283,9 +283,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Background_Downloader.png" />
     <Resource Include="Resources\BNUpdate.png" />
     <Resource Include="Resources\PTR_client.png" />
