@@ -6,11 +6,11 @@
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="WindowSettings"
         Width="470"
-        Height="141"
+        Height="160"
         ShowInTaskbar="False"
         Style="{DynamicResource KamillaStyle}"
         Icon="/Yanitta;component/Resources/Background_Downloader.png"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize" Closing="Window_Closing">
 
     <Window.Resources>
         <RoutedUICommand x:Key="Save"/>

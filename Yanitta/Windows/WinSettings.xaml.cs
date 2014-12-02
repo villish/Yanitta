@@ -27,5 +27,10 @@ namespace Yanitta
             if (dialog.ShowDialog() == true)
                 Settings.Default.ProfilesFileName = dialog.FileName;
         }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Settings.Default.Reload();
+        }
     }
 }
