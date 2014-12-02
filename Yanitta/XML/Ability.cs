@@ -125,22 +125,17 @@ namespace Yanitta
         /// <returns></returns>
         public Ability Clone()
         {
-            var ability = new Ability {
-                Name            = this.Name,
-                SpellID         = this.SpellID,
-                IsMovingCheck   = this.IsMovingCheck,
-                IsUseIncombat   = this.IsUseIncombat,
-                CancelCasting   = this.CancelCasting,
-                CancelChannel   = this.CancelChannel,
-                SetRecastDelay  = this.SetRecastDelay,
-                Lua             = this.Lua,
-                TargetList = new List<TargetType>()
+            return new Ability {
+                Name           = this.Name,
+                SpellID        = this.SpellID,
+                IsMovingCheck  = this.IsMovingCheck,
+                IsUseIncombat  = this.IsUseIncombat,
+                CancelCasting  = this.CancelCasting,
+                CancelChannel  = this.CancelChannel,
+                SetRecastDelay = this.SetRecastDelay,
+                Lua            = this.Lua,
+                TargetList     = new List<TargetType>(this.TargetList.Select(n=>n))
             };
-
-            foreach (var target in this.TargetList)
-                ability.TargetList.Add(target);
-
-            return ability;
         }
     }
 }
