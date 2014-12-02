@@ -134,7 +134,7 @@ namespace Yanitta
                 CancelChannel  = this.CancelChannel,
                 SetRecastDelay = this.SetRecastDelay,
                 Lua            = this.Lua,
-                TargetList     = new List<TargetType>(this.TargetList.Select(n=>n))
+                TargetList     = this.TargetList.ToList()
             };
         }
     }
