@@ -358,8 +358,8 @@ end
 function FillPartyTables(standartSpellId)
     -- Обнуляем все хиловские глобальные переменные.
     MAIN_CLASS_SPELL = standartSpellId;
-    LowHP            = { };
-    members          = { { Unit = "player", IsInMyParty = true } };
+    LowHP   = { };
+    members = { { Unit = "player", IsInMyParty = true } };
 
     for i = 95, 10, -5 do
         LowHP["H"..i] = 0;
@@ -389,9 +389,7 @@ function FillPartyTables(standartSpellId)
     -- Обновляем статы игроков из пати/рейда
     for index = #members, 1, -1 do
         local member = members[index];
-        if UnitGroupRolesAssigned(member.Unit) == "TANK" then
-            members.HasTank = true;
-        end
+
         member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
         member.Agro    = UnitThreatSituation(member.Unit) or 0;
 
@@ -406,6 +404,10 @@ function FillPartyTables(standartSpellId)
 
         -- логика по особому поведению в рейдах
         CheckInstanseLogic(member);
+
+        if member.IsTank then
+            members.HasTank = true;
+        end
 
         -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
         -- не учитываем цели, которые хилить нельзя
@@ -426,6 +428,8 @@ function FillPartyTables(standartSpellId)
     if #members > 1 then
         table.sort(members, function(x, y) return x.HP < y.HP; end);
     elseif #members == 0 then
+        -- Это надо для того, чтобы небыло ошибок при обращении к первому элементу
+        -- Возможны ситуации что в таблице никого не останется, из-за рейдовой логики.
         members = {{ Unit = "none", Agro = 0, HP = 100, IncHeal = 0 }};
     end
 end
@@ -605,7 +609,7 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if DebugMode then
-                print(format("|cff15bd05[%d - %s]|r - |cfff5360c%s|r", spellId, spellName, param15));
+                print(format("|cff15bd05%s|r - |cfff5360c%s|r", GetSpellLink(spellId), param15));
             end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
