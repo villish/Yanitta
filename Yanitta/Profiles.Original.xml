@@ -3305,10 +3305,6 @@ NOTIFY_CAST_TABLE[19801] = "|cff15bd05>> Снимаю исступление!";
 if IsModKeyDown(mkLeftAlt) or IsStealthed() then
     StopAttack();
     PetStopAttack();
-    -- перейдем в аспект ястребя
-    if GetShapeshiftForm() ~= 1 then
-        CastShapeshiftForm(1);
-    end
     return true;
 end
 
@@ -3325,40 +3321,6 @@ if IsMouseButtonDown(4) then
     CameraOrSelectOrMoveStart();
     CameraOrSelectOrMoveStop();
     PetMoveTo();
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Дух ястреба">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitAffectingCombat("player") or IsMounted() then
-    if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
-        CastShapeshiftForm(1);
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Дух гепарда">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not UnitAffectingCombat("player") and not IsMounted() then
-    if GetShapeshiftForm() ~= 2 and GetShapeshiftFormCooldown(2) == 0 then
-        CastShapeshiftForm(2);
-        return true;
-    end
 end
 ]]></Lua>
       </Ability>
