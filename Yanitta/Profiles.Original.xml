@@ -8992,8 +8992,34 @@ end
         <Lua><![CDATA[
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
-if (#members > 5 and LowHP.H70 > 4) or LowHP.H70 > 3 then
+if (#members > 5 and LowHP.H80 > 4) or LowHP.H70 > 3 then
     return members[1].Unit;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Жизнецвет">
+        <SpellID>33763</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Проверяем наличе уже повешенного жизнецвета
+-- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
+for _,member in ipairs(members) do
+    if member.Agro > 2 and HasBuff(member.Unit, 33763, "PLAYER") then
+        return;
+    end
+end
+
+for _,member in ipairs(members) do
+    if member.Agro > 2 and (not members.HasTank or member.IsTank) then
+        if not HasBuff(member.Unit, 33763, "PLAYER") then
+            return member.Unit;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -9065,32 +9091,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return members[1].HP < 35;
-]]></Lua>
-      </Ability>
-      <Ability Name="Жизнецвет">
-        <SpellID>33763</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Проверяем наличе уже повешенного жизнецвета
--- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
-for _,member in ipairs(members) do
-    if member.Agro > 2 and HasBuff(member.Unit, 33763, "PLAYER") then
-        return;
-    end
-end
-
-for _,member in ipairs(members) do
-    if member.Agro > 2 and (not members.HasTank or member.IsTank) then
-        if not HasBuff(member.Unit, 33763, "PLAYER") then
-            return member.Unit;
-        end
-    end
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Восстановление">
