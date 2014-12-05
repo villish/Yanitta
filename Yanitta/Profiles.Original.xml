@@ -278,6 +278,10 @@ function CheckInstanseLogic(member)
         else -- без щита
             member.HP = min(member.HP, 50);
         end
+    -- Верховный молот: Кодгар
+    -- Дебаф поглощающий урон Исторжение магии: Темная магия
+    elseif HasDebuff(member.Unit, 162184) then
+        member.HP = min(member.HP, 50);
     -- Престол гроз: Тортос (Кристальная оболочка)
     elseif HasDebuff(member.Unit, 137633) then
         if not HasDebuff(member.Unit, 140701) then
@@ -9067,14 +9071,14 @@ end
 -- ВАЖНО:
 -- Накладыввя второй раз Омоложение при активном таланте "Зарождение" мы накладываем
 -- бафф "155777 - Зарождение", которое не обновляет время действия "774 - Омоложения".
--- Да и вообще бафы друг друга не обновляют.
+-- Да и вообще бафы друг друга не обновляют. 156954
 
 for _,member in ipairs(members) do
     if member.HP < 80 or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
         local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
         local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
         -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
-        if not rejuvenation or (hasGermination and (member.HP < 60 and not germination)) then
+        if not rejuvenation or (hasGermination and ((member.HP < 60 or member.IsTank) and not germination)) then
             return member.Unit;
         end
     end
