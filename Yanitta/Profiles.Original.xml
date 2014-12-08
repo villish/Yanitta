@@ -5273,7 +5273,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Вскипание крови">
-        <SpellID>48721</SpellID>
+        <SpellID>50842</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5288,33 +5288,6 @@ if isInMeele then
         return true;
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар в сердце">
-        <SpellID>55050</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- if=(blood=1&blood.cooldown_remains<1)|blood=2
-if isInMeele and runes.Blood.Count > 0 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Рунический удар">
-        <SpellID>56815</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Усиление рунического оружия">
@@ -5332,6 +5305,19 @@ if useCooldown and isInMeele
     and runes.Frost.Count == 0 then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Лик смерти">
+        <SpellID>47541</SpellID>
+        <Target>Target</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -8573,8 +8559,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if agroStatus > 2 and HasBuff("player", 118636) then
-    return true;
+if agroStatus > 2 then
+    local value = select(5, HasBuff("player", 158300));
+    local def_val = IsInRaid() and 150 or 100;
+    if value >= def_val then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -8634,11 +8624,13 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and setAoE and chi > 2 then
-    -- Хмельная дымка
-    if HasDebuff("target", 123727, "PLAYER")
-    -- Пламенное дыхание
-    and not HasDebuff("target", 123725, "PLAYER") then
+if isInMeele and setAoE and chi > 1 then
+    -- Хмельная дымка или перк "Усиленное пламенное дыхание"
+    if (HasDebuff("target", 123727, "PLAYER") or IsSpellKnown(157362))
+    -- не должно быть дебафа от "Пламенное дыхание"
+    and not HasDebuff("target", 123725, "PLAYER")
+    -- на нас должны быть скрытые резервы
+    and select(3, HasBuff("player", 115307)) > 5 then
         return true;
     end
 end
@@ -8969,7 +8961,7 @@ return CheckEnrage(target);
         <Lua><![CDATA[
 local buffs = {
     774, -- Омоложение
-    8936 -- Восстановление
+    8936 -- Восстановление 114108
 };
 
 -- Искусность: Бафф гармонии, усиливает хоты - держим 100% аптайм.
@@ -8977,8 +8969,8 @@ local harmonyRemains = select(3, HasBuff("player", 100977));
 
 for _,member in ipairs(members) do
     -- Накладнываем так же когда надо обновить Гармонию (100977)
-    if member.HP < 80 or harmonyRemains < 2 then
-        if HasBuff(member.Unit, buffs, "PLAYER") then
+    if member.HP < 80 or harmonyRemains < 4 then
+        if HasBuff(member.Unit, 774, "PLAYER") then
             return member.Unit;
         end
     end
@@ -9670,8 +9662,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and UnitExists("target")
-    and UnitHealthMax("target") * 2 > UnitHealthMax("target") then
+if isCat then
     if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 5 then
         return true;
     end
@@ -9688,7 +9679,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isCat and select(3, HasDebuff("target", 1822)) < 3 then
-    return UnitIsPVP("player") or UnitHealth("target") < (UnitHealth("player") or 0 / 2);
+    return true;
 end
 ]]></Lua>
       </Ability>
