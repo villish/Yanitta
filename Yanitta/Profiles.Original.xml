@@ -8888,7 +8888,7 @@ if PowerByPercent("player", SPELL_POWER_MANA) < 80 and GetShapeshiftForm() == 0 
     UseItemBySlot(INVSLOT_TRINKET2);
 end
 
-if PowerByPercent("player", SPELL_POWER_MANA) < 90 and GetShapeshiftForm() == 0 then
+if PowerByPercent("player", SPELL_POWER_MANA) < 70 and GetShapeshiftForm() == 0 then
     UseItemBySlot(INVSLOT_TRINKET1);
 end
 
@@ -8930,8 +8930,11 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 30 then
-    return members[1].Unit;
+for _,member in ipairs(members) do
+    -- Железную кору используем только на танка
+    if member.IsTank and member.HP < 30 then
+        return member.Unit;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -8944,11 +8947,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local debuff,_,rem = HasDebuff("player", 144330);
--- Переписать: используя обобщение с другими ротациями.
 if HealthByPercent("player") < 25 then
-    return true;
-elseif debuff and rem < 4 then
     return true;
 end
 ]]></Lua>
@@ -8965,6 +8964,61 @@ end
 return CheckEnrage(target);
 ]]></Lua>
       </Ability>
+      <Ability Name="Природная стремительность">
+        <SpellID>132158</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return members[1].HP < 40;
+]]></Lua>
+      </Ability>
+      <Ability Name="Целительное прикосновение">
+        <SpellID>5185</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- 132158 Природная стремительность
+-- Следующее заклинание используется мгновенно
+-- и не требует затрат ресурсов
+if HasBuff("player", 132158) then
+    -- Природную стремительность используем
+    -- если у кого-то меньше 40% здоровья
+    -- тут поставим проверку с запасом, так на всякий случай
+    if members[1].HP < 50 then
+        return members[1].Unit;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Восстановление">
+        <SpellID>8936</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- 16870 Ясность мысли
+if HasBuff("player", 16870) then
+    -- Используем только под проком ясности мысли, в дереве хилим на ходу
+    -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
+    if members[1].HP <= 70 or select(3, HasBuff("player", 100977)) < 4 and
+        if (GetShapeshiftForm() == 6 or not IS_MOVING) then
+            return members[1].Unit;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Быстрое восстановление">
         <SpellID>18562</SpellID>
         <Target>None</Target>
@@ -8976,18 +9030,14 @@ return CheckEnrage(target);
         <Lua><![CDATA[
 local buffs = {
     774, -- Омоложение
-    8936 -- Восстановление 114108
+    8936 -- Восстановление
 };
 
--- Искусность: Бафф гармонии, усиливает хоты - держим 100% аптайм.
-local harmonyRemains = select(3, HasBuff("player", 100977));
-
 for _,member in ipairs(members) do
-    -- Накладнываем так же когда надо обновить Гармонию (100977)
-    if member.HP < 80 or harmonyRemains < 4 then
-        if HasBuff(member.Unit, 774, "PLAYER") then
-            return member.Unit;
-        end
+    if HasBuff(member.Unit, buffs, "PLAYER")
+        -- Используем или для лечения или для поддержания аптайма Гармонии
+        and (member.HP < 80 or select(3, HasBuff("player", 100977)) < 4) then
+        return member.Unit;
     end
 end
 ]]></Lua>
@@ -9003,7 +9053,8 @@ end
         <Lua><![CDATA[
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
-if (#members > 5 and LowHP.H80 > 4) or LowHP.H70 > 3 then
+local count = IsInRaid() and 5 or 3;
+if LowHP.H70 > count then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -9080,28 +9131,21 @@ end
 -- бафф "155777 - Зарождение", которое не обновляет время действия "774 - Омоложения".
 -- Да и вообще бафы друг друга не обновляют. 156954
 
+local hp_rej = IsInRaid() and 70 or 80;
+local hp_ger = IsInRaid() and 50 or 60;
+
 for _,member in ipairs(members) do
-    if member.HP < 80 or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
+    if member.HP < hp_rej or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
         local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
         local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
+
         -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
-        if not rejuvenation or (hasGermination and ((member.HP < 60 or member.IsTank) and not germination)) then
+        if not rejuvenation or (hasGermination and not germination and
+            (member.HP < hp_ger or (member.IsTank and member.HP < hp_rej))) then
             return member.Unit;
         end
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Природная стремительность">
-        <SpellID>132158</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return members[1].HP < 35;
 ]]></Lua>
       </Ability>
       <Ability Name="Восстановление">
@@ -9113,23 +9157,10 @@ return members[1].HP < 35;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- 132158 Природная стремительность
-if not HasBuff("player", 132158) then
-    if IsMouseButtonDown(4)
-    and UnitExists("mouseover")
-    and UnitHealth("mouseover") > 100
-    and UnitCanAssist("player", "mouseover") then
-        return "mouseover";
-    end
-
-    local ooc,_,oocRem = HasBuff("player", 16870); -- 16870 Ясность мысли
-    local hp = members[1].HP;
-
-    if hp <= 30 or (ooc and ((hp <= 80 and oocRem < 4) or (hp <= 65 and oocRem >= 4))) then
-        -- В дереве хилим на ходу
-        if GetShapeshiftForm() == 6 or not IS_MOVING then
-            return members[1].Unit;
-        end
+if members[1].HP <= 30 then
+    -- В дереве хилим на ходу
+    if GetShapeshiftForm() == 6 or not IS_MOVING then
+        return members[1].Unit;
     end
 end
 ]]></Lua>
@@ -9141,13 +9172,10 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
--- 132158 Природная стремительность
-if not IS_MOVING or HasBuff("player", 132158) then
-    if members[1].HP <= 60 then
-        return members[1].Unit;
-    end
+if members[1].HP <= 60 then
+    return members[1].Unit;
 end
 ]]></Lua>
       </Ability>
