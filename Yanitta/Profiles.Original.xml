@@ -282,6 +282,10 @@ function CheckInstanseLogic(member)
     -- Дебаф поглощающий урон Исторжение магии: Темная магия
     elseif HasDebuff(member.Unit, 162184) then
         member.HP = min(member.HP, 50);
+    -- Верховный молот: Кодгар
+    -- Дебаф под которым надо усиленно хилить: Жгучая энергия
+    elseif HasDebuff(member.Unit, 161242) then
+        member.HP = min(member.HP, 50);
     -- Престол гроз: Тортос (Кристальная оболочка)
     elseif HasDebuff(member.Unit, 137633) then
         if not HasDebuff(member.Unit, 140701) then
@@ -309,15 +313,26 @@ function DontDispell(debuffId, member)
         if select(2, HasDebuff(member.Unit, 143579)) < 3 then
             return true;
         end
+    -- Осада ограммара: Малкорок
     -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
---    elseif debuffId == 142913 then
---        for i,member2 in ipairs(members) do
---            if not UnitIsUnit("player", member2.Unit) then
---                if (GetDistance(member.Unit, member2.Unit) or 0) < 8 then
---                    return true;
---                end
---            end
---        end
+    elseif debuffId == 142913 then
+        for i,member2 in ipairs(members) do
+            if not UnitIsUnit("player", member2.Unit) then
+                if (GetDistance(member.Unit, member2.Unit) or 0) < 8 then
+                    return true;
+                end
+            end
+        end
+    -- Верховный молот: Ко'гар
+    -- Исторжение магии: огонь - надо диспелить когда рядом (5м) нет играков
+    elseif debuffId == 162185 then
+        for i,member2 in ipairs(members) do
+            if not UnitIsUnit("player", member2.Unit) then
+                if (GetDistance(member.Unit, member2.Unit) or 0) < 5 then
+                    return true;
+                end
+            end
+        end
     -- Прикосновение скверны (треш перед боссом Ша гордыни)
     -- Диспелятся сразу все дебафы, а при диспеле наносится урон.
     elseif debuffId == 149207 then
@@ -9154,15 +9169,13 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local params_buff = { 1126, 115921, 20217, 90363 };
-if type(members) == "table" and GetShapeshiftForm() == 0 then
+if GetShapeshiftForm() == 0 then
     for _,member in ipairs(members) do
-        if member.IsInMyParty and UnitIsPlayer(member.Unit) and not HasBuff(member.Unit, params_buff) then
-            return true;
+        if member.IsInMyParty and UnitIsPlayer(member.Unit) then
+            if not HasBuff(member.Unit, params_buff) then
+                return true;
+            end
         end
-    end
-elseif not UnitAffectingCombat("player") then
-    if not HasBuff("player", params_buff) then
-        return true;
     end
 end
 ]]></Lua>
