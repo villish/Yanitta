@@ -9004,14 +9004,14 @@ end
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 16870 Ясность мысли
 if HasBuff("player", 16870) then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
-    if members[1].HP <= 70 or select(3, HasBuff("player", 100977)) < 4 and
+    if members[1].HP <= 70 or select(3, HasBuff("player", 100977)) < 4 then
         if (GetShapeshiftForm() == 6 or not IS_MOVING) then
             return members[1].Unit;
         end
