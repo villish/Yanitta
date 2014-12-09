@@ -759,20 +759,14 @@ reflect_table = {
 };
 
 function NeedReflect(unitEnemy, unitFreind)
+    local spell_ids = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
+
     if UnitIsEnemy("player", unitEnemy) and UnitIsUnit(unitFreind, unitEnemy.."target") then
         local name,_,_,_,_,endTime = UnitCastingInfo(unitEnemy);
         if name and (((endTime / 1000) - GetTime()) - AddonFrame.ping) < 2 then
-            if UnitIsPVP("player") then
-                for _,spell_id in ipairs(reflect_table.PVP) do
-                    if name == GetSpellInfo(spell_id) then
-                        return true;
-                    end
-                end
-            else
-                for _,spell_id in ipairs(reflect_table.RAIDS) do
-                    if name == GetSpellInfo(spell_id) then
-                        return true;
-                    end
+            for _,spell_id in ipairs(spell_ids) do
+                if name == GetSpellInfo(spell_id) then
+                    return true;
                 end
             end
         end
@@ -5243,6 +5237,24 @@ if not HasDebuff("target", 55095, "PLAYER") or HasBuff("player", 59052) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Кровоотвод">
+        <SpellID>45529</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.Death.Count == 1
+    or (runes.Unholy.Count == 0 and runes.Frost.Count >= 1)
+    or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) then
+    if select(2, HasBuff("player", 114851)) >= 5 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Удар смерти">
         <SpellID>49998</SpellID>
         <Target>Target</Target>
@@ -5266,24 +5278,6 @@ return true;
         <Lua><![CDATA[
 if HealthByPercent("target") < 35 then
     return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровоотвод">
-        <SpellID>45529</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if runes.Death.Count == 1
-    or (runes.Unholy.Count == 0 and runes.Frost.Count >= 1)
-    or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) then
-    if select(2, HasBuff("player", 114851)) >= 5 then
-        return true;
-    end
 end
 ]]></Lua>
       </Ability>
