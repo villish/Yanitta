@@ -615,7 +615,7 @@ function AddonFrame_OnEvent(self, event, ...)
               spellId,   spellName,spellSchool, param15 = ...;
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
             if DebugMode and NOTIFY_CAST_TABLE[spellId] then
-                print(NOTIFY_CAST_TABLE[spellId]);
+                print(tostring(NOTIFY_CAST_TABLE[spellId]).." на "..(destName or ""));
             end
             for _,ability in ipairs(ABILITY_TABLE) do
                 for _,targetInfo in ipairs(ability.TargetList) do
@@ -628,7 +628,7 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if DebugMode then
-                print(format("%s - |cfff5360c%s|r", GetSpellLink(spellId), param15));
+                print(format("%s - |cfff5360c%s|r -> %s", GetSpellLink(spellId), param15, destName));
             end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
