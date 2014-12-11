@@ -628,7 +628,7 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if DebugMode then
-                print(format("|cff15bd05%s|r - |cfff5360c%s|r", GetSpellLink(spellId), param15));
+                print(format("%s - |cfff5360c%s|r", GetSpellLink(spellId), param15));
             end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
@@ -8788,8 +8788,9 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 
-NOTIFY_CAST_TABLE[2908]  = "|cff15bd05>> Снимаю исступление!";
-NOTIFY_CAST_TABLE[18562] = "|cff00ff00>> Кастую Быстрое восстановление <<";
+NOTIFY_CAST_TABLE[2908]   = "|cff15bd05>> Снимаю исступление!";
+NOTIFY_CAST_TABLE[18562]  = "|cff00ff00>> Кастую Быстрое восстановление <<";
+NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -9005,7 +9006,8 @@ end
 if HasBuff("player", 16870) then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
-    if members[1].HP <= 70 or select(3, HasBuff("player", 100977)) < 4 then
+    local harmonyRemains = select(3, HasBuff("player", 100977));
+    if members[1].HP <= 70 or harmonyRemains < 4 then
         if (GetShapeshiftForm() == 6 or not IS_MOVING) then
             return members[1].Unit;
         end
@@ -9022,15 +9024,11 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local buffs = {
-    774, -- Омоложение
-    8936 -- Восстановление
-};
-
+-- Либо обновляем Гармонию, либо хилим просевшую цель.
+-- Проверяем только наличие бафа Омоложение
+local harmonyRemains = select(3, HasBuff("player", 100977));
 for _,member in ipairs(members) do
-    if HasBuff(member.Unit, buffs, "PLAYER")
-        -- Используем или для лечения или для поддержания аптайма Гармонии
-        and (member.HP < 80 or select(3, HasBuff("player", 100977)) < 4) then
+    if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 80 or harmonyRemains < 4) then
         return member.Unit;
     end
 end
@@ -9047,8 +9045,7 @@ end
         <Lua><![CDATA[
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
-local count = IsInRaid() and 5 or 3;
-if LowHP.H70 > count then
+if LowHP.H70 > (IsInRaid() and 5 or 3) then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -9064,6 +9061,9 @@ end
         <Lua><![CDATA[
 -- Проверяем наличе уже повешенного жизнецвета
 -- чтобы во время боя (при агро на 2х танках) жизнецвет не перекидывало с одного на другого.
+
+-- Надо реализовать механизм переброса жизнецвета если 1 танк просел сильно а агро на 2х.
+
 for _,member in ipairs(members) do
     if member.Agro > 2 and HasBuff(member.Unit, 33763, "PLAYER") then
         return;
@@ -9092,8 +9092,7 @@ local count = 0;
 for _,member in ipairs(members) do
     if member.HP < 30 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
         count = count + 1;
-        if count > 2 then
-            print("|cff00ff00 >> Кастую сотворение <<")
+        if count > 3 then
             return true;
         end
     end
