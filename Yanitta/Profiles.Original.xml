@@ -628,7 +628,7 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if DebugMode then
-                print(format("%s - |cfff5360c%s|r -> %s", GetSpellLink(spellId), param15, destName));
+                print(format("%s - |cfff5360c%s|r -> %s", GetSpellLink(spellId), param15, destName or "<none>"));
             end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
