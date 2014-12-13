@@ -3225,7 +3225,7 @@ return not setAoE;
         <SpellID>53351</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
-        <CancelCasting>true</CancelCasting>
+        <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -8460,7 +8460,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -8470,15 +8470,7 @@ playerHP   = HealthByPercent("player");
 energy     = UnitPower("player");     -- energy
 chi        = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
 
-additionalChi = 0;
-if IsSpellKnown(115396) then
-    additionalChi = 1;
-end
-
-TP  = HasBuff("player",   125359);            -- Сила тигра
-BoF = HasDebuff("target", 123725, "PLAYER");  -- Пламенное дыхание
-DH  = HasDebuff("target", 123727, "PLAYER");  -- Хмельная дымка
-SR  = select(3, HasBuff("player",   115307)); -- Скрытые резервы
+additionalChi = IsSpellKnown(115396) and 1 or 0;
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
@@ -8571,7 +8563,7 @@ end
 if agroStatus > 2 then
     local value = select(5, HasBuff("player", 158300));
     local def_val = IsInRaid() and 150 or 100;
-    if value >= def_val then
+    if value >= def_val or playerHP < 40 then
         return true;
     end
 end
@@ -8624,6 +8616,20 @@ if playerHP < 40 and useCooldown then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Устранение вреда">
+        <SpellID>115072</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if playerHP < 80 then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Пламенное дыхание">
         <SpellID>115181</SpellID>
         <Target>Target</Target>
@@ -8654,7 +8660,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE then
+if setAoE and not HasBuff("player", 116847) then
     return true;
 end
 ]]></Lua>
@@ -8687,20 +8693,6 @@ if isInMeele and setAoE and chi > 2 then
     end
 end
 if setAoE and isInMeele and energy >= 40 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Устранение вреда">
-        <SpellID>115072</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if playerHP < 80 then
     return true;
 end
 ]]></Lua>
