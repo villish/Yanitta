@@ -91,9 +91,9 @@ end
 -- Вызвращает время до восстановления заклинания
 -- Параметр: ид заклинания
 function SpellCD(m_spell)
-    local start, duration = GetSpellCooldown(m_spell);
+    local start, duration, enable = GetSpellCooldown(m_spell);
     local cooldown = duration + start - GetTime();
-    return cooldown > 0 and cooldown - (AddonFrame.ping or 0) or 0;
+    return (cooldown > 0 and cooldown - (AddonFrame.ping or 0) or 0), enable;
 end
 
 -- Проверка, двигается ли игрок, за исключением бафов, которые дают возможность кастровать на ходу
@@ -529,7 +529,7 @@ function CheckAndCastAbility(ability, targetInfo)
     end
 
     local start, duration, enable = GetSpellCooldown(ability.SpellId);
-    if enable == 1 and ((duration + start) - GetTime()) > AddonFrame.ping then
+    if enable ~= 1 or ((duration + start) - GetTime()) > AddonFrame.ping then
         return;
     end
 
@@ -3230,6 +3230,10 @@ return not setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if DebugMode then
+    local start, duration, enable = GetSpellCooldown(ability.SpellId);
+    print(format("Enable: %d, CD: %d", enable, (duration + start) - GetTime()));
+end
 return true;
 ]]></Lua>
       </Ability>
