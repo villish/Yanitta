@@ -8473,7 +8473,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
 agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
 energy     = UnitPower("player");     -- energy
-chi        = UnitPower("player", SPELL_POWER_LIGHT_FORCE); -- chi
+chi        = UnitPower("player", 12); -- chi
 
 additionalChi = IsSpellKnown(115396) and 1 or 0;
 
@@ -8567,7 +8567,7 @@ end
         <Lua><![CDATA[
 if agroStatus > 2 then
     local value = select(5, HasBuff("player", 158300));
-    local def_val = IsInRaid() and 150 or 100;
+    local def_val = IsInRaid() and 150 or 50;
     if value >= def_val or playerHP < 40 then
         return true;
     end
@@ -8644,7 +8644,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and setAoE and chi > 1 then
+if isInMeele and setAoE and chi > 2 then
     -- Хмельная дымка или перк "Усиленное пламенное дыхание"
     if (HasDebuff("target", 123727, "PLAYER") or IsSpellKnown(157362))
     -- не должно быть дебафа от "Пламенное дыхание"
@@ -8727,7 +8727,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+-- Если талант "Взрыв ци" выбран, тогда используем при АОЕ на 4 ци при соло на 3
+-- Если талант не выбран - используем всегда
+local needchi = setAoE and 3 or 2;
+if not IsPlayerSpell(157676) or chi > needchi then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Дзуки">
