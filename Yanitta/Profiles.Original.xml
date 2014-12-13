@@ -489,7 +489,9 @@ function CheckKnownAbility(ability)
     -- Есть заклинания, которые имеют одинаковое название и разные Id
     local spellId = select(2, GetSpellBookItemInfo(spellName));
     if spellId and ability.SpellId ~= spellId then
-        print(string.format("|cff15bd05Заклинание: %s Id %d -> %d|r", spellName, ability.SpellId, spellId));
+        if DebugMode then
+            print(string.format("|cff15bd05Заклинание: %s Id %d -> %d|r", spellName, ability.SpellId, spellId));
+        end
         ability.SpellId = spellId;
         ability.IsKnown = true;
     end
@@ -3230,11 +3232,10 @@ return not setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if DebugMode then
-    local start, duration, enable = GetSpellCooldown(ability.SpellId);
-    print(format("Enable: %d, CD: %d", enable, (duration + start) - GetTime()));
+-- Если перк Усиленного убийственного выстрела доступен, то проверяем КД по другому ИД
+if not IsSpellOverlayed(157708) or GetSpellCooldown(157708) == 0 then
+    return true;
 end
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Стая воронов">
