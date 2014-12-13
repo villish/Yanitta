@@ -530,8 +530,8 @@ function CheckAndCastAbility(ability, targetInfo)
         return;
     end
 
-    local start, duration, enable = GetSpellCooldown(ability.SpellId);
-    if enable == 0 or ((duration + start) - GetTime()) > AddonFrame.ping then
+    local start, duration = GetSpellCooldown(ability.SpellId);
+    if ((duration + start) - GetTime()) > AddonFrame.ping then
         return;
     end
 
