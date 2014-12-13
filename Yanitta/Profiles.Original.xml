@@ -628,7 +628,7 @@ function AddonFrame_OnEvent(self, event, ...)
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
             if DebugMode then
-                print(format("%s - |cfff5360c%s|r -> %s", GetSpellLink(spellId), param15, destName or "<none>"));
+                print(format("%s - |cfff5360c%s|r", GetSpellLink(spellId), param15));
             end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
@@ -8690,14 +8690,16 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and setAoE and chi > 2 then
-    if HasDebuff("target", 123727, "PLAYER")
-    and not HasDebuff("target", 123725, "PLAYER") then
-        return false;
+if not IsPlayerSpell(116847) then
+    if isInMeele and setAoE and chi > 2 then
+        if HasDebuff("target", 123727, "PLAYER")
+        and not HasDebuff("target", 123725, "PLAYER") then
+            return false;
+        end
     end
-end
-if setAoE and isInMeele and energy >= 40 then
-    return true;
+    if setAoE and isInMeele and energy >= 40 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
