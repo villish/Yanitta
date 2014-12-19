@@ -250,6 +250,10 @@
             <Word>GetDispellInfo</Word>
             <Word>FillPartyTables</Word>
             <Word>IsNotLineOfSight</Word>
+            <Word>CheckEnrage</Word>
+            <Word>IsMountedEx</Word>
+            <Word>CheckKnownAbility</Word>
+            <Word>CheckAllSpells</Word>
         </Keywords>
 
         <Keywords color="WowFunctions">
@@ -4650,7 +4654,7 @@
             <Word>SPELL_POWER_HOLY_POWER</Word>
             <Word>SPELL_POWER_ALTERNATE_POWER</Word>
             <Word>SPELL_POWER_DARK_FORCE</Word>
-            <Word>SPELL_POWER_LIGHT_FORCE</Word>
+            <Word>SPELL_POWER_CHI</Word>
             <Word>SPELL_POWER_SHADOW_ORBS</Word>
             <Word>SPELL_POWER_BURNING_EMBERS</Word>
             <Word>SPELL_POWER_DEMONIC_FURY</Word>
@@ -4688,6 +4692,7 @@
             <Word>isInRange</Word>
             <Word>isInMeele</Word>
             <Word>useAutoDispell</Word>
+            <Word>useInterrupt</Word>
 
             <Word>FORCE_IN_COMBAT</Word>
             <Word>MAIN_CLASS_SPELL</Word>

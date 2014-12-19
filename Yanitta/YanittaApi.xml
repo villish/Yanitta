@@ -190,7 +190,7 @@ INVSLOT_*
   <WowApi RawData="11" ImageType="EnumValue" Name="SPELL_POWER_DARK_FORCE">
     <Description><![CDATA[11 = Dark Force]]></Description>
   </WowApi>
-  <WowApi RawData="12" ImageType="EnumValue" Name="SPELL_POWER_LIGHT_FORCE">
+  <WowApi RawData="12" ImageType="EnumValue" Name="SPELL_POWER_CHI">
     <Description><![CDATA[12 = Light Force]]></Description>
   </WowApi>
   <WowApi RawData="13" ImageType="EnumValue" Name="SPELL_POWER_SHADOW_ORBS">
