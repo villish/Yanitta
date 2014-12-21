@@ -9128,7 +9128,8 @@ if IsModKeyDown(mkLeftControl)
     and UnitExists("mouseover")
     and UnitHealth("mouseover") > 100 -- это хаковая проверка на призывных юнитов (гриб друида и т.п.)
     and UnitCanAssist("player", "mouseover") then
-    if not HasBuff("mouseover", 774, "PLAYER") then
+    if not (HasBuff("mouseover", 774, "PLAYER")
+        and (not hasGermination or HasBuff("mouseover", 155777, "PLAYER")))  then
         return "mouseover";
     end
 end
