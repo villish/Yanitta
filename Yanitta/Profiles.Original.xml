@@ -9059,7 +9059,10 @@ end
         <Lua><![CDATA[
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
-if LowHP.H70 > (IsInRaid() and 5 or 3) then
+local count = IsInRaid() and 5 or 3;
+local member_count = IsInRaid() and LowHP.H60 or LowHP.H60;
+
+if member_count > count then
     return members[1].Unit;
 end
 ]]></Lua>
