@@ -22,6 +22,7 @@ moving_spell_table = {
     79206,  -- Благосклонность предков (Шанам)
     108839, -- Плавучая льдина
     165803, -- Награнд (талбук)
+    0,      -- Дух лисы (Охотник)
 };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
@@ -531,11 +532,11 @@ function CheckAndCastAbility(ability, targetInfo)
     end
 
     local start, duration = GetSpellCooldown(ability.SpellId);
-    if ((duration + start) - GetTime()) > AddonFrame.ping then
+    if (duration + start - GetTime()) > AddonFrame.ping then
         return;
     end
 
-    local castPing = (AddonFrame.ping * 1000);
+    local castPing = AddonFrame.ping * 1000;
     if not ability.CancelCasting then
         local endTime = select(6, UnitCastingInfo("player")) or 0;
         if (endTime - (GetTime() * 1000)) >= castPing then
