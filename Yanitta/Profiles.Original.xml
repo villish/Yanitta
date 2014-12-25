@@ -7853,7 +7853,7 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-power2    = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
+soulShards = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
@@ -7908,7 +7908,7 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE and isInRange and power2 > 0 and SpellCD(74434) == 0 then
+if setAoE and isInRange and soulShards > 0 and SpellCD(74434) == 0 then
     if UnitExists(target)
         and UnitCanAttack("player", target)
         and not UnitIsDeadOrGhost(target)
@@ -7924,9 +7924,9 @@ end
       </Ability>
       <Ability Name="Обмен душ">
         <SpellID>86121</SpellID>
+        <Target>Target</Target>
         <Target>Focus</Target>
         <Target>Mouseover</Target>
-        <Target>Target</Target>
         <Target>Boss1</Target>
         <Target>Boss2</Target>
         <Target>Boss3</Target>
@@ -7938,7 +7938,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if power2 > 1 and SpellCD(74434) == 0 then
+--[[
+
+Не использовать!!!
+Сильно большой расход осколков.
+
+if soulShards > 1 and SpellCD(74434) == 0 then
     local dotList = {
         980,    -- Агония
         172,    -- Порча
@@ -7965,68 +7970,7 @@ if power2 > 1 and SpellCD(74434) == 0 then
         end
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Агония">
-        <SpellID>980</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <Target>Boss1</Target>
-        <Target>Boss2</Target>
-        <Target>Boss3</Target>
-        <Target>Boss4</Target>
-        <Target>Boss5</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Блуждающий дух">
-        <SpellID>48181</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>true</SetRecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if power2 > 0 then
-    if not HasDebuff(target, ability.SpellId, "PLAYER") then
-        if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
-        and select(3, HasDebuff(target, 172,   "PLAYER")) > 7      -- Порча
-        and select(3, HasDebuff(target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
-            return true;
-        end
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Порча">
-        <SpellID>172</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <Target>Boss1</Target>
-        <Target>Boss2</Target>
-        <Target>Boss3</Target>
-        <Target>Boss4</Target>
-        <Target>Boss5</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
-    return true;
-end
+]]
 ]]></Lua>
       </Ability>
       <Ability Name="Нестабильное колдовство">
@@ -8050,6 +7994,68 @@ if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Агония">
+        <SpellID>980</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 7 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Порча">
+        <SpellID>172</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 5 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Блуждающий дух">
+        <SpellID>48181</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if soulShards > 0 then
+    if not HasDebuff(target, ability.SpellId, "PLAYER") then
+        if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
+        and select(3, HasDebuff(target, 172,   "PLAYER")) > 7      -- Порча
+        and select(3, HasDebuff(target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
+            return true;
+        end
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Жизнеотвод">
         <SpellID>1454</SpellID>
         <Target>Player</Target>
@@ -8066,20 +8072,6 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Похищение души">
-        <SpellID>103103</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HealthByPercent(target) <= 20 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Гибельная хватка">
         <SpellID>103103</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
