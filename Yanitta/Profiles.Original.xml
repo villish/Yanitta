@@ -4240,8 +4240,8 @@ end
       </Ability>
       <Ability Name="Обшаривание карманов">
         <SpellID>921</SpellID>
-        <Target>Mouseover</Target>
         <Target>Target</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -9782,9 +9782,9 @@ end
       </Ability>
       <Ability Name="Омоложеине">
         <SpellID>774</SpellID>
+        <Target>Focus</Target>
         <Target>Player</Target>
         <Target>Mouseover</Target>
-        <Target>Focus</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
