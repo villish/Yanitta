@@ -60,6 +60,8 @@ namespace Yanitta
                     }
                     if (control.SelectedItems != null)
                         control.SelectedItemsText = string.Join(", ", control.SelectedItems);
+
+                    list.Sort((a, b) => { return a.Value.CompareTo(b.Value); });
                     control.ItemsSource = list;
                 }
             }
@@ -113,6 +115,7 @@ namespace Yanitta
                     if (value)
                         control.SelectedItems.Add(this.Value);
 
+                    control.SelectedItems.Sort((a, b) => { return a.CompareTo(b); });
                     control.SelectedItemsText = string.Join(", ", control.SelectedItems);
                 }
             }
