@@ -4916,6 +4916,7 @@ return isInRange;
     <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
+isAltMod = nil;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -4939,26 +4940,21 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 
-useCooldown        = true;
-setAoE             = nil;
-isAltMod           = nil;
-rune_names = { "Blood", "Unholy", "Frost", "Death" };
-
 function FillRunesInfo()
     runes = {
-        Blood  = { Rem = 0, Count = 0, FullCount = 0 },
-        Unholy = { Rem = 0, Count = 0, FullCount = 0 },
-        Frost  = { Rem = 0, Count = 0, FullCount = 0 },
-        Death  = { Rem = 0, Count = 0, FullCount = 0 },
+        BLOOD  = { Rem = 0, Count = 0, FullCount = 0 },
+        UNHOLY = { Rem = 0, Count = 0, FullCount = 0 },
+        FROST  = { Rem = 0, Count = 0, FullCount = 0 },
+        DEATH  = { Rem = 0, Count = 0, FullCount = 0 },
         Total  = 0,
         Power  = UnitPower("player", SPELL_POWER_RUNIC_POWER),
     };
 
-    for slot = 1, 6 do
+    for slot = 1, MAX_RUNES do
         local runeType        = GetRuneType(slot);
         local runeCount       = GetRuneCount(slot);
         local start, duration = GetRuneCooldown(slot);
-        local rune_name       = rune_names[runeType];
+        local rune_name       = RUNE_MAPPING[runeType];
 
         runes.Total = runes.Total + runeCount;
 
@@ -4968,114 +4964,12 @@ function FillRunesInfo()
 
         -- Руна сметри может быть использована в качестве любой из рун.
         -- надо тестить
-        if runeType == 4 then
-            runes["Blood" ].FullCount = runes["Blood" ].FullCount + runeCount;
-            runes["Unholy"].FullCount = runes["Unholy"].FullCount + runeCount;
-            runes["Frost" ].FullCount = runes["Frost" ].FullCount + runeCount;
+        if runeType == RUNETYPE_DEATH then
+            runes.BLOOD.FullCount  = runes.BLOOD.FullCount  + runeCount;
+            runes.UNHOLY.FullCount = runes.UNHOLY.FullCount + runeCount;
+            runes.FROST.FullCount  = runes.FROST.FullCount  + runeCount;
         end
         --print(rune_name.." Remains: "..runes[rune_name].Rem.." Count: "..runes[rune_name].Count);
-    end
-end
-
-RUNETYPE_BLOOD     = 1;
-RUNETYPE_CHROMATIC = 2;
-RUNETYPE_FROST     = 3;
-RUNETYPE_DEATH     = 4;
-
-TOTAL_RUNE_COUNT   = 6;
-
-rune_indexes_helper = { 1, 3, 5 };
-
-DIESES_BLOOD_PLAGUE       = 55078;
-DIESES_FROST_FEVER        = 55095;
-
--- это надо убрать, так как ИД заклинаний разные на разных спеках.
-function FillDiesesInfo(ability)
-    blood_plague,_,blood_plague_rem = HasDebuff(target, DIESES_BLOOD_PLAGUE, "PLAYER");-- Кровавая чума
-    frost_fever, _,frost_fever_rem  = HasDebuff(target, DIESES_FROST_FEVER, "PLAYER");-- Озноб
-end
-
-function GetFreeRuneCountForType(runeType)
-    if not runeType or runeType < 1 or runeType > 4 then
-        return 0;
-    end
-    
-    FillRunesInfo();
-    
-    if runeType == RUNETYPE_DEATH then
-        return runes.Death.Count;
-    end
-
-    local deathRuneCount = runes.Death.Count;
-    local runeName = rune_names[runeType];
-
-    local selRuneCount = runes[runeName].Count;
-
-    return deathRuneCount + selRuneCount;
-end
-
-function HaveFullyDepletedRunes()
-    
-    FillRunesInfo();
-
-    local unholy = runes.Unholy.Count;
-    local frost  = runes.Frost.Count;
-    local blood  = runes.Blood.Count;
-    local death  = runes.Death.Count;
-    
-    -- Frost DK dont have blood runes
-    if GetShapeshiftForm() == 2 then
-        blood = 2; -- disable blood rune calc
-    end
-
-    return unholy == 0 or frost == 0 or blood == 0 or death == 0;
-end
-
-function HaveFullyRunes()
-    
-    FillRunesInfo();
-
-    local unholy = runes.Unholy.Count;
-    local frost  = runes.Frost.Count;
-    local blood  = runes.Blood.Count;
-    local death  = runes.Death.Count;
-    
-    -- Frost DK dont have blood runes
-    if GetShapeshiftForm() == 2 then
-        blood = 0; -- disable blood rune calc
-    end
-
-    return unholy == 2 or frost == 2 or blood == 2 or death == 2;
-end
-
-function GetRunesCount()
-    
-    FillRunesInfo();
-
-    local unholy = runes.Unholy.Count;
-    local frost  = runes.Frost.Count;
-    local blood  = runes.Blood.Count;
-    local death  = runes.Death.Count;
-    
-    if GetShapeshiftForm() == 2 then
-        blood = 0;
-    end
-    
-    return unholy + frost + blood + death;
-end
-
-function GetRunesAtCooldownCount()
-    return TOTAL_RUNE_COUNT - GetRunesCount();
-end
-
-function HaveRuneAtCooldown()
-    return GetRunesAtCooldownCount() > 0;
-end
-
-function TestRuneFunction_GetCountOfDepletedRunes()
-    for i = 1,3 do
-        local slot = rune_indexes_helper[i];
-        local start, duration = GetRuneCooldown(slot);
     end
 end
 ]]></Lua>
@@ -5108,12 +5002,8 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
 end
 
 -- Перейти в стойку защиты
-if     GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
+if GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
     CastShapeshiftForm(1); -- blood
-elseif GetSpecialization() == 2 and GetShapeshiftForm() ~= 2 then
-    CastShapeshiftForm(2); -- frost
-elseif GetSpecialization() == 3 and GetShapeshiftForm() ~= 3 then
-    CastShapeshiftForm(3); -- unholly
 end
 
 FillRunesInfo();
@@ -5123,9 +5013,9 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-isInMeele  = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
-agroStatus = UnitThreatSituation("player");
-playerHP   = HealthByPercent("player");
+isInMeele  = IsSpellInRange(GetSpellInfo(45462), "target") == 1;
+agroStatus = UnitThreatSituation("player") or 0;
+playerHP   = HealthByPercent("player") or 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Кровь вампира">
@@ -5179,7 +5069,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if agroStatus == 3 and playerHP < 90 then
+if agroStatus == 3 and playerHP < 70 and isInMeele then
     return true;
 end
 ]]></Lua>
@@ -5193,7 +5083,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown and isInMeele;
+return useCooldown and isInMeele and playerHP < 60;
 ]]></Lua>
       </Ability>
       <Ability Name="Вспышка болезни">
@@ -5209,7 +5099,7 @@ local diseases = {
     55078, -- Кровавая чума
     55095, -- Озноб
 };
-if not HasDebuff("target", diseases, "PLAYER") then
+if not HasDebuff(target, diseases, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -5238,7 +5128,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasDebuff("target", 55095, "PLAYER") or HasBuff("player", 59052) then
+if not HasDebuff("target", 55095, "PLAYER") then
     return true;
 end
 ]]></Lua>
@@ -5252,9 +5142,11 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if runes.Death.Count == 1
-    or (runes.Unholy.Count == 0 and runes.Frost.Count >= 1)
-    or (runes.Unholy.Count >= 1 and runes.Frost.Count == 0) then
+local death = runes.DEATH.Count;
+local frost = runes.FROST.Count;
+local unholy= runes.UNHOLY.Count;
+
+if death < 2 or (unholy == 0 or frost == 0) then
     if select(2, HasBuff("player", 114851)) >= 5 then
         return true;
     end
@@ -5270,7 +5162,15 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+local value = select(5, HasBuff("player", 158300));
+local def_val = IsInRaid() and 100 or 50;
+
+if runes.BLOOD.Count > 1
+or (runes.BLOOD.Count > 0 and runes.BLOOD.Rem < 2)
+or value > def_val
+or playerHP <= 70 then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Жнец душ">
@@ -5297,28 +5197,9 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele then
-    if setAoE and runes.Blood.Count > 0 then
-        return true;
-    elseif HasBuff("player", 81141) then
+    if setAoE or HasBuff("player", 81141) or runes.BLOOD.Count > 1 then
         return true;
     end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Усиление рунического оружия">
-        <SpellID>47568</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and isInMeele
-    and runes.Blood.Count == 0
-    and runes.Unholy.Count == 0
-    and runes.Frost.Count == 0 then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -5333,6 +5214,20 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Усиление рунического оружия">
+        <SpellID>47568</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and isInMeele and runes.Total == 0 and playerHP < 50 then
+    return true;
+end
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -5480,7 +5375,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+local unholy = GetFreeRuneCountForType(RUNETYPE_UNHOLY);
 
 return unholy >= 1 and frost >= 1;
 ]]></Lua>
@@ -5574,7 +5469,7 @@ return GetRunesAtCooldownCount() > reqCount;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+local unholy = GetFreeRuneCountForType(RUNETYPE_UNHOLY);
 return unholy >= 1 and not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
 ]]></Lua>
       </Ability>
@@ -5647,7 +5542,7 @@ return frost >= reqCount or not HasDebuff("target", DIESES_FROST_FEVER, "PLAYER"
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local unholy = GetFreeRuneCountForType(RUNETYPE_CHROMATIC);
+local unholy = GetFreeRuneCountForType(RUNETYPE_UNHOLY);
 local reqCount = 2;
 if SpellCD(49020) > 1 then
     reqCount = 1;
