@@ -5032,6 +5032,20 @@ agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player") or 1;
 ]]></Lua>
       </Ability>
+      <Ability Name="Заморозка разума">
+        <SpellID>47528</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useInterrupt and CheckInterrupt(target);
+]]></Lua>
+      </Ability>
       <Ability Name="Кровь вампира">
         <SpellID>55233</SpellID>
         <Target>None</Target>
@@ -5296,7 +5310,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useInterrupt and CheckInterrupt("target");
+return useInterrupt and CheckInterrupt(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Темный симулякр">
