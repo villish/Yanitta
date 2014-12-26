@@ -4917,6 +4917,7 @@ return isInRange;
 setAoE = false;
 useCooldown = true;
 isAltMod = nil;
+useInterrupt = true;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -4936,6 +4937,14 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
         end
     end
 end
@@ -5151,7 +5160,7 @@ local death = runes.DEATH.Count;
 local frost = runes.FROST.Count;
 local unholy= runes.UNHOLY.Count;
 
-if death < 2 or (unholy == 0 or frost == 0) then
+if death < 2 or (unholy == 0 and frost > 0) or (frost == 0 and unholy > 0) then
     if select(2, HasBuff("player", 114851)) >= 5 then
         return true;
     end
@@ -5237,13 +5246,18 @@ end
       </Ability>
     </Rotation>
     <Rotation Name="Лед">
-      <HotKey Key="Z" Modifier="Alt" />
+      <HotKey Key="V" Modifier="Alt" />
+      <Lua><![CDATA[
+local simulacrSpellTable = {
+    0, -- Добавить сюда список заклинаний
+};
+]]></Lua>
       <Ability Name="Смерть и разложение">
         <SpellID>43265</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
@@ -5264,61 +5278,46 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
--- Смена власти в зависимости от специализации
-if  GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
-    CastShapeshiftForm(1); -- blood
-elseif GetSpecialization() == 2 and GetShapeshiftForm() ~= 2 then
-    CastShapeshiftForm(2); -- frost
-elseif GetSpecialization() == 3 and GetShapeshiftForm() ~= 3 then
-    CastShapeshiftForm(3); -- unholly
-end
-
 FillRunesInfo();
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-isInMeele  = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
-agroStatus = UnitThreatSituation("player");
-playerHP   = HealthByPercent("player");
+-- Если в слоте под левую руку ничего нет - значит двухручка (КА)
+isTwoHand = not GetInventoryItemID("player", INVSLOT_OFFHAND);
+isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
 ]]></Lua>
       </Ability>
-      <Ability Name="Воскрешение мертвых">
-        <SpellID>46584</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Смертельный союз">
-        <SpellID>48743</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return playerHP < 30;
-]]></Lua>
-      </Ability>
-      <Ability Name="Зимний горн">
-        <SpellID>57330</SpellID>
+      <Ability Name="Заморозка разума">
+        <SpellID>47528</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true; -- всегда кастовать Зимный горн для получения рунической энергии
+return useInterrupt and CheckInterrupt("target");
+]]></Lua>
+      </Ability>
+      <Ability Name="Темный симулякр">
+        <SpellID>77606</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+for _, spellId in ipairs(simulacrSpellTable) do
+    local endTime,_,castId = UnitCastingInfo(target);
+    if spellId == castId then
+        if (((endTime / 1000) - GetTime()) - AddonFrame.ping) < 2 then
+            return true
+        end
+    end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Вспышка болезни">
@@ -5330,8 +5329,78 @@ return true; -- всегда кастовать Зимный горн для п�
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-FillDiesesInfo(ability);
-return (not blood_plague or blood_plague_rem <= 1) or (not frost_fever or frost_fever_rem <= 1);
+return select(3, HasDebuff(target, 55078, "PLAYER")) < 3  -- Кровавая чума
+    or select(3, HasDebuff(target, 55095, "PLAYER")) < 3; -- Озноб
+]]></Lua>
+      </Ability>
+      <Ability Name="Кровоотвод">
+        <SpellID>45529</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if runes.UNHOLY.Count == 0 then
+    return select(2, HasBuff("player", 114851)) > 4;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяной столб">
+        <SpellID>51271</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Воскрешение мертвых">
+        <SpellID>46584</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяной столб">
+        <SpellID>51271</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return runes.Total < 2;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Усиление рунического оружия">
+        <SpellID>47568</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
+    return runes.Total < 2;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Жнец душ">
@@ -5343,16 +5412,9 @@ return (not blood_plague or blood_plague_rem <= 1) or (not frost_fever or frost_
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-if frost < 1 then
-    return false;
+if HealthByPercent(target) < 35 then
+    return true;
 end
-
-local pct = 35;
-if HasBuff("player", 138347) then
-    pct = 45;
-end
-return HealthByPercent("target") <= pct;
 ]]></Lua>
       </Ability>
       <Ability Name="Воющий ветер">
@@ -5364,10 +5426,49 @@ return HealthByPercent("target") <= pct;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-if frost >= 2 or HasBuff("player", 59052) then
+if setAoE then
+    -- Используем только при АОЕ или когда надо обновить болезнь
+    return select(3, HasDebuff(target, 55095, "PLAYER")) < 2; -- Озноб
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар чумы">
+        <SpellID>45462</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return select(3, HasDebuff(target, 55078, "PLAYER")) < 3 -- Кровавая чума
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяной удар (1H)">
+        <SpellID>49143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Для одноручного оружия и при проке "Машина для убийств"
+if not isTwoHand and HasBuff("player", 51124) then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Воющий ветер (1H)">
+        <SpellID>49184</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not isTwoHand;
 ]]></Lua>
       </Ability>
       <Ability Name="Уничтожение">
@@ -5379,10 +5480,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-local unholy = GetFreeRuneCountForType(RUNETYPE_UNHOLY);
-
-return unholy >= 1 and frost >= 1;
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Ледяной удар">
@@ -5394,105 +5492,11 @@ return unholy >= 1 and frost >= 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return UnitPower("player") >= 20;
+-- Для двуручного оружия или при максимуме рунической силы
+return isTwoHand or runes.Power > 90;
 ]]></Lua>
       </Ability>
-      <Ability Name="Лик Смерти">
-        <SpellID>47541</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Сливаем избыток рунической энергии Ликом Смерти
-if UnitPower("player") < 80 then
-    return false;
-end
-
-return SpellCD(49143) > 1;
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровоотвод">
-        <SpellID>45529</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local haveRuneAtCooldown = HaveRuneAtCooldown();
-if not haveRuneAtCooldown or haveRuneAtCooldown == 0 then
-    return false;
-end
-
-local bloodCharge,stackCount = HasBuff("player", 114851);
-if not bloodCharge then
-    return false;
-end
-
-return stackCount >= 5;
-]]></Lua>
-      </Ability>
-      <Ability Name="Вытягивание чумы">
-        <SpellID>123693</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Поглощает 2 болезни и восстанавливает 1 случайную руну ввиде руны смерти
-
-FillDiesesInfo(ability);
--- На целе есть 2 болезни
-if not blood_plague or not frost_fever then
-    return false;
-end
-
--- Нужна 1 полностью исчерпанная руна, т.е из пары рун, где 1 перезаряжается, а другая ждет - она и есть полностью исчерпанная
-local reqCount = 2;
-if HealthByPercent("target") < 5 then
-    reqCount = 1;
-end
-
-return GetRunesAtCooldownCount() > reqCount;
-
--- Вытягиваем чуму также если КД  болячек менее 5 секунд
---return HaveFullyDepletedRunes() or HealthByPercent("target") < 5;
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар чумы ">
-        <SpellID>45462</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local unholy = GetFreeRuneCountForType(RUNETYPE_UNHOLY);
-return unholy >= 1 and not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER");
-]]></Lua>
-      </Ability>
-      <Ability Name="Нечестивая порча">
-        <SpellID>115989</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-
--- проверка по кд в 1.5 минуты и наличие хотя бы 3х целей еще по мимо основной
-]]></Lua>
-      </Ability>
-      <Ability Name="Воющий ветер (2)">
+      <Ability Name="Воющий ветер (2H)">
         <SpellID>49184</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -5501,98 +5505,10 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 59052) then
+-- Используем с двуручным оружием при проке "59057 - Инея"
+if isTwoHand and HasBuff("player", 59057) then
     return true;
 end
-
-local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-
-local reqCount = 2;
-if SpellCD(49020) > 1 then
-    reqCount = 1;
-end
-
-return frost >= reqCount;
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяное прикосновение">
-        <SpellID>45477</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HasBuff("player", 59052) then
-    return true;
-end
-
-local frost = GetFreeRuneCountForType(RUNETYPE_FROST);
-
-local reqCount = 3;
-if SpellCD(49020) > 1 then -- Уничтожение имеет КД
-    reqCount = 2;
-end
-
-return frost >= reqCount or not HasDebuff("target", DIESES_FROST_FEVER, "PLAYER");
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар чумы (2)">
-        <SpellID>45462</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local unholy = GetFreeRuneCountForType(RUNETYPE_UNHOLY);
-local reqCount = 2;
-if SpellCD(49020) > 1 then
-    reqCount = 1;
-end
-if unholy >= reqCount or not HasDebuff("target", DIESES_BLOOD_PLAGUE, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной столп">
-        <SpellID>51271</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return GetFreeRuneCountForType(RUNETYPE_FROST) >= 2;
-]]></Lua>
-      </Ability>
-      <Ability Name="Вскипание крови ">
-        <SpellID>48721</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if GetFreeRuneCountForType(RUNETYPE_BLOOD) > 2 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Усиление рунического оружия">
-        <SpellID>47568</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return GetRunesAtCooldownCount() >= 5;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -5737,268 +5653,6 @@ end
 if runes.Frost.Count > 0 then
     return true;
 end
-]]></Lua>
-      </Ability>
-    </Rotation>
-    <Rotation Name="Frost">
-      <HotKey Key="V" Modifier="Alt" />
-      <Ability Name="Смерть и разложение">
-        <SpellID>43265</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
-]]></Lua>
-      </Ability>
-      <Ability Name="Инициализация">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
-    return true;
-end
-
-FillRunesInfo();
-
--- Если в слоте под левую руку ничего нет.
-isTwoHand = not GetInventoryItemID("player", INVSLOT_OFFHAND);
-isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
-]]></Lua>
-      </Ability>
-      <Ability Name="Вспышка болезни">
-        <SpellID>77575</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return select(3, HasDebuff(target, 55078, "PLAYER")) < 3  -- Кровавая чума
-    or select(3, HasDebuff(target, 55095, "PLAYER")) < 3; -- Озноб
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровоотвод">
-        <SpellID>45529</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if runes.Total < 4 then
-    return select(2, HasBuff("player", 114851)) > 4;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной столб">
-        <SpellID>51271</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Воскрешение мертвых">
-        <SpellID>46584</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Усиление рунического оружия">
-        <SpellID>47568</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return runes.Total < 2;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар чумы">
-        <SpellID>45462</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return select(3, HasDebuff(target, 55078, "PLAYER")) < 3 -- Кровавая чума
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной удар (1H)">
-        <SpellID>49143</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not isTwoHand then
-    -- Машина для убийств
-    if HasBuff("player", 51124) or runes.Power > 80 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Жнец душ">
-        <SpellID>130735</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HealthByPercent(target) < 35 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Воющий ветер">
-        <SpellID>49184</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return HasBuff("player", 59057) -- Иней
-    or select(3, HasDebuff(target, 55095, "PLAYER")) < 2; -- Озноб
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной удар (1H)">
-        <SpellID>49143</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not isTwoHand and runes.Power > 80;
-]]></Lua>
-      </Ability>
-      <Ability Name="Уничтожение (1H)">
-        <SpellID>49020</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not isTwoHand then
-    -- Необходимо тестировать.
-    --return runes.Unholy.FullCount > 1;
-    return runes.Unholy.Count > 1;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Воющий ветер (1H)">
-        <SpellID>49184</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not isTwoHand then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Уничтожение (2H)">
-        <SpellID>49020</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isTwoHand then
-    return HasBuff("player", 51124); -- Машина для убийств
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной удар (2H)">
-        <SpellID>49143</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isTwoHand then
-    -- Необходимо тестировать
-    return runes.Power > 80 or runes.Frost.Count == 0;
-    --return runes.Power > 80 or runes.Frost.FullCount == 0;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Уничтожение (2H)">
-        <SpellID>49020</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isTwoHand then
-    -- Full ???? test
-    return runes.Blood.Count  == 2
-        or runes.Unholy.Count == 2
-        or runes.Frost.Count  == 2;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Зимний горн">
-        <SpellID>57330</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return runes.Power < 80;
 ]]></Lua>
       </Ability>
     </Rotation>
