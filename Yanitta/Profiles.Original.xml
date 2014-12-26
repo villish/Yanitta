@@ -4940,6 +4940,11 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 
+local RUNETYPE_BLOOD  = 1;
+local RUNETYPE_UNHOLY = 2;
+local RUNETYPE_FROST  = 3;
+local RUNETYPE_DEATH  = 4;
+
 function FillRunesInfo()
     runes = {
         BLOOD  = { Rem = 0, Count = 0, FullCount = 0 },
@@ -4950,7 +4955,7 @@ function FillRunesInfo()
         Power  = UnitPower("player", SPELL_POWER_RUNIC_POWER),
     };
 
-    for slot = 1, MAX_RUNES do
+    for slot = 1, 6 do
         local runeType        = GetRuneType(slot);
         local runeCount       = GetRuneCount(slot);
         local start, duration = GetRuneCooldown(slot);
