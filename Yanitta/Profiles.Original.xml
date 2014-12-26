@@ -5779,8 +5779,8 @@ isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return select(3, HasDebuff(target, 55078, "PLAYER")) < 3 -- Кровавая чума
-    or select(3, HasDebuff(target, 55095, "PLAYER")) < 3 -- Озноб
+return select(3, HasDebuff(target, 55078, "PLAYER")) < 3  -- Кровавая чума
+    or select(3, HasDebuff(target, 55095, "PLAYER")) < 3; -- Озноб
 ]]></Lua>
       </Ability>
       <Ability Name="Кровоотвод">
