@@ -5080,10 +5080,10 @@ end
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if agroStatus == 3 and playerHP < 70 and isInMeele then
+if agroStatus > 2 and playerHP < 70 and isInMeele then
     return true;
 end
 ]]></Lua>
@@ -5307,7 +5307,7 @@ return useInterrupt and CheckInterrupt("target");
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
+        <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _, spellId in ipairs(simulacrSpellTable) do
@@ -5318,19 +5318,6 @@ for _, spellId in ipairs(simulacrSpellTable) do
         end
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Вспышка болезни">
-        <SpellID>77575</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return select(3, HasDebuff(target, 55078, "PLAYER")) < 3  -- Кровавая чума
-    or select(3, HasDebuff(target, 55095, "PLAYER")) < 3; -- Озноб
 ]]></Lua>
       </Ability>
       <Ability Name="Кровоотвод">
@@ -5371,6 +5358,24 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вспышка болезни">
+        <SpellID>77575</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local diseases = {
+    55078, -- Кровавая чума
+    55095, -- Озноб
+};
+if select(3, HasDebuff(target, diseases, "PLAYER")) < 3 then
     return true;
 end
 ]]></Lua>
