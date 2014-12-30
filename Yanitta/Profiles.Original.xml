@@ -5195,7 +5195,7 @@ local death = runes.DEATH.Count;
 local frost = runes.FROST.Count;
 local unholy= runes.UNHOLY.Count;
 
-if blood == 0 and death < 2 and (unholy == 0 and frost > 0) or (frost == 0 and unholy > 0) then
+if death < 5 and (blood == 0 or unholy == 0 or frost == 0) then
     if select(2, HasBuff("player", 114851)) >= 5 then
         return true;
     end
