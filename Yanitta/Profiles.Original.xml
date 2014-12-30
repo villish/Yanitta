@@ -5161,26 +5161,6 @@ if not HasDebuff("target", 55095, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Кровоотвод">
-        <SpellID>45529</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local death = runes.DEATH.Count;
-local frost = runes.FROST.Count;
-local unholy= runes.UNHOLY.Count;
-
-if death < 2 or (unholy == 0 and frost > 0) or (frost == 0 and unholy > 0) then
-    if select(2, HasBuff("player", 114851)) >= 5 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Удар смерти">
         <SpellID>49998</SpellID>
         <Target>Target</Target>
@@ -5201,6 +5181,27 @@ or playerHP <= 70 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Кровоотвод">
+        <SpellID>45529</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local blood = runes.BLOOD.Count;
+local death = runes.DEATH.Count;
+local frost = runes.FROST.Count;
+local unholy= runes.UNHOLY.Count;
+
+if blood == 0 and death < 2 and (unholy == 0 and frost > 0) or (frost == 0 and unholy > 0) then
+    if select(2, HasBuff("player", 114851)) >= 5 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Жнец душ">
         <SpellID>114866</SpellID>
         <Target>Target</Target>
@@ -5210,7 +5211,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HealthByPercent("target") < 35 then
+if not setAoE and HealthByPercent(target) then
     return true;
 end
 ]]></Lua>
