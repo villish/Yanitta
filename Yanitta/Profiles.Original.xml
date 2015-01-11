@@ -295,6 +295,12 @@ function CheckInstanseLogic(member)
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
     elseif HasDebuff(member.Unit, 137341) then
         member.DontHeal = true;
+    -- Жгучая энергия
+    elseif HasDebuff(member.Unit, 161242) then
+        member.HP = 30;
+    -- Нейтрализующий щит
+    elseif HasDebuff(member.Unit, 163134) then
+        member.HP = 101;   
     end
 end
 
@@ -3975,7 +3981,29 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-local buffs = { 2823, 108211, 3408, 8679 };
+local buffs = {
+    2823,
+    8679
+};
+
+if not HasBuff("player", buffs) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Похищающий  жизнь яд">
+        <SpellID>108211</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>true</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+local buffs = {
+    108211,
+    3408
+};
 
 if not HasBuff("player", buffs) then
     return true;
@@ -4989,6 +5017,21 @@ end
 ]]></Lua>
     <Rotation Name="Кровь">
       <HotKey Key="X" Modifier="Alt" />
+      <Lua><![CDATA[
+--if DebugMode then
+--    AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
+--    function EVENT_MODS.UI_ERROR_MESSAGE(msg)
+--        print(msg);
+--        print(format("Blood: %d Frost: %d Unholy: %d Death: %d",
+--            runes.BLOOD.Count,
+--            runes.FROST.Count,
+--            runes.UNHOLY.Count,
+--            runes.DEATH.Count
+--        ));
+--        print("===============");
+--    end
+--end
+]]></Lua>
       <Ability Name="Смерть и разложение">
         <SpellID>43265</SpellID>
         <Target>MouseLocation</Target>
@@ -5011,7 +5054,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -5170,13 +5213,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local value = select(5, HasBuff("player", 158300));
-local def_val = IsInRaid() and 100 or 50;
-
-if runes.BLOOD.Count > 1
-or (runes.BLOOD.Count > 0 and runes.BLOOD.Rem < 2)
-or value > def_val
-or playerHP <= 70 then
+-- local value = select(5, HasBuff("player", 158300));
+-- local def_val = IsInRaid() and 100 or 50;
+if playerHP < 85 then
     return true;
 end
 ]]></Lua>
@@ -5190,12 +5229,11 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local blood = runes.BLOOD.Count;
-local death = runes.DEATH.Count;
-local frost = runes.FROST.Count;
-local unholy= runes.UNHOLY.Count;
+local blood = runes.BLOOD.FullCount;
+local frost = runes.FROST.FullCount;
+local unholy= runes.UNHOLY.FullCount;
 
-if death < 5 and (blood == 0 or unholy == 0 or frost == 0) then
+if blood == 0 or unholy == 0 or frost == 0 then
     if select(2, HasBuff("player", 114851)) >= 5 then
         return true;
     end
@@ -5211,7 +5249,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and HealthByPercent(target) then
+if not setAoE and HealthByPercent(target) <= 35 then
     return true;
 end
 ]]></Lua>
@@ -5261,9 +5299,9 @@ end
       </Ability>
     </Rotation>
     <Rotation Name="Лед">
-      <HotKey Key="V" Modifier="Alt" />
+      <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
-local simulacrSpellTable = {
+simulacrSpellTable = {
     0, -- Добавить сюда список заклинаний
 };
 ]]></Lua>
@@ -5289,7 +5327,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -5344,8 +5382,13 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if runes.UNHOLY.Count == 0 then
-    return select(2, HasBuff("player", 114851)) > 4;
+local frost = runes.FROST.FullCount;
+local unholy= runes.UNHOLY.FullCount;
+
+if unholy == 0 or frost == 0 then
+    if select(2, HasBuff("player", 114851)) >= 5 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -7468,7 +7511,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown then
+if useCooldown and not HasBuff("player", 113860) then
     return true;
 end
 ]]></Lua>
@@ -8620,7 +8663,7 @@ end
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
