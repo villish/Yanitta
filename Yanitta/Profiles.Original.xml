@@ -279,28 +279,29 @@ function CheckInstanseLogic(member)
         else -- без щита
             member.HP = min(member.HP, 50);
         end
-    -- Верховный молот: Кодгар
-    -- Дебаф поглощающий урон Исторжение магии: Темная магия
+    -- Верховный молот: Кодгар (Дебаф: Исторжение магии: Темная магия)
+    -- Дебаф вешает щит поглощающий опреленное количество лечения (надо выхиливать)
     elseif HasDebuff(member.Unit, 162184) then
         member.HP = min(member.HP, 50);
-    -- Верховный молот: Кодгар
-    -- Дебаф под которым надо усиленно хилить: Жгучая энергия
+    -- Верховный молот: Кодгар (Дебаф: Жгучая энергия)
+    -- Цель получает на 35% меньше отхила - надо сейвить
     elseif HasDebuff(member.Unit, 161242) then
-        member.HP = min(member.HP, 50);
+        member.HP = min(40, member.HP);
+    -- Верховный молот: Кодгар (Дебаф: Нейтрализующий щит)
+    -- На цели есть щит поглощающий урон от магии (это основной урон на боссе)
+    elseif HasDebuff(member.Unit, 163134) then
+        member.HP = 101;
     -- Престол гроз: Тортос (Кристальная оболочка)
+    -- Надо настакивть щит поглощающий урон
     elseif HasDebuff(member.Unit, 137633) then
+        -- нужно доработать условие
         if not HasDebuff(member.Unit, 140701) then
             member.HP = min(member.HP, 50);
         end
     -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
+    -- Вешается на танка, хилить нельзя
     elseif HasDebuff(member.Unit, 137341) then
         member.DontHeal = true;
-    -- Жгучая энергия
-    elseif HasDebuff(member.Unit, 161242) then
-        member.HP = 30;
-    -- Нейтрализующий щит
-    elseif HasDebuff(member.Unit, 163134) then
-        member.HP = 101;   
     end
 end
 
@@ -8463,7 +8464,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if not UnitAffectingCombat("player") and UnitIsPlayer(target)
+if IsModKeyDown(mkLeftShift) and not UnitAffectingCombat("player") and UnitIsPlayer(target)
     and (UnitIsDeadOrGhost(target) or UnitIsCorpse(target)) then
     return true;
 end
@@ -8644,7 +8645,7 @@ end
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
@@ -8717,7 +8718,7 @@ end
         <Lua><![CDATA[
 local count = 0;
 for _,member in ipairs(members) do
-    if member.HP < 30 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
+    if member.HP < 40 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
         count = count + 1;
         if count > 3 then
             return true;
@@ -8752,18 +8753,20 @@ end
 -- бафф "155777 - Зарождение", которое не обновляет время действия "774 - Омоложения".
 -- Да и вообще бафы друг друга не обновляют. 156954
 
-local hp_rej = IsInRaid() and 65 or 80;
-local hp_ger = IsInRaid() and 45 or 60;
+if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
+    local hp_rej = IsInRaid() and 70 or 80;
+    local hp_ger = IsInRaid() and 50 or 60;
 
-for _,member in ipairs(members) do
-    if member.HP < hp_rej or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
-        local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
-        local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
+    for _,member in ipairs(members) do
+        if member.HP < hp_rej or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
+            local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
+            local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
 
-        -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
-        if not rejuvenation or (hasGermination and not germination and
-            (member.HP < hp_ger or (member.IsTank and member.HP < hp_rej))) then
-            return member.Unit;
+            -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
+            if not rejuvenation or (hasGermination and not germination and
+                (member.HP < hp_ger or (member.IsTank and member.HP < hp_rej))) then
+                return member.Unit;
+            end
         end
     end
 end
