@@ -8427,15 +8427,15 @@ NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- пауза
-if IsModKeyDown(mkLeftShift) then
-    for index = 1, NUM_WORLD_RAID_MARKERS do
-        if not IsRaidMarkerActive(index) then
-            PlaceRaidMarker(index);
-            break;
-        end
-    end
-    return true;
-end
+--if IsModKeyDown(mkLeftShift) then
+--    for index = 1, NUM_WORLD_RAID_MARKERS do
+--        if not IsRaidMarkerActive(index) then
+--            PlaceRaidMarker(index);
+--            break;
+--        end
+--    end
+--    return true;
+--end
 
 FillPartyTables(774);
 ]]></Lua>
@@ -8451,7 +8451,7 @@ FillPartyTables(774);
         <Lua><![CDATA[
 -- Перк "Усиленное возрождение" (157301)
 if not IS_MOVING or (IS_MOVING and IsSpellKnown(157301)) then
-    return UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
+    return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
 end
 ]]></Lua>
       </Ability>
@@ -8464,7 +8464,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) and not UnitAffectingCombat("player") and UnitIsPlayer(target)
+if not UnitAffectingCombat("player") and UnitIsPlayer(target)
     and (UnitIsDeadOrGhost(target) or UnitIsCorpse(target)) then
     return true;
 end
@@ -8520,6 +8520,18 @@ end
 if LowHP.H50 > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Гнев">
+        <SpellID>5176</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
       <Ability Name="Природный целитель">
@@ -8755,7 +8767,7 @@ end
 
 if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
     local hp_rej = IsInRaid() and 70 or 80;
-    local hp_ger = IsInRaid() and 50 or 60;
+    local hp_ger = IsInRaid() and 55 or 60;
 
     for _,member in ipairs(members) do
         if member.HP < hp_rej or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
@@ -8808,7 +8820,7 @@ end
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
