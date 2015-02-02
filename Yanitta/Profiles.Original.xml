@@ -2267,7 +2267,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Должен быть дебаф на Слабые Удары (115798)
-return setAoE or not HasDebuff("target", 115798);
+return setAoE;
 ]]></Lua>
       </Ability>
       <Ability Name="Удар воина света">
@@ -3764,6 +3764,48 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
+
+mTempTable = { };
+AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
+AddonFrame:RegisterEvent("LOOT_OPENED");
+
+function EVENT_MODS.UI_ERROR_MESSAGE(msg)
+    -- Если моба невозможно обократсть.
+    -- Или его уже обокрали или у него нет карманов.
+    -- Заносим его в таблицу для дальнейшей проверки.
+    if UnitExists("target")
+        and (msg == SPELL_FAILED_TARGET_NO_POCKETS
+          or msg == ERR_ALREADY_PICKPOCKETED) then
+        mTempTable[LAST_TARGET] = GetTime();
+    end
+end
+
+function EVENT_MODS.WORLD_MAP_UPDATE()
+    -- очистка таблицы мобов с обшареными карманами
+    mTempTable = { };
+end
+
+-- Функция проверки на возможность обокрасть цель.
+-- Проверяется таблица на присутствие "неправильного моба"
+function IsPickPocketed(unit)
+    if type(mTempTable) == "table" then
+        local lastTime = mTempTable[UnitGUID(unit)] or 0;
+        if (lastTime + 300) > GetTime() then
+            return true;
+        end
+    end
+end
+
+function EVENT_MODS.LOOT_OPENED()
+    for i = 1, GetNumLootItems() do
+        local texture, item, quantity = GetLootSlotInfo(i);
+        --print(item, quantity);
+        if quantity == 0 or item == GetItemInfo(16885) then
+            LootSlot(i);
+            --print("Looting: ", item);
+        end
+    end
+end
 ]]></Lua>
     <Rotation Name="Бой">
       <HotKey Key="Z" Modifier="Alt" />
@@ -3793,6 +3835,66 @@ if invisible and not UnitAffectingCombat("player") and GetShapeshiftForm(1) ~= 1
         CastShapeshiftForm(1);
     end
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ошеломление">
+        <SpellID>6770</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasDebuff(target, 6770) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Обшаривание карманов">
+        <SpellID>921</SpellID>
+        <Target>Mouseover</Target>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMounted() or IsModKeyDown(mkLeftAlt) then
+    return true;
+end
+
+if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
+    CastShapeshiftForm(1);
+end
+
+if target == "mouseover" and UnitExists(target) then
+    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
+        return true;
+    end
+end
+
+if target == "target" and UnitExists(target) then
+    --TargetNearestEnemy();
+    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Пинок">
+        <SpellID>1766</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Веер клинков">
@@ -3984,7 +4086,8 @@ end
         <Lua><![CDATA[
 local buffs = {
     2823,
-    8679
+    8679,
+    108211
 };
 
 if not HasBuff("player", buffs) then
@@ -4269,8 +4372,8 @@ end
       </Ability>
       <Ability Name="Обшаривание карманов">
         <SpellID>921</SpellID>
-        <Target>Target</Target>
         <Target>Mouseover</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -4292,7 +4395,7 @@ if target == "mouseover" and UnitExists(target) then
 end
 
 if target == "target" and UnitExists(target) then
-    TargetNearestEnemy();
+    --TargetNearestEnemy();
     if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
         return true;
     end
@@ -4814,7 +4917,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff("target", 2944, "PLAYER") then
     return true;
