@@ -680,11 +680,18 @@ end
 function RegisterKeyHandler(key, handler)
     assert(key, "Невозможно зарегистрировать пустую клавишу");
     local bname = "__button_"..key.."__";
-    handler = handler or function(self, button, down)
-        --print(self.Key, down);
+
+    handler = type(handler) == "function" and handler or function(self, button, down)
         if AddonFrame.Buttons[self.Key] then
-            AddonFrame.Buttons[self.Key].IsDown = (down == "down");
+            AddonFrame.Buttons[self.Key].IsDown = down;
         end
+    end
+
+    -- Сначала почистим старую кнопку
+    if type(AddonFrame.Buttons[key]) == "table" and type(AddonFrame.Buttons[key].UnregisterAllEvents) == "function" then
+        AddonFrame.Buttons[key]:SetScript("OnClick", nil);
+        AddonFrame.Buttons[key]:UnregisterAllEvents();
+        AddonFrame.Buttons[key] = nil;
     end
 
     AddonFrame.Buttons[key] = CreateFrame("BUTTON", bname, AddonFrame)
@@ -741,15 +748,18 @@ end
 if type(AddonFrame) == "table" then
     AddonFrame:UnregisterAllEvents();
     -- Очистим предыдущие биндинги
-    for _,frame in ipairs(ActionBarButtonEventsFrame.frames) do
+    for _, frame in ipairs(ActionBarButtonEventsFrame.frames) do
         ClearOverrideBindings(frame)
     end
 
     -- Снимем обработчики с уже существующих кнопок
     if type(AddonFrame.Buttons) == "table" then
-        for _,button in ipairs(AddonFrame.Buttons) do
-            button:UnregisterAllEvents();
-            button = nil;
+        for _, button in ipairs(AddonFrame.Buttons) do
+            if type(button.UnregisterAllEvents) == "function" then
+                button:SetScript("OnClick", nil);
+                button:UnregisterAllEvents();
+                button = nil;
+            end
         end
     end
 
