@@ -237,6 +237,8 @@
             <Word>HealthByPercent</Word>
             <Word>PowerByPercent</Word>
             <Word>IsModKeyDown</Word>
+            <Word>IsKeyDown</Word>
+            <Word>RegisterKeyHandler</Word>
             <Word>GetDistance</Word>
             <Word>HasGlyph</Word>
             <Word>UseItemBySlot</Word>

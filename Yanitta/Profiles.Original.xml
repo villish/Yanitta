@@ -670,6 +670,50 @@ function AddonFrame_OnEvent(self, event, ...)
     end
 end
 
+function IsKeyDown(key)
+    assert(key, 'Не указана клавиша');
+    if AddonFrame.Buttons[key] then
+        return AddonFrame.Buttons[key].IsDown;
+    end
+end
+
+function RegisterKeyHandler(key, handler)
+    assert(key, "Невозможно зарегистрировать пустую клавишу");
+    local bname = "__button_"..key.."__";
+    handler = handler or function(self, button, down)
+        --print(self.Key, down);
+        if AddonFrame.Buttons[self.Key] then
+            AddonFrame.Buttons[self.Key].IsDown = (down == "down");
+        end
+    end
+
+    AddonFrame.Buttons[key] = CreateFrame("BUTTON", bname, AddonFrame)
+    AddonFrame.Buttons[key].Key = key;
+    AddonFrame.Buttons[key].IsDown = nil;
+    AddonFrame.Buttons[key]:RegisterForClicks("AnyUp","AnyDown");
+    AddonFrame.Buttons[key]:SetScript("OnClick", handler);
+
+    local isBind = nil;
+    local bind = GetBindingByKey(key);
+    if bind and ActionBarButtonEventsFrame.frames then
+        -- Далее, надо сделать проверку по всех фреймах.
+        -- Но возможно обойдемся и панелями команд.
+        for _, frame in ipairs(ActionBarButtonEventsFrame.frames) do
+            if strupper(frame:GetName()) == bind then
+                SetOverrideBindingClick(frame, false, key, bname);
+                --print('Зарегистрирована клавиша', key);
+                isBind = 1;
+            end
+        end
+    else
+        AddonFrame.print("|cfff5360cНе удалось найти привязку для клавиши "..tostring(key).."|r", 1);
+    end
+
+    if not isBind then
+        AddonFrame.print("|cfff5360cНе удалось зарегистрировать обработку для клавиши \'"..tostring(key).."\'|r", 1);
+    end
+end
+
 function AddonFrame_AbilityLoop()
    for _,ability in ipairs(ABILITY_TABLE) do
         for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
@@ -696,6 +740,21 @@ end
 
 if type(AddonFrame) == "table" then
     AddonFrame:UnregisterAllEvents();
+    -- Очистим предыдущие биндинги
+    for _,frame in ipairs(ActionBarButtonEventsFrame.frames) do
+        ClearOverrideBindings(frame)
+    end
+
+    -- Снимем обработчики с уже существующих кнопок
+    if type(AddonFrame.Buttons) == "table" then
+        for _,button in ipairs(AddonFrame.Buttons) do
+            button:UnregisterAllEvents();
+            button = nil;
+        end
+    end
+
+    -- Пересоздадим таблицу кнопок
+    AddonFrame.Buttons = {};
 end
 
 if type(AddonFrame) ~= "table" then
@@ -704,6 +763,7 @@ if type(AddonFrame) ~= "table" then
     AddonFrame:SetScript("OnEvent",  AddonFrame_OnEvent);
     AddonFrame:SetHeight(300);
     AddonFrame:SetWidth(600);
+    AddonFrame.Buttons = {};
     AddonFrame.Msg = AddonFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
     AddonFrame.Msg:SetAllPoints();
     AddonFrame.print = function(msg, con)

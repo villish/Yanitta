@@ -93,6 +93,25 @@ INVSLOT_*
 Если предмет (перчатка, тринька, пояс и т.п) юзабелен и не имеет КД - имитируем клик правой кн. мыши.]]>
     </Description>
   </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="IsKeyDown">
+    <Description>
+      <![CDATA[  IsKeyDown(key)
+Функция проверяет зажата ли клавиша (A-Z)]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="RegisterKeyHandler">
+    <Description>
+      <![CDATA[  RegisterKeyHandler(key, [handler(self,button,down)])
+Регистрирует обработчик для гарячей клавиши.
+Если оработчик пустой, устанавливается обработчик по умлчанию (устанавливается флаг на то что клавиша зажата)
+Параметры:
+  key - клавиша для регистрации (A-Z)
+  handler - специальный обработчик (опционально)
+ВАЖНО:
+  Регистрация будет работать только для кавиш которые зарегистрированы для панели комманд (ActionBarButtonEventsFrame.frames)
+]]>
+    </Description>
+  </WowApi>
   <WowApi RawData="0" ImageType="EnumValue" Name="INVSLOT_AMMO">
     <Description><![CDATA[INVSLOT_AMMO = 0 (Амуниция)]]></Description>
   </WowApi>
