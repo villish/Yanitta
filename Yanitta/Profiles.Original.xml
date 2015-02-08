@@ -878,6 +878,8 @@ isAltMod = true;
 useInterrupt = true;
 useCooldown = true;
 
+RegisterKeyHandler("F");
+
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -957,6 +959,20 @@ isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
 hasAPbuff  = HasBuff("player", { 57330, 19506});
 playerHP   = HealthByPercent("player");
 rage       = UnitPower("player");
+]]></Lua>
+      </Ability>
+      <Ability Name="Ударная волна">
+        <SpellID>46968</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsKeyDown("F") then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
