@@ -673,7 +673,7 @@ end
 function IsKeyDown(key)
     assert(key, 'Не указана клавиша');
     if AddonFrame.Buttons[key] then
-        return AddonFrame.Buttons[key].IsDown;
+        return AddonFrame.Buttons[key].IsDown and not GetCurrentKeyBoardFocus();
     end
 end
 
