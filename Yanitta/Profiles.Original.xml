@@ -8582,6 +8582,10 @@ useCooldown = true;
 setAoE      = nil;
 isCat       = nil;
 useAutoDispell = true;
+
+RegisterKeyHandler("F");
+RegisterKeyHandler("R");
+RegisterKeyHandler("T");
 ]]></Lua>
     <Rotation Name="Лекарь">
       <HotKey Key="Z" Modifier="Alt" />
@@ -8708,6 +8712,38 @@ end
 
 if LowHP.H50 > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
+end
+
+if HasBuff("player", 106898) and GetShapeshiftForm() == 1 then
+    CancelShapeshiftForm();
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Астаральный скачек">
+        <SpellID>102280</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsKeyDown("R") then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Тревожный рев">
+        <SpellID>106898</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsKeyDown("T") then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -9444,6 +9480,20 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isCat and isInMeele and useCooldown and energy < 70 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Перевоплощение: Король джунглей">
+        <SpellID>102543</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and isInMeele and HasBuff("player", 106952) then
     return true;
 end
 ]]></Lua>
