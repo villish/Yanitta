@@ -805,6 +805,15 @@ function ChangeRotation(rotation)
         AddonFrame.print("|cff15bd05Ротация: |r|cff6f0a9a"..rotation.."|r|cff15bd05 - Включена.|r", true);
         PlaySound("PAPERDOLLOPEN", "Master");
         CheckAllSpells();
+        -- Регистрируем клавиши
+        for key = string.byte('A'), string.byte('Z') do
+            --print("Зарегистрирован обработчик для клавиши:", string.char(key));
+            RegisterKeyHandler(string.char(key));
+        end
+        for key = 0, 9 do
+            --print("Зарегистрирован обработчик для клавиши:", string.char(key));
+            RegisterKeyHandler(tostring(key));
+        end
     end
 end
 ]]></Lua>
@@ -877,8 +886,6 @@ setAoE = false;
 isAltMod = true;
 useInterrupt = true;
 useCooldown = true;
-
-RegisterKeyHandler("F");
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -8582,10 +8589,6 @@ useCooldown = true;
 setAoE      = nil;
 isCat       = nil;
 useAutoDispell = true;
-
-RegisterKeyHandler("F");
-RegisterKeyHandler("R");
-RegisterKeyHandler("T");
 ]]></Lua>
     <Rotation Name="Лекарь">
       <HotKey Key="Z" Modifier="Alt" />
