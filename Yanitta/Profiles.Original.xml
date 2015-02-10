@@ -9726,15 +9726,17 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
         if spellId == 93402 then -- Солнечный огонь
             moonTargetList[destGUID] = {
                 Solar = {
-                    LastTime = GetTime(),
-                    Peak = HasBuff("player", 171744) ~= nil, -- Солнечный пик
+                    LastTime    = GetTime(),
+                    Peak        = HasBuff("player", 171744) ~= nil, -- Солнечный пик
+                    IsCelestial = HasBuff("player", 112071) ~= nil, -- Парад планет
                 }
             };
         elseif spellId == 8921 then -- Лунный огонь
             moonTargetList[destGUID] = {
                 Lunar = {
-                    LastTime = GetTime(),
-                    Peak = HasBuff("player", 171743) ~= nil, -- Лунный пик
+                    LastTime    = GetTime(),
+                    Peak        = HasBuff("player", 171743) ~= nil, -- Лунный пик
+                    IsCelestial = HasBuff("player", 112071) ~= nil, -- Парад планет
                 }
             };
         end
@@ -9764,7 +9766,24 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-elipse = UnitPower("player", SPELL_POWER_ECLIPSE);
+isInRange = IsSpellInRange(GetSpellInfo(5176), "target") == 1;
+power     = UnitPower("player", SPELL_POWER_ECLIPSE);
+inLunar   = false;
+inSolar   = false;
+direction = GetEclipseDirection();
+
+if power < 0 then
+    inLunar = true;
+    power = (power*-1);
+elseif power > 0 then
+    inSolar = true;
+end
+
+dotDur = 20;
+local _, _, _, t1, t2  = GetTalentInfo(7, 1, GetActiveSpecGroup());
+if t1 and t2 then
+    dotDur = 10;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Дикий гриб">
@@ -9795,6 +9814,38 @@ if IsModKeyDown(mkLeftControl) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Перевоплощение: Избранный Элуны">
+        <SpellID>102560</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and isInRange then
+    if GetEclipseDirection() == "sun" then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Парад планет">
+        <SpellID>112071</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and isInRange then
+    if GetEclipseDirection() == "sun" then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Звездопад">
         <SpellID>48505</SpellID>
         <Target>None</Target>
@@ -9804,42 +9855,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and UnitExists("target") then
+if useCooldown and isInRange then
     if GetEclipseDirection() == "sun" then
         return true;
     end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Целительное прикосновение">
-        <SpellID>5185</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HealthByPercent("player") < 70 and
-    not HasBuff("player", 774, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Омоложение">
-        <SpellID>774</SpellID>
-        <Target>Focus</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HealthByPercent("focus") < 70 and
-    not HasBuff("focus", 774, "PLAYER")
-    and not UnitIsDeadOrGhost("focus")
-    and not UnitIsEnemy("player", "focus") then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -9854,16 +9873,24 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- проверяем надо ли обновлять дот во время пика
 local guid = UnitGUID(target);
-if moonTargetList[guid] and moonTargetList[guid].Lunar then
+if inLunar and moonTargetList[guid] and moonTargetList[guid].Lunar then
     if not moonTargetList[guid].Lunar.Peak then
         return true;
     end
 end
 
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3
-    or (IS_MOVING and GetEclipseDirection() == "sun" and not HasBuff("player", 93400)) then
-    return target;
+local targetSunfireRem = select(3, HasDebuff(target, 93402));
+local targetMoonfireRem = select(3, HasDebuff(target, 8921));
+local inCelestialAlignment,_,inCelestialAlignmentRem = HasBuff("player", 112071);
+
+if targetMoonfireRem < 6
+or (GetEclipseDirection() == "sun" and power <= 40 and targetMoonfireRem <= dotDur)
+or (inCelestialAlignment and targetSunfireRem < 6)
+or (inCelestialAlignment and inCelestialAlignmentRem < 4 and targetSunfireRem < dotDur)
+then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -9880,14 +9907,20 @@ end
         <Lua><![CDATA[
 -- проверяем надо ли обновлять дот во время пика
 local guid = UnitGUID(target);
-if moonTargetList[guid] and moonTargetList[guid].Sonar then
+if inSolar and moonTargetList[guid] and moonTargetList[guid].Sonar then
     if not moonTargetList[guid].Sonar.Peak then
         return true;
     end
 end
 
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3
-    or (IS_MOVING and GetEclipseDirection() == "moon" and not HasBuff("player", 93400)) then
+local targetSunfireRem  = select(3, HasDebuff(target, 93402));
+local targetMoonfireRem = select(3, HasDebuff(target, 8921));
+local inCelestialAlignment,_,inCelestialAlignmentRem = HasBuff("player", 112071);
+
+if targetSunfireRem < 6
+or (GetEclipseDirection() == "sun"  and power > 0 and targetSunfireRem < 10)
+or (GetEclipseDirection() == "moon" and power <= 40 and targetSunfireRem <= dotDur)
+then
     return true;
 end
 ]]></Lua>
@@ -9902,6 +9935,11 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 93399, 93400 - Падающие звезды
+-- Необходима серьезная доработка...
+local minStarsurgeCharges = 1;
+if HasBuff("player", 112071) then
+    minStarsurgeCharges = 0;
+end
 
 local starsurgeCharges = select(1, GetSpellCharges(78674));
 
@@ -9921,8 +9959,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if GetEclipseDirection() == "moon" then
-    return true;
+if inSolar then
+    if GetEclipseDirection() == "sun" then
+        return true;
+    elseif GetEclipseDirection() == "moon" and power > 35 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -9935,9 +9977,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if GetEclipseDirection() == "sun" then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
