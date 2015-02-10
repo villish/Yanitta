@@ -8823,6 +8823,21 @@ end
 return CheckEnrage(target);
 ]]></Lua>
       </Ability>
+      <Ability Name="Сила Природы">
+        <SpellID>102693</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local member_count = IsInRaid() and LowHP.H50 or LowHP.H70;
+if GetSpellCharges(102693) > 2 or member_count > 3 then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Природная стремительность">
         <SpellID>132158</SpellID>
         <Target>Player</Target>
