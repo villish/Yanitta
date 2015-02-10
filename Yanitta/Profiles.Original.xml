@@ -9693,6 +9693,8 @@ end
 setAoE = false;
 useCooldown = true;
 
+moonTargetList = {};
+
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -9711,6 +9713,30 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
+
+-- Будем отслеживать был ли наложен дот во время усиления
+function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
+          sourceGUID,srcName,  sourceFlags,sourceFlags2,
+          destGUID,  destName, destFlags,  destFlags2,
+          spellId,   spellName,spellSchool)
+    if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
+        if spellId == 93402 then -- Солнечный огонь
+            moonTargetList[destGUID] = {
+                Solar = {
+                    LastTime = GetTime(),
+                    Peak = HasBuff("player", 171744) ~= nil, -- Солнечный пик
+                }
+            };
+        elseif spellId == 8921 then -- Лунный огонь
+            moonTargetList[destGUID] = {
+                Lunar = {
+                    LastTime = GetTime(),
+                    Peak = HasBuff("player", 171743) ~= nil, -- Лунный пик
+                }
+            };
         end
     end
 end
@@ -9820,48 +9846,49 @@ end
       <Ability Name="Лунный огонь">
         <SpellID>8921</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(MoonKinTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3
-            or (IS_MOVING and GetEclipseDirection() == "sun" and not HasBuff("player", 93400)) then
-            return target;
-        end
+local guid = UnitGUID(target);
+if moonTargetList[guid] and moonTargetList[guid].Lunar then
+    if not moonTargetList[guid].Lunar.Peak then
+        return true;
     end
+end
+
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3
+    or (IS_MOVING and GetEclipseDirection() == "sun" and not HasBuff("player", 93400)) then
+    return target;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Солнечный огонь">
         <SpellID>93402</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _, target in ipairs(MoonKinTargetList) do
-    if UnitExists(target)
-    and UnitCanAttack("player", target)
-    and not UnitIsDeadOrGhost(target)
-    and not UnitIsFriend("player", target)
-    --and UnitIsEnemy("player", target) -- не рабоает на манекенах
-    and IsSpellInRange(GetSpellInfo(ability.SpellId), target) == 1 then
-        if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3
-            or (IS_MOVING and GetEclipseDirection() == "moon" and not HasBuff("player", 93400)) then
-            return target;
-        end
+-- проверяем надо ли обновлять дот во время пика
+local guid = UnitGUID(target);
+if moonTargetList[guid] and moonTargetList[guid].Sonar then
+    if not moonTargetList[guid].Sonar.Peak then
+        return true;
     end
+end
+
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3
+    or (IS_MOVING and GetEclipseDirection() == "moon" and not HasBuff("player", 93400)) then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -9874,6 +9901,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- 93399, 93400 - Падающие звезды
+
+local starsurgeCharges = select(1, GetSpellCharges(78674));
+
 if IS_MOVING and HasBuff("player", 93400) then
     return true;
 elseif not IS_MOVING then
