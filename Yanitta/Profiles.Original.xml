@@ -9692,11 +9692,7 @@ end
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
-
 moonTargetList = { };
-peakBuffs = {
-    112071, -- Парад планет
-};
 
 --RegisterKeyHandler('F');
 RegisterKeyHandler('R');
@@ -9732,7 +9728,7 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
     if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
         -- Солнечный/Лунный огонь
         if destGUID and (spellId == 93402 or spellId == 8921) then
-            if HasBuff("player", peakBuffs) then
+            if HasBuff("player", 112071) then -- Парад планет
                 moonTargetList[destGUID] = GetTime();
             end
         end
@@ -9753,12 +9749,11 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
+-- В бою мы должны всегда быть совой
 if GetShapeshiftFormCooldown(4) == 0 and GetShapeshiftForm() ~= 4 then
-    CastShapeshiftForm(4);
-end
-
-if GetShapeshiftForm() ~= 4 then
-    return true;
+    if UnitAffectingCombat("player") then
+        CastShapeshiftForm(4);
+    end
 end
 
 -- камень здоровья
@@ -9768,16 +9763,13 @@ end
 
 isInRange = IsSpellInRange(GetSpellInfo(5176), "target") == 1;
 power     = UnitPower("player", SPELL_POWER_ECLIPSE);
-direction = GetEclipseDirection();
-inSolar   = power > 0;
 
 -- Чистим список целей обдотаных под бафом
 for key, lastCast in pairs(moonTargetList) do
-    if lastCast < GetTime() - 5 then
+    if lastCast < GetTime() - 30 then
         moonTargetList[key] = nil;
     end
 end
-
 ]]></Lua>
       </Ability>
       <Ability Name="Возрождение">
@@ -9873,6 +9865,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftControl) then
+    -- Отключено
     return false;
 end
 ]]></Lua>
@@ -9933,7 +9926,8 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange and setAoE then
-    if GetEclipseDirection() == "moon" then
+    -- Доработать, правильно указать бонус
+    if GetEclipseDirection() == "moon" and power < 0 then
         return true;
     end
 end
@@ -9951,8 +9945,19 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local buffs  = { 171744, 171743 };
-local debuff = inSolar and 164815 or 164812;
-local remain = select(3, HasDebuff(target, debuff));
+local debuff = (power > 0) and 164815 or 164812; -- -100 lunar 0 solar 100
+local remain = select(3, HasDebuff(target, debuff, "PLAYER"));
+
+-- Если парад планет подходит к концу, обновим доты (за 4 сек)
+if select(3, HasBuff("player", 112071)) < 5 then
+    -- Проверяем тольоко по Лунному огню, так как он короче по времени действия
+    if select(3, HasBuff(target, 164815, "PLAYER")) < 15 then
+        if (moonTargetList[UnitGUID(target)] or 0) < GetTime()-4 then
+            print("Обновляем доту перед окончанием парада планет!");
+            return true;
+        end
+    end
+end
 
 if remain < 7 or HasBuff("player", buffs) then
     return true;
@@ -9969,6 +9974,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not setAoE then
+    -- Изначально Звездный поток имеет 3 заряда
     local charges = IS_MOVING and 1 or 2;
     if GetSpellCharges(78674) > charges then
         return true;
@@ -9989,7 +9995,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if inSolar then
+-- Используем только с бонусом солнечного затмения
+-- -100 lunar 0 solar 100
+if power > 0 then
     if GetEclipseDirection() == "sun" then
         return true;
     elseif GetEclipseDirection() == "moon" and power > 35 then
