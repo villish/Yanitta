@@ -9949,7 +9949,8 @@ local debuff = (power > 0) and 164815 or 164812; -- -100 lunar 0 solar 100
 local remain = select(3, HasDebuff(target, debuff, "PLAYER"));
 
 -- Если парад планет подходит к концу, обновим доты (за 4 сек)
-if select(3, HasBuff("player", 112071)) < 5 then
+local celest,_,celestRem = HasBuff("player", 112071);
+if celest and celestRem < 5 then
     -- Проверяем тольоко по Лунному огню, так как он короче по времени действия
     if select(3, HasBuff(target, 164815, "PLAYER")) < 15 then
         if (moonTargetList[UnitGUID(target)] or 0) < GetTime()-4 then
