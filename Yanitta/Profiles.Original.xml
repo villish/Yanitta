@@ -8890,12 +8890,18 @@ end
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 16870 Ясность мысли
-if HasBuff("player", 16870) then
+if IsKeyDown('F')
+    and UnitExists("mouseover")
+    and UnitHealth("mouseover") > 100 -- это хаковая проверка на призывных юнитов (гриб друида и т.п.)
+    and UnitCanAssist("player", "mouseover") then
+    return "mouseover";
+end
+if HasBuff("player", 16870) and UnitAffectingCombat("player") then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
     local harmonyRemains = select(3, HasBuff("player", 100977));
