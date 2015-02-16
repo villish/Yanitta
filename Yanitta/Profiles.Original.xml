@@ -8996,25 +8996,46 @@ end
       </Ability>
       <Ability Name="Омоложение">
         <SpellID>774</SpellID>
-        <Target>Focus</Target>
-        <Target>Player</Target>
-        <Target>Mouseover</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local hp = 90;
-if IsInRaid() then
-    hp = 50;
-elseif GetNumGroupMembers() < 6 and GetNumGroupMembers() > 1 then
-    hp = 70;
+local hasGermination = IsSpellKnown(155675); -- Зарождеине (Талант)
+
+if IsModKeyDown(mkLeftControl)
+    and UnitExists("mouseover")
+    and UnitHealth("mouseover") > 100 -- это хаковая проверка на призывных юнитов (гриб друида и т.п.)
+    and UnitCanAssist("player", "mouseover") then
+    if not (HasBuff("mouseover", 774, "PLAYER")
+        and (not hasGermination or HasBuff("mouseover", 155777, "PLAYER")))  then
+        return "mouseover";
+    end
 end
 
-if HealthByPercent(target) < hp and not HasBuff(target, 774) then
-    return true;
-end
+-- ВАЖНО:
+-- Накладыввя второй раз Омоложение при активном таланте "Зарождение" мы накладываем
+-- бафф "155777 - Зарождение", которое не обновляет время действия "774 - Омоложения".
+-- Да и вообще бафы друг друга не обновляют. 156954
+if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
+    local hp_rej = IsInRaid() and 70 or 80;
+    local hp_ger = IsInRaid() and 55 or 60;
+
+    for _,member in ipairs(members) do
+        if member.HP < hp_rej or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
+            local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
+            local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
+
+            -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
+            if not rejuvenation or (hasGermination and not germination and
+                (member.HP < hp_ger or (member.IsTank and member.HP < hp_rej))) then
+                return member.Unit;
+            end
+        end
+    end
+ end
 ]]></Lua>
       </Ability>
       <Ability Name="Восстановление">
@@ -9960,11 +9981,11 @@ end
         <Lua><![CDATA[
 local buffs  = { 171744, 171743 };
 local debuff = (power > 0) and 164815 or 164812; -- -100 lunar 0 solar 100
-local remain = select(3, HasDebuff(target, debuff, "PLAYER"));
+local sm_fire, _, sm_fire_rem = HasDebuff(target, debuff, "PLAYER");
 
 -- Если парад планет подходит к концу, обновим доты (за 4 сек)
-local celest,_,celestRem = HasBuff("player", 112071);
-if celest and celestRem < 5 then
+local celest,_,celest_rem = HasBuff("player", 112071);
+if celest and celest_rem < 5 then
     -- Проверяем тольоко по Лунному огню, так как он короче по времени действия
     if select(3, HasBuff(target, 164815, "PLAYER")) < 15 then
         if (moonTargetList[UnitGUID(target)] or 0) < GetTime()-4 then
@@ -9974,8 +9995,33 @@ if celest and celestRem < 5 then
     end
 end
 
-if remain < 7 or HasBuff("player", buffs) then
-    return true;
+-- Под бафом "Парад планет" должны быть обе доты
+if celest then
+    if not HasDebuff(target, 164815, "PLAYER") or
+       not HasDebuff(target, 164812, "PLAYER") then
+       return true;
+    end
+end
+
+-- обновлять под проком будем только на "target"
+if target == "target" then
+    if HasBuff("player", buffs) then
+        return true;
+    end
+    -- необходимо протестировать
+    if GetEclipseDirection() == "moon" and power < 90 and power > 0 then
+        if not HasDebuff(target, 164815, "PLAYER") then
+            return true;
+        end
+    elseif GetEclipseDirection() == "sun" and power > 90 and power < 0 then
+        if not HasDebuff(target, 164812, "PLAYER") then
+            return true;
+        end
+    end
+else
+    if sm_fire_rem < 7 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -9993,9 +10039,9 @@ if not setAoE then
     local charges = IS_MOVING and 1 or 2;
     if GetSpellCharges(78674) > charges then
         return true;
-    elseif power < -20 and GetEclipseDirection() == "moon" then
+    elseif power < 0 and GetEclipseDirection() == "moon" then
         return not HasBuff("player", 164547); -- Лунное могущество
-    elseif power > 20 and GetEclipseDirection() == "sun" then
+    elseif power > 0 and GetEclipseDirection() == "sun" then
         return not HasBuff("player", 164545); -- Солнечное могущество
     end
 end
