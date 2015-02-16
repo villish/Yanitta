@@ -9946,10 +9946,11 @@ end
         <Lua><![CDATA[
 local buffs  = { 171744, 171743 };
 local debuff = (power > 0) and 164815 or 164812; -- -100 lunar 0 solar 100
-local remain = select(3, HasDebuff(target, debuff, "PLAYER"));
+local sm_fire, _, sm_fire_rem = HasDebuff(target, debuff, "PLAYER");
 
 -- Если парад планет подходит к концу, обновим доты (за 4 сек)
-if select(3, HasBuff("player", 112071)) < 5 then
+local celest,_,celest_rem = HasBuff("player", 112071);
+if celest and celest_rem < 5 then
     -- Проверяем тольоко по Лунному огню, так как он короче по времени действия
     if select(3, HasBuff(target, 164815, "PLAYER")) < 15 then
         if (moonTargetList[UnitGUID(target)] or 0) < GetTime()-4 then
@@ -9959,8 +9960,33 @@ if select(3, HasBuff("player", 112071)) < 5 then
     end
 end
 
-if remain < 7 or HasBuff("player", buffs) then
-    return true;
+-- Под бафом "Парад планет" должны быть обе доты
+if celest then
+    if not HasDebuff(target, 164815, "PLAYER") or
+       not HasDebuff(target, 164812, "PLAYER") then
+       return true;
+    end
+end
+
+-- обновлять под проком будем только на "target"
+if target == "target" then
+    if HasBuff("player", buffs) then
+        return true;
+    end
+    -- необходимо протестировать
+    if GetEclipseDirection() == "moon" and power < 90 and power > 0 then
+        if not HasDebuff(target, 164815, "PLAYER") then
+            return true;
+        end
+    elseif GetEclipseDirection() == "sun" and power > 90 and power < 0 then
+        if not HasDebuff(target, 164812, "PLAYER") then
+            return true;
+        end
+    end
+else
+    if sm_fire_rem < 7 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
