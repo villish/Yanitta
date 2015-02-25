@@ -2177,6 +2177,19 @@ end
 return isInMeele;
 ]]></Lua>
       </Ability>
+      <Ability Name="Героический бросок">
+        <SpellID>57755</SpellID>
+        <Target>Target</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
     </Rotation>
   </Profile>
   <Profile Class="Paladin">
@@ -3941,8 +3954,8 @@ end
       </Ability>
       <Ability Name="Обшаривание карманов">
         <SpellID>921</SpellID>
-        <Target>Mouseover</Target>
         <Target>Target</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -4211,7 +4224,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return not isInRange;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -8877,12 +8890,18 @@ end
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 16870 Ясность мысли
-if HasBuff("player", 16870) then
+if IsKeyDown('F')
+    and UnitExists("mouseover")
+    and UnitHealth("mouseover") > 100 -- это хаковая проверка на призывных юнитов (гриб друида и т.п.)
+    and UnitCanAssist("player", "mouseover") then
+    return "mouseover";
+end
+if HasBuff("player", 16870) and UnitAffectingCombat("player") then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
     local harmonyRemains = select(3, HasBuff("player", 100977));
@@ -9006,7 +9025,6 @@ end
 -- Накладыввя второй раз Омоложение при активном таланте "Зарождение" мы накладываем
 -- бафф "155777 - Зарождение", которое не обновляет время действия "774 - Омоложения".
 -- Да и вообще бафы друг друга не обновляют. 156954
-
 if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
     local hp_rej = IsInRaid() and 70 or 80;
     local hp_ger = IsInRaid() and 55 or 60;
@@ -9023,7 +9041,7 @@ if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
             end
         end
     end
-end
+ end
 ]]></Lua>
       </Ability>
       <Ability Name="Восстановление">
@@ -9745,7 +9763,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -9884,6 +9902,29 @@ end
 return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
+      <Ability Name="Омоложение">
+        <SpellID>774</SpellID>
+        <Target>Focus</Target>
+        <Target>Player</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local hp = 90;
+if IsInRaid() then
+    hp = 50;
+elseif GetNumGroupMembers() < 6 and GetNumGroupMembers() > 1 then
+    hp = 70;
+end
+
+if HealthByPercent(target) < hp and not HasBuff(target, 774) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Перевоплощение: Избранный Элуны">
         <SpellID>102560</SpellID>
         <Target>None</Target>
@@ -9925,11 +9966,11 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInRange and setAoE then
+if isInRange and setAoE then
     -- Доработать, правильно указать бонус
-    if GetEclipseDirection() == "moon" and power < 0 then
+   -- if GetEclipseDirection() == "moon" and power < 0 then
         return true;
-    end
+   -- end
 end
 ]]></Lua>
       </Ability>
@@ -10004,9 +10045,9 @@ if not setAoE then
     local charges = IS_MOVING and 1 or 2;
     if GetSpellCharges(78674) > charges then
         return true;
-    elseif power < -20 and GetEclipseDirection() == "moon" then
+    elseif power < 0 and GetEclipseDirection() == "moon" then
         return not HasBuff("player", 164547); -- Лунное могущество
-    elseif power > 20 and GetEclipseDirection() == "sun" then
+    elseif power > 0 and GetEclipseDirection() == "sun" then
         return not HasBuff("player", 164545); -- Солнечное могущество
     end
 end
