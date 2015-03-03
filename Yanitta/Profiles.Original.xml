@@ -345,6 +345,10 @@ function DontDispell(debuffId, member)
     -- Диспелятся сразу все дебафы, а при диспеле наносится урон.
     elseif debuffId == 149207 then
         return true;
+    -- Дрожащие тени (Железные леди)
+    elseif debuffId == 156112 then
+        return true;
+    -- Лучевой ожог (Огнебаба)
     elseif debuffId == 155049 then
         return true;
     end
