@@ -45,6 +45,10 @@ namespace Yanitta
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool FlushInstructionCache(IntPtr hProcess, IntPtr lpBaseAddress, int dwSize);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+
+
         #endregion
 
         /// <summary>
@@ -362,7 +366,12 @@ namespace Yanitta
         /// </summary>
         public bool IsFocusMainWindow
         {
-            get { return this.Process.MainWindowHandle == GetForegroundWindow(); }
+            get
+            {
+                int id;
+                GetWindowThreadProcessId(GetForegroundWindow(), out id);
+                return id == Process.Id;
+            }
         }
 
         public bool IsX64
