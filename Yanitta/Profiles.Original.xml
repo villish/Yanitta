@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <Profiles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Lua><![CDATA[
+  <Lua>
+      <![CDATA[
 ABILITY_TABLE = { };
 EVENT_MODS    = { };
 COMBATLOG_MODS= { };
@@ -345,8 +346,10 @@ function DontDispell(debuffId, member)
     -- Диспелятся сразу все дебафы, а при диспеле наносится урон.
     elseif debuffId == 149207 then
         return true;
+    -- Дрожащие тени (Железные леди)
     elseif debuffId == 156214 then
         return true;
+    -- Лучевой ожог (Огнебаба)
     elseif debuffId == 155049 then
         return true;
     end
