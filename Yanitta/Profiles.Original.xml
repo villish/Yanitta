@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <Profiles xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Lua>
-      <![CDATA[
+  <Lua><![CDATA[
 ABILITY_TABLE = { };
 EVENT_MODS    = { };
 COMBATLOG_MODS= { };
@@ -6779,7 +6778,7 @@ return isInRange and useCooldown;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsSpellInRange(GetSpellInfo(133), target) == 1 then
+if IsSpellInRange(GetSpellInfo(2948), target) == 1 then
     if not HasDebuff(target, ability.SpellId, "PLAYER") then
         return true;
     end
