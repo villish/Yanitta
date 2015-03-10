@@ -346,7 +346,7 @@ function DontDispell(debuffId, member)
     elseif debuffId == 149207 then
         return true;
     -- Дрожащие тени (Железные леди)
-    elseif debuffId == 156112 then
+    elseif debuffId == 156214 then
         return true;
     -- Лучевой ожог (Огнебаба)
     elseif debuffId == 155049 then
@@ -6778,7 +6778,7 @@ return isInRange and useCooldown;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsSpellInRange(GetSpellInfo(133), target) == 1 then
+if IsSpellInRange(GetSpellInfo(2948), target) == 1 then
     if not HasDebuff(target, ability.SpellId, "PLAYER") then
         return true;
     end
