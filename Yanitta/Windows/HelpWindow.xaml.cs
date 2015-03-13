@@ -27,6 +27,8 @@ namespace Yanitta.Windows
 
         public void GetSpellData(uint spellId)
         {
+            this.spellId.Text = spellId.ToString();
+
             var url = string.Format("https://eu.api.battle.net/wow/spell/{0}?locale=ru_RU&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue", spellId);
             var spell = Extensions.GetJSONObject<Spell>(url);
 
@@ -41,6 +43,13 @@ namespace Yanitta.Windows
             bi3.UriSource = new Uri(string.Format("http://media.blizzard.com/wow/icons/56/{0}.jpg", spell.Icon), UriKind.Absolute);
             bi3.EndInit();
             spellIcon.Source = bi3;
+        }
+
+        private void CommandBinding_GetSpellData_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            uint id;
+            if (uint.TryParse(this.spellId.Text.Trim(), out id))
+                GetSpellData(id);
         }
     }
 }

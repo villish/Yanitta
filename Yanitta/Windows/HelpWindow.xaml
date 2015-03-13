@@ -7,6 +7,15 @@
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         Title="HelpWindow" Height="300" Width="300" WindowStyle="ToolWindow">
+
+    <Window.CommandBindings>
+        <CommandBinding Command="Help" Executed="CommandBinding_GetSpellData_Executed" />
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Command="Help" Key="F1" />
+        <KeyBinding Command="Help" Key="Enter" />
+    </Window.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="64"/>
@@ -17,11 +26,12 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Image Name="spellIcon" Margin="3"/>
-        
+
         <StackPanel Grid.Column="1">
-            <TextBlock Name="spellName" FontWeight="Bold" Foreground="Cyan"/>
-            <TextBlock Name="spellRange" FontWeight="Bold" Foreground="Cyan"/>
-            <TextBlock Name="spellCost" FontWeight="Bold" Foreground="Cyan"/>
+            <TextBox   Name="spellId"       FontWeight="Bold" Foreground="Cyan" TextAlignment="Right"/>
+            <TextBlock Name="spellName"     FontWeight="Bold" Foreground="Cyan"/>
+            <TextBlock Name="spellRange"    FontWeight="Bold" Foreground="Cyan"/>
+            <TextBlock Name="spellCost"     FontWeight="Bold" Foreground="Cyan"/>
             <TextBlock Name="spellCastTime" FontWeight="Bold" Foreground="Cyan"/>
         </StackPanel>
 
