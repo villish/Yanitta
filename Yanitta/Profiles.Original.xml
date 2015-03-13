@@ -9989,7 +9989,6 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local buffs  = { 171744, 171743 };
 local debuff = (power > 0) and 164815 or 164812; -- -100 lunar 0 solar 100
 local sm_fire, _, sm_fire_rem = HasDebuff(target, debuff, "PLAYER");
 
@@ -10013,25 +10012,9 @@ if celest then
     end
 end
 
--- обновлять под проком будем только на "target"
-if target == "target" then
-    if HasBuff("player", buffs) then
-        return true;
-    end
-    -- необходимо протестировать
-    if GetEclipseDirection() == "moon" and power < 90 and power > 0 then
-        if not HasDebuff(target, 164815, "PLAYER") then
-            return true;
-        end
-    elseif GetEclipseDirection() == "sun" and power > 90 and power < 0 then
-        if not HasDebuff(target, 164812, "PLAYER") then
-            return true;
-        end
-    end
-else
-    if sm_fire_rem < 7 then
-        return true;
-    end
+local emprovement = (power > 0) and 171744 or 171743;
+if not sm_fire or sm_fire_rem < 3 or (sm_fire_rem < 12 and HasBuff("player", emprovement)) then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -10054,6 +10037,23 @@ if not setAoE then
     elseif power > 0 and GetEclipseDirection() == "sun" then
         return not HasBuff("player", 164545); -- Солнечное могущество
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Лунный/Солнечный огонь">
+        <SpellID>8921</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Если двигаемся, спамим Лунный/Солнечный огонь
+if IS_MOVING then
+    return true;
 end
 ]]></Lua>
       </Ability>
