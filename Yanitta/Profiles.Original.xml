@@ -9104,7 +9104,7 @@ end
     <Rotation Name="Страж">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
-setAoE = 0;
+setAoE = false;
 isAltMod = true;
 useCooldown = true;
 
@@ -9112,15 +9112,11 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
-        setAoE = setAoE or 0;
-        if setAoE == 0 then
-            setAoE = 1;
-            AddonFrame.print("|cff6f0a9aКливы", true);
-        elseif setAoE == 1 then
-            setAoE = 2;
+        if not setAoE then
+            setAoE = true;
             AddonFrame.print("|cffff0000AOE", true);
         else
-            setAoE = 0;
+            setAoE = false;
             AddonFrame.print("|cff00ff00Одиночная цель", true);
         end
     elseif modifier == "RALT" then
@@ -9151,13 +9147,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if type(setAoE) ~= "number" then
-    setAoE = 0;
-end
-
 -- если персонаж на маунте, или в инвизе или не в форме медведа или кота
 if IsModKeyDown(mkLeftAlt) or IsMounted()
-    or not (GetShapeshiftForm() == 3 or GetShapeshiftForm() == 1)
+    or not (GetShapeshiftForm() == 2 or GetShapeshiftForm() == 1)
     or IsStealthed() then
     return true;
 end
@@ -9170,7 +9162,7 @@ end
 agroStatus = UnitThreatSituation("player") or 0;
 playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33917), "target") == 1;
-isCat      = GetShapeshiftForm() == 3;
+isCat      = GetShapeshiftForm() == 2;
 
 if isInMeele and useCooldown and SpellCD(33917) == 0 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND);
@@ -9189,6 +9181,20 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt("target");
+]]></Lua>
+      </Ability>
+      <Ability Name="Целительное прикосновение">
+        <SpellID>5185</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if playerHP < 80 and HasBuff("player", 145162) then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Неистовое восстановление">
@@ -9276,7 +9282,7 @@ end
         <Lua><![CDATA[
 if isInMeele and not isCat then
     -- надо проверить ИД кровотечения.
-    if setAoE == 2 or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
+    if setAoE or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
         return true;
     end
 end
@@ -9300,6 +9306,22 @@ if not isCat and playerHP > 30 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Раздавить">
+        <SpellID>80313</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not isCat and select(2, HasDebuff("target", 33745, "PLAYER")) > 2 then
+    if not HasBuff("player", 158792) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Растерзать">
         <SpellID>33745</SpellID>
         <Target>Target</Target>
@@ -9310,45 +9332,11 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not isCat then
-    if setAoE == 1 then -- Кливы
-        if select(2, HasDebuff("target", 33745, "PLAYER")) < 3 then
-            return true;
-        end
-    else
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Взбучка (Кот)">
-        <SpellID>106830</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and setAoE and not HasDebuff("target", 106830, "PLAYER") then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Глубокая рана (Кот)">
-        <SpellID>1822</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and select(3, HasDebuff("target", 1822, "PLAYER")) < 2 and not setAoE then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Свирепый укус (Кот)">
+      <Ability Name="Свирепый укус">
         <SpellID>22568</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -9357,7 +9345,21 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and not setAoE and UnitPower("player") > 30 and GetComboPoints("player") > 4 then
+if isCat and UnitPower("player") > 30 and GetComboPoints("player") > 4 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Полоснуть">
+        <SpellID>5221</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isCat then
     return true;
 end
 ]]></Lua>
@@ -9371,7 +9373,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return not isCat;
 ]]></Lua>
       </Ability>
     </Rotation>
