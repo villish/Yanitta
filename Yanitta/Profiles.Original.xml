@@ -22,7 +22,7 @@ moving_spell_table = {
     79206,  -- Благосклонность предков (Шанам)
     108839, -- Плавучая льдина
     165803, -- Награнд (талбук)
-    0,      -- Дух лисы (Охотник)
+    172106,      -- Дух лисы (Охотник)
 };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
@@ -2954,6 +2954,34 @@ if pethp ~= 0 and pethp < 75 then
         return true;
     end
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Шквал">
+        <SpellID>120360</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if setAoE then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Выстрел кобры">
+        <SpellID>77767</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+--if SpellCD(120360) < 1 and setAoE and IsTalentSpell(GetSpellInfo(120360)) then
+--    return isInRange;
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Залп">
@@ -8354,14 +8382,14 @@ return useInterrupt and CheckInterrupt("target");
       </Ability>
       <Ability Name="Отвар неуловимости">
         <SpellID>115308</SpellID>
-        <Target>Player</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(2, HasBuff("player", 115308)) > 9 then
+if select(2, HasBuff("player", 128939)) > 9 then
     return true;
 end
 ]]></Lua>
@@ -8379,7 +8407,7 @@ end
 -- (124274) Умеренное пошатывание
 -- (124273) Сильное пошатывание
 -- Снимаем только при "Сильном пошатывании"
-if chi > 0 and HasDebuff("player", 124273) then
+if chi > 0 and SpellCD(115295) > 10 and HasDebuff("player", 124273) then
     return true;
 end
 ]]></Lua>
@@ -8931,6 +8959,7 @@ end
 local harmonyRemains = select(3, HasBuff("player", 100977));
 for _,member in ipairs(members) do
     if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 80 or harmonyRemains < 4) then
+        print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains)
         return member.Unit;
     end
 end
@@ -8941,7 +8970,7 @@ end
         <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
@@ -8950,7 +8979,10 @@ end
 local count = IsInRaid() and 5 or 3;
 local member_count = IsInRaid() and LowHP.H60 or LowHP.H70;
 
-if member_count > count then
+if UnitExists("mouseover") and IsMouseButtonDown(5) then
+    return "mouseover";
+elseif (member_count > count and UnitAffectingCombat("player"))
+    or IsMouseButtonDown(5) then
     return members[1].Unit;
 end
 ]]></Lua>
@@ -8994,6 +9026,11 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local count = 0;
+
+if IsMouseButtonDown(4) then
+    return true;
+end
+
 for _,member in ipairs(members) do
     if member.HP < 40 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
         count = count + 1;
@@ -10032,7 +10069,9 @@ end
 if not setAoE then
     -- Изначально Звездный поток имеет 3 заряда
     local charges = IS_MOVING and 1 or 2;
-    if GetSpellCharges(78674) > charges then
+    local buffs = (power > 0) and 164545 or 164547; -- -100 lunar 0 solar 100
+    if GetSpellCharges(78674) > charges
+        or (select(3, HasBuff("player", 112071)) > 1 and not HasBuff("player", buffs)) then
         return true;
     elseif power < 0 and GetEclipseDirection() == "moon" then
         return not HasBuff("player", 164547); -- Лунное могущество
