@@ -8691,7 +8691,9 @@ FillPartyTables(774);
         <Lua><![CDATA[
 -- Перк "Усиленное возрождение" (157301)
 if not IS_MOVING or (IS_MOVING and IsSpellKnown(157301)) then
-    return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
+    if not HasDebuff(target, 160029) then
+        return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
+    end
 end
 ]]></Lua>
       </Ability>
@@ -8705,7 +8707,8 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") and UnitIsPlayer(target)
-    and (UnitIsDeadOrGhost(target) or UnitIsCorpse(target)) then
+    and (UnitIsDeadOrGhost(target) or UnitIsCorpse(target))
+    and not HasDebuff(target, 160029) then
     return true;
 end
 ]]></Lua>
@@ -9077,7 +9080,7 @@ if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
 
             -- Накладываем хоту если есть талант "Зарождение" и меньше 60% здоровья
             if not rejuvenation or (hasGermination and not germination and
-                (member.HP < hp_ger or (member.IsTank and member.HP < hp_rej))) then
+                (member.HP < hp_ger or member.IsTank)) then
                 return member.Unit;
             end
         end
