@@ -6073,7 +6073,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Перерождение">
-        <SpellID>165339</SpellID>
+        <SpellID>114050</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
