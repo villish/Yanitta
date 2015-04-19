@@ -302,6 +302,9 @@ function CheckInstanseLogic(member)
     -- Вешается на танка, хилить нельзя
     elseif HasDebuff(member.Unit, 137341) then
         member.DontHeal = true;
+    -- Доты на черноруке
+    elseif HasDebuff(member.Unit, { 156047, 156743, 158054 }) then
+        member.HP = min(member.HP, 60);
     end
 end
 
@@ -2282,8 +2285,10 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if hollyPower > 2 and select(3, HasBuff("player", 114163, "PLAYER")) < 2 then
-    return true;
+if hollyPower > 2 and select(2, HasBuff("player", 114637)) < 4 then
+    if select(3, HasBuff("player", 156322, "PLAYER")) < 4 then 
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -2408,7 +2413,7 @@ return true;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return playerHP < 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Щит мстителя">
@@ -2517,7 +2522,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
     return true;
 end
 
@@ -2569,6 +2574,7 @@ end
       <Ability Name="Вспышка света">
         <SpellID>19750</SpellID>
         <Target>Player</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -2576,7 +2582,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Самоотверженный целитель (3 стака)
-if playerHP < 80 and select(2, HasBuff("player", 114250)) > 2 then
+if HealthByPercent(target) < 80 and select(2, HasBuff("player", 114250)) > 2 then
     return true;
 end
 ]]></Lua>
@@ -2645,7 +2651,7 @@ return not setAoE and hollyPower > 4;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE and hollyPower > 2;
+return (isInMeele and ( (setAoE and hollyPower > 2) or HasBuff("player", 144595) ~= nil));
 ]]></Lua>
       </Ability>
       <Ability Name="Молот гнева">
@@ -4571,6 +4577,18 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
+      <Ability Name="Божественное перышко">
+        <SpellID>121536</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
       <Ability Name="Божественное перышко">
         <SpellID>121536</SpellID>
         <Target>MouseLocation</Target>
@@ -6725,7 +6743,7 @@ if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
 
-isInRange = IsSpellInRange(GetSpellInfo(133), "target") == 1;
+isInRange = IsSpellInRange(GetSpellInfo(2948), "target") == 1;
 
 -- камень здоровья
 if HealthByPercent("player") < 30 then
@@ -8980,7 +8998,7 @@ end
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
 local count = IsInRaid() and 5 or 3;
-local member_count = IsInRaid() and LowHP.H60 or LowHP.H70;
+local member_count = IsInRaid() and LowHP.H70 or LowHP.H70;
 
 if UnitExists("mouseover") and IsMouseButtonDown(5) then
     return "mouseover";
