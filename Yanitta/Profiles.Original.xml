@@ -2881,24 +2881,6 @@ if useCooldown then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Рык">
-        <SpellID>0</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---if not GetSpellAutocast(ability.SpellId, "pet") then
---    if not (UnitInRaid("player") or UnitInParty("player")) then
---        if UnitThreatSituation("pet", "target") < 2 then
---            return true;
---        end
---    end
---end
-]]></Lua>
-      </Ability>
       <Ability Name="Перенаправление">
         <SpellID>34477</SpellID>
         <Target>None</Target>
@@ -2985,9 +2967,12 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---if SpellCD(120360) < 1 and setAoE and IsTalentSpell(GetSpellInfo(120360)) then
---    return isInRange;
---end
+-- Надо накопить концентрацию для шквала
+if setAoE and isInRange and UnitPower("player") < 60 then
+    if IsTalentSpell(GetSpellInfo(120360)) and SpellCD(120360) < 3 then
+        return true;
+    end
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Залп">
@@ -3011,7 +2996,59 @@ return setAoE;
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+-- На изготовку!
+if HasBuff("player", 56343) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейский выстрел">
+        <SpellID>3044</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+
+local trincetBuffs = {
+    -- прописать бафы проков тринек
+    0
+};
+
+-- Охотничий азарт и проки тринек
+if HasBuff("player", 109306) and HasBuff("player", trincetBuffs) then
+    -- return true;
+    return false; -- пока что отключим
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Разрывной выстрел">
+        <SpellID>53301</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>true</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейский выстрел">
+        <SpellID>3044</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Охотничий азарт
+if HasBuff("player", 109306) then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Черная стрела">
