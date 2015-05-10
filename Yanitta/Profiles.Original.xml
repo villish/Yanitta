@@ -3011,7 +3011,6 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-
 local trincetBuffs = {
     -- прописать бафы проков тринек
     0
@@ -3995,7 +3994,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() then
+if IsModKeyDown(mkLeftAlt) or IsMountedEx() then
     return true;
 end
 
@@ -6706,7 +6705,7 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
 end
 ]]></Lua>
     <Rotation Name="Огонь">
-      <HotKey Key="Z" Modifier="Alt" />
+      <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 igniteDamage = 0;     -- Урон от тика доты Воспламенение (12654)
 pyroCrit     = nil;   -- Было ли заклинание Огненная глыба (11366) критическим
@@ -8253,7 +8252,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return true;--chi > 3 or HasBuff("player", 159407) ~= nil;
 ]]></Lua>
       </Ability>
       <Ability Name="Лапа тигра">
@@ -9951,6 +9950,8 @@ end
       <Ability Name="Умиротворение">
         <SpellID>2908</SpellID>
         <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -10136,6 +10137,8 @@ if not setAoE then
     elseif power > 0 and GetEclipseDirection() == "sun" then
         return not HasBuff("player", 164545); -- Солнечное могущество
     end
+elseif GetSpellCharges(78674) > 2 then
+    return true;
 end
 ]]></Lua>
       </Ability>
