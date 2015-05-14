@@ -10037,9 +10037,9 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange then
-    --if GetEclipseDirection() == "moon" and power < -70 then
+    if power < -2 then
         return true;
-    --end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -10053,7 +10053,7 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange then
-    if GetEclipseDirection() == "moon" and power < -70 then
+    if power < -2 then
         return true;
     end
 end
