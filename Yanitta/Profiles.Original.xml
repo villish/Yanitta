@@ -6792,16 +6792,11 @@ if PowerByPercent("player") < 50 then
 end
 
 -- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
-if UnitCastingInfo("player") == GetSpellInfo(133) or UnitCastingInfo("player") == GetSpellInfo(2943) then
-    if HasBuff("player", 48108) then
+local castedSpell = UnitCastingInfo("player");
+if castedSpell == GetSpellInfo(133) or castedSpell == GetSpellInfo(2943) then
+    if HasBuff("player", 48108) and UnitAffectingCombat("player") then
         SpellStopCasting();
     end
-end
-
-if useCooldown then
-    UseItemBySlot(INVSLOT_HAND);
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET1);
 end
 ]]></Lua>
       </Ability>
@@ -6895,6 +6890,9 @@ end
 -- Так же важно использовать возгорание под прок тринек
 if useCooldown and (pyroCrit or igniteDamage > 100000) then
     if select(3, HasDebuff(target, 12654, "PLAYER")) > 3 then
+        UseItemBySlot(INVSLOT_HAND);
+        UseItemBySlot(INVSLOT_TRINKET1);
+        UseItemBySlot(INVSLOT_TRINKET1);
         return true;
     end
 end
