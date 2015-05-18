@@ -5061,7 +5061,7 @@ return IsModKeyDown(mkLeftAlt);
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE;
 ]]></Lua>
@@ -5122,7 +5122,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasDebuff("target", 2944, "PLAYER") then
+if not HasDebuff(target, 2944, "PLAYER") then
     return HealthByPercent(target) < 20;
 end
 ]]></Lua>
@@ -5224,7 +5224,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return isInRange;
 ]]></Lua>
