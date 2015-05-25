@@ -5881,6 +5881,12 @@ end
 if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
+
+FillRunesInfo();
+
+local curses = {
+    155159 -- Мертвящая чума
+};
 ]]></Lua>
       </Ability>
       <Ability Name="Смерть и разложение">
@@ -5938,8 +5944,7 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not (HasDebuff("target", 59879, "PLAYER")        -- Кровавая чума
-    and HasDebuff("target", 59921, "PLAYER")) then  -- Озноб
+if not HasDebuff("target", curses, "PLAYER") then  -- Озноб
     return true;
 end
 ]]></Lua>
@@ -5953,7 +5958,21 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if runes.Frost.Count > 0 and HealthByPercent("target") < 35 then
+if HealthByPercent("target") < 45 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар разложения">
+        <SpellID>85948</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not setAoE and select(3, HasDebuff("target", curses)) < 10 then
     return true;
 end
 ]]></Lua>
@@ -5966,47 +5985,69 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
-      </Ability>
-      <Ability Name="Лик смерти">
-        <SpellID>47541</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if runes.Power > 40 or HasBuff("player", 49530) then
+--Вливание тьмы 
+if UnitExists("pet") and select(2, HasBuff("player", 91342, "PLAYER")) > 4 then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар разложения">
-        <SpellID>85948</SpellID>
-        <Target>None</Target>
+      <Ability Name="Лик смерти">
+        <SpellID>47541</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if runes.Frost.Count > 0 and runes.Blood.Count > 0 then
+-- Неумолимый рок (81340)
+if runes.Power > 90 
+or HasBuff("player", 81340)
+or select(2, HasBuff("player", 91342)) < 4
+or HasBuff("pet", 63560)
+then
     return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Удар плети">
         <SpellID>55090</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if runes.Frost.Count > 0 then
+local debuff,_,rem = HasDebuff("target", 91342, "PLAYER");
+if not debuff or rem > 10 then
     return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар разложения">
+        <SpellID>85948</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not setAoE;
+]]></Lua>
+      </Ability>
+      <Ability Name="Лик смерти">
+        <SpellID>47541</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -6844,6 +6885,22 @@ return CheckInterrupt(target);
 return isInRange and useCooldown;
 ]]></Lua>
       </Ability>
+      <Ability Name="Ледяной заслон">
+        <SpellID>111264</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetNumGroupMembers() == 0 then
+    if not HasBuff("player", 111264) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Живая бомба">
         <SpellID>44457</SpellID>
         <Target>Target</Target>
@@ -6889,7 +6946,9 @@ end
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Так же важно использовать возгорание под прок тринек
 if useCooldown and (pyroCrit or igniteDamage > 100000) then
-    if select(3, HasDebuff(target, 12654, "PLAYER")) > 3 then
+    local leaveBomb = HasDebuff(target, 44457, "PLAYER"); -- Живая бомба
+    local ignite    = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение 
+    if leaveBomb and ignite then
         UseItemBySlot(INVSLOT_HAND);
         UseItemBySlot(INVSLOT_TRINKET1);
         UseItemBySlot(INVSLOT_TRINKET1);
