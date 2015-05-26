@@ -6763,7 +6763,7 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
             if spellId == 12654 then
                 igniteDamage = amount or 0;
                 if DebugMode then
-                    AddonFrame:print("Воспламенение (12654) - "..tostring(amount));
+                    print("Воспламенение (12654) - "..tostring(amount));
                 end
             end
         end
@@ -6833,12 +6833,12 @@ if PowerByPercent("player") < 50 then
 end
 
 -- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
-local castedSpell = UnitCastingInfo("player");
-if castedSpell == GetSpellInfo(133) or castedSpell == GetSpellInfo(2943) then
-    if HasBuff("player", 48108) and UnitAffectingCombat("player") then
-        SpellStopCasting();
-    end
-end
+--local castedSpell = UnitCastingInfo("player");
+--if castedSpell == GetSpellInfo(133) or castedSpell == GetSpellInfo(2943) then
+--    if HasBuff("player", 48108) and UnitAffectingCombat("player") then
+--        SpellStopCasting();
+--    end
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Замедленное падение">
@@ -6923,7 +6923,7 @@ end
         <SpellID>11366</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
-        <CancelCasting>true</CancelCasting>
+        <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -6945,7 +6945,7 @@ end
         <Lua><![CDATA[
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Так же важно использовать возгорание под прок тринек
-if useCooldown and (pyroCrit or igniteDamage > 100000) then
+if useCooldown and (pyroCrit or igniteDamage > 3000) then
     local leaveBomb = HasDebuff(target, 44457, "PLAYER"); -- Живая бомба
     local ignite    = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение 
     if leaveBomb and ignite then
@@ -6961,7 +6961,7 @@ end
         <SpellID>108853</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
-        <CancelCasting>true</CancelCasting>
+        <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -8043,7 +8043,7 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
 ]]></Lua>
