@@ -6727,13 +6727,13 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
     if modifier == "LCTRL" then
-        if setAoE then
-            setAoE = false;
-            AddonFrame.print("|cff00ff00Одиночная цель", true);
-        else
-            setAoE = true;
-            AddonFrame.print("|cffff0000AOE", true);
-        end
+        --if setAoE then
+        --    setAoE = false;
+        --    AddonFrame.print("|cff00ff00Одиночная цель", true);
+        --else
+        --    setAoE = true;
+        --    AddonFrame.print("|cffff0000AOE", true);
+        --end
     elseif modifier == "RSHIFT" then
         if useCooldown then
             useCooldown = false;
@@ -6796,6 +6796,18 @@ return IsModKeyDown(mkRightAlt);
       </Ability>
       <Ability Name="Огненный столб">
         <SpellID>2120</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftShift);
+]]></Lua>
+      </Ability>
+      <Ability Name="Метеор">
+        <SpellID>153561</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -6901,24 +6913,6 @@ if GetNumGroupMembers() == 0 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Живая бомба">
-        <SpellID>44457</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsSpellInRange(GetSpellInfo(2948), target) == 1 then
-    if not HasDebuff(target, ability.SpellId, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Огненная глыба">
         <SpellID>11366</SpellID>
         <Target>Target</Target>
@@ -6934,6 +6928,25 @@ if HasBuff("player", 48108) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Живая бомба">
+        <SpellID>44457</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsSpellInRange(GetSpellInfo(2948), target) == 1 then
+    if not HasDebuff(target, ability.SpellId, "PLAYER")
+       and not HasBuff("player", 48107) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Возгорание">
         <SpellID>11129</SpellID>
         <Target>Target</Target>
@@ -6946,6 +6959,8 @@ end
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Так же важно использовать возгорание под прок тринек
 if useCooldown and (pyroCrit or igniteDamage > 3000) then
+    local fdamage = GetSpellBonusDamage(3); -- fire spell bonus damage
+    
     local leaveBomb = HasDebuff(target, 44457, "PLAYER"); -- Живая бомба
     local ignite    = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение 
     if leaveBomb and ignite then
