@@ -4072,20 +4072,6 @@ end
 return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Веер клинков">
-        <SpellID>51723</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <SetRecastDelay>false</SetRecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Внезапный удар">
         <SpellID>8676</SpellID>
         <Target>Target</Target>
@@ -4140,13 +4126,10 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local name, count, rem = HasBuff("player", 5171);
+local cp = GetComboPoints("player");
 
-if rem == 0 then
-    return true;
-end
-
-if UnitExists("target") and GetComboPoints("player", "target") > 4 then
-    if rem < 4 then
+if UnitExists("target") then
+    if (rem < 4 and cp > 4) or rem == 0 then
         return true;
     end
 end
@@ -4260,9 +4243,9 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 local buffs = {
-    2823,
-    8679,
-    108211
+    2823,   -- Быстродействующий яд (старый)
+    8679,   -- Нейтрализующий яд (ослабление исцеления)
+    157584, -- Быстродействующий яд (перк)
 };
 
 if not HasBuff("player", buffs) then
@@ -4280,8 +4263,8 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 local buffs = {
-    108211,
-    3408
+    108211, -- Похищающий жизнь яд (лечение)
+    3408,   -- Калечащий яд (замедление)
 };
 
 if not HasBuff("player", buffs) then
