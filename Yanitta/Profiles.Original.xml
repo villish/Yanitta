@@ -7817,6 +7817,20 @@ return isInRange;
 return IsMouseButtonDown(3);
 ]]></Lua>
       </Ability>
+      <Ability Name="Катаклизм">
+        <SpellID>152108</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -8016,10 +8030,29 @@ if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 5 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Горящая душа">
+        <SpellID>74434</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- 152109 - Горящая душа: Блуждающий дух
+if isInRange and IsSpellKnown(152109) then
+    if select(2, HasBuff("player", 157698)) < 10 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Блуждающий дух">
         <SpellID>48181</SpellID>
         <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <SetRecastDelay>true</SetRecastDelay>
@@ -8028,14 +8061,8 @@ end
 -- задержка следующего каста на 3 секунды
 ability.RecastDelay = 3;
 
-if soulShards > 0 then
-    if not HasDebuff(target, ability.SpellId, "PLAYER") then
-        if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
-        and select(3, HasDebuff(target, 172,   "PLAYER")) > 7      -- Порча
-        and select(3, HasDebuff(target, 30108, "PLAYER")) > 7 then -- Нестабильное колдовство
-            return true;
-        end
-    end
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
+    return true;
 end
 ]]></Lua>
       </Ability>
