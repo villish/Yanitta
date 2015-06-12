@@ -532,7 +532,7 @@ function CheckAndCastAbility(ability, targetInfo)
 
     if ability.SetRecastDelay
         and targetInfo.Guid == UnitGUID(targetInfo.Target)
-        and targetInfo.LastCastingTime >= GetTime() then
+        and (targetInfo.LastCastingTime + (ability.RecastDelay or 1)) >= GetTime() then
         return;
     end
 
@@ -600,7 +600,7 @@ function CheckAndCastAbility(ability, targetInfo)
     end
 
     targetInfo.Guid = UnitGUID(targetInfo.Target);
-    targetInfo.LastCastingTime = GetTime() + 1 + (select(7, GetSpellInfo(ability.SpellId)) or 0) / 1000;
+    targetInfo.LastCastingTime = GetTime() + (select(7, GetSpellInfo(ability.SpellId)) or 0) / 1000;
 
     if targetInfo.Target == "mouselocation" then
         CastSpellByName(spellName, nil);
@@ -640,7 +640,7 @@ function AddonFrame_OnEvent(self, event, ...)
                 for _,targetInfo in ipairs(ability.TargetList) do
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = destGUID;
-                        targetInfo.LastCastingTime = GetTime() + 1;
+                        targetInfo.LastCastingTime = GetTime();
                         --print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                     end
                 end
@@ -8025,6 +8025,9 @@ end
         <SetRecastDelay>true</SetRecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
+-- задержка следующего каста на 3 секунды
+ability.RecastDelay = 3;
+
 if soulShards > 0 then
     if not HasDebuff(target, ability.SpellId, "PLAYER") then
         if  select(3, HasDebuff(target, 980,   "PLAYER")) > 7      -- Агония
