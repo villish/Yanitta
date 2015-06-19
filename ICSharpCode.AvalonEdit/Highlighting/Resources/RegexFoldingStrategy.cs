@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public RegexFoldingStrategy()
         {
             this.StartPattern = @"(?<start>\b(function|while|if|for)\b|{|--\[\[)";
-            this.EndPattern = @"(?<end>\b(end)\b|}|]])";
+            this.EndPattern   = @"(?<end>\b(end)\b|}|]])";
         }
 
         /// <summary>
@@ -46,10 +46,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             var foldings = new List<NewFolding>();
             var stack = new Stack<int>();
 
-            for (int i = 0; i < document.LineCount; ++i)
+            foreach (var line in document.Lines)
             {
-                var line = document.Lines[i];
-
                 // комментарии пропускаем
                 if (line.Text.TrimStart().StartsWith("--") && !line.Text.TrimStart().StartsWith("--[["))
                     continue;
@@ -60,7 +58,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                     if (element.Success)
                     {
                         stack.Push(line.EndOffset);
-                        break;
                     }
                 }
 
@@ -73,7 +70,6 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                         {
                             var first = stack.Pop();
                             foldings.Add(new NewFolding(first, line.EndOffset));
-                            break;
                         }
                         else
                         {
