@@ -1223,11 +1223,6 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
---if UnitIsPlayer(target) then
---    return true;
---elseif rage > 60 and (playerHP > 70 or agroStatus < 3) then
---    return true;
---end
 ]]></Lua>
       </Ability>
       <Ability Name="Отражение заклинания">
@@ -2133,6 +2128,18 @@ end
       </Ability>
       <Ability Name="Мощный удар щитом">
         <SpellID>23922</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <SetRecastDelay>false</SetRecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Казнь">
+        <SpellID>5308</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
