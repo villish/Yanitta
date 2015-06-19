@@ -6738,8 +6738,58 @@ end
     <Rotation Name="Огонь">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
-igniteDamage = 0;     -- Урон от тика доты Воспламенение (12654)
-pyroCrit     = nil;   -- Было ли заклинание Огненная глыба (11366) критическим
+pyroTable = { }; -- таблица накомленного урона от воспламенения
+
+function CleanPyroTable()
+    -- Очистка таблицы от старых записей
+    for guid, dmgTable in pairs(pyroTable) do
+        -- Если юнит давно не получал урон (или помер внезапно :))
+        if (dmgTable.LastTime or 0) < GetTime() - 10 then
+            pyroTable[guid] = nil;
+        else
+            -- так же держим в актуале нанесенный урон за последние 10 сек.
+            for dmgTime, dmgVal in pairs(dmgTable.Values) do
+                if dmgTime < GetTime() - 10 then
+                    dmgTable.Values[dmgTime] = nil;
+                end
+            end
+        end
+    end
+end
+
+-- Урон нанесенный заклинанием (12654 - Воспламенение) за последнее время
+function GetIgniteDamage(target, sec)
+    local guid = UnitGUID(target or "target");
+    local dmgTable = pyroTable[guid];
+    if not dmgTable then
+        return 0;
+    end
+    local damage = 0;
+    for dmgTime, dmgVal in pairs(dmgTable.Values) do
+        if dmgTime >= (GetTime()-(sec or 8)) then
+            damage = damage + dmgVal;
+        end
+    end
+
+    return damage;
+end
+
+-- Модификатор наносимого урона по цели
+function GetDmgModifikator(target)
+    local modif = 0;
+
+    -- Например бафф увеличивает наносимый урон на 50%
+    --if HasBuff("player", 111111) then
+    --    modif = modif + 50;
+    --end
+
+    -- Например дебафф увеличивает получаемый урон на 20%
+    --if HasDebuff(target, 111111) then
+    --    modif = modif + 20;
+    --end
+
+    return (modif == 0 and 1 or (modif/100));
+end
 
 function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
           sourceGUID,srcName,  sourceFlags,sourceFlags2,
@@ -6748,29 +6798,16 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
           resisted,  blocked,  absorbed,   critical, glancing,crushing)
 
     if subEvent == "SPELL_PERIODIC_DAMAGE" then
-        if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
-            -- Воспламенение
-            if spellId == 12654 then
-                igniteDamage = amount or 0;
-                if DebugMode then
-                    print("Воспламенение (12654) - "..tostring(amount));
-                end
-            end
-        end
-    end
-
-    if subEvent == "SPELL_DAMAGE" then
-        if UnitGUID("player") == sourceGUID and destGUID == UnitGUID("target") then
-            -- Огненная глыба
-            if spellId == 11366 then
-                pyroCrit = critical;
-                if DebugMode and critical then
-                    print("|cff00ff00 Крит: Огненная глыба (11366) - "..tostring(amount));
-                end
-            end
+        -- Собираем урон по заклинанию (12654 - Воспламенение)
+        if spellId == 12654 and UnitGUID("player") == sourceGUID then
+            local dmgTable = pyroTable[destGUID] or { LastTime = 0, Values = {}};
+            dmgTable.LastTime = timestamp;
+            dmgTable.Values[timestamp] = amount;
+            pyroTable[destGUID] = dmgTable;
         end
     end
 end
+
 ]]></Lua>
       <Ability Name="Руна мощи">
         <SpellID>116011</SpellID>
@@ -6948,12 +6985,17 @@ end
         <Lua><![CDATA[
 -- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
 -- Так же важно использовать возгорание под прок тринек
-if useCooldown and (pyroCrit or igniteDamage > 3000) then
-    local fdamage = GetSpellBonusDamage(3); -- fire spell bonus damage
-    
-    local leaveBomb = HasDebuff(target, 44457, "PLAYER"); -- Живая бомба
-    local ignite    = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение 
-    if leaveBomb and ignite then
+if useCooldown then
+    -- TODO: необходимо вычислить коефициент урона
+    local koef = 1;
+    local fdamage   = GetSpellBonusDamage(3); -- fire spell bonus damage
+    local igniteDmg = GetIgniteDamage(target, 8); -- Урон от воспламенения за последние 8 сек
+    local hasIgnite = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение
+    local modif     = GetDmgModifikator(target); -- Модификатор наносимого урона
+
+    --print("ignite: ", igniteDmg);
+
+    if hasIgnite and (igniteDmg > ((koef * fdamage)/modif) then
         UseItemBySlot(INVSLOT_HAND);
         UseItemBySlot(INVSLOT_TRINKET1);
         UseItemBySlot(INVSLOT_TRINKET1);
@@ -10020,7 +10062,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckEnrage(target);
+if UnitInParty("player") then
+    return CheckEnrage(target);
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Дикий гриб">
