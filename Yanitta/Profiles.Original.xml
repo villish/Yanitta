@@ -10060,7 +10060,9 @@ end
         <SetRecastDelay>false</SetRecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckEnrage(target);
+if IsInGroup() or IsInRaid() then
+    return CheckEnrage(target);
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Дикий гриб">
