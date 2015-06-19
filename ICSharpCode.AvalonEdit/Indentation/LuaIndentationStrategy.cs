@@ -6,7 +6,10 @@ namespace ICSharpCode.AvalonEdit.Indentation
 {
     public class LuaIndentationStrategy : DefaultIndentationStrategy
     {
-        public int indent_space_count = 4;
+        const int indent_space_count = 4;
+        const string patternFull  = @"\b(?<start>function|while(.+)do|if(.+)then|elseif(.+)then|for(.+)do|{{|end|}})\b";
+        const string patternStart = @"\b(?<start>function|while(.+)do|if(.+)then|elseif(.+)then|for(.+)do|{{)\b";
+        const string patternEnd   = @"\b(?<start>end)\b";
 
         private TextEditor textEditor;
 
@@ -37,12 +40,12 @@ namespace ICSharpCode.AvalonEdit.Indentation
 
             var previousIsComment = line.PreviousLine.Text.TrimStart().StartsWith("--");
 
-            if (Regex.IsMatch(line.Text, @"\b(?<start>function|while(.+)do|if(.+)then|elseif(.+)then|for(.+)do|{{|end|}})\b") && !previousIsComment)
+            if (Regex.IsMatch(line.Text, patternFull) && !previousIsComment)
             {
                 var ind = new string(' ', prev);
                 document.Insert(line.Offset, ind);
             }
-            else if (Regex.IsMatch(line.PreviousLine.Text, @"\b(?<start>function|while(.+)do|if(.+)then|elseif(.+)then|for(.+)do|{{)\b") && !previousIsComment)
+            else if (Regex.IsMatch(line.PreviousLine.Text, patternStart) && !previousIsComment)
             {
                 var ind = new string(' ', prev + indent_space_count);
                 document.Insert(line.Offset, ind);
@@ -57,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Indentation
 
                     var sps = CalcSpace(text);
 
-                    if (sps == prev && Regex.IsMatch(text, @"\b(?<start>end)\b"))
+                    if (sps == prev && Regex.IsMatch(text, patternEnd))
                         found = true;
                 }
 
