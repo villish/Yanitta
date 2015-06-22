@@ -207,10 +207,10 @@
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
 
-                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.SetRecastDelay}">
+                                        <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsUsableCheck}">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding SetRecastDelay}" ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}" />
+                                                    <CheckBox IsChecked="{Binding IsUsableCheck}" ToolTip="{x:Static yanitta:Localization.IsUsableCheckToolTip}" />
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
@@ -231,6 +231,7 @@
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
 
+                                        <GridViewColumn Width="50" DisplayMemberBinding="{Binding RecastDelay}" Header="{x:Static yanitta:Localization.RecastDelay}" />
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -240,7 +241,7 @@
                     <Grid Grid.Column="1" Margin="5,0,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50"/>
-                            <RowDefinition Height="140"/>
+                            <RowDefinition Height="175"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TabControl Grid.Row="2">
@@ -266,6 +267,7 @@
                                 </Grid.ColumnDefinitions>
                                 <Grid>
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="25"/>
                                         <RowDefinition Height="25"/>
                                         <RowDefinition Height="25"/>
                                         <RowDefinition Height="25"/>
@@ -300,11 +302,14 @@
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
+                                    <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,0" Text="{x:Static yanitta:Localization.RecastDelay}" VerticalAlignment="Center"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="4" Margin="5,0" Text="{Binding RecastDelay, UpdateSourceTrigger=PropertyChanged}" Name="tbRecastDelay"
+                                               ToolTip="{x:Static yanitta:Localization.RecastDelayToolTip}"/>
                                 </Grid>
 
                                 <StackPanel Grid.Column="1">
                                     <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"  Content="{x:Static yanitta:Localization.IsUseIncombat}"  ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
-                                    <CheckBox Margin="3" IsChecked="{Binding SetRecastDelay}" Content="{x:Static yanitta:Localization.SetRecastDelay}" ToolTip="{x:Static yanitta:Localization.SetRecastDelayToolTip}"/>
+                                    <CheckBox Margin="3" IsChecked="{Binding IsUsableCheck}"  Content="{x:Static yanitta:Localization.IsUsableCheck}"  ToolTip="{x:Static yanitta:Localization.IsUsableCheckToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="{x:Static yanitta:Localization.CancelCasting}"  ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"  Content="{x:Static yanitta:Localization.CancelChanel}"   ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                                 </StackPanel>
