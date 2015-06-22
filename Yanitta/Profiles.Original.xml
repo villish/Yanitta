@@ -9594,30 +9594,22 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Быстрое восстановление">
-        <SpellID>0</SpellID>
+        <SpellID>18562</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
+        <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Так как нам надо обойти баг с тем, что спелл нам кажется недоступным, сделаем так:
--- Доступен только тогда, когда у нас в цели юнит с бафом хоты
-local start, duration = GetSpellCooldown(ability.SpellId);
-if (duration + start - GetTime()) > AddonFrame.ping then
-    return false;
-end
-
 -- Либо обновляем Гармонию, либо хилим просевшую цель.
 -- Проверяем только наличие бафа Омоложение
 local harmonyRemains = select(3, HasBuff("player", 100977));
 for _,member in ipairs(members) do
     if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 80 or harmonyRemains < 4) then
         print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains);
-        CastSpellByName(GetSpellInfo(18562), member.Unit); -- Быстрое восстановление
-        return true;
+        return member.Unit;
     end
 end
 ]]></Lua>
