@@ -427,6 +427,6 @@
     <value>Включает проверку на доступность заклинания, выключать только в особых случаях.</value>
   </data>
   <data name="RecastDelay" xml:space="preserve">
-    <value>Задержка</value>
+    <value>Задержка (сек.)</value>
   </data>
 </root>

@@ -664,7 +664,7 @@ namespace Yanitta {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Recast delay.
+        ///   Ищет локализованную строку, похожую на Recast delay (sec.).
         /// </summary>
         public static string RecastDelay {
             get {

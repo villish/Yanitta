@@ -8493,9 +8493,6 @@ end
         <RecastDelay>3</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
--- задержка следующего каста на 3 секунды
-ability.RecastDelay = 3;
-
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
     return true;
 end
