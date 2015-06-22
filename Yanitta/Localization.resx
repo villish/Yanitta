@@ -240,12 +240,6 @@
   <data name="CancelCasting" xml:space="preserve">
     <value>Drop casting</value>
   </data>
-  <data name="SetRecastDelay" xml:space="preserve">
-    <value>Delay on next spell</value>
-  </data>
-  <data name="SetRecastDelayToolTip" xml:space="preserve">
-    <value>The delay in the next utterance of this spell</value>
-  </data>
   <data name="CoreHeader" xml:space="preserve">
     <value>Core</value>
   </data>
@@ -422,5 +416,17 @@
   </data>
   <data name="OpenLuaCode" xml:space="preserve">
     <value>Open Lua code</value>
+  </data>
+  <data name="IsUsableCheck" xml:space="preserve">
+    <value>Is usable check</value>
+  </data>
+  <data name="IsUsableCheckToolTip" xml:space="preserve">
+    <value>It enables checking the availability of spell off only in special cases.</value>
+  </data>
+  <data name="RecastDelay" xml:space="preserve">
+    <value>Recast delay (sec.)</value>
+  </data>
+  <data name="RecastDelayToolTip" xml:space="preserve">
+    <value>Delay your next spell of the same in the same target in seconds.</value>
   </data>
 </root>

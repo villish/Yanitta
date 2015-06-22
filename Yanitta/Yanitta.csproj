@@ -111,7 +111,7 @@
       <DependentUpon>MultySelectedComboBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Misk\Offsets.cs" />
-    <Compile Include="XML\HotKey.cs" />
+    <Compile Include="Model\HotKey.cs" />
     <Compile Include="Localization.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -139,10 +139,10 @@
       <DependentUpon>WinProfileEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Misk\WowMemory.cs" />
-    <Compile Include="XML\ProfileDb.cs" />
-    <Compile Include="XML\Rotation.cs" />
-    <Compile Include="XML\ViewModelBase.cs" />
-    <Compile Include="XML\XmlManager.cs" />
+    <Compile Include="Model\ProfileDb.cs" />
+    <Compile Include="Model\Rotation.cs" />
+    <Compile Include="Model\ViewModelBase.cs" />
+    <Compile Include="Misk\XmlManager.cs" />
     <Page Include="Windows\CopyAbilitysWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -159,7 +159,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="XML\Ability.cs" />
+    <Compile Include="Model\Ability.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -186,7 +186,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="XML\Profile.cs" />
+    <Compile Include="Model\Profile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

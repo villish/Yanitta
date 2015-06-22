@@ -56,7 +56,7 @@ namespace Yanitta
             if (this.CurrentRotation == null)
                 throw new YanittaException("Не выбрана ротация для новой способности!");
 
-            this.CurrentRotation.AbilityList.Add(new Ability());
+            this.CurrentRotation.AbilityList.Add(new Ability { IsUsableCheck = true });
             this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
             this.tbAbilityName.Focus();
             this.tbAbilityName.SelectAll();
