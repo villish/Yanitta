@@ -531,9 +531,9 @@ function CheckAndCastAbility(ability, targetInfo)
         return;
     end
 
-    if ability.SetRecastDelay
+    if ability.RecastDelay > 0
         and targetInfo.Guid == UnitGUID(targetInfo.Target)
-        and (targetInfo.LastCastingTime + (ability.RecastDelay or 1)) >= GetTime() then
+        and (targetInfo.LastCastingTime + ability.RecastDelay) >= GetTime() then
         return;
     end
 
@@ -544,7 +544,9 @@ function CheckAndCastAbility(ability, targetInfo)
 
     if ability.SpellId < 1 then
         return ability.Func(ability, targetInfo, targetInfo.Target);
-    elseif not (ability.IsKnown and IsUsableSpell(spellName)) then
+    elseif not ability.IsKnown then
+        return;
+    elseif ability.IsUsableCheck and not IsUsableSpell(spellName) then
         return;
     end
 
