@@ -52,9 +52,16 @@ namespace Yanitta
         public bool IsUseIncombat          { get; set; }
 
         /// <summary>
-        /// Использовать задержку на произнесение следующего заклинания.
+        /// Проверка на доступность заклинания.
+        /// По умолчанию должно быть включено.
         /// </summary>
-        public bool SetRecastDelay         { get; set; }
+        public bool IsUsableCheck          { get; set; }
+
+        /// <summary>
+        /// Задержка на произнесение следующего заклинания.
+        /// Если 0, тогда не делать проверку.
+        /// </summary>
+        public int RecastDelay             { get; set; }
 
         /// <summary>
         /// Проверка, движения персонажа.
@@ -93,7 +100,7 @@ namespace Yanitta
             var cancelChannel     = this.CancelChannel.ToString().ToLower();
             var cancelCasting     = this.CancelCasting.ToString().ToLower();
             var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
-            var setRecastDelay    = this.SetRecastDelay.ToString().ToLower();
+            var isUsableCheck     = this.IsUsableCheck.ToString().ToLower();
             var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
             var name              = this.Name.Replace("\"", @"\""");
 
@@ -103,10 +110,11 @@ namespace Yanitta
             var builder = new StringBuilder();
             builder.AppendFormatLine("    {{   SpellId = {0,6}, Name = \"{1}\",", this.SpellID, name);
             builder.AppendFormatLine("        IsMovingCheck     = \"{0}\",", isMovingCheck);
+            builder.AppendFormatLine("        RecastDelay       = {0},",  this.RecastDelay);
             builder.AppendFormatLine("        DropChanel        = {0},",     cancelChannel);
             builder.AppendFormatLine("        CancelCasting     = {0},",     cancelCasting);
             builder.AppendFormatLine("        IsCheckInCombat   = {0},",     isUseIncombat);
-            builder.AppendFormatLine("        SetRecastDelay    = {0},",     setRecastDelay);
+            builder.AppendFormatLine("        IsUsableCheck     = {0},",     isUsableCheck);
 
             builder.AppendFormatLine("        TargetList = {{\n            {0}\n        }},",
                 string.Join(",\n            ", TargetList.OrderBy(n => n).Select(n =>
@@ -130,9 +138,10 @@ namespace Yanitta
                 SpellID        = this.SpellID,
                 IsMovingCheck  = this.IsMovingCheck,
                 IsUseIncombat  = this.IsUseIncombat,
+                IsUsableCheck  = this.IsUsableCheck,
                 CancelCasting  = this.CancelCasting,
                 CancelChannel  = this.CancelChannel,
-                SetRecastDelay = this.SetRecastDelay,
+                RecastDelay    = this.RecastDelay,
                 Lua            = this.Lua,
                 TargetList     = this.TargetList.ToList()
             };
