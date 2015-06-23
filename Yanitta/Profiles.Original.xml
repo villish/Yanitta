@@ -241,7 +241,7 @@ DISPELL_TABLE = { --    Магия         Яд             Болезнь      
     MONK_HEAL       = { Magic = true, Poison = true, Disease = true, Curse = nil  },
     MONK_NONE       = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
     SHAMAN_HEAL     = { Magic = true, Poison = nil , Disease = nil , Curse = true },
-    SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = nil  },
+    SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
     MAGE_NONE       = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
 };
 
@@ -6593,6 +6593,28 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Очищение духа">
+        <SpellID>51886</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local monk_dispells = DISPELL_TABLE["SHAMAN_NONE"];
+if monk_dispells then
+    for index = 1, 40 do
+        local name, _,_,_, dispelType = UnitDebuff("player", index);
+        if not name then break end
+        if monk_dispells[dispelType] then
+            return true;
+        end
+    end
+end
 ]]></Lua>
       </Ability>
     </Rotation>
