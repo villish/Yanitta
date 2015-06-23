@@ -34,14 +34,14 @@ namespace Yanitta
                 builder.AppendFormat(CultureInfo.InvariantCulture, format, args).AppendLine();
         }
 
-        public static string GetTrimValue(this XmlCDataSection cdataSection)
+        public static string GetTrimValue(XmlCDataSection cdataSection)
         {
             if (cdataSection == null || string.IsNullOrWhiteSpace(cdataSection.Value))
                 return string.Empty;
             return cdataSection.Value.Trim();
         }
 
-        public static XmlCDataSection CreateCDataSection(this string content)
+        public static XmlCDataSection CreateCDataSection(string content)
         {
             if (string.IsNullOrWhiteSpace(content))
                 return null;
