@@ -253,7 +253,7 @@
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="25"/>
                                         </Grid.RowDefinitions>
-                                        <Label Content="Func = function (ability, targetInfo, target)" FontFamily="Consolas"/>
+                                        <Label Content="Func = function(ability, targetInfo, target)" FontFamily="Consolas"/>
                                         <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Row="1">
                                             <avalonedit:TextEditor FontFamily="Consolas"
                                                                    Text="{Binding ProfileList/RotationList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />

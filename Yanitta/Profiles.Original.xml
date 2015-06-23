@@ -6367,6 +6367,22 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
+      <Ability Name="Землятресение">
+        <SpellID>61882</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>2</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- 157766 - Усиленная цепная молния
+if IsMouseButtonDown(3) and (HasBuff("player", 157766) or not IS_MOVING) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -6507,6 +6523,19 @@ if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Цепная молния">
+        <SpellID>421</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE;
+]]></Lua>
+      </Ability>
       <Ability Name="Высвободить чары стихий">
         <SpellID>73680</SpellID>
         <Target>Target</Target>
@@ -6551,19 +6580,6 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Цепная молния">
-        <SpellID>421</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return setAoE;
 ]]></Lua>
       </Ability>
       <Ability Name="Молния">

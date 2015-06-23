@@ -10,7 +10,7 @@ namespace Yanitta
 {
     public partial class WinProfileEditor : Window
     {
-        private Key[] Keys = new Key[] { Key.X, Key.Z, Key.C, Key.V, Key.B, Key.N };
+        private Key[] Keys = { Key.X, Key.Z, Key.C, Key.V, Key.B, Key.N };
 
         public WinProfileEditor()
         {
