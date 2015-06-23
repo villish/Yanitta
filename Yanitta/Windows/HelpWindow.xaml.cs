@@ -38,11 +38,11 @@ namespace Yanitta.Windows
             spellCastTime.Text      = spell.CastTime;
             spellDescription.Text   = spell.Description;
 
-            var bi3 = new BitmapImage();
-            bi3.BeginInit();
-            bi3.UriSource = new Uri(string.Format("http://media.blizzard.com/wow/icons/56/{0}.jpg", spell.Icon), UriKind.Absolute);
-            bi3.EndInit();
-            spellIcon.Source = bi3;
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = new Uri(string.Format("http://media.blizzard.com/wow/icons/56/{0}.jpg", spell.Icon), UriKind.Absolute);
+            image.EndInit();
+            spellIcon.Source = image;
         }
 
         private void CommandBinding_GetSpellData_Executed(object sender, ExecutedRoutedEventArgs e)

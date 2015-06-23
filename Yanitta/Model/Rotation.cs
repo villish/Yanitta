@@ -59,8 +59,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return this.Lua.CreateCDataSection(); }
-            set { this.Lua = value.GetTrimValue(); }
+            get { return Extensions.CreateCDataSection(this.Lua); }
+            set { this.Lua = Extensions.GetTrimValue(value); }
         }
 
         /// <summary>
