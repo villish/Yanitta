@@ -6374,11 +6374,11 @@ end
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>2</RecastDelay>
+        <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 157766 - Усиленная цепная молния
-if IsMouseButtonDown(3) and (HasBuff("player", 157766) or not IS_MOVING) then
+if IsMouseButtonDown(3) then
     return true;
 end
 ]]></Lua>
@@ -6459,6 +6459,19 @@ return CheckInterrupt(target);
 --end
 ]]></Lua>
       </Ability>
+      <Ability Name="Цепная молния">
+        <SpellID>421</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE;
+]]></Lua>
+      </Ability>
       <Ability Name="Опаляющий тотем">
         <SpellID>3599</SpellID>
         <Target>None</Target>
@@ -6485,6 +6498,22 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if isInRange and useCooldown then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Высвободить чары стихий">
+        <SpellID>73680</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Освобожденная ярость
+if IsTalentSpell(GetSpellInfo(117012)) then
     return true;
 end
 ]]></Lua>
@@ -6519,35 +6548,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Цепная молния">
-        <SpellID>421</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Высвободить чары стихий">
-        <SpellID>73680</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Освобожденная ярость
-if IsTalentSpell(GetSpellInfo(117012)) then
     return true;
 end
 ]]></Lua>
