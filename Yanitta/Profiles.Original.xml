@@ -9612,8 +9612,8 @@ end
 -- Проверяем только наличие бафа Омоложение
 local harmonyRemains = select(3, HasBuff("player", 100977));
 for _,member in ipairs(members) do
-    if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 80 or harmonyRemains < 4) then
-        print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains);
+    if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 85 or harmonyRemains < 4) then
+        --print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains);
         return member.Unit;
     end
 end
