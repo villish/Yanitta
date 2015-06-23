@@ -6518,6 +6518,19 @@ if IsTalentSpell(GetSpellInfo(117012)) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Удар духов стихии">
+        <SpellID>117014</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Земной шок">
         <SpellID>8042</SpellID>
         <Target>Target</Target>
@@ -6567,19 +6580,6 @@ if setAoE and HasBuff("player", 77756) then
 elseif HasBuff("player", 77756) or not IS_MOVING then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар духов стихии">
-        <SpellID>117014</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Молния">
