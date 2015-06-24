@@ -7110,17 +7110,19 @@ end
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 pyroTable = { }; -- таблица накомленного урона от воспламенения
+clearTime = 20;
 
 function CleanPyroTable()
     -- Очистка таблицы от старых записей
     for guid, dmgTable in pairs(pyroTable) do
         -- Если юнит давно не получал урон (или помер внезапно :))
-        if (dmgTable.LastTime or 0) < GetTime() - 10 then
+        if (dmgTable.LastTime or 0) < GetTime() - clearTime then
             pyroTable[guid] = nil;
+            print('clean targer');
         else
             -- так же держим в актуале нанесенный урон за последние 10 сек.
             for dmgTime, dmgVal in pairs(dmgTable.Values) do
-                if dmgTime < GetTime() - 10 then
+                if dmgTime < GetTime() - clearTime then
                     dmgTable.Values[dmgTime] = nil;
                 end
             end
@@ -7136,8 +7138,8 @@ function GetIgniteDamage(target, sec)
         return 0;
     end
     local damage = 0;
-    for dmgTime, dmgVal in pairs(dmgTable.Values) do
-        if dmgTime >= (GetTime()-(sec or 8)) then
+    for dmgTime, dmgVal in pairs(dmgTable.Values or {}) do
+        if dmgTime >= GetTime()-sec then
             damage = damage + dmgVal;
         end
     end
@@ -7172,6 +7174,7 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
         -- Собираем урон по заклинанию (12654 - Воспламенение)
         if spellId == 12654 and UnitGUID("player") == sourceGUID then
             local dmgTable = pyroTable[destGUID] or { LastTime = 0, Values = {}};
+            timestamp = GetTime();
             dmgTable.LastTime = timestamp;
             dmgTable.Values[timestamp] = amount;
             pyroTable[destGUID] = dmgTable;
@@ -7244,6 +7247,8 @@ end
 if PowerByPercent("player") < 50 then
     UseItemById(36799);
 end
+
+CleanPyroTable();
 
 -- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
 --local castedSpell = UnitCastingInfo("player");
@@ -7368,15 +7373,16 @@ end
 -- Так же важно использовать возгорание под прок тринек
 if useCooldown then
     -- TODO: необходимо вычислить коефициент урона
-    local koef = 1;
+    local koef = 2.75;
+    local glyphMod  = HasGlyph(56368) and 2 or 1; -- Символ возгорания
     local fdamage   = GetSpellBonusDamage(3); -- fire spell bonus damage
-    local igniteDmg = GetIgniteDamage(target, 8); -- Урон от воспламенения за последние 8 сек
+    local igniteDmg = GetIgniteDamage(target, 8*glyphMod); -- Урон от воспламенения за последние 8 сек
     local hasIgnite = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение
     local modif     = GetDmgModifikator(target); -- Модификатор наносимого урона
 
-    --print("ignite: ", igniteDmg);
+    print("ignite:", igniteDmg, "SpellBonus:", fdamage);
 
-    if hasIgnite and (igniteDmg > ((koef * fdamage)/modif) then
+    if hasIgnite and (igniteDmg > ((koef*fdamage*glyphMod)/modif)) then
         UseItemBySlot(INVSLOT_HAND);
         UseItemBySlot(INVSLOT_TRINKET1);
         UseItemBySlot(INVSLOT_TRINKET1);
@@ -9644,8 +9650,8 @@ end
 -- Проверяем только наличие бафа Омоложение
 local harmonyRemains = select(3, HasBuff("player", 100977));
 for _,member in ipairs(members) do
-    if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 80 or harmonyRemains < 4) then
-        print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains);
+    if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 85 or harmonyRemains < 4) then
+        --print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains);
         return member.Unit;
     end
 end
