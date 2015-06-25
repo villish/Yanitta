@@ -9946,7 +9946,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat then
+if not isCat and not IsModKeyDown(mkLeftShift) then
     if playerHP < 80 and UnitPower("player") > 55 then
         return true;
     elseif playerHP < 30 and UnitPower("player") > 35 then
@@ -10044,7 +10044,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- без ГКД
-if not isCat and playerHP > 30 then
+if not isCat and playerHP > 30 and not IsModKeyDown(mkLeftShift) then
     -- зубы и когти
     if HasBuff("player", 135288) then
         return true;
