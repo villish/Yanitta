@@ -299,7 +299,7 @@ PartyLogic = {
             and not UnitIsCorpse(unit)
             and UnitHealth(unit) > 100
             and     UnitCanAssist(unit, "player")
-            and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+            and     IsSpellInRange(GetSpellInfo(self.MAIN_CLASS_SPELL), unit) == 1
             and not IsNotLineOfSight(unit) then
             for _,member in ipairs(self.members) do
                 if UnitGUID(member.Unit) == UnitGUID(unit) then
