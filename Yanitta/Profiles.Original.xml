@@ -129,11 +129,11 @@ end
 function IsModKeyDown(m_key)
     if not GetCurrentKeyBoardFocus() then
         return (m_key == mkLeftShift    and IsLeftShiftKeyDown()   ) or
-               (m_key == mkLeftControl  and IsLeftControlKeyDown() ) or
-               (m_key == mkLeftAlt      and IsLeftAltKeyDown()     ) or
-               (m_key == mkRightShift   and IsRightShiftKeyDown()  ) or
-               (m_key == mkRightAlt     and IsRightAltKeyDown()    ) or
-               (m_key == mkRightControl and IsRightControlKeyDown());
+                (m_key == mkLeftControl  and IsLeftControlKeyDown() ) or
+                (m_key == mkLeftAlt      and IsLeftAltKeyDown()     ) or
+                (m_key == mkRightShift   and IsRightShiftKeyDown()  ) or
+                (m_key == mkRightAlt     and IsRightAltKeyDown()    ) or
+                (m_key == mkRightControl and IsRightControlKeyDown());
     end
 end
 
@@ -222,258 +222,325 @@ function CheckEnrage(unit, ...)
 end
 
 function IsMountedEx()
-   return IsMounted() and not HasBuff("player", 165803);
+    return IsMounted() and not HasBuff("player", 165803);
 end
 
------------------------------------------------
---                    HEAL                   --
------------------------------------------------
+BossModLogic = {
+    iskar_debuffs = {
+        181957, -- Ирреальные ветра
+        182325, -- Ирреальные раны
+        181824, -- Ирреальная порча
+    };
 
-MAIN_CLASS_SPELL = 0;
-
-DISPELL_TABLE = { --    Магия         Яд             Болезнь         Проклятие
-    PRIEST_HEAL     = { Magic = true, Poison = nil , Disease = true, Curse = nil  },
-    PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = nil  },
-    DRUID_HEAL      = { Magic = true, Poison = true, Disease = nil , Curse = true },
-    DRUID_NONE      = { Magic = nil , Poison = true, Disease = nil , Curse = true },
-    PALADIN_HEAL    = { Magic = true, Poison = true, Disease = true, Curse = nil  },
-    PALADIN_NONE    = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
-    MONK_HEAL       = { Magic = true, Poison = true, Disease = true, Curse = nil  },
-    MONK_NONE       = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
-    SHAMAN_HEAL     = { Magic = true, Poison = nil , Disease = nil , Curse = true },
-    SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
-    MAGE_NONE       = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
+    Exec = function(self)
+        -- Искар, перебразывание глаза Анзу
+        if HasDebuff("player", 179202) then -- Глаз Анзу
+            for _, member in ipairs(PartyLogic.members) do
+                if HasDebuff(member.Unit, self.iskar_debuffs) then
+                    local macro = format("/target \n/click ExtraActionButton1\n/targetlasttarget", member.Unit);
+                    RunMacroText(macro);
+                end
+            end
+        end
+    end
 };
 
--- Добавляет в таблицу "members" указанного юнита, при этом делая проверки (возможность лечить)
-function InsertNewUnitToHeallersTable(unit)
-    if UnitExists(unit)
-        and not UnitIsDeadOrGhost(unit)
-        and not UnitIsCorpse(unit)
-        and UnitHealth(unit) > 100
-        and     UnitCanAssist(unit, "player")
-        and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
-        and not IsNotLineOfSight(unit) then
-        for _,member in ipairs(members) do
-            if UnitGUID(member.Unit) == UnitGUID(unit) then
-                return;
+PartyLogic = {
+    First   = { },
+    members = { },
+    LowHP   = { },
+    MAIN_CLASS_SPELL = 0,
+
+    MAIN_CLASS_SPELL_TABLE = {
+        WARRIOR     = 0,      --
+        PALADIN     = 0,      --
+        HUNTER      = 0,      --
+        ROGUE       = 0,      --
+        PRIEST      = 2061,   -- Исцеление
+        DEATHKNIGHT = 0,      --
+        SHAMAN      = 8004,   -- Исцеляющий сплеск
+        MAGE        = 0,      --
+        WARLOCK     = 0,      --
+        MONK        = 0,      --
+        DRUID       = 774,    -- Омоложение
+        GetMainClassSpell = function(self)
+            return self[select(2, UnitClass("player"))];
+        end
+    },
+
+    DISPELL_TABLE = {  --    Магия           Яд               Болезнь           Проклятие
+        PRIEST_HEALER   = { Magic = true, Poison = nil , Disease = true, Curse = nil  },
+        PRIEST_NONE     = { Magic = nil , Poison = nil , Disease = true, Curse = nil  },
+        DRUID_HEALER    = { Magic = true, Poison = true, Disease = nil , Curse = true },
+        DRUID_NONE      = { Magic = nil , Poison = true, Disease = nil , Curse = true },
+        PALADIN_HEALER  = { Magic = true, Poison = true, Disease = true, Curse = nil  },
+        PALADIN_NONE    = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
+        MONK_HEALER     = { Magic = true, Poison = true, Disease = true, Curse = nil  },
+        MONK_NONE       = { Magic = nil , Poison = true, Disease = true, Curse = nil  },
+        SHAMAN_HEALER   = { Magic = true, Poison = nil , Disease = nil , Curse = true },
+        SHAMAN_NONE     = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
+        MAGE_NONE       = { Magic = nil , Poison = nil , Disease = nil , Curse = true },
+
+        GetDispellType = function(self)
+            local class = select(2, UnitClass("player"));
+            local specId = GetSpecialization();
+            if specId then
+                local role = select(6, GetSpecializationInfo(specId));
+                role = role == "HEALER" and "HEALER" or "NONE";
+                return self[class..'_'..role]
             end
         end
-        table.insert(members, { Unit = unit, IsInMyParty = false });
-    end
-end
+    },
 
--- в эту функцию добавляем логику по особому поведению в рейдах
--- на пример, если есть какой-то дебаф, который надо выхиливать.
-function CheckInstanseLogic(member)
-    -- Осада Огриммара: Малкорок
-    -- Отхил не проходит, надо настакивать щит под дебафом
-    -- по этому просто занижаем реальное здоровье.
-    if HasDebuff(member.Unit, 142861) then
-        if HasDebuff(member.Unit, 142863) then -- красный
-            member.HP = 50;
-        elseif HasDebuff(member.Unit, 142864) then -- желтый
-            member.HP = 80;
-        elseif HasDebuff(member.Unit, 142865) then -- зеленый
-            member.HP = 100;
-        else -- без щита
-            member.HP = min(member.HP, 50);
+    -- Добавляет в таблицу "members" указанного юнита, при этом делая проверки (возможность лечить)
+    InsertNewUnitToHeallersTable = function(self, unit)
+        if UnitExists(unit)
+            and not UnitIsDeadOrGhost(unit)
+            and not UnitIsCorpse(unit)
+            and UnitHealth(unit) > 100
+            and     UnitCanAssist(unit, "player")
+            and     IsSpellInRange(GetSpellInfo(MAIN_CLASS_SPELL), unit) == 1
+            and not IsNotLineOfSight(unit) then
+            for _,member in ipairs(self.members) do
+                if UnitGUID(member.Unit) == UnitGUID(unit) then
+                    return;
+                end
+            end
+            table.insert(self.members, { Unit = unit, IsInMyParty = false });
         end
-    -- Верховный молот: Кодгар (Дебаф: Исторжение магии: Темная магия)
-    -- Дебаф вешает щит поглощающий опреленное количество лечения (надо выхиливать)
-    elseif HasDebuff(member.Unit, 162184) then
-        member.HP = min(member.HP, 50);
-    -- Верховный молот: Кодгар (Дебаф: Жгучая энергия)
-    -- Цель получает на 35% меньше отхила - надо сейвить
-    elseif HasDebuff(member.Unit, 161242) then
-        member.HP = min(40, member.HP);
-    -- Верховный молот: Кодгар (Дебаф: Нейтрализующий щит)
-    -- На цели есть щит поглощающий урон от магии (это основной урон на боссе)
-    elseif HasDebuff(member.Unit, 163134) then
-        member.HP = 101;
-    -- Престол гроз: Тортос (Кристальная оболочка)
-    -- Надо настакивть щит поглощающий урон
-    elseif HasDebuff(member.Unit, 137633) then
-        -- нужно доработать условие
-        if not HasDebuff(member.Unit, 140701) then
-            member.HP = min(member.HP, 50);
-        end
-    -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
-    -- Вешается на танка, хилить нельзя
-    elseif HasDebuff(member.Unit, 137341) then
-        member.DontHeal = true;
-    -- Доты на черноруке
-    elseif HasDebuff(member.Unit, { 156047, 156743, 158054 }) then
-        member.HP = min(member.HP, 60);
-    end
-end
+    end,
 
--- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
-function DontDispell(debuffId, member)
-    -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
-    -- После "Освобождения" Дар титанов больше не кидается, поэтому диспелим по КД
-    if debuffId == 144351 then
-        if not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30 then
-            -- Если на нас много порчи - не диспелим
-            if UnitPower("player", SPELL_POWER_ALTERNATE_POWER) > 50 then
+    -- в эту функцию добавляем логику по особому поведению в рейдах
+    -- на пример, если есть какой-то дебаф, который надо выхиливать.
+    CheckInstanseLogic = function(self, member)
+        -- Осада Огриммара: Малкорок
+        -- Отхил не проходит, надо настакивать щит под дебафом
+        -- по этому просто занижаем реальное здоровье.
+        if HasDebuff(member.Unit, 142861) then
+            if HasDebuff(member.Unit, 142863) then -- красный
+                member.HP = 50;
+            elseif HasDebuff(member.Unit, 142864) then -- желтый
+                member.HP = 80;
+            elseif HasDebuff(member.Unit, 142865) then -- зеленый
+                member.HP = 100;
+            else -- без щита
+                member.HP = min(member.HP, 50);
+            end
+        -- Верховный молот: Кодгар (Дебаф: Исторжение магии: Темная магия)
+        -- Дебаф вешает щит поглощающий опреленное количество лечения (надо выхиливать)
+        elseif HasDebuff(member.Unit, 162184) then
+            member.HP = min(member.HP, 50);
+        -- Верховный молот: Кодгар (Дебаф: Жгучая энергия)
+        -- Цель получает на 35% меньше отхила - надо сейвить
+        elseif HasDebuff(member.Unit, 161242) then
+            member.HP = min(40, member.HP);
+        -- Верховный молот: Кодгар (Дебаф: Нейтрализующий щит)
+        -- На цели есть щит поглощающий урон от магии (это основной урон на боссе)
+        elseif HasDebuff(member.Unit, 163134) then
+            member.HP = 101;
+        -- Престол гроз: Тортос (Кристальная оболочка)
+        -- Надо настакивть щит поглощающий урон
+        elseif HasDebuff(member.Unit, 137633) then
+            -- нужно доработать условие
+            if not HasDebuff(member.Unit, 140701) then
+                member.HP = min(member.HP, 50);
+            end
+        -- Престол гроз: Наложницы блезнецы (Дебаф: Чудовище из кошмаров)
+        -- Вешается на танка, хилить нельзя
+        elseif HasDebuff(member.Unit, 137341) then
+            member.DontHeal = true;
+        -- Доты на черноруке
+        elseif HasDebuff(member.Unit, { 156047, 156743, 158054 }) then
+            member.HP = min(member.HP, 60);
+        end
+    end,
+
+    -- Формирует таблицу "members" которая содержит юнитов нуждающихся в лечении.
+    -- при формировании происходят проверки: (доступность + рейдовая логика)
+    -- сформированная таблица будет отсортирована по наименьшему здоровью.
+    Init = function(self)
+        -- Обнуляем все хиловские глобальные переменные.
+        self.LowHP = { };
+        self.members = { { Unit = "player", IsInMyParty = true } };
+        self.MAIN_CLASS_SPELL = self.MAIN_CLASS_SPELL_TABLE:GetMainClassSpell();
+
+        for i = 95, 10, -5 do
+            LowHP["H"..i] = 0;
+        end
+
+        local prefix = IsInRaid() and "raid" or "party";
+
+        for index = 1, GetNumGroupMembers() do
+            local unit = prefix..index;
+            if UnitExists(unit)
+                and not UnitIsCorpse(unit)
+                and not UnitIsUnit("player", unit)
+                and     UnitIsConnected(unit)
+                and not UnitIsEnemy("player", unit)
+                and not UnitIsDeadOrGhost(unit)
+                and     UnitInRange(unit)
+                and not IsNotLineOfSight(unit) then
+                table.insert(self.members, { Unit = unit, IsInMyParty = true });
+            end
+        end
+
+        -- отхил дружественной цели по mouseover/target/focus
+        if self.MAIN_CLASS_SPELL ~= 0 then
+            self:InsertNewUnitToHeallersTable("target");
+            self:InsertNewUnitToHeallersTable("focus");
+            self:InsertNewUnitToHeallersTable("mouseover");
+        end
+
+        -- Обновляем статы игроков из пати/рейда
+        for index = #self.members, 1, -1 do
+            local member = self.members[index];
+
+            member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
+            member.IsHeal  = UnitGroupRolesAssigned(member.Unit) == "HEAL";
+            member.Agro    = UnitThreatSituation(member.Unit) or 0;
+
+            local max_hp   = UnitHealthMax(member.Unit) or 0;
+            local inc_hp   = UnitGetIncomingHeals(member.Unit) or 0;
+            local inc_abs  = UnitGetTotalAbsorbs(member.Unit) or 0;
+            local cur_hp   = UnitHealth(member.Unit) or 0;
+
+            member.IncHeal = 100 * inc_hp  / max_hp;
+            member.Absorb  = 100 * inc_abs / max_hp;
+            member.HP      = 100 * (cur_hp + inc_hp) / max_hp;
+
+            -- логика по особому поведению в рейдах
+            if self.MAIN_CLASS_SPELL ~= 0 then
+                self:CheckInstanseLogic(member);
+            end
+
+            if member.IsTank then
+                self.members.HasTank = true;
+            end
+
+            -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
+            -- не учитываем цели, которые хилить нельзя
+            if not member.DontHeal then
+                for i = 95, 10, -5 do
+                    if member.HP <= i then
+                        LowHP["H"..i] = LowHP["H"..i] + 1;
+                    end
+                end
+            end
+
+            -- удаляем из талицы юнит, которого нельзя хилить
+            if member.DontHeal then
+                table.remove(self.members, index);
+            end
+        end
+        -- сортируем таблицы по наименьшему количеству ХР
+        if #self.members > 1 then
+            table.sort(self.members, function(x, y) return x.HP < y.HP; end);
+        elseif #self.members == 0 then
+            -- Это надо для того, чтобы небыло ошибок при обращении к первому элементу
+            -- Возможны ситуации что в таблице никого не останется, из-за рейдовой логики.
+            self.members = {{ Unit = "none", Agro = 0, HP = 100, IncHeal = 0 }};
+        end
+        self.First = self.members[1];
+    end,
+
+    GetMember = function(self, unit)
+        for _,member in ipairs(self.members) do
+            if UnitIsUnit(member.Unit, unit) then
+                return member;
+            end
+        end
+    end
+
+    -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
+    DontDispell = function(self, debuffId, member)
+        -- ша гордыни: диспелим "Слово тьмы: Погибель" только с дебафом "Дар титанов"
+        -- После "Освобождения" Дар титанов больше не кидается, поэтому диспелим по КД
+        if debuffId == 144351 then
+            if not HasDebuff("player", 144359) and HealthByPercent("boss1") > 30 then
+                -- Если на нас много порчи - не диспелим
+                if UnitPower("player", SPELL_POWER_ALTERNATE_POWER) > 50 then
+                    return true;
+                end
+            end
+        -- Глубиний
+        elseif debuffId == 143579 then
+            if select(2, HasDebuff(member.Unit, 143579)) < 3 then
                 return true;
             end
-        end
-    -- Глубиний
-    elseif debuffId == 143579 then
-        if select(2, HasDebuff(member.Unit, 143579)) < 3 then
+        -- Осада ограммара: Малкорок
+        -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
+        elseif debuffId == 142913 then
+            for i,member2 in ipairs(self.members) do
+                if not UnitIsUnit("player", member2.Unit) then
+                    if (GetDistance(member.Unit, member2.Unit) or 0) < 8 then
+                        return true;
+                    end
+                end
+            end
+        -- Верховный молот: Ко'гар
+        -- Исторжение магии: огонь - надо диспелить когда рядом (5м) нет играков
+        elseif debuffId == 162185 then
+            for i,member2 in ipairs(self.members) do
+                if not UnitIsUnit("player", member2.Unit) then
+                    if (GetDistance(member.Unit, member2.Unit) or 0) < 5 then
+                        return true;
+                    end
+                end
+            end
+        -- Прикосновение скверны (треш перед боссом Ша гордыни)
+        -- Диспелятся сразу все дебафы, а при диспеле наносится урон.
+        elseif debuffId == 149207 then
+            return true;
+        -- Дрожащие тени (Железные леди)
+        elseif debuffId == 156214 then
+            return true;
+        -- Лучевой ожог (Огнебаба)
+        elseif debuffId == 155049 then
             return true;
         end
-    -- Осада ограммара: Малкорок
-    -- Блуждающая энергия: надо диспелить когда возле цели разсеивания нету других игроков
-    elseif debuffId == 142913 then
-        for i,member2 in ipairs(members) do
-            if not UnitIsUnit("player", member2.Unit) then
-                if (GetDistance(member.Unit, member2.Unit) or 0) < 8 then
-                    return true;
+    end,
+
+    -- Возвращает юнита, с которого надо диспелить (с наибольшим количеством стаков)
+    -- Параметр dispeller_type - Указывает тип диспеллера ( "NONE", "HEAL", "SIMBIOS")
+    -- По умолчанию: "NONE"
+    -- Возвращает: unit, count или nil - если диспелить нечего.
+    GetDispellInfo = function(self, unit)
+        local c_rec = self.DISPELL_TABLE:GetDispellType();
+        if not c_rec then return end
+
+        local dispellTable = { };
+        local memberList = self.members;
+        if unit then
+            memberList = {}
+            local mem = self:GetMember(unit);
+            if mem then
+                tinsert(memberList, mem);
+            end
+        end
+
+        for _,member in ipairs(self.members) do
+            for index = 1, 40 do
+                local name,_,_,count,dispelType,duration,expires,_,_,_,debuffId = UnitDebuff(member.Unit, index);
+                if not name then break end
+                if c_rec[dispelType] and not self:DontDispell(debuffId, member) then
+                    table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
                 end
             end
         end
-    -- Верховный молот: Ко'гар
-    -- Исторжение магии: огонь - надо диспелить когда рядом (5м) нет играков
-    elseif debuffId == 162185 then
-        for i,member2 in ipairs(members) do
-            if not UnitIsUnit("player", member2.Unit) then
-                if (GetDistance(member.Unit, member2.Unit) or 0) < 5 then
-                    return true;
-                end
+        if #dispellTable > 0 then
+            if #dispellTable > 1 then
+                table.sort(dispellTable, function(A, B)
+                    return A.Count > B.Count;
+                end);
             end
+            return dispellTable[1].Unit, dispellTable;
         end
-    -- Прикосновение скверны (треш перед боссом Ша гордыни)
-    -- Диспелятся сразу все дебафы, а при диспеле наносится урон.
-    elseif debuffId == 149207 then
-        return true;
-    -- Дрожащие тени (Железные леди)
-    elseif debuffId == 156214 then
-        return true;
-    -- Лучевой ожог (Огнебаба)
-    elseif debuffId == 155049 then
-        return true;
-    end
-end
-
--- Возвращает юнита, с которого надо диспелить (с наибольшим количеством стаков)
--- Параметр dispeller_type - Указывает тип диспеллера ( "NONE", "HEAL", "SIMBIOS")
--- По умолчанию: "NONE"
--- Возвращает: unit, count или nil - если диспелить нечего.
-function GetDispellInfo(dispeller_type)
-    local dispeller = dispeller_type or "NONE";
-    local d_class   = select(2, UnitClass("player"));
-    local c_rec     = DISPELL_TABLE[d_class.."_"..dispeller];
-
-    if not c_rec then return end
-
-    local dispellTable = { };
-    for _,member in ipairs(members) do
-        for index = 1, 40 do
-            local name,_,_,count,dispelType,duration,expires,_,_,_,debuffId = UnitDebuff(member.Unit, index);
-            if not name then break end
-            if c_rec[dispelType] and not DontDispell(debuffId, member) then
-                table.insert(dispellTable, { Unit = member.Unit, Count = count, HP = member.HP });
-            end
-        end
-    end
-    if #dispellTable > 0 then
-        if #dispellTable > 1 then
-            table.sort(dispellTable, function(A, B)
-                return A.Count > B.Count;
-            end);
-        end
-        return dispellTable[1].Unit, dispellTable;
-    end
-end
-
--- Формирует таблицу "members" которая содержит юнитов нуждающихся в лечении.
--- при формировании происходят проверки: (доступность + рейдовая логика)
--- сформированная таблица будет отсортирована по наименьшему здоровью.
-function FillPartyTables(standartSpellId)
-    -- Обнуляем все хиловские глобальные переменные.
-    MAIN_CLASS_SPELL = standartSpellId;
-    LowHP   = { };
-    members = { { Unit = "player", IsInMyParty = true } };
-
-    for i = 95, 10, -5 do
-        LowHP["H"..i] = 0;
-    end
-
-    local prefix = IsInRaid() and "raid" or "party";
-
-    for index = 1, GetNumGroupMembers() do
-        local unit = prefix..index;
-        if UnitExists(unit)
-            and not UnitIsCorpse(unit)
-            and not UnitIsUnit("player", unit)
-            and     UnitIsConnected(unit)
-            and not UnitIsEnemy("player", unit)
-            and not UnitIsDeadOrGhost(unit)
-            and     UnitInRange(unit)
-            and not IsNotLineOfSight(unit) then
-            table.insert(members, { Unit = unit, IsInMyParty = true });
-        end
-    end
-
-    -- отхил дружественной цели по mouseover/target/focus
-    InsertNewUnitToHeallersTable("target");
-    InsertNewUnitToHeallersTable("focus");
-    InsertNewUnitToHeallersTable("mouseover");
-
-    -- Обновляем статы игроков из пати/рейда
-    for index = #members, 1, -1 do
-        local member = members[index];
-
-        member.IsTank  = UnitGroupRolesAssigned(member.Unit) == "TANK";
-        member.Agro    = UnitThreatSituation(member.Unit) or 0;
-
-        local max_hp   = UnitHealthMax(member.Unit) or 0;
-        local inc_hp   = UnitGetIncomingHeals(member.Unit) or 0;
-        local inc_abs  = UnitGetTotalAbsorbs(member.Unit) or 0;
-        local cur_hp   = UnitHealth(member.Unit) or 0;
-
-        member.IncHeal = 100 * inc_hp  / max_hp;
-        member.Absorb  = 100 * inc_abs / max_hp;
-        member.HP      = 100 * (cur_hp + inc_hp) / max_hp;
-
-        -- логика по особому поведению в рейдах
-        CheckInstanseLogic(member);
-
-        if member.IsTank then
-            members.HasTank = true;
-        end
-
-        -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
-        -- не учитываем цели, которые хилить нельзя
-        if not member.DontHeal then
-            for i = 95, 10, -5 do
-                if member.HP <= i then
-                    LowHP["H"..i] = LowHP["H"..i] + 1;
-                end
-            end
-        end
-
-        -- удаляем из талицы юнит, которого нельзя хилить
-        if member.DontHeal then
-            table.remove(members, index);
-        end
-    end
-    -- сортируем таблицы по наименьшему количеству ХР
-    if #members > 1 then
-        table.sort(members, function(x, y) return x.HP < y.HP; end);
-    elseif #members == 0 then
-        -- Это надо для того, чтобы небыло ошибок при обращении к первому элементу
-        -- Возможны ситуации что в таблице никого не останется, из-за рейдовой логики.
-        members = {{ Unit = "none", Agro = 0, HP = 100, IncHeal = 0 }};
-    end
-end
+    end,
+};
 
 ---------------------------------------
 --              CORE                 --
 ---------------------------------------
-
 function CheckKnownAbility(ability)
     local spellName = GetSpellInfo(ability.SpellId);
     ability.IsKnown = false;
@@ -632,9 +699,9 @@ function AddonFrame_OnEvent(self, event, ...)
         CheckAllSpells();
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
         local timestamp, subEvent, hideCaster,
-              sourceGUID,srcName,  sourceFlags,sourceFlags2,
-              destGUID,  destName, destFlags,  destFlags2,
-              spellId,   spellName,spellSchool, param15 = ...;
+                sourceGUID,srcName,  sourceFlags,sourceFlags2,
+                destGUID,  destName, destFlags,  destFlags2,
+                spellId,   spellName,spellSchool, param15 = ...;
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
             if DebugMode and NOTIFY_CAST_TABLE[spellId] then
                 print(tostring(NOTIFY_CAST_TABLE[spellId]).." на "..(destName or ""));
@@ -662,10 +729,10 @@ function AddonFrame_OnEvent(self, event, ...)
                         targetInfo.LastCastingTime = 0;
                         --print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                         if param15 == SPELL_FAILED_NOT_BEHIND or       -- Вы должны находиться позади цели.
-                           --param15 == SPELL_FAILED_BAD_TARGETS or      -- Нельзя применить к этой цели.
-                           param15 == SPELL_FAILED_UNIT_NOT_INFRONT or -- Цель должна быть перед вами.
-                           param15 == SPELL_FAILED_VISION_OBSCURED or  -- Вы с трудом видите цель
-                           param15 == SPELL_FAILED_LINE_OF_SIGHT then  -- Цель вне поля зрения.
+                            --param15 == SPELL_FAILED_BAD_TARGETS or      -- Нельзя применить к этой цели.
+                            param15 == SPELL_FAILED_UNIT_NOT_INFRONT or -- Цель должна быть перед вами.
+                            param15 == SPELL_FAILED_VISION_OBSCURED or  -- Вы с трудом видите цель
+                            param15 == SPELL_FAILED_LINE_OF_SIGHT then  -- Цель вне поля зрения.
                             targetInfo[param15] = GetTime();
                         end
                     end
@@ -734,7 +801,7 @@ function RegisterKeyHandler(key, handler)
 end
 
 function AddonFrame_AbilityLoop()
-   for _,ability in ipairs(ABILITY_TABLE) do
+    for _,ability in ipairs(ABILITY_TABLE) do
         for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
             if CheckAndCastAbility(ability, targetInfo) then
                 return;
@@ -748,6 +815,8 @@ function AddonFrame_OnUpdate(self, elapsed)
         if AddonFrame.CurentRotation and not UnitIsDeadOrGhost("player") and not UnitIsAFK("player") then
             IS_MOVING = IsMoving();
             AddonFrame.ping = select(4, GetNetStats()) / 1000;
+            PartyLogic:Init();
+            BossModLogic:Exec();
             AddonFrame_AbilityLoop();
         end
         AddonFrame.LastTime = GetTime() + math.random(150, 250) / 1000;
@@ -2663,16 +2732,7 @@ return CheckInterrupt("target");
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local dispells = DISPELL_TABLE["PALADIN_NONE"];
-if dispells then
-    for index = 1, 40 do
-        local name, _,_,_, dispelType = UnitDebuff(target, index);
-        if not name then break end
-        if dispells[dispelType] then
-            return true;
-        end
-    end
-end
+return PartyLogic:GetDispellInfo(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Вспышка света">
@@ -4792,6 +4852,7 @@ useAutoDispell = true;
       <Lua><![CDATA[
 useAutoDispell = true;
 useCooldown = true;
+MAIN_CLASS_SPELL = 2061;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -4855,8 +4916,6 @@ return IsModKeyDown(mkLeftShift);
 if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
     return true;
 end
-
-FillPartyTables(2061);
 
 myMana = PowerByPercent("player", SPELL_POWER_MANA);
 
@@ -4929,7 +4988,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useAutoDispell then
-    return GetDispellInfo("HEAL");
+    return PartyLogic:GetDispellInfo();
 end
 ]]></Lua>
       </Ability>
@@ -4943,8 +5002,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and members[1].HP < 30 then
-    return members[1].Unit;
+if useCooldown and PartyLogic.members[1].HP < 30 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5008,7 +5067,7 @@ and not HasDebuff("mouseover", 6788) then
     return "mouseover";
 end
 
-for _, member in ipairs(members) do
+for _, member in ipairs(PartyLogic.members) do
     if (not HasDebuff(member.Unit, 6788) and not HasBuff(member.Unit, 17))
         or HasBuff("player", 123266) then
         if (member.IsTank and member.Agro > 2) or IsModKeyDown(mkLeftControl) then
@@ -5028,8 +5087,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 40 then
-    return members[1].Unit;
+if PartyLogic.members[1].HP < 40 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5043,8 +5102,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if LowHP.H90 > 2 and members[1].HP < 85 then
-   return members[1].Unit;
+if PartyLogic.LowHP.H90 > 2 and PartyLogic.members[1].HP < 85 then
+   return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5059,8 +5118,8 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- Если активен щит души, тогда настакиваем щит
-if LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER") then
-    return members[1].Unit;
+if PartyLogic.LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER") then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5074,8 +5133,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 60 then
-    return members[1].Unit;
+if PartyLogic.members[1].HP < 60 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5089,7 +5148,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
    if member.IsTank and member.HP < 70 then
        if not HasBuff(member.Unit, 139, "PLAYER") then
            return member.Unit;
@@ -5110,8 +5169,8 @@ end
         <Lua><![CDATA[
 if not UnitIsFriend("target", "player") then
     return "target";
-elseif members[1].HP < 60 then
-    return members[1].Unit;
+elseif PartyLogic.members[1].HP < 60 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -6344,6 +6403,7 @@ return true;
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
+MAIN_CLASS_SPELL = 8004;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -6404,8 +6464,6 @@ if HealthByPercent("player") < 30 then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(403), "target") == 1;
-
-FillPartyTables(8004);
 ]]></Lua>
       </Ability>
       <Ability Name="Щит молний">
@@ -6451,7 +6509,7 @@ return CheckInterrupt(target);
 --if UnitExists("mouseover") and HealthByPercent("mouseover") < 70 and UnitIsFriend("player", "mouseover") then
 --    return true;
 --end
---for _, member in ipairs(members) do
+--for _, member in ipairs(PartyLogic.members) do
 --    if member.HP < 70 then
 --        --print(UnitName(member.Unit), member.HP);
 --        return member.Unit;
@@ -6605,16 +6663,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local monk_dispells = DISPELL_TABLE["SHAMAN_NONE"];
-if monk_dispells then
-    for index = 1, 40 do
-        local name, _,_,_, dispelType = UnitDebuff("player", index);
-        if not name then break end
-        if monk_dispells[dispelType] then
-            return true;
-        end
-    end
-end
+return PartyLogic:GetDispellInfo(target);
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -6932,7 +6981,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     if member.Agro > 2 and member.IsTank then
         if select(3, HasBuff(member.Unit, 974, "PLAYER")) > 10 then
             return;
@@ -6941,7 +6990,7 @@ for _,member in ipairs(members) do
 end
 
 -- Накладываем щит земли на танка с агро
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     if member.Agro > 2 and member.IsTank then
         return member.Unit;
     end
@@ -6979,7 +7028,7 @@ if IsMouseButtonDown(5) then
     end
 end
 if useAutoDispell then
-    return GetDispellInfo("HEAL");
+    return PartyLogic:GetDispellInfo();
 end
 ]]></Lua>
       </Ability>
@@ -6993,8 +7042,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if LowHP.H70 > 2 then
-    return members[1].Unit;
+if PartyLogic.LowHP.H70 > 2 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -7008,7 +7057,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     if member.HP < 70 or (member.IsTank and member.Agro > 2) then
         if not HasBuff(member.Unit, 61295, "PLAYER") then
             return member.Unit;
@@ -7027,8 +7076,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP < 60 then
-    return members[1].Unit;
+if PartyLogic.members[1].HP < 60 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -7042,7 +7091,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if LowHP.H80 > 2 and not GetTotemInfo(3) then
+if PartyLogic.LowHP.H80 > 2 and not GetTotemInfo(3) then
     return true;
 end
 ]]></Lua>
@@ -8724,16 +8773,7 @@ return CheckInterrupt("target");
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local monk_dispells = DISPELL_TABLE["MONK_NONE"];
-if monk_dispells then
-    for index = 1, 40 do
-        local name, _,_,_, dispelType = UnitDebuff("player", index);
-        if not name then break end
-        if monk_dispells[dispelType] then
-            return true;
-        end
-    end
-end
+return PartyLogic:GetDispellInfo(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Отвар тигриной силы">
@@ -9101,16 +9141,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local monk_dispells = DISPELL_TABLE["MONK_NONE"];
-if monk_dispells then
-    for index = 1, 40 do
-        local name, _,_,_, dispelType = UnitDebuff("player", index);
-        if not name then break end
-        if monk_dispells[dispelType] then
-            return true;
-        end
-    end
-end
+return PartyLogic:GetDispellInfo(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Волна ци">
@@ -9306,6 +9337,7 @@ useAutoDispell = true;
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 useAutoDispell = true;
+MAIN_CLASS_SPELL = 774;
 
 RegisterKeyHandler('F');
 RegisterKeyHandler('R');
@@ -9349,8 +9381,6 @@ NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
 --    end
 --    return true;
 --end
-
-FillPartyTables(774);
 ]]></Lua>
       </Ability>
       <Ability Name="Возрождение">
@@ -9505,7 +9535,7 @@ if IsMouseButtonDown(5) then
     end
 end
 if useAutoDispell then
-    return GetDispellInfo("HEAL");
+    return PartyLogic:GetDispellInfo();
 end
 ]]></Lua>
       </Ability>
@@ -9519,7 +9549,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     -- Железную кору используем только на танка
     if member.IsTank and member.HP < 30 then
         return member.Unit;
@@ -9581,7 +9611,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return members[1].HP < 40;
+return PartyLogic.members[1].HP < 40;
 ]]></Lua>
       </Ability>
       <Ability Name="Целительное прикосновение">
@@ -9601,8 +9631,8 @@ if HasBuff("player", 132158) then
     -- Природную стремительность используем
     -- если у кого-то меньше 40% здоровья
     -- тут поставим проверку с запасом, так на всякий случай
-    if members[1].HP < 50 then
-        return members[1].Unit;
+    if PartyLogic.members[1].HP < 50 then
+        return PartyLogic.members[1].Unit;
     end
 end
 ]]></Lua>
@@ -9628,9 +9658,9 @@ if HasBuff("player", 16870) and UnitAffectingCombat("player") then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
     local harmonyRemains = select(3, HasBuff("player", 100977));
-    if members[1].HP <= 70 or harmonyRemains < 4 then
+    if PartyLogic.members[1].HP <= 70 or harmonyRemains < 4 then
         if (GetShapeshiftForm() == 6 or not IS_MOVING) then
-            return members[1].Unit;
+            return PartyLogic.members[1].Unit;
         end
     end
 end
@@ -9649,7 +9679,7 @@ end
 -- Либо обновляем Гармонию, либо хилим просевшую цель.
 -- Проверяем только наличие бафа Омоложение
 local harmonyRemains = select(3, HasBuff("player", 100977));
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     if HasBuff(member.Unit, 774, "PLAYER") and (member.HP < 85 or harmonyRemains < 4) then
         --print(member.Unit, UnitName(member.Unit), member.HP, harmonyRemains);
         return member.Unit;
@@ -9670,13 +9700,13 @@ end
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
 local count = IsInRaid() and 5 or 3;
-local member_count = IsInRaid() and LowHP.H70 or LowHP.H70;
+local member_count = IsInRaid() and PartyLogic.LowHP.H70 or PartyLogic.LowHP.H70;
 
 if UnitExists("mouseover") and IsMouseButtonDown(5) then
     return "mouseover";
 elseif (member_count > count and UnitAffectingCombat("player"))
     or IsMouseButtonDown(5) then
-    return members[1].Unit;
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -9695,14 +9725,14 @@ end
 
 -- Надо реализовать механизм переброса жизнецвета если 1 танк просел сильно а агро на 2х.
 
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     if member.Agro > 2 and HasBuff(member.Unit, 33763, "PLAYER") then
         return;
     end
 end
 
-for _,member in ipairs(members) do
-    if member.Agro > 2 and (not members.HasTank or member.IsTank) then
+for _,member in ipairs(PartyLogic.members) do
+    if member.Agro > 2 and (not PartyLogic.members.HasTank or member.IsTank) then
         if not HasBuff(member.Unit, 33763, "PLAYER") then
             return member.Unit;
         end
@@ -9726,7 +9756,7 @@ if IsMouseButtonDown(4) then
     return true;
 end
 
-for _,member in ipairs(members) do
+for _,member in ipairs(PartyLogic.members) do
     if member.HP < 40 and select(3, HasBuff(member.Unit, 774, "PLAYER")) > 4 then
         count = count + 1;
         if count > 3 then
@@ -9766,7 +9796,7 @@ if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
     local hp_rej = IsInRaid() and 70 or 80;
     local hp_ger = IsInRaid() and 55 or 60;
 
-    for _,member in ipairs(members) do
+    for _,member in ipairs(PartyLogic.members) do
         if member.HP < hp_rej or member.Agro > 2 or IsModKeyDown(mkLeftControl) then
             local rejuvenation = HasBuff(member.Unit, 774,    "PLAYER"); -- Омоложение
             local germination  = HasBuff(member.Unit, 155777, "PLAYER"); -- Омоложение (Зарождение бафф)
@@ -9791,10 +9821,10 @@ if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP <= 30 then
+if PartyLogic.members[1].HP <= 30 then
     -- В дереве хилим на ходу
     if GetShapeshiftForm() == 6 or not IS_MOVING then
-        return members[1].Unit;
+        return PartyLogic.members[1].Unit;
     end
 end
 ]]></Lua>
@@ -9809,8 +9839,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if members[1].HP <= 60 then
-    return members[1].Unit;
+if PartyLogic.members[1].HP <= 60 then
+    return PartyLogic.members[1].Unit;
 end
 ]]></Lua>
       </Ability>
@@ -9826,7 +9856,7 @@ end
         <Lua><![CDATA[
 local params_buff = { 1126, 115921, 20217, 90363 };
 if GetShapeshiftForm() == 0 then
-    for _,member in ipairs(members) do
+    for _,member in ipairs(PartyLogic.members) do
         if member.IsInMyParty and UnitIsPlayer(member.Unit) then
             if not HasBuff(member.Unit, params_buff) then
                 return true;
