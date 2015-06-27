@@ -365,7 +365,7 @@ PartyLogic = {
         self.MAIN_CLASS_SPELL = self.MAIN_CLASS_SPELL_TABLE:GetMainClassSpell();
 
         for i = 95, 10, -5 do
-            LowHP["H"..i] = 0;
+            self.LowHP["H"..i] = 0;
         end
 
         local prefix = IsInRaid() and "raid" or "party";
@@ -422,7 +422,7 @@ PartyLogic = {
             if not member.DontHeal then
                 for i = 95, 10, -5 do
                     if member.HP <= i then
-                        LowHP["H"..i] = LowHP["H"..i] + 1;
+                        self.LowHP["H"..i] = self.LowHP["H"..i] + 1;
                     end
                 end
             end
@@ -449,7 +449,7 @@ PartyLogic = {
                 return member;
             end
         end
-    end
+    end,
 
     -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
     DontDispell = function(self, debuffId, member)
@@ -5032,7 +5032,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return LowHP.H50 > 3;
+return PartyLogic.LowHP.H50 > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Архангел">
@@ -5045,7 +5045,7 @@ return LowHP.H50 > 3;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return LowHP.H70 > 3;
+return PartyLogic.LowHP.H70 > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Слово силы: Щит">
@@ -9467,7 +9467,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-if LowHP.H50 > 3 and UnitAffectingCombat("player") then
+if PartyLogic.LowHP.H50 > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 
@@ -9595,7 +9595,7 @@ return CheckEnrage(target);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local member_count = IsInRaid() and LowHP.H50 or LowHP.H70;
+local member_count = IsInRaid() and PartyLogic.LowHP.H50 or PartyLogic.LowHP.H70;
 if GetSpellCharges(102693) > 2 or member_count > 3 then
     return true;
 end
