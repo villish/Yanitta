@@ -61,7 +61,7 @@ namespace Yanitta
         /// Задержка на произнесение следующего заклинания.
         /// Если 0, тогда не делать проверку.
         /// </summary>
-        public int RecastDelay             { get; set; }
+        public float RecastDelay           { get; set; }
 
         /// <summary>
         /// Проверка, движения персонажа.
@@ -133,7 +133,7 @@ namespace Yanitta
         /// <returns></returns>
         public Ability Clone()
         {
-            return new Ability {
+            var ability = new Ability {
                 Name           = this.Name,
                 SpellID        = this.SpellID,
                 IsMovingCheck  = this.IsMovingCheck,
@@ -142,9 +142,13 @@ namespace Yanitta
                 CancelCasting  = this.CancelCasting,
                 CancelChannel  = this.CancelChannel,
                 RecastDelay    = this.RecastDelay,
-                Lua            = this.Lua,
-                TargetList     = this.TargetList.ToList()
+                Lua            = this.Lua
             };
+
+            foreach (var targetType in this.TargetList)
+                ability.TargetList.Add(targetType);
+
+            return ability;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,7 +57,10 @@ namespace Yanitta
             if (this.CurrentRotation == null)
                 throw new YanittaException("Не выбрана ротация для новой способности!");
 
-            this.CurrentRotation.AbilityList.Add(new Ability { IsUsableCheck = true });
+            this.CurrentRotation.AbilityList.Add(new Ability {
+                IsUsableCheck = true,
+                TargetList = new List<TargetType> { TargetType.None }
+            });
             this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
             this.tbAbilityName.Focus();
             this.tbAbilityName.SelectAll();
