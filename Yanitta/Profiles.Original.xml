@@ -8357,8 +8357,8 @@ return isInRange;
     <Rotation Name="Колдовство">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
-SetTargetListState(false, "boss%d");
 bossTargetState = false;
+SetTargetListState(bossTargetState, "boss%d");
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
