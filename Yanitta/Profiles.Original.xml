@@ -800,10 +800,22 @@ function RegisterKeyHandler(key, handler)
     end
 end
 
+-- Устанавливает доступность цели из шаблонного списка
+function SetTargetListState(state, targetPattern)
+    targetPattern = targetPattern or "boss%d";
+    for _, ability in ipairs(ABILITY_TABLE) do
+        for _, targetInfo in ipairs(ability.TargetList) do
+            if string.find(targetInfo.Target, targetPattern) then
+                targetInfo.IsEnabled = state;
+            end
+        end
+    end
+end
+
 function AddonFrame_AbilityLoop()
     for _,ability in ipairs(ABILITY_TABLE) do
         for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
-            if CheckAndCastAbility(ability, targetInfo) then
+            if targetInfo.IsEnabled and CheckAndCastAbility(ability, targetInfo) then
                 return;
             end
         end
@@ -7753,7 +7765,10 @@ return not HasBuff("player", 7302);
     <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
-
+]]></Lua>
+    <Rotation Name="Демонология">
+      <HotKey Key="X" Modifier="Alt" />
+      <Lua><![CDATA[
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -7776,8 +7791,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
-    <Rotation Name="Демонология">
-      <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -7957,6 +7970,28 @@ end
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 useChaosBold = true;
+
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000AOE", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    end
+end
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -8321,6 +8356,41 @@ return isInRange;
     </Rotation>
     <Rotation Name="Колдовство">
       <HotKey Key="C" Modifier="Alt" />
+      <Lua><![CDATA[
+SetTargetListState(false, "boss%d");
+bossTargetState = false;
+
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if setAoE then
+            setAoE = false;
+            AddonFrame.print("|cff00ff00Одиночная цель", true);
+        else
+            setAoE = true;
+            AddonFrame.print("|cffff0000AOE", true);
+        end
+    elseif modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    elseif modifier == "LALT" then
+        if bossTargetState then
+            bossTargetState = false;
+            AddonFrame.print("|cffff0000Мультидотинг боссов выключен", true);
+        else
+            bossTargetState = true;
+            AddonFrame.print("|cff00ff00Мультидотинг боссов включен", true);
+        end
+        SetTargetListState(bossTargetState, "boss%d");
+    end
+end
+]]></Lua>
       <Ability Name="Неистовство тьмы">
         <SpellID>30283</SpellID>
         <Target>MouseLocation</Target>

@@ -261,6 +261,7 @@
             <Word>IsMountedEx</Word>
             <Word>CheckKnownAbility</Word>
             <Word>CheckAllSpells</Word>
+            <Word>SetTargetListState</Word>
         </Keywords>
 
         <Keywords color="WowFunctions">

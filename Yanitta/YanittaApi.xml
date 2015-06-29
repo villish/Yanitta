@@ -112,6 +112,19 @@ INVSLOT_*
 ]]>
     </Description>
   </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="SetTargetListState">
+    <Description>
+      <![CDATA[  function SetTargetListState(state, [targetPattern])
+Устанавливает доступность целей из списка в способности.
+state - Состояние boolean [true/false]
+targetPattern - Шаблон поиска совпадения для цели, например "boss%d"
+
+Пример использования:
+ Если надо естановить возможность дотать цели боссов (boss1,..., boss5)
+ тогда SetTargetListState(true, "boss%d");
+]]>
+    </Description>
+  </WowApi>
   <WowApi RawData="0" ImageType="EnumValue" Name="INVSLOT_AMMO">
     <Description><![CDATA[INVSLOT_AMMO = 0 (Амуниция)]]></Description>
   </WowApi>
