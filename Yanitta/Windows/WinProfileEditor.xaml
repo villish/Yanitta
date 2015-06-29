@@ -24,6 +24,21 @@
         <RoutedUICommand x:Key="MoveRotation" />
         <RoutedUICommand x:Key="MoveAbility" />
         <RoutedUICommand x:Key="CopyFromRotation" />
+
+        <DataTemplate x:Key="DragTemplate">
+            <DataTemplate.Resources>
+                <Style TargetType="Image">
+                    <Setter Property="Width" Value="50" />
+                    <Setter Property="Height" Value="50" />
+                    <Setter Property="Margin" Value="5" />
+                </Style>
+            </DataTemplate.Resources>
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding Path=Location}" Margin="2" />
+                <TextBlock Text="{Binding Path=Firstname}" Margin="2" TextAlignment="Center" FontWeight="Bold" />
+                <TextBlock Text="{Binding Path=Lastname}"  Margin="2" TextAlignment="Center" FontWeight="Bold" />
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
 
     <Window.InputBindings>
@@ -94,7 +109,13 @@
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                             </ToolBar>
-                            <ListView x:Name="rotationList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList/RotationList}" Grid.Row="1" Margin="0,0,0,5">
+                            <ListView x:Name="rotationList"
+                                      IsSynchronizedWithCurrentItem="true"
+                                      ItemsSource="{Binding ProfileList/RotationList}"
+                                      avalonedit:DragDropHelper.IsDropTarget="True"
+                                      avalonedit:DragDropHelper.IsDragSource="True"
+                                      avalonedit:DragDropHelper.DragDropTemplate="{StaticResource DragTemplate}"
+                                      Grid.Row="1" Margin="0,0,0,5">
                                 <ListView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{x:Static yanitta:Localization.AddRotation}"    ToolTip="{x:Static yanitta:Localization.AddRotation}"    Command="{StaticResource AddRotation}"    Icon="{DynamicResource AddIcon}"/>
@@ -168,7 +189,13 @@
                                 <TextBlock Text="{x:Static yanitta:Localization.Ability_Filter}" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 <TextBox Name="tbAbilityFilter" Width="150" TextChanged="tbAbilityFilter_TextChanged"/>
                             </ToolBar>
-                            <ListView x:Name="abilityList" IsSynchronizedWithCurrentItem="True" ItemsSource="{Binding ProfileList/RotationList/AbilityList}" Grid.Row="1">
+                            <ListView x:Name="abilityList"
+                                      IsSynchronizedWithCurrentItem="True"
+                                      ItemsSource="{Binding ProfileList/RotationList/AbilityList}"
+                                      avalonedit:DragDropHelper.IsDropTarget="True"
+                                      avalonedit:DragDropHelper.IsDragSource="True"
+                                      avalonedit:DragDropHelper.DragDropTemplate="{StaticResource DragTemplate}"
+                                      Grid.Row="1">
                                 <ListView.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="{x:Static yanitta:Localization.AddAbility}"    ToolTip="{x:Static yanitta:Localization.AddAbility}"    Command="{StaticResource AddAbility}"    Icon="{DynamicResource AddIcon}"/>
