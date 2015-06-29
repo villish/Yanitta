@@ -806,7 +806,7 @@ function SetTargetListState(state, targetPattern)
     for _, ability in ipairs(ABILITY_TABLE) do
         for _, targetInfo in ipairs(ability.TargetList) do
             if string.find(targetInfo.Target, targetPattern) then
-                targetInfo.IsEnabled = state;
+                targetInfo.IsEnable = state;
             end
         end
     end
@@ -815,7 +815,7 @@ end
 function AddonFrame_AbilityLoop()
     for _,ability in ipairs(ABILITY_TABLE) do
         for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
-            if targetInfo.IsEnabled and CheckAndCastAbility(ability, targetInfo) then
+            if targetInfo.IsEnable and CheckAndCastAbility(ability, targetInfo) then
                 return;
             end
         end
