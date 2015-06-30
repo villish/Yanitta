@@ -9,6 +9,8 @@
     <Color name="Functions"     foreground="#FF0080C0"   fontWeight="bold"      exampleText="print" />
     <Color name="Number"        foreground="#FF9812C1"                          exampleText="123 0x45" />
     <Color name="WowFunctions"  foreground="#FF00AAAA"                          exampleText="GetTime" />
+    <Color name="Class"         foreground="#FF10C07D"                          exampleText="PLAYER" />
+    <Color name="ClassMembers"  foreground="#FF7910C0"                          exampleText="PLAYER.IsMoving" />
 
     <RuleSet ignoreCase="false">
 
@@ -47,6 +49,32 @@
 
         <Keywords color="Extra" fontStyle="oblique">
             <Word>self</Word>
+        </Keywords>
+
+        <Keywords color="Class" fontStyle="oblique">
+            <Word>PLAYER</Word>
+            <Word>PartyLogic</Word>
+            <Word>BossModLogic</Word>
+        </Keywords>
+
+        <Keywords color="ClassMembers" fontStyle="oblique">
+            <Word>IsMoving</Word>
+            <Word>InCombat</Word>
+            <Word>Power</Word>
+            <Word>Exec</Word>
+            <Word>HP</Word>
+            <Word>First</Word>
+            <Word>members</Word>
+            <Word>HasTank</Word>
+            <Word>GetMainClassSpell</Word>
+            <Word>GetDispellType</Word>
+            <Word>InsertNewUnitToHeallersTable</Word>
+            <Word>CheckInstanseLogic</Word>
+            <Word>Init</Word>
+            <Word>GetMember</Word>
+            <Word>GetDispellInfo</Word>
+            <Word>DontDispell</Word>
+            <Word>LowHP</Word>
         </Keywords>
 
         <Keywords color="Operators" fontStyle="oblique">
@@ -250,15 +278,8 @@
             <Word>UseItemById</Word>
             <Word>CheckInterrupt</Word>
             <Word>UnitId</Word>
-            <Word>ExtendTheHealTable</Word>
-            <Word>CheckInstanseLogic</Word>
-            <Word>ValidDispellForClass</Word>
-            <Word>DontDispell</Word>
-            <Word>GetDispellInfo</Word>
-            <Word>FillPartyTables</Word>
             <Word>IsNotLineOfSight</Word>
             <Word>CheckEnrage</Word>
-            <Word>IsMountedEx</Word>
             <Word>CheckKnownAbility</Word>
             <Word>CheckAllSpells</Word>
             <Word>SetTargetListState</Word>
@@ -4711,13 +4732,9 @@
             <Word>LOSS_TABLE</Word>
             <Word>NOTIFY_CAST_TABLE</Word>
             <Word>LAST_TARGET</Word>
-            <Word>IS_MOVING</Word>
-            <Word>LowHP</Word>
             <Word>members</Word>
             <Word>AddonFrame</Word>
             <Word>moving_spell_table</Word>
-            <Word>PartyLogic</Word>
-            <Word>BossModLogic</Word>
         </Keywords>
 
         <Rule color="Number">\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?</Rule>

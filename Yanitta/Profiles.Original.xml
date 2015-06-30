@@ -221,9 +221,25 @@ function CheckEnrage(unit, ...)
     end
 end
 
-function IsMountedEx()
-    return IsMounted() and not HasBuff("player", 165803);
-end
+PLAYER = {
+    HP = 0,
+    IsMoving = false,
+    IsMounted = false,
+    InCombat = false,
+
+    Init = function(self)
+        self.HP = 100 * (UnitHealth("player") or 1) / (UnitHealthMax("player") or 1) or 0;
+        self.IsMoving = IsMoving("player");
+        self.IsMounted= IsMounted() or not HasBuff("player", 165803);
+        self.InCombat = UnitAffectingCombat("player");
+    end,
+
+    Power = function(self, power_type)
+        local pval = UnitPower("player", power_type) or 1;
+        local pct = 100 * pval / (UnitPowerMax("player", power_type) or 1) or 0;
+        return pval, pct;
+    end,
+};
 
 BossModLogic = {
     iskar_debuffs = {
@@ -248,7 +264,7 @@ BossModLogic = {
 PartyLogic = {
     First   = { },
     members = { },
-    LowHP   = { },
+    HasTank = false,
     MAIN_CLASS_SPELL = 0,
 
     MAIN_CLASS_SPELL_TABLE = {
@@ -360,16 +376,11 @@ PartyLogic = {
     -- сформированная таблица будет отсортирована по наименьшему здоровью.
     Init = function(self)
         -- Обнуляем все хиловские глобальные переменные.
-        self.LowHP = { };
+        self.HasTank = false;
         self.members = { { Unit = "player", IsInMyParty = true } };
         self.MAIN_CLASS_SPELL = self.MAIN_CLASS_SPELL_TABLE:GetMainClassSpell();
 
-        for i = 95, 10, -5 do
-            self.LowHP["H"..i] = 0;
-        end
-
         local prefix = IsInRaid() and "raid" or "party";
-
         for index = 1, GetNumGroupMembers() do
             local unit = prefix..index;
             if UnitExists(unit)
@@ -414,17 +425,7 @@ PartyLogic = {
             end
 
             if member.IsTank then
-                self.members.HasTank = true;
-            end
-
-            -- подсчет количества персонажей с определенным уровнем здоровья (95-10) с шагом в -5
-            -- не учитываем цели, которые хилить нельзя
-            if not member.DontHeal then
-                for i = 95, 10, -5 do
-                    if member.HP <= i then
-                        self.LowHP["H"..i] = self.LowHP["H"..i] + 1;
-                    end
-                end
+                self.HasTank = true;
             end
 
             -- удаляем из талицы юнит, которого нельзя хилить
@@ -449,6 +450,17 @@ PartyLogic = {
                 return member;
             end
         end
+    end,
+
+    -- Возвращает количество учасников группы с указанным или ниже здоровьем.
+    LowHP = function(self, hp)
+        local count = 0;
+        for _,member in ipairs(self.members) do
+            if member.HP <= hp and not member.DontHeal then
+                count = count + 1;
+            end
+        end
+        return count;
     end,
 
     -- логика развеивания заклинаний, тут добавляем условия, которые запрещают развеивать дебафы
@@ -637,8 +649,8 @@ function CheckAndCastAbility(ability, targetInfo)
         end
     end
 
-    if (ability.IsMovingCheck == "notmoving"  and IS_MOVING)
-    or (ability.IsMovingCheck == "moving" and not IS_MOVING) then
+    if (ability.IsMovingCheck == "notmoving"  and PLAYER.IsMoving)
+    or (ability.IsMovingCheck == "moving" and not PLAYER.IsMoving) then
         return;
     end
 
@@ -826,8 +838,8 @@ end
 function AddonFrame_OnUpdate(self, elapsed)
     if type(ABILITY_TABLE) == "table" and GetTime() >= (AddonFrame.LastTime or 0) then
         if AddonFrame.CurentRotation and not UnitIsDeadOrGhost("player") and not UnitIsAFK("player") then
-            IS_MOVING = IsMoving();
             AddonFrame.ping = select(4, GetNetStats()) / 1000;
+            PLAYER:Init();
             PartyLogic:Init();
             BossModLogic:Exec();
             AddonFrame_AbilityLoop();
@@ -1036,7 +1048,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -1505,7 +1517,7 @@ if IsMouseButtonDown(4) then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -1804,7 +1816,7 @@ if type(setAoE) ~= "number" then
 end
 
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -2146,7 +2158,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -2410,7 +2422,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -2706,7 +2718,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -3060,7 +3072,7 @@ return IsModKeyDown(mkRightControl);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+if PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -3169,7 +3181,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Надо накопить концентрацию для шквала
-if setAoE and isInRange and UnitPower("player") < 60 then
+if setAoE and isInRange and PLAYER:Power() < 60 then
     if IsTalentSpell(GetSpellInfo(120360)) and SpellCD(120360) < 3 then
         return true;
     end
@@ -3468,7 +3480,7 @@ return IsModKeyDown(mkRightControl);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+if PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -3583,7 +3595,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Накапливаем концентрацию перед использованием быстрой стрельбы
-if useCooldown and UnitPower("player") < 80 then
+if useCooldown and PLAYER:Power() < 80 then
     if HealthByPercent("target") < 80 and SpellCD(3045) < 4 then
         return true;
     end
@@ -3600,7 +3612,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInRange and UnitPower("player") > 50 then
+if useCooldown and isInRange and PLAYER:Power() > 50 then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
@@ -3823,7 +3835,7 @@ return IsModKeyDown(mkRightControl);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsMounted() or IsStealthed() then
+if PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -4256,7 +4268,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
     return true;
 end
 
@@ -4300,7 +4312,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsMounted() or IsModKeyDown(mkLeftAlt) then
+if PLAYER.IsMounted or IsModKeyDown(mkLeftAlt) then
     return true;
 end
 
@@ -4577,7 +4589,7 @@ return not isInRange;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
     return true;
 end
 
@@ -4830,7 +4842,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsMounted() or IsModKeyDown(mkLeftAlt) then
+if PLAYER.IsMounted or IsModKeyDown(mkLeftAlt) then
     return true;
 end
 
@@ -4926,7 +4938,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -5015,8 +5027,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and PartyLogic.members[1].HP < 30 then
-    return PartyLogic.members[1].Unit;
+if useCooldown and PartyLogic.First.HP < 30 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5045,7 +5057,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return PartyLogic.LowHP.H50 > 3;
+return PartyLogic.LowHP(50) > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Архангел">
@@ -5058,7 +5070,7 @@ return PartyLogic.LowHP.H50 > 3;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return PartyLogic.LowHP.H70 > 3;
+return PartyLogic.LowHP(70) > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Слово силы: Щит">
@@ -5100,8 +5112,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.members[1].HP < 40 then
-    return PartyLogic.members[1].Unit;
+if PartyLogic.First.HP < 40 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5115,8 +5127,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.LowHP.H90 > 2 and PartyLogic.members[1].HP < 85 then
-   return PartyLogic.members[1].Unit;
+if PartyLogic.LowHP(90) > 2 and PartyLogic.First.HP < 85 then
+   return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5131,8 +5143,8 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- Если активен щит души, тогда настакиваем щит
-if PartyLogic.LowHP.H70 > 3 or HasBuff("player", 114908, "PLAYER") then
-    return PartyLogic.members[1].Unit;
+if PartyLogic.LowHP(70) > 3 or HasBuff("player", 114908, "PLAYER") then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5146,8 +5158,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.members[1].HP < 60 then
-    return PartyLogic.members[1].Unit;
+if PartyLogic.First.HP < 60 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5182,8 +5194,8 @@ end
         <Lua><![CDATA[
 if not UnitIsFriend("target", "player") then
     return "target";
-elseif PartyLogic.members[1].HP < 60 then
-    return PartyLogic.members[1].Unit;
+elseif PartyLogic.First.HP < 60 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -5301,7 +5313,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -5494,7 +5506,7 @@ if not HasDebuff("target", 2944, "PLAYER") then
         return true;
     end
 
-    if IS_MOVING or remains < 2 then
+    if PLAYER.IsMoving or remains < 2 then
         return true;
     end
 end
@@ -5658,7 +5670,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -5948,7 +5960,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -6225,7 +6237,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -6467,7 +6479,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -6648,7 +6660,7 @@ end
         <Lua><![CDATA[
 if setAoE and HasBuff("player", 77756) then
     return true;
-elseif HasBuff("player", 77756) or not IS_MOVING then
+elseif HasBuff("player", 77756) or not PLAYER.IsMoving then
     return true;
 end
 ]]></Lua>
@@ -6719,7 +6731,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -6943,7 +6955,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftShift) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftShift) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -7055,8 +7067,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.LowHP.H70 > 2 then
-    return PartyLogic.members[1].Unit;
+if PartyLogic.LowHP(70) > 2 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -7089,8 +7101,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.members[1].HP < 60 then
-    return PartyLogic.members[1].Unit;
+if PartyLogic.First.HP < 60 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -7104,7 +7116,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.LowHP.H80 > 2 and not GetTotemInfo(3) then
+if PartyLogic.LowHP(80) > 2 and not GetTotemInfo(3) then
     return true;
 end
 ]]></Lua>
@@ -7294,7 +7306,7 @@ return IsModKeyDown(mkLeftShift);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -7534,7 +7546,7 @@ return IsModKeyDown(mkRightAlt);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -7691,7 +7703,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 112965) or (IS_MOVING and not HasBuff("player", 108839)) then
+if HasBuff("player", 112965) or (PLAYER.IsMoving and not HasBuff("player", 108839)) then
     return true;
 end
 ]]></Lua>
@@ -7803,12 +7815,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Пауза в ротации
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
-    return true;
-end
-
-
-if IsMounted() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -8073,7 +8080,7 @@ return IsModKeyDown(mkLeftShift);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsMounted() then
+if PLAYER.IsMounted then
     return true;
 end
 
@@ -8432,7 +8439,7 @@ end
         <Lua><![CDATA[
 -- Пауза в ротации
 
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -8541,7 +8548,7 @@ if soulShards > 1 and SpellCD(74434) == 0 then
         -- Если нету ни одного дебафа
         -- если у цели меньше 20% здоровья
         -- если мы двигаемся
-        if HealthByPercent("target") <= 20 or IS_MOVING then
+        if HealthByPercent("target") <= 20 or PLAYER.IsMoving then
             -- Проверяем только "Нестабильное колдовство"
             -- так как маленькая продолжительность и есть время каста
             -- так же не будем терять ДПС при перебежках.
@@ -8769,7 +8776,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -9086,7 +9093,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -9465,7 +9472,7 @@ NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Перк "Усиленное возрождение" (157301)
-if not IS_MOVING or (IS_MOVING and IsSpellKnown(157301)) then
+if not PLAYER.IsMoving or (PLAYER.IsMoving and IsSpellKnown(157301)) then
     if not HasDebuff(target, 160029) then
         return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
     end
@@ -9514,7 +9521,7 @@ return IsMouseButtonDown(3);
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() or HasBuff("player", 104270)
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() or HasBuff("player", 104270)
     or (GetShapeshiftForm() ~= 0 and GetShapeshiftForm() ~= 6) then
     return true;
 end
@@ -9538,7 +9545,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-if PartyLogic.LowHP.H50 > 3 and UnitAffectingCombat("player") then
+if PartyLogic.LowHP(50) > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 
@@ -9666,7 +9673,7 @@ return CheckEnrage(target);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local member_count = IsInRaid() and PartyLogic.LowHP.H50 or PartyLogic.LowHP.H70;
+local member_count = IsInRaid() and PartyLogic.LowHP(50) or PartyLogic.LowHP(70);
 if GetSpellCharges(102693) > 2 or member_count > 3 then
     return true;
 end
@@ -9682,7 +9689,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return PartyLogic.members[1].HP < 40;
+return PartyLogic.First.HP < 40;
 ]]></Lua>
       </Ability>
       <Ability Name="Целительное прикосновение">
@@ -9702,8 +9709,8 @@ if HasBuff("player", 132158) then
     -- Природную стремительность используем
     -- если у кого-то меньше 40% здоровья
     -- тут поставим проверку с запасом, так на всякий случай
-    if PartyLogic.members[1].HP < 50 then
-        return PartyLogic.members[1].Unit;
+    if PartyLogic.First.HP < 50 then
+        return PartyLogic.First.Unit;
     end
 end
 ]]></Lua>
@@ -9729,9 +9736,9 @@ if HasBuff("player", 16870) and UnitAffectingCombat("player") then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
     local harmonyRemains = select(3, HasBuff("player", 100977));
-    if PartyLogic.members[1].HP <= 70 or harmonyRemains < 4 then
-        if (GetShapeshiftForm() == 6 or not IS_MOVING) then
-            return PartyLogic.members[1].Unit;
+    if PartyLogic.First.HP <= 70 or harmonyRemains < 4 then
+        if (GetShapeshiftForm() == 6 or not PLAYER.IsMoving) then
+            return PartyLogic.First.Unit;
         end
     end
 end
@@ -9771,13 +9778,13 @@ end
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
 local count = IsInRaid() and 5 or 3;
-local member_count = IsInRaid() and PartyLogic.LowHP.H70 or PartyLogic.LowHP.H70;
+local member_count = IsInRaid() and PartyLogic.LowHP(70) or PartyLogic.LowHP(70);
 
 if UnitExists("mouseover") and IsMouseButtonDown(5) then
     return "mouseover";
 elseif (member_count > count and UnitAffectingCombat("player"))
     or IsMouseButtonDown(5) then
-    return PartyLogic.members[1].Unit;
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -9803,7 +9810,7 @@ for _,member in ipairs(PartyLogic.members) do
 end
 
 for _,member in ipairs(PartyLogic.members) do
-    if member.Agro > 2 and (not PartyLogic.members.HasTank or member.IsTank) then
+    if member.Agro > 2 and (not PartyLogic.HasTank or member.IsTank) then
         if not HasBuff(member.Unit, 33763, "PLAYER") then
             return member.Unit;
         end
@@ -9892,10 +9899,10 @@ if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.members[1].HP <= 30 then
+if PartyLogic.First.HP <= 30 then
     -- В дереве хилим на ходу
-    if GetShapeshiftForm() == 6 or not IS_MOVING then
-        return PartyLogic.members[1].Unit;
+    if GetShapeshiftForm() == 6 or not PLAYER.IsMoving then
+        return PartyLogic.First.Unit;
     end
 end
 ]]></Lua>
@@ -9910,8 +9917,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.members[1].HP <= 60 then
-    return PartyLogic.members[1].Unit;
+if PartyLogic.First.HP <= 60 then
+    return PartyLogic.First.Unit;
 end
 ]]></Lua>
       </Ability>
@@ -9986,7 +9993,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, или в инвизе или не в форме медведа или кота
-if IsModKeyDown(mkLeftAlt) or IsMounted()
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted
     or not (GetShapeshiftForm() == 2 or GetShapeshiftForm() == 1)
     or IsStealthed() then
     return true;
@@ -10277,7 +10284,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMounted() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -10641,7 +10648,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftAlt) or IsMountedEx() or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
@@ -10679,7 +10686,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Перк "Усиленное возрождение" (157301)
-if not IS_MOVING or (IS_MOVING and IsSpellKnown(157301)) then
+if not PLAYER.IsMoving or (PLAYER.IsMoving and IsSpellKnown(157301)) then
     return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
 end
 ]]></Lua>
@@ -10921,7 +10928,7 @@ end
         <Lua><![CDATA[
 if not setAoE then
     -- Изначально Звездный поток имеет 3 заряда
-    local charges = IS_MOVING and 1 or 2;
+    local charges = PLAYER.IsMoving and 1 or 2;
     local buffs = (power > 0) and 164545 or 164547; -- -100 lunar 0 solar 100
     if GetSpellCharges(78674) > charges
         or (select(3, HasBuff("player", 112071)) > 1 and not HasBuff("player", buffs)) then
@@ -10949,7 +10956,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Если двигаемся, спамим Лунный/Солнечный огонь
-if IS_MOVING then
+if PLAYER.IsMoving then
     return true;
 end
 ]]></Lua>
@@ -11001,7 +11008,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsModKeyDown(mkLeftAlt) or IsMounted() or GetShapeshiftForm() ~= 0 then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or GetShapeshiftForm() ~= 0 then
     return true;
 end
 
@@ -11023,7 +11030,7 @@ TargetNearestEnemy();
         <Lua><![CDATA[
 -- and string.match(UnitName("target"), "^(.+).жных морей$")
 if UnitExists("target") and not UnitIsDeadOrGhost("target") then
-    if IS_MOVING or not HasDebuff("target", 8921) then
+    if PLAYER.IsMoving or not HasDebuff("target", 8921) then
         return true;
     end
 end
