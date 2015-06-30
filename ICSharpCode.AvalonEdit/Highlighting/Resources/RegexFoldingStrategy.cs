@@ -49,7 +49,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             foreach (var line in document.Lines)
             {
                 // комментарии пропускаем
-                if (line.Text.TrimStart().StartsWith("--") && !line.Text.TrimStart().StartsWith("--[["))
+                if (line.Text.TrimStart().StartsWith("--", System.StringComparison.CurrentCulture)
+                    && !line.Text.TrimStart().StartsWith("--[[", System.StringComparison.CurrentCulture))
                     continue;
 
                 foreach (Match match in startPattern.Matches(line.Text))
