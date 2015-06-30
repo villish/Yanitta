@@ -1323,7 +1323,7 @@ namespace ICSharpCode.AvalonEdit
                 {
                     var c = this.Text[i];
                     // допустимые символы в именах...
-                    if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
+                    if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == ':' || c == '.'))
                     {
                         ++i;
                         break;

@@ -85,6 +85,37 @@
 Проверка, имеется ли у персонажа указанный символ]]>
     </Description>
   </WowApi>
+  <WowApi ImageType="ExtensionMethod" Name="PLAYER:Power">
+    <Description>
+      <![CDATA[ power, power_percent = PLAYER:Power(power_type)
+Возвращает ресурс персонажа.]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="EnumValue" Name="PLAYER.HP">
+    <Description>
+      <![CDATA[Возвращает уровень здоровья персонажа]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="EnumValue" Name="PLAYER.Agro">
+    <Description>
+      <![CDATA[Возвращает уровень угрозы персонажа]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="EnumValue" Name="PLAYER.InCombat">
+    <Description>
+      <![CDATA[Возвращает нахождение персонажа в бою]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="EnumValue" Name="PLAYER.IsMoving">
+    <Description>
+      <![CDATA[Движение персонажа]]>
+    </Description>
+  </WowApi>
+  <WowApi ImageType="EnumValue" Name="PLAYER.IsMounted">
+    <Description>
+      <![CDATA[Персонаж верхом]]>
+    </Description>
+  </WowApi>
   <WowApi ImageType="ExtensionMethod" Name="UseItemBySlot">
     <Description>
       <![CDATA[  UseItemBySlot(slotId)

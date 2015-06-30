@@ -223,6 +223,7 @@ end
 
 PLAYER = {
     HP = 0,
+    Agro = 0,
     IsMoving = false,
     IsMounted = false,
     InCombat = false,
@@ -230,8 +231,9 @@ PLAYER = {
     Init = function(self)
         self.HP = 100 * (UnitHealth("player") or 1) / (UnitHealthMax("player") or 1) or 0;
         self.IsMoving = IsMoving("player");
-        self.IsMounted= IsMounted() or not HasBuff("player", 165803);
+        self.IsMounted= IsMounted() and not HasBuff("player", 165803);
         self.InCombat = UnitAffectingCombat("player");
+        self.Agro     = UnitThreatSituation("player") or 0;
     end,
 
     Power = function(self, power_type)
@@ -249,6 +251,17 @@ BossModLogic = {
     };
 
     Exec = function(self)
+        -- Самолечение
+        if PLAYER.HP < 30 and PLAYER.InCombat and not PLAYER.IsMounted then
+            local _, durationH, enableH = GetItemCooldown(5512); -- Камень здоровья
+            local _, durationP, enableP = GetItemCooldown(5512); -- Лечебное снадобье
+            if durationH == 0 and enableH and GetItemCount(5512)>0 then
+                UseItemById(5512);
+            elseif durationP == 0 and enableP and GetItemCount(109223)>0 then
+                UseItemById(109223);
+            end
+        end
+
         -- Искар, перебразывание глаза Анзу
         if HasDebuff("player", 179202) then -- Глаз Анзу
             for _, member in ipairs(PartyLogic.members) do
@@ -1057,15 +1070,8 @@ if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
     CastShapeshiftForm(2);
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-agroStatus = UnitThreatSituation("player") or 0;
 isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
 hasAPbuff  = HasBuff("player", { 57330, 19506});
-playerHP   = HealthByPercent("player");
 rage       = UnitPower("player");
 ]]></Lua>
       </Ability>
@@ -1122,7 +1128,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP <= 80 then
+if PLAYER.HP <= 80 then
     return true;
 end
 ]]></Lua>
@@ -1179,12 +1185,12 @@ if isAltMod and not HasBuff("player", 112048) then
     
     -- Если есть здоровье - набираем ярость для большей эфективности щита
     -- Надо еще добавить проверку на наличе бафа "Решимости"
-    if rage > 55 and playerHP > 20 then
+    if PLAYER:Power() > 55 and PLAYER.HP > 20 then
         return value > def_val;
         --return true;
     -- Если здоровья мало - используем щит когда это возможно
     -- Надо подкорректировать количество минимального здоровья
-    elseif rage > 30 and playerHP <= 20 then
+    elseif PLAYER:Power() > 30 and PLAYER.HP <= 20 then
         return true;
     end
 end
@@ -1201,7 +1207,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 132404 Блок щитом
-if rage >= 60 and agroStatus > 2 and not HasBuff("player", 132404) then
+if PLAYER:Power() >= 60 and PLAYER.Agro > 2 and not HasBuff("player", 132404) then
     return true;
 end
 ]]></Lua>
@@ -1216,7 +1222,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 30 and agroStatus > 2 and useCooldown then
+if PLAYER.HP < 30 and PLAYER.Agro > 2 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1231,7 +1237,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInCombat and playerHP < 25 and useCooldown then
+if PLAYER.HP < 25 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1246,7 +1252,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 20 and agroStatus > 2 and useCooldown then
+if PLAYER.HP < 20 and PLAYER.Agro > 2 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1261,7 +1267,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP <= 50 and isInMeele and useCooldown then
+if PLAYER.HP <= 50 and isInMeele and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1407,18 +1413,8 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Это заклинание не затрагивает ГКД
--- Неприклонные удары (169685)
-local count = select(2, HasBuff("player", 169685));
-if count == 6 then
-    return true;
-elseif count == 5 and (rage > 70 or playerHP > 70) then
-    return true;
-elseif rage > 70 and playerHP > 70 then
-    return true;
-elseif agroStatus < 3 and playerHP > 70 then
-    return true;
 -- (Ультиматум - 122510)
-elseif HasBuff("player", 122510) or rage > 70 then
+if HasBuff("player", 122510) then
     return true;
 end
 ]]></Lua>
@@ -1826,7 +1822,6 @@ if HealthByPercent("player") < 30 then
 end
 
 rage       = UnitPower("player");
-playerHP   = HealthByPercent("player");
 targetHP   = HealthByPercent("target");
 isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
 koloss,_,kolossRem = HasDebuff("target", 86346, "PLAYER");
@@ -1843,7 +1838,7 @@ koloss_cd  = SpellCD(86346);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return playerHP <= 80;
+return PLAYER.HP <= 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -2172,11 +2167,7 @@ if HealthByPercent("player") < 30 then
     UseItemById(5512);
 end
 
-agroStatus = UnitThreatSituation("player") or 0;
 isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
-hasAPbuff  = HasBuff("player", { 57330, 19506});
-playerHP   = HealthByPercent("player");
-rage       = UnitPower("player");
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -2202,7 +2193,7 @@ return useInterrupt and CheckInterrupt("target");
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP <= 80 then
+if PLAYER.HP <= 80 then
     return true;
 end
 ]]></Lua>
@@ -2267,7 +2258,7 @@ end
         <Lua><![CDATA[
 -- 
 if isInMeele and not HasBuff("player", 169667) then
-    if rage > 25 and SpellCD(23922) <= 1.5 then
+    if PLAYER:Power() > 25 and SpellCD(23922) <= 1.5 then
         -- 169686 Неприклонные удары
         --if select(2, HasBuff("", 169686)) > 1 then
             return true;
@@ -2343,7 +2334,7 @@ return true;
         <Lua><![CDATA[
 -- Это заклинание не затрагивает ГКД
 -- (Ультиматум - 122510)
-if HasBuff("player", 122510) or rage > 70 then
+if HasBuff("player", 122510) or PLAYER:Power() > 70 then
     return true;
 end
 ]]></Lua>
@@ -2379,7 +2370,6 @@ return true;
   </Profile>
   <Profile Class="Paladin">
     <Lua><![CDATA[
-agroStatus  = 0;
 useCooldown = true;
 setAoE      = nil;
 ]]></Lua>
@@ -2426,14 +2416,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-agroStatus = UnitThreatSituation("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(35395), "target") == 1;
-playerHP   = HealthByPercent("player");
 hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
 
 divine_purpose = HasBuff("player", 90174);  -- Божественный замысел
@@ -2483,7 +2466,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 70 then
+if PLAYER.HP < 70 then
     if divine_purpose or hollyPower > 2 then
         -- Бастион славы (114637)
         if (select(2, HasBuff("player", 114637)) or 0) > 4 then
@@ -2518,7 +2501,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 15 then
+if PLAYER.HP < 15 then
     return true;
 end
 ]]></Lua>
@@ -2533,7 +2516,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 40 then
+if PLAYER.HP < 40 then
     return true;
 end
 ]]></Lua>
@@ -2548,7 +2531,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 60 then
+if PLAYER.HP < 60 then
     return true;
 end
 ]]></Lua>
@@ -2603,7 +2586,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return playerHP < 80;
+return PLAYER.HP < 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Щит мстителя">
@@ -2722,13 +2705,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInMeele  = IsSpellInRange(GetSpellInfo(35395), "target") == 1;
-playerHP   = HealthByPercent("player");
 hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
 ]]></Lua>
       </Ability>
@@ -3074,11 +3051,6 @@ return IsModKeyDown(mkRightControl);
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if PLAYER.IsMounted or IsStealthed() then
     return true;
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 
 if useCooldown then
@@ -3484,11 +3456,6 @@ if PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 if useCooldown then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
@@ -3837,11 +3804,6 @@ return IsModKeyDown(mkRightControl);
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if PLAYER.IsMounted or IsStealthed() then
     return true;
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 
 if useCooldown then
@@ -4272,11 +4234,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInRange = IsSpellInRange(GetSpellInfo(1752), "target") == 1;
 
 if invisible and not UnitAffectingCombat("player") and GetShapeshiftForm(1) ~= 1 then
@@ -4591,11 +4548,6 @@ return not isInRange;
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
     return true;
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 
 -- Если мы в скрытности, то всегда, если возможно прыгаем в форму незаметности
@@ -4947,11 +4899,6 @@ myMana = PowerByPercent("player", SPELL_POWER_MANA);
 if myMana < 75 then
     --UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 ]]></Lua>
       </Ability>
@@ -5322,11 +5269,6 @@ if GetSpecialization() == 3 and GetShapeshiftForm() ~= 1 then
     CastShapeshiftForm(1);
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
 
 isBurst = IsModKeyDown(mkLeftShift);
@@ -5680,15 +5622,7 @@ if GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
 end
 
 FillRunesInfo();
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInMeele  = IsSpellInRange(GetSpellInfo(45462), "target") == 1;
-agroStatus = UnitThreatSituation("player") or 0;
-playerHP   = HealthByPercent("player") or 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Заморозка разума">
@@ -5716,7 +5650,7 @@ return useInterrupt and CheckInterrupt(target);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 30 then
+if PLAYER.HP < 30 then
     return true;
 end
 ]]></Lua>
@@ -5746,7 +5680,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and playerHP <= 40 then
+if useCooldown and PLAYER.HP <= 40 then
     return true;
 end
 ]]></Lua>
@@ -5761,7 +5695,7 @@ end
         <RecastDelay>1</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if agroStatus > 2 and playerHP < 70 and isInMeele then
+if PLAYER.Agro > 2 and PLAYER.HP < 70 and isInMeele then
     return true;
 end
 ]]></Lua>
@@ -5776,7 +5710,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown and isInMeele and playerHP < 60;
+return useCooldown and isInMeele and PLAYER.HP < 60;
 ]]></Lua>
       </Ability>
       <Ability Name="Вспышка болезни">
@@ -5841,7 +5775,7 @@ end
         <Lua><![CDATA[
 -- local value = select(5, HasBuff("player", 158300));
 -- local def_val = IsInRaid() and 100 or 50;
-if playerHP < 85 then
+if PLAYER.HP < 85 then
     return true;
 end
 ]]></Lua>
@@ -5923,7 +5857,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and runes.Total == 0 and playerHP < 50 then
+if useCooldown and isInMeele and runes.Total == 0 and PLAYER.HP < 50 then
     return true;
 end
 ]]></Lua>
@@ -6483,11 +6417,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInRange = IsSpellInRange(GetSpellInfo(403), "target") == 1;
 ]]></Lua>
       </Ability>
@@ -6735,11 +6664,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInMeele = IsSpellInRange(GetSpellInfo(8050), "target") == 1;
 ]]></Lua>
       </Ability>
@@ -6958,13 +6882,6 @@ end
 if IsModKeyDown(mkLeftShift) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-FillPartyTables(8004);
 ]]></Lua>
       </Ability>
       <Ability Name="Целительный ливень">
@@ -7312,11 +7229,6 @@ end
 
 isInRange = IsSpellInRange(GetSpellInfo(2948), "target") == 1;
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 -- Самоцвет маны
 if PowerByPercent("player") < 50 then
     UseItemById(36799);
@@ -7556,11 +7468,6 @@ if HasBuff("player", 87959) then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(116), "target") == 1;
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
 
 -- Холод элементаля (33395)
 if IsMouseButtonDown(4) then
@@ -7821,11 +7728,6 @@ end
 
 power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Метаморфоза">
@@ -8088,11 +7990,6 @@ power2           = UnitPower("player", SPELL_POWER_BURNING_EMBERS);
 FireAndBrimstone = HasBuff("player", 108683); -- огонь и сера
 ChaosCount       = select(2, HasBuff("player", 80240));-- хаос
 RainOfFire       = HasBuff("player", 104232); -- огненный ливень
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
 
 -- Установка пета в указанную позицию
 if IsMouseButtonDown(4) then
@@ -8446,11 +8343,6 @@ end
 isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
 soulShards = UnitPower("player", SPELL_POWER_SOUL_SHARDS);
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 -- Установка пета в указанную позицию
 if IsMouseButtonDown(4) then
     PetMoveTo();
@@ -8788,11 +8680,6 @@ if HasDebuff("target", stuned_debufs) then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 energy = UnitPower("player");     -- energy
 chi    = UnitPower("player",  12); -- chi
 ]]></Lua>
@@ -9098,17 +8985,10 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
 end
 
 isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
-agroStatus = UnitThreatSituation("player") or 0;
-playerHP   = HealthByPercent("player");
-energy     = UnitPower("player");     -- energy
-chi        = UnitPower("player", 12); -- chi
+energy     = PLAYER:Power();
+chi        = PLAYER:Power(SPELL_POWER_CHI);
 
 additionalChi = IsSpellKnown(115396) and 1 or 0;
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Целительная сфера">
@@ -9199,11 +9079,11 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if agroStatus > 2 then
+if PLAYER.Agro > 2 then
     local value = select(5, HasBuff("player", 158300));
     local defence = HasBuff("player", 115295);
     local def_val = IsInRaid() and 150 or 50;
-    if not defence and (value >= def_val or playerHP < 40) then
+    if not defence and (value >= def_val or PLAYER.HP < 40) then
         return true;
     end
 end
@@ -9245,7 +9125,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 40 and useCooldown then
+if PLAYER.HP < 40 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -9260,7 +9140,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 80 then
+if PLAYER.HP < 80 then
     return true;
 end
 ]]></Lua>
@@ -9538,11 +9418,6 @@ end
 
 if PowerByPercent("player", SPELL_POWER_MANA) < 70 and GetShapeshiftForm() == 0 then
     UseItemBySlot(INVSLOT_TRINKET1);
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 
 if PartyLogic.LowHP(50) > 3 and UnitAffectingCombat("player") then
@@ -9999,13 +9874,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
-agroStatus = UnitThreatSituation("player") or 0;
-playerHP   = HealthByPercent("player");
 isInMeele  = IsSpellInRange(GetSpellInfo(33917), "target") == 1;
 isCat      = GetShapeshiftForm() == 2;
 
@@ -10039,7 +9907,7 @@ return CheckInterrupt("target");
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if playerHP < 80 and HasBuff("player", 145162) then
+if PLAYER.HP < 80 and HasBuff("player", 145162) then
     return true;
 end
 ]]></Lua>
@@ -10055,9 +9923,9 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not isCat and not IsModKeyDown(mkLeftShift) then
-    if playerHP < 80 and UnitPower("player") > 55 then
+    if PLAYER.HP < 80 and UnitPower("player") > 55 then
         return true;
-    elseif playerHP < 30 and UnitPower("player") > 35 then
+    elseif PLAYER.HP < 30 and UnitPower("player") > 35 then
         return true;
     end
 end
@@ -10073,7 +9941,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat and playerHP < 60 and agroStatus > 0 then
+if not isCat and PLAYER.HP < 60 and PLAYER.Agro > 0 then
     return true;
 end
 ]]></Lua>
@@ -10088,7 +9956,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and playerHP < 50 then
+if useCooldown and PLAYER.HP < 50 then
     return true;
 end
 ]]></Lua>
@@ -10103,7 +9971,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat and useCooldown and playerHP < 35 then
+if not isCat and useCooldown and PLAYER.HP < 35 then
     return true;
 end
 ]]></Lua>
@@ -10152,7 +10020,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- без ГКД
-if not isCat and playerHP > 30 and not IsModKeyDown(mkLeftShift) then
+if not isCat and PLAYER.HP > 30 and not IsModKeyDown(mkLeftShift) then
     -- зубы и когти
     if HasBuff("player", 135288) then
         return true;
@@ -10286,11 +10154,6 @@ end
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 
 -- 69369d
@@ -10657,11 +10520,6 @@ if GetShapeshiftFormCooldown(4) == 0 and GetShapeshiftForm() ~= 4 then
     if UnitAffectingCombat("player") then
         CastShapeshiftForm(4);
     end
-end
-
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(5176), "target") == 1;

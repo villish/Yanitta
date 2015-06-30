@@ -75,6 +75,7 @@
             <Word>GetDispellInfo</Word>
             <Word>DontDispell</Word>
             <Word>LowHP</Word>
+            <Word>Agro</Word>
         </Keywords>
 
         <Keywords color="Operators" fontStyle="oblique">
