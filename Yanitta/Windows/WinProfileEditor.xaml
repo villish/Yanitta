@@ -282,7 +282,7 @@
                                         </Grid.RowDefinitions>
                                         <Label Content="Func = function(ability, targetInfo, target)" FontFamily="Consolas"/>
                                         <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Row="1">
-                                            <avalonedit:TextEditor FontFamily="Consolas"
+                                            <avalonedit:TextEditor FontFamily="Consolas" PreviewKeyDown="TextEditor_PreviewKeyDown"
                                                                    Text="{Binding ProfileList/RotationList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         </Border>
                                         <Label Grid.Row="2" Content="end" FontFamily="Consolas" />
@@ -291,7 +291,8 @@
                             </TabItem>
                             <TabItem Header="{x:Static yanitta:Localization.Rotation_Code}">
                                 <Border BorderThickness="1" BorderBrush="#FF009600">
-                                    <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                                    <avalonedit:TextEditor FontFamily="Consolas" PreviewKeyDown="TextEditor_PreviewKeyDown"
+                                                           Text="{Binding ProfileList/RotationList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                 </Border>
                             </TabItem>
                         </TabControl>
@@ -359,10 +360,10 @@
             </TabItem>
 
             <TabItem Header="{x:Static yanitta:Localization.BeforeRotationCode}" ToolTip="{x:Static yanitta:Localization.BeforeRotationCodeToolTip}">
-                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewKeyDown="TextEditor_PreviewKeyDown" />
             </TabItem>
             <TabItem Header="{x:Static yanitta:Localization.CoreHeader}" ToolTip="{x:Static yanitta:Localization.CoreHeaderToolTip}">
-                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewKeyDown="TextEditor_PreviewKeyDown" />
             </TabItem>
         </TabControl>
 

@@ -243,5 +243,16 @@ namespace Yanitta
                 App.ShowWindow<HelpWindow>().GetSpellData(CurrentAbility.SpellID);
             }
         }
+
+        private void TextEditor_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F1)
+            {
+                var spellId = 0u;
+                var spell = (sender as ICSharpCode.AvalonEdit.TextEditor).GetWord();
+                if (uint.TryParse(spell, out spellId))
+                    App.ShowWindow<HelpWindow>().GetSpellData(spellId);
+            }
+        }
     }
 }

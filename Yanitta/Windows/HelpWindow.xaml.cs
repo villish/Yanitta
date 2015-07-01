@@ -32,6 +32,12 @@ namespace Yanitta.Windows
             var url = string.Format("https://eu.api.battle.net/wow/spell/{0}?locale=ru_RU&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue", spellId);
             var spell = Extensions.GetJSONObject<Spell>(url);
 
+            if (spell == null)
+            {
+                this.Close();
+                return;
+            }
+
             spellName.Text          = spell.Name;
             spellRange.Text         = string.IsNullOrWhiteSpace(spell.Range) ? "" : "Радиус действия: " + spell.Range;
             spellCost.Text          = spell.PowerCost;

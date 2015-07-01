@@ -1287,8 +1287,11 @@ namespace ICSharpCode.AvalonEdit
 
         #region Code Completion
 
-        private string GetWord(int offset)
+        public string GetWord(int offset = -1)
         {
+            if (offset == -1)
+                offset = this.SelectionStart;
+
             if (offset < 0 || offset >= this.Text.Length)
                 return null;
 
@@ -1297,7 +1300,7 @@ namespace ICSharpCode.AvalonEdit
             for (start = offset - 1; start >= 0; start--)
             {
                 var c = this.Text[start];
-                if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
+                if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == ':' || c == '.'))
                 {
                     ++start;
                     break;
@@ -1307,7 +1310,7 @@ namespace ICSharpCode.AvalonEdit
             for (int j = start; j < this.Text.Length; ++j, ++len)
             {
                 var c = this.Text[j];
-                if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_'))
+                if (!((c >= 'A' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == ':' || c == '.'))
                     break;
             }
             var word = this.Text.Substring(start, len);

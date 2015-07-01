@@ -44,19 +44,29 @@ namespace Yanitta
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentNullException("url");
 
-            var request = WebRequest.Create(url) as HttpWebRequest;
-            using (var response = request.GetResponse() as HttpWebResponse)
+            T result = default(T);
+
+            try
             {
-                using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
+                var request = WebRequest.Create(url) as HttpWebRequest;
+                using (var response = request.GetResponse() as HttpWebResponse)
                 {
-                    var bytes = reader.ReadToEnd();
-                    using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(bytes)))
+                    using (var reader = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
-                        var serializer = new DataContractJsonSerializer(typeof(T));
-                        return serializer.ReadObject(stream) as T;
+                        var bytes = reader.ReadToEnd();
+                        using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(bytes)))
+                        {
+                            var serializer = new DataContractJsonSerializer(typeof(T));
+                            return serializer.ReadObject(stream) as T;
+                        }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+            return result;
         }
     }
 }
