@@ -44,11 +44,9 @@ namespace Yanitta.Windows
             spellCastTime.Text      = spell.CastTime;
             spellDescription.Text   = spell.Description;
 
-            var image = new BitmapImage();
-            image.BeginInit();
-            image.UriSource = new Uri(string.Format("http://media.blizzard.com/wow/icons/56/{0}.jpg", spell.Icon), UriKind.Absolute);
-            image.EndInit();
-            spellIcon.Source = image;
+            spellIcon.Source = new BitmapImage(
+                new Uri(string.Format("http://media.blizzard.com/wow/icons/56/{0}.jpg", spell.Icon),
+                    UriKind.Absolute));
         }
 
         private void CommandBinding_GetSpellData_Executed(object sender, ExecutedRoutedEventArgs e)
