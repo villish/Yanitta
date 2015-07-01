@@ -87,6 +87,13 @@
 Проверка, имеется ли у персонажа указанный символ]]>
         </Description>
     </WowApi>
+
+    <WowApi ImageType="ExtensionMethod" Name="PLAYER:Init">
+        <Description>
+            <![CDATA[ PLAYER:Init()
+Инициализируем и заполняет поля класса PLAYER]]>
+        </Description>
+    </WowApi>
     <WowApi ImageType="ExtensionMethod" Name="PLAYER:Power">
         <Description>
             <![CDATA[ power, power_percent = PLAYER:Power(power_type)
@@ -116,6 +123,94 @@
     <WowApi ImageType="EnumValue" Name="PLAYER.IsMounted">
         <Description>
             <![CDATA[Персонаж верхом]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.HP">
+        <Description>
+            <![CDATA[Уровень здоровья в процентах]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.Unit">
+        <Description>
+            <![CDATA[Идентификатор персонажа (player, focus, raid1, party2, ect)]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.IsTank">
+        <Description>
+            <![CDATA[Роль танк]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.IsHeal">
+        <Description>
+            <![CDATA[Роль лекарь]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.Agro">
+        <Description>
+            <![CDATA[Уровень угрозы]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.IncHeal">
+        <Description>
+            <![CDATA[Получаемое исцеление (перкаст заклинания)]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="member.Absorb">
+        <Description>
+            <![CDATA[Уровень поглощаемого урона]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="ExtensionMethod" Name="RaidLogic:Exec">
+        <Description>
+            <![CDATA[ RaidLogic:Exec()
+Выполняет обрабоку поведения для всех персонажей.]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="ExtensionMethod" Name="PartyLogic:Init">
+        <Description>
+            <![CDATA[ PartyLogic:Init()
+Инициализация/заполнение полей класса PartyLogic.]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="ExtensionMethod" Name="PartyLogic:GetMember">
+        <Description>
+            <![CDATA[ member = PartyLogic:GetMember(unit)
+Возвращает структуру member по указанному идентификатору.
+Пример: local member = PartyLogic:GetMember("raid1")]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="ExtensionMethod" Name="PartyLogic:LowHP">
+        <Description>
+            <![CDATA[ count = PartyLogic:LowHP(hp)
+Возвращает количество персонажей в группе с указанным или ниже здоровьем.
+Пример: local count = PartyLogic:LowHP(80)]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="ExtensionMethod" Name="PartyLogic:GetDispellInfo">
+        <Description>
+            <![CDATA[ unit, count = PartyLogic:GetDispellInfo([unit])
+Возвращает информацию о необходимости диспелить с члена группы.
+Если передать параметром идентификатор юнита, то проверка будет идти только для него.
+Пример:
+    unit, count = PartyLogic:GetDispellInfo("player")
+или
+    unit, count = PartyLogic:GetDispellInfo() -- для всей группы
+]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="PartyLogic.First">
+        <Description>
+            <![CDATA[Член группы с самым низким уровнем здоровья]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="PartyLogic.members">
+        <Description>
+            <![CDATA[Список членов группы]]>
+        </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="PartyLogic.HasTank">
+        <Description>
+            <![CDATA[Наличие танка в группе]]>
         </Description>
     </WowApi>
     <WowApi ImageType="ExtensionMethod" Name="UseItemBySlot">

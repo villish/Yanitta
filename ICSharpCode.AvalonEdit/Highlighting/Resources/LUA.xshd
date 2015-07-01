@@ -76,6 +76,12 @@
             <Word>DontDispell</Word>
             <Word>LowHP</Word>
             <Word>Agro</Word>
+            <Word>Unit</Word>
+            <Word>IsTank</Word>
+            <Word>IsHeal</Word>
+            <Word>IncHeal</Word>
+            <Word>Absorb</Word>
+            <Word>DontHeal</Word>
         </Keywords>
 
         <Keywords color="Operators" fontStyle="oblique">
