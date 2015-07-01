@@ -3,6 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -182,6 +183,7 @@ namespace ICSharpCode.AvalonEdit
         private void DragSource_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             this._draggedData = null;
+            CollectionViewSource.GetDefaultView((sender as ItemsControl).ItemsSource).Refresh();
         }
 
         // DropTarget
@@ -244,6 +246,7 @@ namespace ICSharpCode.AvalonEdit
 
                 RemoveDraggedAdorner();
                 RemoveInsertionAdorner();
+                CollectionViewSource.GetDefaultView((sender as ItemsControl).ItemsSource).Refresh();
             }
             e.Handled = true;
         }

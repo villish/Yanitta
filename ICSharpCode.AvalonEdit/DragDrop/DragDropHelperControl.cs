@@ -7,7 +7,8 @@ namespace ICSharpCode.AvalonEdit
     {
         static DragDropHelperControl()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(DragDropHelperControl), new FrameworkPropertyMetadata(typeof(DragDropHelperControl)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(DragDropHelperControl),
+                new FrameworkPropertyMetadata(typeof(DragDropHelperControl)));
         }
     }
 }

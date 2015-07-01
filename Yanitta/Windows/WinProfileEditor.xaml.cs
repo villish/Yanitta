@@ -65,6 +65,7 @@ namespace Yanitta
             this.tbAbilityName.Focus();
             this.tbAbilityName.SelectAll();
             abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
         }
 
         private void CommandBinding_Executed_CopyAbility(object sender, ExecutedRoutedEventArgs e)
@@ -77,6 +78,7 @@ namespace Yanitta
             this.tbAbilityName.Focus();
             this.tbAbilityName.SelectAll();
             this.abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
         }
 
         private void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
@@ -87,7 +89,10 @@ namespace Yanitta
             var result = MessageBox.Show(Localization.AbilityDelQuestion,
                 this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
+            {
                 this.CurrentRotation.AbilityList.Remove(this.CurrentAbility);
+                CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
+            }
         }
 
         // rotations
@@ -108,6 +113,7 @@ namespace Yanitta
             this.tbRotationName.Focus();
             this.tbRotationName.SelectAll();
             this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+            CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
         }
 
         private void CommandBinding_Executed_CopyRotation(object sender, ExecutedRoutedEventArgs e)
@@ -120,6 +126,7 @@ namespace Yanitta
             this.tbRotationName.Focus();
             this.tbRotationName.SelectAll();
             this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+            CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
         }
 
         private void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
@@ -130,7 +137,10 @@ namespace Yanitta
             var result = MessageBox.Show(Localization.RotationDelQuestion,
                    this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
+            {
                 this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
+                CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
+            }
         }
 
         private void CommandBinding_MoveRotation_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -143,6 +153,7 @@ namespace Yanitta
             {
                 CurrentProfile.RotationList.Move(index, index + shift);
                 rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+                CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
             }
         }
 
@@ -156,6 +167,7 @@ namespace Yanitta
             {
                 CurrentRotation.AbilityList.Move(index, index + shift);
                 abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+                CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
             }
         }
 
@@ -172,6 +184,7 @@ namespace Yanitta
                 {
                     CurrentRotation.AbilityList.Add(ability);
                 }
+                CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
             }
         }
 
@@ -219,6 +232,7 @@ namespace Yanitta
                         });
                     }
                 }
+                abilityView.Refresh();
             }
         }
 
