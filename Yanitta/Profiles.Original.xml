@@ -266,7 +266,7 @@ BossModLogic = {
         if HasDebuff("player", 179202) then -- Глаз Анзу
             for _, member in ipairs(PartyLogic.members) do
                 if HasDebuff(member.Unit, self.iskar_debuffs) then
-                    local macro = format("/target \n/click ExtraActionButton1\n/targetlasttarget", member.Unit);
+                    local macro = format("/target %s \n/click ExtraActionButton1\n/targetlasttarget", member.Unit);
                     RunMacroText(macro);
                 end
             end
