@@ -10,21 +10,40 @@ namespace ICSharpCode.AvalonEdit.Highlighting
     /// </summary>
     public class RegexFoldingStrategy : AbstractFoldingStrategy
     {
-        private const RegexOptions PatternRegexOption = RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.Singleline;
+        const RegexOptions PatternRegexOption = RegexOptions.Compiled | RegexOptions.Multiline | RegexOptions.Singleline;
 
-        private Regex startPattern;
-        private Regex endPattern;
+        Regex startPattern;
+        Regex endPattern;
+        Regex commentPattern;
 
         public string StartPattern
         {
             get { return startPattern != null ? startPattern.ToString() : null; }
-            set { if (!string.IsNullOrWhiteSpace(value)) this.startPattern = new Regex(value, PatternRegexOption); }
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    this.startPattern = new Regex(value, PatternRegexOption);
+            }
         }
 
         public string EndPattern
         {
             get { return endPattern != null ? endPattern.ToString() : null; }
-            set { if (!string.IsNullOrWhiteSpace(value)) this.endPattern = new Regex(value, PatternRegexOption); }
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    this.endPattern = new Regex(value, PatternRegexOption);
+            }
+        }
+
+        public string CommentPattern
+        {
+            get { return commentPattern != null ? commentPattern.ToString() : null; }
+            set
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    this.commentPattern = new Regex(value, RegexOptions.Compiled | RegexOptions.Singleline);
+            }
         }
 
         /// <summary>
@@ -32,8 +51,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// </summary>
         public RegexFoldingStrategy()
         {
-            this.StartPattern = @"(?<start>\b(function|while|if|for)\b|{|--\[\[)";
-            this.EndPattern   = @"(?<end>\b(end)\b|}|]])";
+            this.StartPattern   = @"(?<start>\b(function|while|if|for)\b|{|--\[\[)";
+            this.EndPattern     = @"(?<end>\b(end)\b|}|]])";
+            this.CommentPattern = @"^\s*--[^\[]";
         }
 
         /// <summary>
@@ -49,8 +69,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             foreach (var line in document.Lines)
             {
                 // комментарии пропускаем
-                if (line.Text.TrimStart().StartsWith("--", System.StringComparison.CurrentCulture)
-                    && !line.Text.TrimStart().StartsWith("--[[", System.StringComparison.CurrentCulture))
+                if (commentPattern.IsMatch(line.Text))
                     continue;
 
                 foreach (Match match in startPattern.Matches(line.Text))
@@ -70,7 +89,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                         if (stack.Count > 0)
                         {
                             var first = stack.Pop();
-                            foldings.Add(new NewFolding(first, line.EndOffset));
+                            var folding = new NewFolding(first, line.EndOffset);
+                            foldings.Add(folding);
                         }
                         else
                         {
