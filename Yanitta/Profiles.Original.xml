@@ -244,6 +244,8 @@ PLAYER = {
 };
 
 BossModLogic = {
+    Tank = { Avoid = false, ActiveDef = false },
+
     iskar_debuffs = {
         181957, -- Ирреальные ветра
         182325, -- Ирреальные раны
@@ -251,10 +253,13 @@ BossModLogic = {
     };
 
     Exec = function(self)
+        Tank.Avoid     = true;
+        Tank.ActiveDef = false;
+
         -- Самолечение
         if PLAYER.HP < 30 and PLAYER.InCombat and not PLAYER.IsMounted then
-            local _, durationH, enableH = GetItemCooldown(5512); -- Камень здоровья
-            local _, durationP, enableP = GetItemCooldown(5512); -- Лечебное снадобье
+            local _, durationH, enableH = GetItemCooldown(5512);   -- Камень здоровья
+            local _, durationP, enableP = GetItemCooldown(109223); -- Лечебное снадобье
             if durationH == 0 and enableH and GetItemCount(5512)>0 then
                 UseItemById(5512);
             elseif durationP == 0 and enableP and GetItemCount(109223)>0 then
@@ -269,6 +274,16 @@ BossModLogic = {
                     local macro = format("/target %s \n/click ExtraActionButton1\n/targetlasttarget", member.Unit);
                     RunMacroText(macro);
                 end
+            end
+        end
+
+        -- Килрогг мертвый глаз
+        if UnitId("boss1") = 90378 then
+            -- На килроге незьзя тратить ресурс на отхил,
+            Tank.Avoid = false;
+            -- так как надо прожимать активную зашиту на удар "Вспарывание брони"
+            if UnitCastingInfo("target") == GetSpellInfo(180199) then
+                Tank.ActiveDef = true;
             end
         end
     end
