@@ -253,8 +253,8 @@ BossModLogic = {
     };
 
     Exec = function(self)
-        Tank.Avoid     = true;
-        Tank.ActiveDef = false;
+        self.Tank.Avoid     = true;
+        self.Tank.ActiveDef = false;
 
         -- Самолечение
         if PLAYER.HP < 30 and PLAYER.InCombat and not PLAYER.IsMounted then
@@ -278,12 +278,12 @@ BossModLogic = {
         end
 
         -- Килрогг мертвый глаз
-        if UnitId("boss1") = 90378 then
+        if UnitId("boss1") == 90378 then
             -- На килроге незьзя тратить ресурс на отхил,
-            Tank.Avoid = false;
+            self.Tank.Avoid = false;
             -- так как надо прожимать активную зашиту на удар "Вспарывание брони"
             if UnitCastingInfo("target") == GetSpellInfo(180199) then
-                Tank.ActiveDef = true;
+                self.Tank.ActiveDef = true;
             end
         end
     end
@@ -10058,12 +10058,10 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-
 if PLAYER.Agro > 0 and
     UnitCastingInfo("target") == GetSpellInfo(180199) then
     return true;
 end
-
 ]]></Lua>
       </Ability>
       <Ability Name="Дубовая кожа">
