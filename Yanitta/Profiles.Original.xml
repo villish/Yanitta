@@ -4829,7 +4829,6 @@ useAutoDispell = true;
       <Lua><![CDATA[
 useAutoDispell = true;
 useCooldown = true;
-MAIN_CLASS_SPELL = 2061;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -4853,19 +4852,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
-      <Ability Name="Божественное перышко">
-        <SpellID>121536</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
-]]></Lua>
-      </Ability>
       <Ability Name="Божественное перышко">
         <SpellID>121536</SpellID>
         <Target>MouseLocation</Target>
@@ -5004,7 +4990,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return PartyLogic.LowHP(50) > 3;
+return PartyLogic:LowHP(50) > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Архангел">
@@ -5017,7 +5003,7 @@ return PartyLogic.LowHP(50) > 3;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return PartyLogic.LowHP(70) > 3;
+return PartyLogic:LowHP(70) > 3;
 ]]></Lua>
       </Ability>
       <Ability Name="Слово силы: Щит">
@@ -5074,7 +5060,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.LowHP(90) > 2 and PartyLogic.First.HP < 85 then
+if PartyLogic:LowHP(90) > 2 and PartyLogic.First.HP < 85 then
    return PartyLogic.First.Unit;
 end
 ]]></Lua>
@@ -5090,7 +5076,7 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- Если активен щит души, тогда настакиваем щит
-if PartyLogic.LowHP(70) > 3 or HasBuff("player", 114908, "PLAYER") then
+if PartyLogic:LowHP(70) > 3 or HasBuff("player", 114908, "PLAYER") then
     return PartyLogic.First.Unit;
 end
 ]]></Lua>
@@ -6984,7 +6970,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.LowHP(70) > 2 then
+if PartyLogic:LowHP(70) > 2 then
     return PartyLogic.First.Unit;
 end
 ]]></Lua>
@@ -7033,7 +7019,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PartyLogic.LowHP(80) > 2 and not GetTotemInfo(3) then
+if PartyLogic:LowHP(80) > 2 and not GetTotemInfo(3) then
     return true;
 end
 ]]></Lua>
@@ -9420,7 +9406,7 @@ if PowerByPercent("player", SPELL_POWER_MANA) < 70 and GetShapeshiftForm() == 0 
     UseItemBySlot(INVSLOT_TRINKET1);
 end
 
-if PartyLogic.LowHP(50) > 3 and UnitAffectingCombat("player") then
+if PartyLogic:LowHP(50) > 3 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND); -- Нейронные пружины
 end
 
@@ -9548,7 +9534,7 @@ return CheckEnrage(target);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local member_count = IsInRaid() and PartyLogic.LowHP(50) or PartyLogic.LowHP(70);
+local member_count = IsInRaid() and PartyLogic:LowHP(50) or PartyLogic:LowHP(70);
 if GetSpellCharges(102693) > 2 or member_count > 3 then
     return true;
 end
@@ -9653,7 +9639,7 @@ end
 -- Очень дорогой АОЕ-хил,
 -- применять нужно только если в рейде просажено более 3х-5ти целей до 70% хп и ниже.
 local count = IsInRaid() and 5 or 3;
-local member_count = IsInRaid() and PartyLogic.LowHP(70) or PartyLogic.LowHP(70);
+local member_count = IsInRaid() and PartyLogic:LowHP(70) or PartyLogic:LowHP(70);
 
 if UnitExists("mouseover") and IsMouseButtonDown(5) then
     return "mouseover";
@@ -9922,7 +9908,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat and not IsModKeyDown(mkLeftShift) then
+if isAltMod then
     if PLAYER.HP < 80 and UnitPower("player") > 55 then
         return true;
     elseif PLAYER.HP < 30 and UnitPower("player") > 35 then
@@ -9941,9 +9927,12 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat and PLAYER.HP < 60 and PLAYER.Agro > 0 then
+
+if PLAYER.Agro > 0 and
+    UnitCastingInfo("target") == GetSpellInfo(180199) then
     return true;
 end
+
 ]]></Lua>
       </Ability>
       <Ability Name="Дубовая кожа">
@@ -10530,6 +10519,21 @@ for key, lastCast in pairs(moonTargetList) do
     if lastCast < GetTime() - 30 then
         moonTargetList[key] = nil;
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Знак дикой природы">
+        <SpellID>1126</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not (GetRaidBuffTrayAuraInfo(1) and GetRaidBuffTrayAuraInfo(9)) then
+    return true;
 end
 ]]></Lua>
       </Ability>
