@@ -4690,21 +4690,6 @@ if not (UnitAffectingCombat("player") or HasBuff("player", 2823)) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Веер клинков">
-        <SpellID>51723</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Заживление ран">
         <SpellID>73651</SpellID>
         <Target>None</Target>
@@ -4727,12 +4712,27 @@ end
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetShapeshiftForm() == 1 and IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Веер клинков">
+        <SpellID>51723</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if GetShapeshiftForm() == 1 then
+if IsModKeyDown(mkLeftShift) and GetShapeshiftForm() == 0 then
     return true;
 end
 ]]></Lua>
@@ -4743,19 +4743,21 @@ end
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
+        <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local name, count, rem = HasBuff("player", 5171);
-
-if rem == 0 then
-    return true;
-end
-
-if UnitExists("target") and GetComboPoints("player", "target") > 4 then
-    if rem < 4 then
+if not IsPassiveSpell(GetSpellInfo(5171)) then
+    local name, count, rem = HasBuff("player", 5171);
+    
+    if rem == 0 then
         return true;
+    end
+    
+    if UnitExists("target") and GetComboPoints("player", "target") > 4 then
+        if rem < 4 then
+            return true;
+        end
     end
 end
 ]]></Lua>
@@ -4786,7 +4788,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") > 4 then
-    if select(3, HasDebuff(target, 1943, "PLAYER")) < 2 then
+    if select(3, HasDebuff(target, 1943, "PLAYER")) < 5 then
         return true;
     end
 end
@@ -4831,6 +4833,19 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок сюрикена">
+        <SpellID>114014</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not isInRange;
 ]]></Lua>
       </Ability>
     </Rotation>
