@@ -5650,12 +5650,12 @@ end
 
 DK_RUNES = {
     Init = function(self)
-        self.BLOOD  = { Rem = 0, Count = 0, FullCount = 0 },
-        self.UNHOLY = { Rem = 0, Count = 0, FullCount = 0 },
-        self.FROST  = { Rem = 0, Count = 0, FullCount = 0 },
-        self.DEATH  = { Rem = 0, Count = 0, FullCount = 0 },
-        self.Total  = 0,
-        self.Power  = UnitPower("player", SPELL_POWER_RUNIC_POWER),
+        self.BLOOD  = { Rem = 0, Count = 0, FullCount = 0 };
+        self.UNHOLY = { Rem = 0, Count = 0, FullCount = 0 };
+        self.FROST  = { Rem = 0, Count = 0, FullCount = 0 };
+        self.DEATH  = { Rem = 0, Count = 0, FullCount = 0 };
+        self.Total  = 0;
+        self.Power  = UnitPower("player", SPELL_POWER_RUNIC_POWER);
 
         for slot = 1, 6 do
             local runeType        = GetRuneType(slot);
@@ -5663,7 +5663,7 @@ DK_RUNES = {
             local start, duration = GetRuneCooldown(slot);
             local rune_name       = RUNE_MAPPING[runeType]; -- from RuneFrame.lua
 
-            self.Total = runes.Total + runeCount;
+            self.Total = self.Total + runeCount;
 
             self[rune_name].Rem       = (start + duration) - GetTime();
             self[rune_name].Count     = runeCount + self[rune_name].Count;
@@ -5805,9 +5805,9 @@ end
         <RecastDelay>1</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.Agro > 2 and PLAYER.HP < 70 and isInMeele then
-    return true;
-end
+--if PLAYER.Agro > 2 and PLAYER.HP < 70 and isInMeele then
+--    return true;
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Танцующее руническое оружие">
@@ -5873,21 +5873,6 @@ if not HasDebuff("target", 55095, "PLAYER") then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар смерти">
-        <SpellID>49998</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- local value = select(5, HasBuff("player", 158300));
--- local def_val = IsInRaid() and 100 or 50;
-return true;
-]]></Lua>
-      </Ability>
       <Ability Name="Кровоотвод">
         <SpellID>45529</SpellID>
         <Target>None</Target>
@@ -5909,8 +5894,8 @@ if blood == 0 or unholy == 0 or frost == 0 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Жнец душ">
-        <SpellID>114866</SpellID>
+      <Ability Name="Удар смерти">
+        <SpellID>49998</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5919,9 +5904,9 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and HealthByPercent(target) <= 35 then
-    return true;
-end
+-- local value = select(5, HasBuff("player", 158300));
+-- local def_val = IsInRaid() and 100 or 50;
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Вскипание крови">
@@ -5938,6 +5923,21 @@ if isInMeele then
     if setAoE or HasBuff("player", 81141) or DK_RUNES.BLOOD.Count > 1 then
         return true;
     end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Жнец душ">
+        <SpellID>114866</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not setAoE and HealthByPercent(target) <= 35 then
+    return true;
 end
 ]]></Lua>
       </Ability>
