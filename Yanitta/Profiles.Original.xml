@@ -5667,12 +5667,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
 end
 
 DK_RUNES = {
-    RUNETYPE_BLOOD  = 1,
-    RUNETYPE_UNHOLY = 2,
-    RUNETYPE_FROST  = 3,
-    RUNETYPE_DEATH  = 4,
-    RUNE_MAPPING    = { "BLOOD", "UNHOLY", "FROST", "DEATH" },
-
     Init = function(self)
         self.BLOOD  = { Rem = 0, Count = 0, FullCount = 0 },
         self.UNHOLY = { Rem = 0, Count = 0, FullCount = 0 },
@@ -5685,7 +5679,7 @@ DK_RUNES = {
             local runeType        = GetRuneType(slot);
             local runeCount       = GetRuneCount(slot);
             local start, duration = GetRuneCooldown(slot);
-            local rune_name       = self.RUNE_MAPPING[runeType];
+            local rune_name       = RUNE_MAPPING[runeType]; -- from RuneFrame.lua
 
             self.Total = runes.Total + runeCount;
 
@@ -5695,7 +5689,7 @@ DK_RUNES = {
 
             -- Руна сметри может быть использована в качестве любой из рун.
             -- надо тестить
-            if runeType == RUNETYPE_DEATH then
+            if runeType == 4 then
                 self.BLOOD.FullCount  = self.BLOOD.FullCount  + runeCount;
                 self.UNHOLY.FullCount = self.UNHOLY.FullCount + runeCount;
                 self.FROST.FullCount  = self.FROST.FullCount  + runeCount;
@@ -7232,60 +7226,70 @@ end
     <Rotation Name="Огонь">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
-pyroTable = { }; -- таблица накомленного урона от воспламенения
-clearTime = 20;
+PYRO_TABLE = {
+    clearTime = 20, -- таблица накомленного урона от воспламенения
+    pyroTable = {},
 
-function CleanPyroTable()
-    -- Очистка таблицы от старых записей
-    for guid, dmgTable in pairs(pyroTable) do
-        -- Если юнит давно не получал урон (или помер внезапно :))
-        if (dmgTable.LastTime or 0) < GetTime() - clearTime then
-            pyroTable[guid] = nil;
-            print('clean targer');
-        else
-            -- так же держим в актуале нанесенный урон за последние 10 сек.
-            for dmgTime, dmgVal in pairs(dmgTable.Values) do
-                if dmgTime < GetTime() - clearTime then
-                    dmgTable.Values[dmgTime] = nil;
+    Clear = function(self)
+        -- Очистка таблицы от старых записей
+        for guid, dmgTable in pairs(self.pyroTable) do
+            -- Если юнит давно не получал урон (или помер внезапно :))
+            if (dmgTable.LastTime or 0) < GetTime() - clearTime then
+                self.pyroTable[guid] = nil;
+                print('clean targer');
+            else
+                -- так же держим в актуале нанесенный урон за последние xx сек.
+                for dmgTime, dmgVal in pairs(dmgTable.Values) do
+                    if dmgTime < GetTime() - clearTime then
+                        dmgTable.Values[dmgTime] = nil;
+                    end
                 end
             end
         end
-    end
-end
+    end,
 
--- Урон нанесенный заклинанием (12654 - Воспламенение) за последнее время
-function GetIgniteDamage(target, sec)
-    local guid = UnitGUID(target or "target");
-    local dmgTable = pyroTable[guid];
-    if not dmgTable then
-        return 0;
-    end
-    local damage = 0;
-    for dmgTime, dmgVal in pairs(dmgTable.Values or {}) do
-        if dmgTime >= GetTime()-sec then
-            damage = damage + dmgVal;
+    Tick = function(self, guid, amount)
+        local dmgTable = self.pyroTable[destGUID] or { LastTime = 0, Values = {}};
+        timestamp = GetTime();
+        dmgTable.LastTime = timestamp;
+        dmgTable.Values[timestamp] = amount;
+        self.pyroTable[destGUID] = dmgTable;
+    end,
+
+    -- Урон нанесенный заклинанием (12654 - Воспламенение) за последнее время
+    GetIgniteDamage = function(self, target, sec)
+        local guid = UnitGUID(target or "target");
+        local dmgTable = self.pyroTable[guid];
+        if not dmgTable then
+            return 0;
         end
-    end
+        local damage = 0;
+        for dmgTime, dmgVal in pairs(dmgTable.Values or {}) do
+            if dmgTime >= GetTime()-sec then
+                damage = damage + dmgVal;
+            end
+        end
 
-    return damage;
-end
+        return damage;
+    end,
 
--- Модификатор наносимого урона по цели
-function GetDmgModifikator(target)
-    local modif = 0;
+    -- Модификатор наносимого урона по цели
+    GetDmgMod = function(self, target)
+        local modif = 0;
 
-    -- Например бафф увеличивает наносимый урон на 50%
-    --if HasBuff("player", 111111) then
-    --    modif = modif + 50;
-    --end
+        -- Например бафф увеличивает наносимый урон на 50%
+        --if HasBuff("player", 111111) then
+        --    modif = modif + 50;
+        --end
 
-    -- Например дебафф увеличивает получаемый урон на 20%
-    --if HasDebuff(target, 111111) then
-    --    modif = modif + 20;
-    --end
+        -- Например дебафф увеличивает получаемый урон на 20%
+        --if HasDebuff(target, 111111) then
+        --    modif = modif + 20;
+        --end
 
-    return (modif == 0 and 1 or (modif/100));
-end
+        return (modif == 0 and 1 or (modif/100));
+    end,
+};
 
 function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
           sourceGUID,srcName,  sourceFlags,sourceFlags2,
@@ -7296,11 +7300,7 @@ function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
     if subEvent == "SPELL_PERIODIC_DAMAGE" then
         -- Собираем урон по заклинанию (12654 - Воспламенение)
         if spellId == 12654 and UnitGUID("player") == sourceGUID then
-            local dmgTable = pyroTable[destGUID] or { LastTime = 0, Values = {}};
-            timestamp = GetTime();
-            dmgTable.LastTime = timestamp;
-            dmgTable.Values[timestamp] = amount;
-            pyroTable[destGUID] = dmgTable;
+            PYRO_TABLE:Tick(destGUID, amount);
         end
     end
 end
@@ -7366,7 +7366,7 @@ if PowerByPercent("player") < 50 then
     UseItemById(36799);
 end
 
-CleanPyroTable();
+PYRO_TABLE:Clear();
 
 -- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
 --local castedSpell = UnitCastingInfo("player");
@@ -7494,9 +7494,9 @@ if useCooldown then
     local koef = 2.75;
     local glyphMod  = HasGlyph(56368) and 2 or 1; -- Символ возгорания
     local fdamage   = GetSpellBonusDamage(3); -- fire spell bonus damage
-    local igniteDmg = GetIgniteDamage(target, 8*glyphMod); -- Урон от воспламенения за последние 8 сек
+    local igniteDmg = PYRO_TABLE:GetIgniteDamage(target, 8*glyphMod); -- Урон от воспламенения за последние 8 сек
+    local modif     = PYRO_TABLE:GetDmgMod(target); -- Модификатор наносимого урона
     local hasIgnite = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение
-    local modif     = GetDmgModifikator(target); -- Модификатор наносимого урона
 
     print("ignite:", igniteDmg, "SpellBonus:", fdamage);
 
