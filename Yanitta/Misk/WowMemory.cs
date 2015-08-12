@@ -116,16 +116,8 @@ namespace Yanitta
                     this.isInGame = value;
                     this.OnPropertyChanged("IsInGame");
 
-                    if (value)
-                    {
-                        this.Class = (WowClass)this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.PlayerClass));
-                        this.Name  = this.Memory.ReadString(this.Memory.Rebase(this.Offsets.PlayerName));
-                    }
-                    else
-                    {
-                        this.Class = WowClass.None;
-                        this.Name  = string.Empty;
-                    }
+                    this.Class = value ? (WowClass)this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.PlayerClass)) : WowClass.None;
+                    this.Name  = value ? this.Memory.ReadString(this.Memory.Rebase(this.Offsets.PlayerName)) : string.Empty;
 
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged += OnRotationListChange;
