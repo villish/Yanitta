@@ -6,7 +6,7 @@ namespace Yanitta
 {
     public class Offsets
     {
-        private const string fileName = "offsets.ini";
+        private readonly string fileName = Path.Combine(Environment.CurrentDirectory, "offsets.ini");
 
         /// <summary>
         /// Имя персонажа.
@@ -58,16 +58,14 @@ namespace Yanitta
 
         public Offsets(string section)
         {
-            var file = Path.Combine(Environment.CurrentDirectory, fileName);
+            if (!File.Exists(fileName))
+                throw new FileNotFoundException("File not found", fileName);
 
-            if (!File.Exists(file))
-                throw new FileNotFoundException("File not found", file);
-
-            PlayerName      = GetValue(section, "UnitName", file);
-            PlayerClass     = GetValue(section, "UnitClas", file);
-            IsInGame        = GetValue(section, "IsInGame", file);
-            ExecuteBuffer   = GetValue(section, "ExecBuff", file);
-            InjectedAddress = GetValue(section, "Inj_Addr", file);
+            PlayerName      = GetValue(section, "UnitName", fileName);
+            PlayerClass     = GetValue(section, "UnitClas", fileName);
+            IsInGame        = GetValue(section, "IsInGame", fileName);
+            ExecuteBuffer   = GetValue(section, "ExecBuff", fileName);
+            InjectedAddress = GetValue(section, "Inj_Addr", fileName);
         }
 
         #region WinApi

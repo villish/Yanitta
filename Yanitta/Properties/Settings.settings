@@ -9,7 +9,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="ProcessName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">wow</Value>
+      <Value Profile="(Default)">Wow;WowB;WowT; Wow-64;WowB-64;WowT-64</Value>
     </Setting>
     <Setting Name="Language" Type="System.String" Scope="User">
       <Value Profile="(Default)">auto</Value>

@@ -36,52 +36,48 @@ namespace Yanitta
                 throw new Exception("ProcessName is empty");
 
             var nameList = Settings.Default.ProcessName.Split(new[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var wowProcessList = Process.GetProcesses().Where(n => nameList.Contains(n.ProcessName));
 
-            foreach (var wowProcName in nameList)
+            if (!wowProcessList.Any())
             {
-                var wowProcessList = Process.GetProcessesByName(wowProcName);
-
-                if (!wowProcessList.Any())
+                foreach (var process in this)
                 {
-                    foreach (var process in this)
-                    {
-                        Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
-                        process.Dispose();
-                    }
-                    this.Clear();
+                    Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
+                    process.Dispose();
                 }
+                this.Clear();
+            }
 
-                for (int i = this.Count - 1; i >= 0; --i)
+            for (int i = this.Count - 1; i >= 0; --i)
+            {
+                if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
                 {
-                    if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
-                    {
-                        Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
-                        this[i].Dispose();
-                        this.RemoveAt(i);
-                    }
+                    Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
+                    this[i].Dispose();
+                    this.RemoveAt(i);
                 }
+            }
 
-                foreach (var wowProcess in wowProcessList)
+            foreach (var wowProcess in wowProcessList)
+            {
+                if (this.Any(n => n.ProcessId == wowProcess.Id))
+                    continue;
+
+                try
                 {
-                    if (this.Any(n => n.ProcessId == wowProcess.Id))
-                        continue;
+                    var wowMemory = new WowMemory(wowProcess);
 
-                    try
+                    wowMemory.GameExited += (memory) =>
                     {
-                        var wowMemory = new WowMemory(wowProcess);
-
-                        wowMemory.GameExited += (memory) =>
-                        {
-                            if (this.Contains(memory))
-                                this.Remove(memory);
-                            memory.Dispose();
-                        };
-                        this.Add(wowMemory);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Error WowMemory: " + ex.Message);
-                    }
+                        if (this.Contains(memory))
+                            this.Remove(memory);
+                        memory.Dispose();
+                    };
+                    this.Add(wowMemory);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error WowMemory: " + ex.Message);
                 }
             }
         }
@@ -110,7 +106,6 @@ namespace Yanitta
                     {
                         this.refreshTimer.IsEnabled = false;
                         this.refreshTimer.Stop();
-
                     }
 
                     foreach (var process in this)

@@ -121,6 +121,11 @@ namespace Yanitta
                         this.Class = (WowClass)this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.PlayerClass));
                         this.Name  = this.Memory.ReadString(this.Memory.Rebase(this.Offsets.PlayerName));
                     }
+                    else
+                    {
+                        this.Class = WowClass.None;
+                        this.Name  = string.Empty;
+                    }
 
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged += OnRotationListChange;
@@ -149,11 +154,13 @@ namespace Yanitta
             if (process == null)
                 throw new ArgumentNullException("process");
 
-            var section = string.Format("{0}_x86", process.MainModule.FileVersionInfo.FilePrivatePart);
+            var section = string.Format("{0}_{1}",
+                process.ProcessName,
+                process.MainModule.FileVersionInfo.FilePrivatePart);
 
             this.Offsets = new Offsets(section);
             if (this.Offsets == null)
-                throw new NullReferenceException(string.Format("Current build {0}_x86 not supported!", section));
+                throw new NullReferenceException(string.Format("Current game version ({0}) not supported!", section));
 
             this.Memory = new ProcessMemory(process);
 
