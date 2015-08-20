@@ -35,8 +35,8 @@ namespace Yanitta
             if (string.IsNullOrWhiteSpace(Settings.Default.ProcessName))
                 throw new Exception("ProcessName is empty");
 
-            var nameList = Settings.Default.ProcessName.Split(new[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            var wowProcessList = Process.GetProcesses().Where(n => nameList.Contains(n.ProcessName));
+            var nameList = Settings.Default.ProcessName.ToLower().Split(new[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var wowProcessList = Process.GetProcesses().Where(n => nameList.Contains(n.ProcessName.ToLower()));
 
             if (!wowProcessList.Any())
             {

@@ -78,6 +78,16 @@ namespace Yanitta
             get { return this.Memory == null ? 0 : this.Memory.Process.Id; }
         }
 
+        public string ProcessName
+        {
+            get
+            {
+                return string.Format("{0}_{1}",
+                    this.Memory.Process.ProcessName,
+                    this.Memory.Process.MainModule.FileVersionInfo.FilePrivatePart);
+            }
+        }
+
         public IEnumerable<Rotation> Rotations
         {
             get
@@ -118,6 +128,9 @@ namespace Yanitta
 
                     this.Class = value ? (WowClass)this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.PlayerClass)) : WowClass.None;
                     this.Name  = value ? this.Memory.ReadString(this.Memory.Rebase(this.Offsets.PlayerName)) : string.Empty;
+
+                    if (this.Class < WowClass.None || this.Class > WowClass.Druid)
+                        throw new Exception("Unsuported wow class: " + this.Class);
 
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged += OnRotationListChange;
@@ -274,7 +287,10 @@ namespace Yanitta
                 var injAddress  = this.Memory.Rebase(this.Offsets.InjectedAddress);
                 var funcAddress = this.Memory.Rebase(this.Offsets.ExecuteBuffer);
 
-                this.Memory.Call(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
+                //if (Memory.IsX64)
+                //    this.Memory.Call_x64(injAddress, funcAddress, code, path, IntPtr.Zero);
+                //else
+                    this.Memory.Call_x32(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
             }
             catch (Exception ex)
             {

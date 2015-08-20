@@ -33,9 +33,9 @@ namespace Yanitta
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
         static extern uint ResumeThread(IntPtr thandle);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
-        static extern bool GetThreadContext(IntPtr thandle, ref CONTEXT context);
+        static extern bool GetThreadContext(IntPtr thandle, ref WOW64_CONTEXT context);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
-        static extern bool SetThreadContext(IntPtr thandle, ref CONTEXT context);
+        static extern bool SetThreadContext(IntPtr thandle, ref WOW64_CONTEXT context);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("user32")]
         static extern IntPtr GetForegroundWindow();
         [DllImport("kernel32.dll", SetLastError = true, CallingConvention = CallingConvention.Winapi)]
@@ -47,7 +47,6 @@ namespace Yanitta
 
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
-
 
         #endregion
 
@@ -259,13 +258,13 @@ namespace Yanitta
         /// Параметры функции.
         /// Параметрами могут выступать как и значения так и указатели на значения.
         /// </param>
-        public void Call(IntPtr injAddress, IntPtr callAddress, params int[] funcArgs)
+        public void Call_x32(IntPtr injAddress, IntPtr callAddress, params int[] funcArgs)
         {
             var tHandle = OpenThread(ThreadAccess.All, false, this.Process.Threads[0].Id);
             if (SuspendThread(tHandle) == 0xFFFFFFFF)
                 throw new Win32Exception();
 
-            var context = new CONTEXT { ContextFlags = 0x10001 /*CONTROL*/ };
+            var context = new WOW64_CONTEXT { ContextFlags = 0x10001 /*CONTROL*/ };
             if (!GetThreadContext(tHandle, ref context))
                 throw new Win32Exception();
 
@@ -351,6 +350,11 @@ namespace Yanitta
             this.Free(retaddr);
         }
 
+        public void Call_x64(IntPtr injAddress, IntPtr callAddress, params IntPtr[] funcArgs)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Возвращает абсолютный аддресс в процессе.
         /// </summary>
@@ -378,10 +382,9 @@ namespace Yanitta
         {
             get
             {
-                bool wow64Proxess;
-                var ver = Environment.OSVersion.Version;
-                IsWow64Process(this.Process.Handle, out wow64Proxess);
-                return wow64Proxess && (ver.Major > 5 || (ver.Major == 5 && ver.Minor >= 1));
+                bool wow64Process;
+                IsWow64Process(this.Process.Handle, out wow64Process);
+                return wow64Process;
             }
         }
     }
@@ -456,7 +459,7 @@ namespace Yanitta
     /// Contains processor-specific register data.
     /// </summary>
     [StructLayout(LayoutKind.Explicit, Size = 716)]
-    public struct CONTEXT
+    public struct WOW64_CONTEXT
     {
         /// <summary>
         /// Context flag.
@@ -470,6 +473,25 @@ namespace Yanitta
         [FieldOffset(0xB8)]
         public uint Eip;
     };
+
+    /// <summary>
+    /// Contains processor-specific register data.
+    /// </summary>
+    [StructLayout(LayoutKind.Explicit, Size = 1232, Pack = 16)]
+    public struct CONTEXT
+    {
+        /// <summary>
+        /// Context flag.
+        /// </summary>
+        [FieldOffset(0x30)]
+        public uint ContextFlags;
+
+        /// <summary>
+        /// Next instruction pointer.
+        /// </summary>
+        [FieldOffset(0xF8)]
+        public ulong Rip;
+    }
 
     #endregion
 }

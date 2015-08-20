@@ -57,8 +57,9 @@
                     <Border BorderThickness="1" BorderBrush="#FF00AA00">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{Binding Class, Converter={yanitta:EnumToImageConverter}}" Width="40" />
-                            <TextBlock Text="{Binding ProcessId}" Width="50"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
-                            <TextBlock Text="{Binding Name}"      Width="100" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                            <TextBlock Text="{Binding ProcessId}"   Width="50"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                            <TextBlock Text="{Binding Name}"        Width="120" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                            <TextBlock Text="{Binding ProcessName}" Width="120" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                         </StackPanel>
                     </Border>
                     <HierarchicalDataTemplate.ItemTemplate>

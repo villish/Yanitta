@@ -29,10 +29,6 @@ namespace ICSharpCode.AvalonEdit
         private bool _hasVerticalOrientation;
         private int _insertionIndex;
         private bool _isInFirstHalf;
-        private double _scrollHorizontalOffset;
-        private double _scrollVerticalOffset;
-        private double _targetTopMargin;
-        private double _targetLeftMargin;
 
         // singleton
         private static DragDropHelper _instance;
