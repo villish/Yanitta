@@ -4863,7 +4863,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return not isInRange;
+return IsSpellInRange(GetSpellInfo(1329), "target") ~= 1;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -7234,13 +7234,13 @@ PYRO_TABLE = {
         -- Очистка таблицы от старых записей
         for guid, dmgTable in pairs(self.pyroTable) do
             -- Если юнит давно не получал урон (или помер внезапно :))
-            if (dmgTable.LastTime or 0) < GetTime() - clearTime then
+            if (dmgTable.LastTime or 0) < GetTime() - self.clearTime then
                 self.pyroTable[guid] = nil;
-                print('clean targer');
+                --print('clean targer');
             else
                 -- так же держим в актуале нанесенный урон за последние xx сек.
                 for dmgTime, dmgVal in pairs(dmgTable.Values) do
-                    if dmgTime < GetTime() - clearTime then
+                    if dmgTime < GetTime() - self.clearTime then
                         dmgTable.Values[dmgTime] = nil;
                     end
                 end
@@ -7248,7 +7248,7 @@ PYRO_TABLE = {
         end
     end,
 
-    Tick = function(self, guid, amount)
+    Tick = function(self, destGUID, amount)
         local dmgTable = self.pyroTable[destGUID] or { LastTime = 0, Values = {}};
         timestamp = GetTime();
         dmgTable.LastTime = timestamp;
@@ -7498,12 +7498,11 @@ if useCooldown then
     local modif     = PYRO_TABLE:GetDmgMod(target); -- Модификатор наносимого урона
     local hasIgnite = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение
 
-    print("ignite:", igniteDmg, "SpellBonus:", fdamage);
-
     if hasIgnite and (igniteDmg > ((koef*fdamage*glyphMod)/modif)) then
         UseItemBySlot(INVSLOT_HAND);
         UseItemBySlot(INVSLOT_TRINKET1);
         UseItemBySlot(INVSLOT_TRINKET1);
+        print("ignite:", igniteDmg, "SpellBonus:", fdamage);
         return true;
     end
 end
