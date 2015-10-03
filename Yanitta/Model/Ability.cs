@@ -80,8 +80,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(this.Lua); }
-            set { this.Lua = Extensions.GetTrimValue(value); }
+            get { return Extensions.CreateCDataSection(Lua); }
+            set { Lua = Extensions.GetTrimValue(value); }
         }
 
         public Ability()
@@ -97,20 +97,20 @@ namespace Yanitta
         {
             // переменные
             //var target            = this.Target.ToString().ToLower();
-            var cancelChannel     = this.CancelChannel.ToString().ToLower();
-            var cancelCasting     = this.CancelCasting.ToString().ToLower();
-            var isUseIncombat     = this.IsUseIncombat.ToString().ToLower();
-            var isUsableCheck     = this.IsUsableCheck.ToString().ToLower();
-            var isMovingCheck     = this.IsMovingCheck.ToString().ToLower();
-            var name              = this.Name.Replace("\"", @"\""");
+            var cancelChannel     = CancelChannel.ToString().ToLower();
+            var cancelCasting     = CancelCasting.ToString().ToLower();
+            var isUseIncombat     = IsUseIncombat.ToString().ToLower();
+            var isUsableCheck     = IsUsableCheck.ToString().ToLower();
+            var isMovingCheck     = IsMovingCheck.ToString().ToLower();
+            var name              = Name.Replace("\"", @"\""");
 
             // код
-            var lua = string.IsNullOrWhiteSpace(this.Lua) ? "return false;" : this.Lua;
+            var lua = string.IsNullOrWhiteSpace(Lua) ? "return false;" : Lua;
 
             var builder = new StringBuilder();
-            builder.AppendFormatLine("    {{   SpellId = {0,6}, Name = \"{1}\",", this.SpellID, name);
+            builder.AppendFormatLine("    {{   SpellId = {0,6}, Name = \"{1}\",", SpellID, name);
             builder.AppendFormatLine("        IsMovingCheck     = \"{0}\",", isMovingCheck);
-            builder.AppendFormatLine("        RecastDelay       = {0},",  this.RecastDelay);
+            builder.AppendFormatLine("        RecastDelay       = {0},", RecastDelay);
             builder.AppendFormatLine("        DropChanel        = {0},",     cancelChannel);
             builder.AppendFormatLine("        CancelCasting     = {0},",     cancelCasting);
             builder.AppendFormatLine("        IsCheckInCombat   = {0},",     isUseIncombat);
@@ -134,18 +134,18 @@ namespace Yanitta
         public Ability Clone()
         {
             var ability = new Ability {
-                Name           = this.Name,
-                SpellID        = this.SpellID,
-                IsMovingCheck  = this.IsMovingCheck,
-                IsUseIncombat  = this.IsUseIncombat,
-                IsUsableCheck  = this.IsUsableCheck,
-                CancelCasting  = this.CancelCasting,
-                CancelChannel  = this.CancelChannel,
-                RecastDelay    = this.RecastDelay,
-                Lua            = this.Lua
+                Name           = Name,
+                SpellID        = SpellID,
+                IsMovingCheck  = IsMovingCheck,
+                IsUseIncombat  = IsUseIncombat,
+                IsUsableCheck  = IsUsableCheck,
+                CancelCasting  = CancelCasting,
+                CancelChannel  = CancelChannel,
+                RecastDelay    = RecastDelay,
+                Lua            = Lua
             };
 
-            foreach (var targetType in this.TargetList)
+            foreach (var targetType in TargetList)
                 ability.TargetList.Add(targetType);
 
             return ability;

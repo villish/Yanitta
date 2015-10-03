@@ -9,7 +9,7 @@ namespace ICSharpCode.AvalonEdit
     /// </summary>
     public struct TextViewPosition : IEquatable<TextViewPosition>
     {
-        private int line, column, visualColumn;
+        int line, column, visualColumn;
 
         /// <summary>
         /// Gets/Sets Location.
@@ -75,8 +75,8 @@ namespace ICSharpCode.AvalonEdit
         /// </summary>
         public TextViewPosition(TextLocation location, int visualColumn)
         {
-            this.line = location.Line;
-            this.column = location.Column;
+            line = location.Line;
+            column = location.Column;
             this.visualColumn = visualColumn;
         }
 
@@ -93,7 +93,7 @@ namespace ICSharpCode.AvalonEdit
         {
             return string.Format(CultureInfo.InvariantCulture,
                                  "[TextViewPosition Line={0} Column={1} VisualColumn={2}]",
-                                 this.line, this.column, this.visualColumn);
+                                 line, column, visualColumn);
         }
 
         #region Equals and GetHashCode implementation
@@ -128,7 +128,7 @@ namespace ICSharpCode.AvalonEdit
         /// </summary>
         public bool Equals(TextViewPosition other)
         {
-            return this.Line == other.Line && this.Column == other.Column && this.VisualColumn == other.VisualColumn;
+            return Line == other.Line && Column == other.Column && VisualColumn == other.VisualColumn;
         }
 
         /// <summary>

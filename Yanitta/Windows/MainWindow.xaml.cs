@@ -18,42 +18,42 @@ namespace Yanitta
             InitializeComponent();
         }
 
-        private void Image_MouseDown(object o, RoutedEventArgs e)
+        void Image_MouseDown(object o, RoutedEventArgs e)
         {
-            this.DragMove();
+            DragMove();
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
+        void Window_Closing(object sender, CancelEventArgs e)
         {
             App.Current.Shutdown();
         }
 
-        private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
-        private void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_ShowExecuteWindow(object sender, ExecutedRoutedEventArgs e)
         {
             App.ShowWindow<WinCodeExecute>();
         }
 
-        private void CommandBinding_Executed_ShowProfileWindow(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_ShowProfileWindow(object sender, ExecutedRoutedEventArgs e)
         {
             App.ShowWindow<WinProfileEditor>();
         }
 
-        private void CommandBinding_Executed_ShowSettingWindow(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_ShowSettingWindow(object sender, ExecutedRoutedEventArgs e)
         {
             App.ShowWindow<WindowSettings>();
         }
 
-        private void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e)
         {
-            this.WindowState = WindowState.Minimized;
+            WindowState = WindowState.Minimized;
         }
 
-        private void CommandBinding_Executed_OpenFile(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_OpenFile(object sender, ExecutedRoutedEventArgs e)
         {
             try
             {

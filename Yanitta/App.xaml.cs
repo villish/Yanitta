@@ -21,7 +21,7 @@ namespace Yanitta
         {
             ConsoleWriter.Initialize("Yanitta.log", true);
 
-            this.Dispatcher.UnhandledException += (o, ex) => {
+            Dispatcher.UnhandledException += (o, ex) => {
                 if (ex.Exception is YanittaException)
                 {
                     MessageBox.Show(ex.Exception.Message,

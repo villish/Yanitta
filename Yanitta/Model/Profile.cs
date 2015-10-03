@@ -31,8 +31,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(this.Lua); }
-            set { this.Lua = Extensions.GetTrimValue(value); }
+            get { return Extensions.CreateCDataSection(Lua); }
+            set { Lua = Extensions.GetTrimValue(value); }
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Yanitta
         /// </summary>
         public Profile()
         {
-            this.RotationList = new ObservableCollection<Rotation>();
+            RotationList = new ObservableCollection<Rotation>();
         }
     }
 }

@@ -55,9 +55,9 @@ namespace Yanitta
         public event WowMemoryHandler GameExited;
 
         // Сохраним ссылку на обработчик, чтобы ее не трогал сборщик мусора.
-        private KeyBoardProc KeyBoardProck;
+        KeyBoardProc KeyBoardProck;
 
-        private bool isInGame;
+        bool isInGame;
 
         /// <summary>
         /// Текущий процесс <see cref="Yanitta.ProcessMemory"/>
@@ -66,16 +66,16 @@ namespace Yanitta
 
         public Offsets Offsets { get; private set; }
 
-        private IntPtr keyboardHook;
-        private bool IsDisposed;
-        private DispatcherTimer mTimer;
+        IntPtr keyboardHook;
+        bool IsDisposed;
+        DispatcherTimer mTimer;
 
         /// <summary>
         /// Id процесса.
         /// </summary>
         public int ProcessId
         {
-            get { return this.Memory == null ? 0 : this.Memory.Process.Id; }
+            get { return Memory == null ? 0 : Memory.Process.Id; }
         }
 
         public string ProcessName
@@ -83,8 +83,8 @@ namespace Yanitta
             get
             {
                 return string.Format("{0}_{1}",
-                    this.Memory.Process.ProcessName,
-                    this.Memory.Process.MainModule.FileVersionInfo.FilePrivatePart);
+                    Memory.Process.ProcessName,
+                    Memory.Process.MainModule.FileVersionInfo.FilePrivatePart);
             }
         }
 
@@ -92,9 +92,9 @@ namespace Yanitta
         {
             get
             {
-                if (this.IsInGame)
+                if (IsInGame)
                 {
-                    foreach (var rotation in ProfileDb.Instance[this.Class].RotationList)
+                    foreach (var rotation in ProfileDb.Instance[Class].RotationList)
                         yield return rotation;
 
                     foreach (var rotation in ProfileDb.Instance[WowClass.None].RotationList)
@@ -118,34 +118,34 @@ namespace Yanitta
         /// </summary>
         public bool IsInGame
         {
-            get { return this.isInGame; }
+            get { return isInGame; }
             private set
             {
-                if (this.isInGame != value)
+                if (isInGame != value)
                 {
-                    this.isInGame = value;
-                    this.OnPropertyChanged("IsInGame");
+                    isInGame = value;
+                    OnPropertyChanged("IsInGame");
 
-                    this.Class = value ? (WowClass)this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.PlayerClass)) : WowClass.None;
-                    this.Name  = value ? this.Memory.ReadString(this.Memory.Rebase(this.Offsets.PlayerName)) : string.Empty;
+                    Class = value ? (WowClass)Memory.Read<byte>(Memory.Rebase(Offsets.PlayerClass)) : WowClass.None;
+                    Name = value ? Memory.ReadString(Memory.Rebase(Offsets.PlayerName)) : string.Empty;
 
-                    if (this.Class < WowClass.None || this.Class > WowClass.Druid)
-                        throw new Exception("Unsuported wow class: " + this.Class);
+                    if (Class < WowClass.None || Class > WowClass.Druid)
+                        throw new Exception("Unsuported wow class: " + Class);
 
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged += OnRotationListChange;
 
-                    ProfileDb.Instance[this.Class].RotationList.CollectionChanged -= OnRotationListChange;
-                    ProfileDb.Instance[this.Class].RotationList.CollectionChanged += OnRotationListChange;
+                    ProfileDb.Instance[Class].RotationList.CollectionChanged -= OnRotationListChange;
+                    ProfileDb.Instance[Class].RotationList.CollectionChanged += OnRotationListChange;
 
-                    this.OnPropertyChanged("Class");
-                    this.OnPropertyChanged("Name");
-                    this.OnPropertyChanged("Rotations");
+                    OnPropertyChanged("Class");
+                    OnPropertyChanged("Name");
+                    OnPropertyChanged("Rotations");
                 };
             }
         }
 
-        private void OnRotationListChange(object sender, EventArgs e)
+        void OnRotationListChange(object sender, EventArgs e)
         {
             OnPropertyChanged("Rotations");
         }
@@ -157,58 +157,58 @@ namespace Yanitta
         public WowMemory(Process process)
         {
             if (process == null)
-                throw new ArgumentNullException("process");
+                throw new ArgumentNullException(nameof(process));
 
             var section = string.Format("{0}_{1}",
                 process.ProcessName,
                 process.MainModule.FileVersionInfo.FilePrivatePart);
 
-            this.Offsets = new Offsets(section);
-            if (this.Offsets == null)
+            Offsets = new Offsets(section);
+            if (Offsets == null)
                 throw new NullReferenceException(string.Format("Current game version ({0}) not supported!", section));
 
-            this.Memory = new ProcessMemory(process);
+            Memory = new ProcessMemory(process);
 
-            this.mTimer = new DispatcherTimer();
-            this.mTimer.Interval = TimeSpan.FromMilliseconds(500);
-            this.mTimer.Tick += (o, e) => {
+            mTimer = new DispatcherTimer();
+            mTimer.Interval = TimeSpan.FromMilliseconds(500);
+            mTimer.Tick += (o, e) => {
                 if (CheckProcess())
-                    this.IsInGame = this.Memory.Read<byte>(this.Memory.Rebase(this.Offsets.IsInGame)) != 0;
+                    IsInGame = Memory.Read<byte>(Memory.Rebase(Offsets.IsInGame)) != 0;
             };
 
             // Мы должны сохранить ссылку на делегат, чтобы его не трогал сборщик мусора
-            this.KeyBoardProck = new KeyBoardProc(HookCallback);
-            this.keyboardHook = SetWindowsHookEx(13, this.KeyBoardProck, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
+            KeyBoardProck = new KeyBoardProc(HookCallback);
+            keyboardHook = SetWindowsHookEx(13, KeyBoardProck, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
 
-            this.mTimer.IsEnabled = true;
-            this.mTimer.Start();
+            mTimer.IsEnabled = true;
+            mTimer.Start();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
+        IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode == 0
                 && Keyboard.Modifiers != ModifierKeys.None
-                && this.Memory.IsFocusMainWindow
-                && this.IsInGame
+                && Memory.IsFocusMainWindow
+                && IsInGame
                 && (wParam.ToInt32() == 0x104 || wParam.ToInt32() == 0x100))
             {
                 var vkCode = Marshal.ReadInt32(lParam);
-                var key    = KeyInterop.KeyFromVirtualKey(vkCode);
+                var key = KeyInterop.KeyFromVirtualKey(vkCode);
 
                 // не будем обрабатывать, если просто зажат модификатор [116...121]
                 if (!(key >= Key.LeftShift && key <= Key.RightAlt))
                 {
                     //Debug.WriteLine("[{3}] Mod: {0}, Key: {1} ({2})", Keyboard.Modifiers, key, VkCode, nCode);
-                    foreach (var rotation in this.Rotations)
+                    foreach (var rotation in Rotations)
                     {
                         if (rotation.HotKey.Modifier == Keyboard.Modifiers
                             && rotation.HotKey.Key == key)
                         {
                             Console.WriteLine("Процесс: [{0}] {1} <{2}> Запуск ротации \"{3}\" ({4})",
-                                this.ProcessId, this.Class, this.Name, rotation.Name, rotation.HotKey);
+                                ProcessId, Class, Name, rotation.Name, rotation.HotKey);
 
-                            this.ExecuteProfile(rotation);
+                            ExecuteProfile(rotation);
                             return (IntPtr)1;
                         }
                     }
@@ -220,17 +220,17 @@ namespace Yanitta
         /// <summary>
         /// Проверяет доступность текущего процесса.
         /// </summary>
-        private bool CheckProcess()
+        bool CheckProcess()
         {
-            if (this.Memory.Process.HasExited
-                || Process.GetProcessById(this.ProcessId) == null)
+            if (Memory.Process.HasExited
+                || Process.GetProcessById(ProcessId) == null)
             {
-                this.IsInGame = false;
-                if (this.GameExited != null)
-                    this.GameExited(this);
+                IsInGame = false;
+                if (GameExited != null)
+                    GameExited(this);
 
                 Console.WriteLine("Wow process exited!");
-                this.Dispose();
+                Dispose();
                 return false;
             }
             return true;
@@ -240,20 +240,19 @@ namespace Yanitta
         /// Запускает/останавливает ротацию.
         /// </summary>
         /// <param name="rotation">Текущая ротация.</param>
-        private void ExecuteProfile(Rotation rotation)
+        void ExecuteProfile(Rotation rotation)
         {
             if (rotation == null)
-                throw new ArgumentNullException("rotation");
+                throw new ArgumentNullException(nameof(rotation));
 
             var builder = new StringBuilder();
             builder.AppendLine(ProfileDb.Instance.Lua);
             builder.AppendLine();
 
-            builder.AppendFormatLine("ABILITY_TABLE = {{\n{0}\n}};",
-                string.Join(",\n", rotation.AbilityList));
+            builder.AppendFormatLine($"ABILITY_TABLE = {{\n{string.Join(",\n", rotation.AbilityList)}\n}};");
             builder.AppendLine();
 
-            builder.AppendLine(ProfileDb.Instance[this.Class].Lua);
+            builder.AppendLine(ProfileDb.Instance[Class].Lua);
             builder.AppendLine();
             // у профилей по умолчанию не должно быть кода профиля.
             //builder.AppendLine(ProfileDb.Instance[WowClass.None].Lua);
@@ -263,13 +262,13 @@ namespace Yanitta
             builder.AppendFormatLine(@"DebugMode = {0};", Settings.Default.DebugMode.ToString().ToLower());
             // Запуск ротации
             builder.AppendFormatLine("assert(type(ChangeRotation) == \"function\", 'Не найдена функция \"ChangeRotation\"');");
-            builder.AppendFormatLine(@"ChangeRotation(""{0}"");", rotation.Name);
+            builder.AppendFormatLine($"ChangeRotation(\"{rotation.Name}\");");
 
             var code = builder.ToString();
 
             System.IO.File.WriteAllText("InjectedLuaCode.lua", code);
 
-            this.LuaExecute(code);
+            LuaExecute(code);
         }
 
         /// <summary>
@@ -279,18 +278,18 @@ namespace Yanitta
         public void LuaExecute(string command)
         {
             var bytes = Encoding.UTF8.GetBytes(command + '\0');
-            var code  = this.Memory.Write(bytes);
-            var path  = this.Memory.WriteCString("profile.lua");
+            var code  = Memory.Write(bytes);
+            var path  = Memory.WriteCString("profile.lua");
             var len   = bytes.Length - 1;
             try
             {
-                var injAddress  = this.Memory.Rebase(this.Offsets.InjectedAddress);
-                var funcAddress = this.Memory.Rebase(this.Offsets.ExecuteBuffer);
+                var injAddress  = Memory.Rebase(Offsets.InjectedAddress);
+                var funcAddress = Memory.Rebase(Offsets.ExecuteBuffer);
 
                 //if (Memory.IsX64)
                 //    this.Memory.Call_x64(injAddress, funcAddress, code, path, IntPtr.Zero);
                 //else
-                    this.Memory.Call_x32(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
+                Memory.Call_x32(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
             }
             catch (Exception ex)
             {
@@ -298,14 +297,14 @@ namespace Yanitta
             }
             finally
             {
-                this.Memory.Free(code);
-                this.Memory.Free(path);
+                Memory.Free(code);
+                Memory.Free(path);
             }
         }
 
         public override string ToString()
         {
-            return string.Format("[{0}] {1} ({2})", this.ProcessId, this.Name, this.Class);
+            return $"[{ProcessId}] {Name} ({Class})";
         }
 
         ~WowMemory()
@@ -318,42 +317,42 @@ namespace Yanitta
         /// </summary>
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        private const string StopCode =
+        const string StopCode =
 @"if type(ChangeRotation) == ""function"" then
      ChangeRotation();
  end
  ABILITY_TABLE = { };";
 
-        private void Dispose(bool disposing)
+        void Dispose(bool disposing)
         {
-            if (this.IsDisposed)
+            if (IsDisposed)
                 return;
 
-            if (this.mTimer != null)
+            if (mTimer != null)
             {
-                this.mTimer.Stop();
-                this.mTimer.IsEnabled = false;
+                mTimer.Stop();
+                mTimer.IsEnabled = false;
             }
 
-            if (this.keyboardHook != IntPtr.Zero)
-                UnhookWindowsHookEx(this.keyboardHook);
-            this.KeyBoardProck = null;
+            if (keyboardHook != IntPtr.Zero)
+                UnhookWindowsHookEx(keyboardHook);
+            KeyBoardProck = null;
 
-            if (this.Memory != null && !this.Memory.Process.HasExited)
+            if (Memory != null && !Memory.Process.HasExited)
             {
-                if (this.IsInGame && this.Memory != null)
+                if (IsInGame && Memory != null)
                 {
-                    this.LuaExecute(StopCode);
+                    LuaExecute(StopCode);
                 }
             }
 
-            this.keyboardHook = IntPtr.Zero;
-            this.Memory     = null;
-            this.IsDisposed = true;
+            keyboardHook = IntPtr.Zero;
+            Memory = null;
+            IsDisposed = true;
         }
     }
 }

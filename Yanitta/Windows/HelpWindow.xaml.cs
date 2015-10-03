@@ -34,7 +34,7 @@ namespace Yanitta.Windows
 
             if (spell == null)
             {
-                this.Close();
+                Close();
                 return;
             }
 
@@ -49,10 +49,10 @@ namespace Yanitta.Windows
                     UriKind.Absolute));
         }
 
-        private void CommandBinding_GetSpellData_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_GetSpellData_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             uint id;
-            if (uint.TryParse(this.spellId.Text.Trim(), out id))
+            if (uint.TryParse(spellId.Text.Trim(), out id))
                 GetSpellData(id);
         }
     }

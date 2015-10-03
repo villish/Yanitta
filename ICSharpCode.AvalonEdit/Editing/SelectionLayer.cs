@@ -7,12 +7,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 {
     internal sealed class SelectionLayer : Layer, IWeakEventListener
     {
-        private readonly TextArea textArea;
+        readonly TextArea textArea;
 
         public SelectionLayer(TextArea textArea)
             : base(textArea.TextView, KnownLayer.Selection)
         {
-            this.IsHitTestVisible = false;
+            IsHitTestVisible = false;
             this.textArea         = textArea;
 
             TextViewWeakEventManager.VisualLinesChanged.AddListener(textView, this);

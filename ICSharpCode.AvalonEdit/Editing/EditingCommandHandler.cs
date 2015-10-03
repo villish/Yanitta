@@ -32,10 +32,10 @@ namespace ICSharpCode.AvalonEdit.Editing
             return handler;
         }
 
-        private static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
-        private static readonly List<InputBinding> InputBindings = new List<InputBinding>();
+        static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
+        static readonly List<InputBinding> InputBindings = new List<InputBinding>();
 
-        private static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
+        static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
         {
             CommandBindings.Add(new CommandBinding(command, handler));
             InputBindings.Add(TextAreaDefaultInputHandler.CreateFrozenKeyBinding(command, modifiers, key));
@@ -78,14 +78,14 @@ namespace ICSharpCode.AvalonEdit.Editing
             TextAreaDefaultInputHandler.WorkaroundWPFMemoryLeak(InputBindings);
         }
 
-        private static TextArea GetTextArea(object target)
+        static TextArea GetTextArea(object target)
         {
             return target as TextArea;
         }
 
         #region Text Transformation Helpers
 
-        private enum DefaultSegmentType
+        enum DefaultSegmentType
         {
             None,
             WholeDocument,
@@ -96,7 +96,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// Calls transformLine on all lines in the selected range.
         /// transformLine needs to handle read-only segments!
         /// </summary>
-        private static void TransformSelectedLines(Action<TextArea, DocumentLine> transformLine, object target, ExecutedRoutedEventArgs args, DefaultSegmentType defaultSegmentType)
+        static void TransformSelectedLines(Action<TextArea, DocumentLine> transformLine, object target, ExecutedRoutedEventArgs args, DefaultSegmentType defaultSegmentType)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -147,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// <summary>
         /// Calls transformLine on all writable segment in the selected range.
         /// </summary>
-        private static void TransformSelectedSegments(Action<TextArea, ISegment> transformSegment, object target, ExecutedRoutedEventArgs args, DefaultSegmentType defaultSegmentType)
+        static void TransformSelectedSegments(Action<TextArea, ISegment> transformSegment, object target, ExecutedRoutedEventArgs args, DefaultSegmentType defaultSegmentType)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -194,7 +194,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region EnterLineBreak
 
-        private static void OnEnter(object target, ExecutedRoutedEventArgs args)
+        static void OnEnter(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.IsKeyboardFocused)
@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Tab
 
-        private static void OnTab(object target, ExecutedRoutedEventArgs args)
+        static void OnTab(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -245,10 +245,10 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void OnShiftTab(object target, ExecutedRoutedEventArgs args)
+        static void OnShiftTab(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedLines(
-                delegate(TextArea textArea, DocumentLine line)
+                delegate (TextArea textArea, DocumentLine line)
                 {
                     int offset = line.Offset;
                     ISegment s = TextUtilities.GetSingleIndentationSegment(textArea.Document, offset, textArea.Options.IndentationSize);
@@ -267,7 +267,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Delete
 
-        private static ExecutedRoutedEventHandler OnDelete(RoutedUICommand selectingCommand)
+        static ExecutedRoutedEventHandler OnDelete(RoutedUICommand selectingCommand)
         {
             return (target, args) =>
             {
@@ -310,7 +310,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             };
         }
 
-        private static void CanDelete(object target, CanExecuteRoutedEventArgs args)
+        static void CanDelete(object target, CanExecuteRoutedEventArgs args)
         {
             // HasSomethingSelected for delete command
             TextArea textArea = GetTextArea(target);
@@ -325,7 +325,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Clipboard commands
 
-        private static void CanCutOrCopy(object target, CanExecuteRoutedEventArgs args)
+        static void CanCutOrCopy(object target, CanExecuteRoutedEventArgs args)
         {
             // HasSomethingSelected for copy and cut commands
             TextArea textArea = GetTextArea(target);
@@ -336,7 +336,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void OnCopy(object target, ExecutedRoutedEventArgs args)
+        static void OnCopy(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -354,7 +354,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void OnCut(object target, ExecutedRoutedEventArgs args)
+        static void OnCut(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -379,7 +379,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void CopySelectedText(TextArea textArea)
+        static void CopySelectedText(TextArea textArea)
         {
             var data = textArea.Selection.CreateDataObject(textArea);
 
@@ -399,9 +399,9 @@ namespace ICSharpCode.AvalonEdit.Editing
             textArea.OnTextCopied(new TextEventArgs(text));
         }
 
-        private const string LineSelectedType = "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
+        const string LineSelectedType = "MSDEVLineSelect";  // This is the type VS 2003 and 2005 use for flagging a whole line copy
 
-        private static void CopyWholeLine(TextArea textArea, DocumentLine line)
+        static void CopyWholeLine(TextArea textArea, DocumentLine line)
         {
             ISegment wholeLine = new SimpleSegment(line.Offset, line.TotalLength);
             string text = textArea.Document.GetText(wholeLine);
@@ -431,7 +431,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             textArea.OnTextCopied(new TextEventArgs(text));
         }
 
-        private static void CanPaste(object target, CanExecuteRoutedEventArgs args)
+        static void CanPaste(object target, CanExecuteRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -444,7 +444,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void OnPaste(object target, ExecutedRoutedEventArgs args)
+        static void OnPaste(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -506,7 +506,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region DeleteLine
 
-        private static void OnDeleteLine(object target, ExecutedRoutedEventArgs args)
+        static void OnDeleteLine(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -522,39 +522,39 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Remove..Whitespace / Convert Tabs-Spaces
 
-        private static void OnRemoveLeadingWhitespace(object target, ExecutedRoutedEventArgs args)
+        static void OnRemoveLeadingWhitespace(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedLines(
-                delegate(TextArea textArea, DocumentLine line)
+                delegate (TextArea textArea, DocumentLine line)
                 {
                     textArea.Document.Remove(TextUtilities.GetLeadingWhitespace(textArea.Document, line));
                 }, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void OnRemoveTrailingWhitespace(object target, ExecutedRoutedEventArgs args)
+        static void OnRemoveTrailingWhitespace(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedLines(
-                delegate(TextArea textArea, DocumentLine line)
+                delegate (TextArea textArea, DocumentLine line)
                 {
                     textArea.Document.Remove(TextUtilities.GetTrailingWhitespace(textArea.Document, line));
                 }, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void OnConvertTabsToSpaces(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertTabsToSpaces(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedSegments(ConvertTabsToSpaces, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void OnConvertLeadingTabsToSpaces(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertLeadingTabsToSpaces(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedLines(
-                delegate(TextArea textArea, DocumentLine line)
+                delegate (TextArea textArea, DocumentLine line)
                 {
                     ConvertTabsToSpaces(textArea, TextUtilities.GetLeadingWhitespace(textArea.Document, line));
                 }, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void ConvertTabsToSpaces(TextArea textArea, ISegment segment)
+        static void ConvertTabsToSpaces(TextArea textArea, ISegment segment)
         {
             TextDocument document = textArea.Document;
             int endOffset = segment.EndOffset;
@@ -569,21 +569,21 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void OnConvertSpacesToTabs(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertSpacesToTabs(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedSegments(ConvertSpacesToTabs, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void OnConvertLeadingSpacesToTabs(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertLeadingSpacesToTabs(object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedLines(
-                delegate(TextArea textArea, DocumentLine line)
+                delegate (TextArea textArea, DocumentLine line)
                 {
                     ConvertSpacesToTabs(textArea, TextUtilities.GetLeadingWhitespace(textArea.Document, line));
                 }, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void ConvertSpacesToTabs(TextArea textArea, ISegment segment)
+        static void ConvertSpacesToTabs(TextArea textArea, ISegment segment)
         {
             TextDocument document = textArea.Document;
             int endOffset = segment.EndOffset;
@@ -613,10 +613,10 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Convert...Case
 
-        private static void ConvertCase(Func<string, string> transformText, object target, ExecutedRoutedEventArgs args)
+        static void ConvertCase(Func<string, string> transformText, object target, ExecutedRoutedEventArgs args)
         {
             TransformSelectedSegments(
-                delegate(TextArea textArea, ISegment segment)
+                delegate (TextArea textArea, ISegment segment)
                 {
                     string oldText = textArea.Document.GetText(segment);
                     string newText = transformText(oldText);
@@ -624,27 +624,27 @@ namespace ICSharpCode.AvalonEdit.Editing
                 }, target, args, DefaultSegmentType.WholeDocument);
         }
 
-        private static void OnConvertToUpperCase(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertToUpperCase(object target, ExecutedRoutedEventArgs args)
         {
             ConvertCase(CultureInfo.CurrentCulture.TextInfo.ToUpper, target, args);
         }
 
-        private static void OnConvertToLowerCase(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertToLowerCase(object target, ExecutedRoutedEventArgs args)
         {
             ConvertCase(CultureInfo.CurrentCulture.TextInfo.ToLower, target, args);
         }
 
-        private static void OnConvertToTitleCase(object target, ExecutedRoutedEventArgs args)
+        static void OnConvertToTitleCase(object target, ExecutedRoutedEventArgs args)
         {
             ConvertCase(CultureInfo.CurrentCulture.TextInfo.ToTitleCase, target, args);
         }
 
-        private static void OnInvertCase(object target, ExecutedRoutedEventArgs args)
+        static void OnInvertCase(object target, ExecutedRoutedEventArgs args)
         {
             ConvertCase(InvertCase, target, args);
         }
 
-        private static string InvertCase(string text)
+        static string InvertCase(string text)
         {
             CultureInfo culture = CultureInfo.CurrentCulture;
             char[] buffer = text.ToCharArray();
@@ -658,7 +658,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #endregion Convert...Case
 
-        private static void OnIndentSelection(object target, ExecutedRoutedEventArgs args)
+        static void OnIndentSelection(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -683,7 +683,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void ProcessSegment(TextArea textArea, Action<SelectionSegment, DocumentLine> predicate)
+        static void ProcessSegment(TextArea textArea, Action<SelectionSegment, DocumentLine> predicate)
         {
             if (textArea == null || textArea.Document == null)
                 return;
@@ -694,7 +694,7 @@ namespace ICSharpCode.AvalonEdit.Editing
                     foreach (var line in textArea.Document.Lines.Reverse())
                     {
                         var start = segment.StartOffset;
-                        var end   = segment.EndOffset;
+                        var end = segment.EndOffset;
 
                         if (line.Offset >= start && line.Offset <= end)
                         {
@@ -705,17 +705,19 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void OnCommentSelection(object target, ExecutedRoutedEventArgs args)
+        static void OnCommentSelection(object target, ExecutedRoutedEventArgs args)
         {
-            ProcessSegment(GetTextArea(target), (segment, line) => {
+            ProcessSegment(GetTextArea(target), (segment, line) =>
+            {
                 line.Text = "--" + line.Text;
             });
             args.Handled = true;
         }
 
-        private static void OnUnCommentSelection(object target, ExecutedRoutedEventArgs args)
+        static void OnUnCommentSelection(object target, ExecutedRoutedEventArgs args)
         {
-            ProcessSegment(GetTextArea(target), (segment, line) => {
+            ProcessSegment(GetTextArea(target), (segment, line) =>
+            {
                 if (line.Text.TrimStart().StartsWith("--"))
                     line.Text = line.Text.Substring(line.Text.IndexOf("--") + 2);
             });

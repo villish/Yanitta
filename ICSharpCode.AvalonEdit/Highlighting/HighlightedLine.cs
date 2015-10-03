@@ -18,12 +18,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public HighlightedLine(TextDocument document, DocumentLine documentLine)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             if (!document.Lines.Contains(documentLine))
                 throw new ArgumentException("Line is null or not part of document");
-            this.Document = document;
-            this.DocumentLine = documentLine;
-            this.Sections = new NullSafeCollection<HighlightedSection>();
+            Document = document;
+            DocumentLine = documentLine;
+            Sections = new NullSafeCollection<HighlightedSection>();
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// </summary>
         public IList<HighlightedSection> Sections { get; private set; }
 
-        private sealed class HtmlElement : IComparable<HtmlElement>
+        sealed class HtmlElement : IComparable<HtmlElement>
         {
             internal readonly int Offset;
             internal readonly int Nesting;
@@ -53,10 +53,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
             public HtmlElement(int offset, int nesting, bool isEnd, HighlightingColor color)
             {
-                this.Offset = offset;
-                this.Nesting = nesting;
-                this.IsEnd = isEnd;
-                this.Color = color;
+                Offset = offset;
+                Nesting = nesting;
+                IsEnd = isEnd;
+                Color = color;
             }
 
             public int CompareTo(HtmlElement other)
@@ -86,8 +86,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// </summary>
         public string ToHtml(HtmlOptions options)
         {
-            int startOffset = this.DocumentLine.Offset;
-            return ToHtml(startOffset, startOffset + this.DocumentLine.Length, options);
+            int startOffset = DocumentLine.Offset;
+            return ToHtml(startOffset, startOffset + DocumentLine.Length, options);
         }
 
         /// <summary>
@@ -96,19 +96,19 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public string ToHtml(int startOffset, int endOffset, HtmlOptions options)
         {
             if (options == null)
-                throw new ArgumentNullException("options");
-            int documentLineStartOffset = this.DocumentLine.Offset;
-            int documentLineEndOffset = documentLineStartOffset + this.DocumentLine.Length;
+                throw new ArgumentNullException(nameof(options));
+            int documentLineStartOffset = DocumentLine.Offset;
+            int documentLineEndOffset = documentLineStartOffset + DocumentLine.Length;
             if (startOffset < documentLineStartOffset || startOffset > documentLineEndOffset)
-                throw new ArgumentOutOfRangeException("startOffset", startOffset, "Value must be between " + documentLineStartOffset + " and " + documentLineEndOffset);
+                throw new ArgumentOutOfRangeException(nameof(startOffset), startOffset, "Value must be between " + documentLineStartOffset + " and " + documentLineEndOffset);
             if (endOffset < startOffset || endOffset > documentLineEndOffset)
-                throw new ArgumentOutOfRangeException("endOffset", endOffset, "Value must be between startOffset and " + documentLineEndOffset);
+                throw new ArgumentOutOfRangeException(nameof(endOffset), endOffset, "Value must be between startOffset and " + documentLineEndOffset);
             ISegment requestedSegment = new SimpleSegment(startOffset, endOffset - startOffset);
 
             List<HtmlElement> elements = new List<HtmlElement>();
-            for (int i = 0; i < this.Sections.Count; i++)
+            for (int i = 0; i < Sections.Count; i++)
             {
-                HighlightedSection s = this.Sections[i];
+                HighlightedSection s = Sections[i];
                 if (s.GetOverlap(requestedSegment).Length > 0)
                 {
                     elements.Add(new HtmlElement(s.Offset, i, false, s.Color));
@@ -117,7 +117,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
             elements.Sort();
 
-            TextDocument document = this.Document;
+            TextDocument document = Document;
             StringWriter w = new StringWriter(CultureInfo.InvariantCulture);
             int textOffset = startOffset;
             foreach (HtmlElement e in elements)

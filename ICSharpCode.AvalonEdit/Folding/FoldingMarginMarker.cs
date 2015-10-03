@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         internal VisualLine VisualLine;
         internal FoldingSection FoldingSection;
 
-        private bool isExpanded;
+        bool isExpanded;
 
         public bool IsExpanded
         {
@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.Folding
             }
         }
 
-        private const double MarginSizeFactor = 0.7;
+        const double MarginSizeFactor = 0.7;
 
         protected override Size MeasureCore(Size availableSize)
         {
@@ -64,8 +64,8 @@ namespace ICSharpCode.AvalonEdit.Folding
             Size pixelSize = PixelSnapHelpers.GetPixelSize(this);
             Rect rect = new Rect(pixelSize.Width / 2,
                                  pixelSize.Height / 2,
-                                 this.RenderSize.Width - pixelSize.Width,
-                                 this.RenderSize.Height - pixelSize.Height);
+                                 RenderSize.Width - pixelSize.Width,
+                                 RenderSize.Height - pixelSize.Height);
 
             drawingContext.DrawRectangle(
                 IsMouseDirectlyOver ? margin.SelectedFoldingMarkerBackgroundBrush : margin.FoldingMarkerBackgroundBrush,

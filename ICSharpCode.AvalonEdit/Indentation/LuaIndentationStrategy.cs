@@ -11,14 +11,14 @@ namespace ICSharpCode.AvalonEdit.Indentation
         const string patternStart = @"\b(?<start>function|while(.+)do|if(.+)then|elseif(.+)then|for(.+)do|{{)\b";
         const string patternEnd   = @"\b(?<start>end)\b";
 
-        private TextEditor textEditor;
+        TextEditor textEditor;
 
         public LuaIndentationStrategy(TextEditor textEditor)
         {
             this.textEditor = textEditor;
         }
 
-        private int CalcSpace(string str)
+        int CalcSpace(string str)
         {
             for (int i = 0; i < str.Length; ++i)
             {

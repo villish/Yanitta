@@ -11,7 +11,7 @@ namespace Yanitta
 {
     public partial class WinProfileEditor : Window
     {
-        private Key[] Keys = { Key.X, Key.Z, Key.C, Key.V, Key.B, Key.N };
+        Key[] Keys = { Key.X, Key.Z, Key.C, Key.V, Key.B, Key.N };
 
         public WinProfileEditor()
         {
@@ -19,22 +19,22 @@ namespace Yanitta
             InitialiseEmptyProfiles();
         }
 
-        private Profile CurrentProfile
+        Profile CurrentProfile
         {
             get { return profiLeList.SelectedValue<Profile>(); }
         }
 
-        private Rotation CurrentRotation
+        Rotation CurrentRotation
         {
             get { return rotationList.SelectedValue<Rotation>(); }
         }
 
-        private Ability CurrentAbility
+        Ability CurrentAbility
         {
             get { return abilityList.SelectedValue<Ability>(); }
         }
 
-        private void InitialiseEmptyProfiles()
+        void InitialiseEmptyProfiles()
         {
             foreach (WowClass wowClass in Enum.GetValues(typeof(WowClass)))
             {
@@ -52,53 +52,54 @@ namespace Yanitta
         #region Commands
 
         // ability
-        private void CommandBinding_Executed_AddAbility(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_AddAbility(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentRotation == null)
+            if (CurrentRotation == null)
                 throw new YanittaException("Не выбрана ротация для новой способности!");
 
-            this.CurrentRotation.AbilityList.Add(new Ability {
+            CurrentRotation.AbilityList.Add(new Ability
+            {
                 IsUsableCheck = true,
                 TargetList = new List<TargetType> { TargetType.None }
             });
-            this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
-            this.tbAbilityName.Focus();
-            this.tbAbilityName.SelectAll();
-            abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            abilityList.SelectedIndex = CurrentRotation.AbilityList.Count - 1;
+            tbAbilityName.Focus();
+            tbAbilityName.SelectAll();
+            abilityList.ScrollIntoView(abilityList.SelectedItem);
             CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
         }
 
-        private void CommandBinding_Executed_CopyAbility(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_CopyAbility(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentAbility == null)
+            if (CurrentAbility == null)
                 throw new YanittaException("Не выбрана способность для копирования!");
 
-            this.CurrentRotation.AbilityList.Add(this.CurrentAbility.Clone());
-            this.abilityList.SelectedIndex = this.CurrentRotation.AbilityList.Count - 1;
-            this.tbAbilityName.Focus();
-            this.tbAbilityName.SelectAll();
-            this.abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+            CurrentRotation.AbilityList.Add(CurrentAbility.Clone());
+            abilityList.SelectedIndex = CurrentRotation.AbilityList.Count - 1;
+            tbAbilityName.Focus();
+            tbAbilityName.SelectAll();
+            abilityList.ScrollIntoView(abilityList.SelectedItem);
             CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
         }
 
-        private void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentAbility == null)
+            if (CurrentAbility == null)
                 throw new YanittaException("Не выбрана способность для удаления!");
 
             var result = MessageBox.Show(Localization.AbilityDelQuestion,
-                this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                this.CurrentRotation.AbilityList.Remove(this.CurrentAbility);
+                CurrentRotation.AbilityList.Remove(CurrentAbility);
                 CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
             }
         }
 
         // rotations
-        private void CommandBinding_Executed_AddRotation(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_AddRotation(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentProfile == null)
+            if (CurrentProfile == null)
                 throw new YanittaException("Не выбран класс для новой ротации!");
 
             var mod = ModifierKeys.Alt | (CurrentProfile.Class == WowClass.None
@@ -106,77 +107,77 @@ namespace Yanitta
                 : ModifierKeys.None);
 
             var rotation = new Rotation();
-            if (CurrentProfile.RotationList.Count < this.Keys.Length)
-                rotation.HotKey = new HotKey(this.Keys[CurrentProfile.RotationList.Count], mod);
-            this.CurrentProfile.RotationList.Add(rotation);
-            this.rotationList.SelectedIndex = this.CurrentProfile.RotationList.Count - 1;
-            this.tbRotationName.Focus();
-            this.tbRotationName.SelectAll();
-            this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+            if (CurrentProfile.RotationList.Count < Keys.Length)
+                rotation.HotKey = new HotKey(Keys[CurrentProfile.RotationList.Count], mod);
+            CurrentProfile.RotationList.Add(rotation);
+            rotationList.SelectedIndex = CurrentProfile.RotationList.Count - 1;
+            tbRotationName.Focus();
+            tbRotationName.SelectAll();
+            rotationList.ScrollIntoView(rotationList.SelectedItem);
             CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
         }
 
-        private void CommandBinding_Executed_CopyRotation(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_CopyRotation(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentRotation == null)
+            if (CurrentRotation == null)
                 throw new YanittaException("Не выбрана ротация для копирования!");
 
-            this.CurrentProfile.RotationList.Add((Rotation)this.CurrentRotation.Clone());
-            this.rotationList.SelectedIndex = this.CurrentProfile.RotationList.Count - 1;
-            this.tbRotationName.Focus();
-            this.tbRotationName.SelectAll();
-            this.rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+            CurrentProfile.RotationList.Add((Rotation)CurrentRotation.Clone());
+            rotationList.SelectedIndex = CurrentProfile.RotationList.Count - 1;
+            tbRotationName.Focus();
+            tbRotationName.SelectAll();
+            rotationList.ScrollIntoView(rotationList.SelectedItem);
             CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
         }
 
-        private void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentRotation == null)
+            if (CurrentRotation == null)
                 throw new YanittaException("Не выбрана ротация для удаления!");
 
             var result = MessageBox.Show(Localization.RotationDelQuestion,
-                   this.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                   Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                this.CurrentProfile.RotationList.Remove(this.CurrentRotation);
+                CurrentProfile.RotationList.Remove(CurrentRotation);
                 CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
             }
         }
 
-        private void CommandBinding_MoveRotation_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_MoveRotation_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var shift = int.Parse((string)e.Parameter);
             var index = rotationList.SelectedIndex;
             if (CurrentProfile != null && index > -1
                 && !(shift == -1 && index == 0)
-                && !(shift == 1  && index == CurrentProfile.RotationList.Count - 1))
+                && !(shift == 1 && index == CurrentProfile.RotationList.Count - 1))
             {
                 CurrentProfile.RotationList.Move(index, index + shift);
-                rotationList.ScrollIntoView(this.rotationList.SelectedItem);
+                rotationList.ScrollIntoView(rotationList.SelectedItem);
                 CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
             }
         }
 
-        private void CommandBinding_MoveAbility_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_MoveAbility_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var shift = int.Parse((string)e.Parameter);
             var index = abilityList.SelectedIndex;
             if (CurrentRotation != null && index > -1
                 && !(shift == -1 && index == 0)
-                && !(shift == 1  && index == CurrentRotation.AbilityList.Count - 1))
+                && !(shift == 1 && index == CurrentRotation.AbilityList.Count - 1))
             {
                 CurrentRotation.AbilityList.Move(index, index + shift);
-                abilityList.ScrollIntoView(this.abilityList.SelectedItem);
+                abilityList.ScrollIntoView(abilityList.SelectedItem);
                 CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
             }
         }
 
-        private void CommandBinding_CopyFromRotation_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_CopyFromRotation_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (this.CurrentProfile == null)
+            if (CurrentProfile == null)
                 throw new YanittaException("Empty profile");
 
-            var window = new CopyAbilitysWindow(this.CurrentProfile);
+            var window = new CopyAbilitysWindow(CurrentProfile);
             window.Owner = this;
             if (window.ShowDialog() == true)
             {
@@ -188,20 +189,20 @@ namespace Yanitta
             }
         }
 
-        private void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
         {
             ProfileDb.Save();
         }
 
-        private void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = true;
-            this.Close();
+            Close();
         }
 
         #endregion Commands
 
-        private void tbAbilityFilter_TextChanged(object sender, TextChangedEventArgs e)
+        void tbAbilityFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
             var abilityView = CollectionViewSource.GetDefaultView(abilityList.ItemsSource);
             if (abilityView != null)
@@ -215,7 +216,8 @@ namespace Yanitta
                     int spellId = 0;
                     if (int.TryParse(tbAbilityFilter.Text, out spellId))
                     {
-                        abilityView.Filter = new Predicate<object>((raw_ability) => {
+                        abilityView.Filter = new Predicate<object>((raw_ability) =>
+                        {
                             var ability = raw_ability as Ability;
                             if (ability == null)
                                 return false;
@@ -224,7 +226,8 @@ namespace Yanitta
                     }
                     else
                     {
-                        abilityView.Filter = new Predicate<object>((raw_ability) => {
+                        abilityView.Filter = new Predicate<object>((raw_ability) =>
+                        {
                             var ability = raw_ability as Ability;
                             if (ability == null || string.IsNullOrWhiteSpace(ability.Name))
                                 return false;
@@ -236,7 +239,7 @@ namespace Yanitta
             }
         }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F1 && CurrentAbility.SpellID != 0)
             {
@@ -244,7 +247,7 @@ namespace Yanitta
             }
         }
 
-        private void TextEditor_PreviewKeyDown(object sender, KeyEventArgs e)
+        void TextEditor_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F1)
             {

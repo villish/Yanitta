@@ -29,7 +29,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         {
         }
 
-        private List<VisualLineDrawingVisual> visuals = new List<VisualLineDrawingVisual>();
+        List<VisualLineDrawingVisual> visuals = new List<VisualLineDrawingVisual>();
 
         internal void SetVisualLines(ICollection<VisualLine> visualLines)
         {

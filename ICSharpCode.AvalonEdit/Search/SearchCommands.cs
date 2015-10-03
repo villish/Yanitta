@@ -47,10 +47,10 @@ namespace ICSharpCode.AvalonEdit.Search
         public SearchInputHandler(TextArea textArea)
             : base(textArea)
         {
-            RegisterCommands(this.CommandBindings);
+            RegisterCommands(CommandBindings);
         }
 
-        private void RegisterCommands(ICollection<CommandBinding> commandBindings)
+        void RegisterCommands(ICollection<CommandBinding> commandBindings)
         {
             commandBindings.Add(new CommandBinding(ApplicationCommands.Find, ExecuteFind));
             commandBindings.Add(new CommandBinding(SearchCommands.FindNext, ExecuteFindNext));
@@ -58,9 +58,9 @@ namespace ICSharpCode.AvalonEdit.Search
             commandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, ExecuteCloseSearchPanel));
         }
 
-        private SearchPanel panel;
+        SearchPanel panel;
 
-        private void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
+        void ExecuteFind(object sender, ExecutedRoutedEventArgs e)
         {
             if (panel == null || panel.IsClosed)
             {
@@ -71,19 +71,19 @@ namespace ICSharpCode.AvalonEdit.Search
             Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Input, (Action)delegate { panel.Reactivate(); });
         }
 
-        private void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
+        void ExecuteFindNext(object sender, ExecutedRoutedEventArgs e)
         {
             if (panel != null)
                 panel.FindNext();
         }
 
-        private void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
+        void ExecuteFindPrevious(object sender, ExecutedRoutedEventArgs e)
         {
             if (panel != null)
                 panel.FindPrevious();
         }
 
-        private void ExecuteCloseSearchPanel(object sender, ExecutedRoutedEventArgs e)
+        void ExecuteCloseSearchPanel(object sender, ExecutedRoutedEventArgs e)
         {
             if (panel != null)
                 panel.Close();

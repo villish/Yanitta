@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         internal readonly TextDocument document;
 
         internal readonly List<TextView> textViews = new List<TextView>();
-        private readonly TextSegmentCollection<FoldingSection> foldings;
+        readonly TextSegmentCollection<FoldingSection> foldings;
 
         #region Constructor
 
@@ -28,9 +28,9 @@ namespace ICSharpCode.AvalonEdit.Folding
         public FoldingManager(TextDocument document)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             this.document = document;
-            this.foldings = new TextSegmentCollection<FoldingSection>();
+            foldings = new TextSegmentCollection<FoldingSection>();
             document.VerifyAccess();
             TextDocumentWeakEventManager.Changed.AddListener(document, this);
         }
@@ -55,7 +55,7 @@ namespace ICSharpCode.AvalonEdit.Folding
             return ReceiveWeakEvent(managerType, sender, e);
         }
 
-        private void OnDocumentChanged(DocumentChangeEventArgs e)
+        void OnDocumentChanged(DocumentChangeEventArgs e)
         {
             foldings.UpdateOffsets(e);
             int newEndOffset = e.Offset + e.InsertionLength;
@@ -148,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         public void RemoveFolding(FoldingSection fs)
         {
             if (fs == null)
-                throw new ArgumentNullException("fs");
+                throw new ArgumentNullException(nameof(fs));
             fs.IsFolded = false;
             foldings.Remove(fs);
             Redraw(fs);
@@ -242,12 +242,12 @@ namespace ICSharpCode.AvalonEdit.Folding
         public void UpdateFoldings(IEnumerable<NewFolding> newFoldings, int firstErrorOffset)
         {
             if (newFoldings == null)
-                throw new ArgumentNullException("newFoldings");
+                throw new ArgumentNullException(nameof(newFoldings));
 
             if (firstErrorOffset < 0)
                 firstErrorOffset = int.MaxValue;
 
-            var oldFoldings = this.AllFoldings.ToArray();
+            var oldFoldings = AllFoldings.ToArray();
             int oldFoldingIndex = 0;
             int previousStartOffset = 0;
             // merge new foldings into old foldings so that sections keep being collapsed
@@ -268,7 +268,7 @@ namespace ICSharpCode.AvalonEdit.Folding
                 // remove old foldings that were skipped
                 while (oldFoldingIndex < oldFoldings.Length && newFolding.StartOffset > oldFoldings[oldFoldingIndex].StartOffset)
                 {
-                    this.RemoveFolding(oldFoldings[oldFoldingIndex++]);
+                    RemoveFolding(oldFoldings[oldFoldingIndex++]);
                 }
                 FoldingSection section;
                 // reuse current folding if its matching:
@@ -280,7 +280,7 @@ namespace ICSharpCode.AvalonEdit.Folding
                 else
                 {
                     // no matching current folding; create a new one:
-                    section = this.CreateFolding(newFolding.StartOffset, newFolding.EndOffset);
+                    section = CreateFolding(newFolding.StartOffset, newFolding.EndOffset);
                     // auto-close #regions only when opening the document
                     section.IsFolded = newFolding.DefaultClosed;
                     section.Tag = newFolding;
@@ -293,7 +293,7 @@ namespace ICSharpCode.AvalonEdit.Folding
                 FoldingSection oldSection = oldFoldings[oldFoldingIndex++];
                 if (oldSection.StartOffset >= firstErrorOffset)
                     break;
-                this.RemoveFolding(oldSection);
+                RemoveFolding(oldSection);
             }
         }
 
@@ -310,7 +310,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         public static FoldingManager Install(TextArea textArea)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             return new FoldingManagerInstallation(textArea);
         }
 
@@ -321,7 +321,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         public static void Uninstall(FoldingManager manager)
         {
             if (manager == null)
-                throw new ArgumentNullException("manager");
+                throw new ArgumentNullException(nameof(manager));
             FoldingManagerInstallation installation = manager as FoldingManagerInstallation;
             if (installation != null)
             {
@@ -333,11 +333,11 @@ namespace ICSharpCode.AvalonEdit.Folding
             }
         }
 
-        private sealed class FoldingManagerInstallation : FoldingManager
+        sealed class FoldingManagerInstallation : FoldingManager
         {
-            private TextArea textArea;
-            private FoldingMargin margin;
-            private FoldingElementGenerator generator;
+            TextArea textArea;
+            FoldingMargin margin;
+            FoldingElementGenerator generator;
 
             public FoldingManagerInstallation(TextArea textArea)
                 : base(textArea.Document)
@@ -367,7 +367,7 @@ namespace ICSharpCode.AvalonEdit.Folding
                 }
             }
 
-            private void textArea_Caret_PositionChanged(object sender, EventArgs e)
+            void textArea_Caret_PositionChanged(object sender, EventArgs e)
             {
                 // Expand Foldings when Caret is moved into them.
                 int caretOffset = textArea.Caret.Offset;

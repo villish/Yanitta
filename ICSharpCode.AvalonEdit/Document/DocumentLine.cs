@@ -25,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.Document
 
         // Required for thread safety check which is done only in debug builds.
         // To save space, we don't store the document reference in release builds as we don't need it there.
-        private readonly TextDocument document;
+        readonly TextDocument document;
 
         internal bool isDeleted;
 
@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.Document
         }
 
         [Conditional("DEBUG")]
-        private void DebugVerifyAccess()
+        void DebugVerifyAccess()
         {
             document.DebugVerifyAccess();
         }
@@ -123,15 +123,15 @@ namespace ICSharpCode.AvalonEdit.Document
         /// <remarks>EndOffset = <see cref="Offset"/> + <see cref="Length"/>.</remarks>
         public int EndOffset
         {
-            get { return this.Offset + this.Length; }
+            get { return Offset + Length; }
         }
 
         #endregion Properties stored in tree
 
         #region Length
 
-        private int totalLength;
-        private byte delimiterLength;
+        int totalLength;
+        byte delimiterLength;
 
         /// <summary>
         /// Gets the length of this line. The length does not include the line delimiter. O(1)

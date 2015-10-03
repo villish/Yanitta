@@ -14,7 +14,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         /// </summary>
         public const string Namespace = V2Loader.Namespace;
 
-        private XmlWriter writer;
+        XmlWriter writer;
 
         /// <summary>
         /// Creates a new SaveXshdVisitor instance.
@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public SaveXshdVisitor(XmlWriter writer)
         {
             if (writer == null)
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             this.writer = writer;
         }
 
@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public void WriteDefinition(XshdSyntaxDefinition definition)
         {
             if (definition == null)
-                throw new ArgumentNullException("definition");
+                throw new ArgumentNullException(nameof(definition));
             writer.WriteStartElement("SyntaxDefinition", Namespace);
             if (definition.Name != null)
                 writer.WriteAttributeString("name", definition.Name);
@@ -58,7 +58,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return null;
         }
 
-        private void WriteBoolAttribute(string attributeName, bool? value)
+        void WriteBoolAttribute(string attributeName, bool? value)
         {
             if (value != null)
             {
@@ -66,7 +66,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private void WriteRuleSetReference(XshdReference<XshdRuleSet> ruleSetReference)
+        void WriteRuleSetReference(XshdReference<XshdRuleSet> ruleSetReference)
         {
             if (ruleSetReference.ReferencedElement != null)
             {
@@ -77,7 +77,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private void WriteColorReference(XshdReference<XshdColor> color)
+        void WriteColorReference(XshdReference<XshdColor> color)
         {
             if (color.InlineElement != null)
             {
@@ -153,7 +153,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return null;
         }
 
-        private void WriteBeginEndElement(string elementName, string regex, XshdReference<XshdColor> colorReference)
+        void WriteBeginEndElement(string elementName, string regex, XshdReference<XshdColor> colorReference)
         {
             if (regex != null)
             {

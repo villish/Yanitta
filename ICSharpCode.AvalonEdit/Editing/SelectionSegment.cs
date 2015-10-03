@@ -8,7 +8,7 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// </summary>
     public class SelectionSegment : ISegment
     {
-        private readonly int startOffset, endOffset, startVC, endVC;
+        readonly int startOffset, endOffset, startVC, endVC;
 
         /// <summary>
         /// Creates a SelectionSegment from two offsets.
@@ -17,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         {
             this.startOffset = Math.Min(startOffset, endOffset);
             this.endOffset   = Math.Max(startOffset, endOffset);
-            this.startVC     = this.endVC = -1;
+            startVC = endVC = -1;
         }
 
         /// <summary>

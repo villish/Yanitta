@@ -11,18 +11,18 @@ namespace ICSharpCode.AvalonEdit.Document
     {
         #region Constructor
 
-        private readonly TextDocument document;
-        private readonly DocumentLineTree documentLineTree;
+        readonly TextDocument document;
+        readonly DocumentLineTree documentLineTree;
 
         /// <summary>
         /// A copy of the line trackers. We need a copy so that line trackers may remove themselves
         /// while being notified (used e.g. by WeakLineTracker)
         /// </summary>
-        private ILineTracker[] lineTrackers;
+        ILineTracker[] lineTrackers;
 
         internal void UpdateListOfLineTrackers()
         {
-            this.lineTrackers = document.LineTrackers.ToArray();
+            lineTrackers = document.LineTrackers.ToArray();
         }
 
         public LineManager(DocumentLineTree documentLineTree, TextDocument document)
@@ -173,7 +173,7 @@ namespace ICSharpCode.AvalonEdit.Document
             SetLineLength(startLine, startLine.TotalLength - charactersRemovedInStartLine + charactersLeftInEndLine);
         }
 
-        private void RemoveLine(DocumentLine lineToRemove)
+        void RemoveLine(DocumentLine lineToRemove)
         {
             foreach (ILineTracker lt in lineTrackers)
                 lt.BeforeRemoveLine(lineToRemove);
@@ -241,7 +241,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private DocumentLine InsertLineAfter(DocumentLine line, int length)
+        DocumentLine InsertLineAfter(DocumentLine line, int length)
         {
             DocumentLine newLine = documentLineTree.InsertLineAfter(line, length);
             foreach (ILineTracker lt in lineTrackers)
@@ -260,7 +260,7 @@ namespace ICSharpCode.AvalonEdit.Document
         /// </summary>
         /// <returns>Usually returns <paramref name="line"/>, but if line was deleted due to
         /// the "\r\n" merge, returns the previous line.</returns>
-        private DocumentLine SetLineLength(DocumentLine line, int newTotalLength)
+        DocumentLine SetLineLength(DocumentLine line, int newTotalLength)
         {
             //			changedLines.Add(line);
             //			deletedOrChangedLines.Add(line);

@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         /// </summary>
         public XshdReference<XshdColor> ColorReference { get; set; }
 
-        private readonly NullSafeCollection<string> words = new NullSafeCollection<string>();
+        readonly NullSafeCollection<string> words = new NullSafeCollection<string>();
 
         /// <summary>
         /// Gets the list of key words.

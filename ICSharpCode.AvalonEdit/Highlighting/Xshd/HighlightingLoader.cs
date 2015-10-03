@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         internal static XshdSyntaxDefinition LoadXshd(XmlReader reader, bool skipValidation)
         {
             if (reader == null)
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             try
             {
                 reader.MoveToContent();
@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private static Exception WrapException(Exception ex, int lineNumber, int linePosition)
+        static Exception WrapException(Exception ex, int lineNumber, int linePosition)
         {
             return new HighlightingDefinitionInvalidException(FormatExceptionMessage(ex.Message, lineNumber, linePosition), ex);
         }
@@ -93,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public static IHighlightingDefinition Load(XshdSyntaxDefinition syntaxDefinition, IHighlightingDefinitionReferenceResolver resolver)
         {
             if (syntaxDefinition == null)
-                throw new ArgumentNullException("syntaxDefinition");
+                throw new ArgumentNullException(nameof(syntaxDefinition));
             return new XmlHighlightingDefinition(syntaxDefinition, resolver);
         }
 

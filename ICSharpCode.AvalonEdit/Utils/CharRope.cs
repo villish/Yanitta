@@ -14,7 +14,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static Rope<char> Create(string text)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             return new Rope<char>(InitFromString(text));
         }
 
@@ -29,7 +29,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static string ToString(this Rope<char> rope, int startIndex, int length)
         {
             if (rope == null)
-                throw new ArgumentNullException("rope");
+                throw new ArgumentNullException(nameof(rope));
             if (length == 0)
                 return string.Empty;
             char[] buffer = new char[length];
@@ -48,9 +48,9 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static void WriteTo(this Rope<char> rope, StringBuilder output, int startIndex, int length)
         {
             if (rope == null)
-                throw new ArgumentNullException("rope");
+                throw new ArgumentNullException(nameof(rope));
             if (output == null)
-                throw new ArgumentNullException("output");
+                throw new ArgumentNullException(nameof(output));
             rope.VerifyRange(startIndex, length);
             rope.root.WriteTo(startIndex, output, length);
         }
@@ -74,7 +74,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static void InsertText(this Rope<char> rope, int index, string text)
         {
             if (rope == null)
-                throw new ArgumentNullException("rope");
+                throw new ArgumentNullException(nameof(rope));
             rope.InsertRange(index, text.ToCharArray(), 0, text.Length);
             /*if (index < 0 || index > rope.Length) {
                 throw new ArgumentOutOfRangeException("index", index, "0 <= index <= " + rope.Length.ToString(CultureInfo.InvariantCulture));
@@ -98,7 +98,7 @@ namespace ICSharpCode.AvalonEdit.Utils
             return node;
         }
 
-        private static void FillNode(RopeNode<char> node, string text, int start)
+        static void FillNode(RopeNode<char> node, string text, int start)
         {
             if (node.contents != null)
             {
@@ -157,9 +157,9 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static int IndexOfAny(this Rope<char> rope, char[] anyOf, int startIndex, int length)
         {
             if (rope == null)
-                throw new ArgumentNullException("rope");
+                throw new ArgumentNullException(nameof(rope));
             if (anyOf == null)
-                throw new ArgumentNullException("anyOf");
+                throw new ArgumentNullException(nameof(anyOf));
             rope.VerifyRange(startIndex, length);
 
             while (length > 0)

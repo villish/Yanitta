@@ -10,20 +10,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 {
     internal sealed class CaretLayer : Layer
     {
-        private bool isVisible;
-        private Rect caretRectangle;
+        bool isVisible;
+        Rect caretRectangle;
 
-        private DispatcherTimer caretBlinkTimer = new DispatcherTimer();
-        private bool blink;
+        DispatcherTimer caretBlinkTimer = new DispatcherTimer();
+        bool blink;
 
         public CaretLayer(TextView textView)
             : base(textView, KnownLayer.Caret)
         {
-            this.IsHitTestVisible = false;
+            IsHitTestVisible = false;
             caretBlinkTimer.Tick += new EventHandler(caretBlinkTimer_Tick);
         }
 
-        private void caretBlinkTimer_Tick(object sender, EventArgs e)
+        void caretBlinkTimer_Tick(object sender, EventArgs e)
         {
             blink = !blink;
             InvalidateVisual();
@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public void Show(Rect caretRectangle)
         {
             this.caretRectangle = caretRectangle;
-            this.isVisible = true;
+            isVisible = true;
             StartBlinkAnimation();
             InvalidateVisual();
         }
@@ -47,7 +47,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void StartBlinkAnimation()
+        void StartBlinkAnimation()
         {
             TimeSpan blinkTime = Win32.CaretBlinkTime;
             blink = true; // the caret should visible initially
@@ -59,7 +59,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void StopBlinkAnimation()
+        void StopBlinkAnimation()
         {
             caretBlinkTimer.Stop();
         }
@@ -72,7 +72,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
             if (isVisible && blink)
             {
-                Brush caretBrush = this.CaretBrush;
+                Brush caretBrush = CaretBrush;
                 if (caretBrush == null)
                     caretBrush = (Brush)textView.GetValue(TextBlock.ForegroundProperty);
                 Rect r = new Rect(caretRectangle.X - textView.HorizontalOffset,

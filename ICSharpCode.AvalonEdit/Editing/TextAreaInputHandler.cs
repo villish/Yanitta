@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// </summary>
     public abstract class TextAreaStackedInputHandler : ITextAreaInputHandler
     {
-        private readonly TextArea textArea;
+        readonly TextArea textArea;
 
         /// <inheritdoc/>
         public TextArea TextArea
@@ -59,7 +59,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         protected TextAreaStackedInputHandler(TextArea textArea)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             this.textArea = textArea;
         }
 
@@ -94,11 +94,11 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// <remarks><inheritdoc cref="ITextAreaInputHandler"/></remarks>
     public class TextAreaInputHandler : ITextAreaInputHandler
     {
-        private readonly ObserveAddRemoveCollection<CommandBinding> commandBindings;
-        private readonly ObserveAddRemoveCollection<InputBinding> inputBindings;
-        private readonly ObserveAddRemoveCollection<ITextAreaInputHandler> nestedInputHandlers;
-        private readonly TextArea textArea;
-        private bool isAttached;
+        readonly ObserveAddRemoveCollection<CommandBinding> commandBindings;
+        readonly ObserveAddRemoveCollection<InputBinding> inputBindings;
+        readonly ObserveAddRemoveCollection<ITextAreaInputHandler> nestedInputHandlers;
+        readonly TextArea textArea;
+        bool isAttached;
 
         /// <summary>
         /// Creates a new TextAreaInputHandler.
@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public TextAreaInputHandler(TextArea textArea)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             this.textArea = textArea;
 
             commandBindings     = new ObserveAddRemoveCollection<CommandBinding>(CommandBinding_Added, CommandBinding_Removed);
@@ -138,13 +138,13 @@ namespace ICSharpCode.AvalonEdit.Editing
             get { return commandBindings; }
         }
 
-        private void CommandBinding_Added(CommandBinding commandBinding)
+        void CommandBinding_Added(CommandBinding commandBinding)
         {
             if (isAttached)
                 textArea.CommandBindings.Add(commandBinding);
         }
 
-        private void CommandBinding_Removed(CommandBinding commandBinding)
+        void CommandBinding_Removed(CommandBinding commandBinding)
         {
             if (isAttached)
                 textArea.CommandBindings.Remove(commandBinding);
@@ -158,13 +158,13 @@ namespace ICSharpCode.AvalonEdit.Editing
             get { return inputBindings; }
         }
 
-        private void InputBinding_Added(InputBinding inputBinding)
+        void InputBinding_Added(InputBinding inputBinding)
         {
             if (isAttached)
                 textArea.InputBindings.Add(inputBinding);
         }
 
-        private void InputBinding_Removed(InputBinding inputBinding)
+        void InputBinding_Removed(InputBinding inputBinding)
         {
             if (isAttached)
                 textArea.InputBindings.Remove(inputBinding);
@@ -179,8 +179,8 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// <param name="handler">The event handler to run when the command is executed.</param>
         public void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
         {
-            this.CommandBindings.Add(new CommandBinding(command, handler));
-            this.InputBindings.Add(new KeyBinding(command, key, modifiers));
+            CommandBindings.Add(new CommandBinding(command, handler));
+            InputBindings.Add(new KeyBinding(command, key, modifiers));
         }
 
         #endregion CommandBindings / InputBindings
@@ -196,17 +196,17 @@ namespace ICSharpCode.AvalonEdit.Editing
             get { return nestedInputHandlers; }
         }
 
-        private void NestedInputHandler_Added(ITextAreaInputHandler handler)
+        void NestedInputHandler_Added(ITextAreaInputHandler handler)
         {
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
             if (handler.TextArea != textArea)
                 throw new ArgumentException("The nested handler must be working for the same text area!");
             if (isAttached)
                 handler.Attach();
         }
 
-        private void NestedInputHandler_Removed(ITextAreaInputHandler handler)
+        void NestedInputHandler_Removed(ITextAreaInputHandler handler)
         {
             if (isAttached)
                 handler.Detach();

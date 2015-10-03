@@ -10,7 +10,7 @@ namespace ICSharpCode.AvalonEdit.Utils
     /// </summary>
     internal sealed class ObserveAddRemoveCollection<T> : Collection<T>
     {
-        private readonly Action<T> onAdd, onRemove;
+        readonly Action<T> onAdd, onRemove;
 
         public ObserveAddRemoveCollection(Action<T> onAdd, Action<T> onRemove)
         {

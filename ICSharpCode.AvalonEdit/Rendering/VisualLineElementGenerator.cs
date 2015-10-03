@@ -18,8 +18,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public virtual void StartGeneration(ITextRunConstructionContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
-            this.CurrentContext = context;
+                throw new ArgumentNullException(nameof(context));
+            CurrentContext = context;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public virtual void FinishGeneration()
         {
-            this.CurrentContext = null;
+            CurrentContext = null;
         }
 
         /// <summary>

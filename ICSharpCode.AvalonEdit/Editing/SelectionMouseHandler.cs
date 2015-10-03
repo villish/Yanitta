@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.Editing
     {
         #region enum SelectionMode
 
-        private enum SelectionMode
+        enum SelectionMode
         {
             /// <summary>
             /// no selection (no mouse button down)
@@ -61,18 +61,18 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #endregion enum SelectionMode
 
-        private readonly TextArea textArea;
+        readonly TextArea textArea;
 
-        private SelectionMode mode;
-        private AnchorSegment startWord;
-        private Point possibleDragStartMousePos;
+        SelectionMode mode;
+        AnchorSegment startWord;
+        Point possibleDragStartMousePos;
 
         #region Constructor + Attach + Detach
 
         public SelectionMouseHandler(TextArea textArea)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             this.textArea = textArea;
         }
 
@@ -110,7 +110,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void AttachDragDrop()
+        void AttachDragDrop()
         {
             textArea.AllowDrop = true;
             textArea.GiveFeedback += textArea_GiveFeedback;
@@ -121,7 +121,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             textArea.Drop += textArea_Drop;
         }
 
-        private void DetachDragDrop()
+        void DetachDragDrop()
         {
             textArea.AllowDrop = false;
             textArea.GiveFeedback -= textArea_GiveFeedback;
@@ -132,9 +132,9 @@ namespace ICSharpCode.AvalonEdit.Editing
             textArea.Drop -= textArea_Drop;
         }
 
-        private bool enableTextDragDrop;
+        bool enableTextDragDrop;
 
-        private void textArea_OptionChanged(object sender, PropertyChangedEventArgs e)
+        void textArea_OptionChanged(object sender, PropertyChangedEventArgs e)
         {
             bool newEnableTextDragDrop = textArea.Options.EnableTextDragDrop;
             if (newEnableTextDragDrop != enableTextDragDrop)
@@ -152,7 +152,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         #region Dropping text
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void textArea_DragEnter(object sender, DragEventArgs e)
+        void textArea_DragEnter(object sender, DragEventArgs e)
         {
             try
             {
@@ -166,7 +166,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void textArea_DragOver(object sender, DragEventArgs e)
+        void textArea_DragOver(object sender, DragEventArgs e)
         {
             try
             {
@@ -178,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private DragDropEffects GetEffect(DragEventArgs e)
+        DragDropEffects GetEffect(DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.UnicodeText, true))
             {
@@ -207,7 +207,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void textArea_DragLeave(object sender, DragEventArgs e)
+        void textArea_DragLeave(object sender, DragEventArgs e)
         {
             try
             {
@@ -222,7 +222,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void textArea_Drop(object sender, DragEventArgs e)
+        void textArea_Drop(object sender, DragEventArgs e)
         {
             try
             {
@@ -251,7 +251,7 @@ namespace ICSharpCode.AvalonEdit.Editing
                             // Mark the undo group with the currentDragDescriptor, if the drag
                             // is originating from the same control. This allows combining
                             // the undo groups when text is moved.
-                            textArea.Document.UndoStack.StartUndoGroup(this.currentDragDescriptor);
+                            textArea.Document.UndoStack.StartUndoGroup(currentDragDescriptor);
                             try
                             {
                                 if (rectangular && RectangleSelection.PerformRectangularPaste(textArea, textArea.Caret.Position, text, true))
@@ -278,7 +278,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void OnDragException(Exception ex)
+        void OnDragException(Exception ex)
         {
             // WPF swallows exceptions during drag'n'drop or reports them incorrectly, so
             // we re-throw them later to allow the application's unhandled exception handler
@@ -292,7 +292,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void textArea_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        void textArea_GiveFeedback(object sender, GiveFeedbackEventArgs e)
         {
             try
             {
@@ -306,7 +306,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void textArea_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
+        void textArea_QueryContinueDrag(object sender, QueryContinueDragEventArgs e)
         {
             try
             {
@@ -334,9 +334,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Start Drag
 
-        private object currentDragDescriptor;
+        object currentDragDescriptor;
 
-        private void StartDrag()
+        void StartDrag()
         {
             // prevent nested StartDrag calls
             mode = SelectionMode.Drag;
@@ -358,7 +358,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
 
             object dragDescriptor = new object();
-            this.currentDragDescriptor = dragDescriptor;
+            currentDragDescriptor = dragDescriptor;
 
             DragDropEffects resultEffect;
             using (textArea.AllowCaretOutsideSelection())
@@ -383,7 +383,7 @@ namespace ICSharpCode.AvalonEdit.Editing
                 }
             }
 
-            this.currentDragDescriptor = null;
+            currentDragDescriptor = null;
 
             if (deleteOnMove != null && resultEffect == DragDropEffects.Move && (allowedEffects & DragDropEffects.Move) == DragDropEffects.Move)
             {
@@ -412,7 +412,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         #region QueryCursor
 
         // provide the IBeam Cursor for the text area
-        private void textArea_QueryCursor(object sender, QueryCursorEventArgs e)
+        void textArea_QueryCursor(object sender, QueryCursorEventArgs e)
         {
             if (!e.Handled)
             {
@@ -445,7 +445,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region LeftButtonDown
 
-        private void textArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        void textArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             mode = SelectionMode.None;
             if (!e.Handled && e.ChangedButton == MouseButton.Left)
@@ -539,7 +539,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Mouse Position <-> Text coordinates
 
-        private SimpleSegment GetWordAtMousePosition(MouseEventArgs e)
+        SimpleSegment GetWordAtMousePosition(MouseEventArgs e)
         {
             TextView textView = textArea.TextView;
             if (textView == null) return SimpleSegment.Invalid;
@@ -570,7 +570,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private SimpleSegment GetLineAtMousePosition(MouseEventArgs e)
+        SimpleSegment GetLineAtMousePosition(MouseEventArgs e)
         {
             TextView textView = textArea.TextView;
             if (textView == null) return SimpleSegment.Invalid;
@@ -591,12 +591,12 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private int GetOffsetFromMousePosition(MouseEventArgs e, out int visualColumn)
+        int GetOffsetFromMousePosition(MouseEventArgs e, out int visualColumn)
         {
             return GetOffsetFromMousePosition(e.GetPosition(textArea.TextView), out visualColumn);
         }
 
-        private int GetOffsetFromMousePosition(Point positionRelativeToTextView, out int visualColumn)
+        int GetOffsetFromMousePosition(Point positionRelativeToTextView, out int visualColumn)
         {
             visualColumn = 0;
             TextView textView = textArea.TextView;
@@ -617,7 +617,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             return -1;
         }
 
-        private int GetOffsetFromMousePositionFirstTextLineOnly(Point positionRelativeToTextView, out int visualColumn)
+        int GetOffsetFromMousePositionFirstTextLineOnly(Point positionRelativeToTextView, out int visualColumn)
         {
             visualColumn = 0;
             TextView textView = textArea.TextView;
@@ -642,7 +642,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region MouseMove
 
-        private void textArea_MouseMove(object sender, MouseEventArgs e)
+        void textArea_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Handled)
                 return;
@@ -673,12 +673,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region ExtendSelection
 
-        private void SetCaretOffsetToMousePosition(MouseEventArgs e)
+        void SetCaretOffsetToMousePosition(MouseEventArgs e)
         {
             SetCaretOffsetToMousePosition(e, null);
         }
 
-        private void SetCaretOffsetToMousePosition(MouseEventArgs e, ISegment allowedSegment)
+        void SetCaretOffsetToMousePosition(MouseEventArgs e, ISegment allowedSegment)
         {
             int visualColumn;
             int offset;
@@ -697,7 +697,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void ExtendSelectionToMouse(MouseEventArgs e)
+        void ExtendSelectionToMouse(MouseEventArgs e)
         {
             TextViewPosition oldPosition = textArea.Caret.Position;
             if (mode == SelectionMode.Normal || mode == SelectionMode.Rectangular)
@@ -732,7 +732,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region MouseLeftButtonUp
 
-        private void textArea_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        void textArea_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (mode == SelectionMode.None || e.Handled)
                 return;

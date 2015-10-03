@@ -42,7 +42,7 @@ namespace Yanitta
         public static T GetJSONObject<T>(string url) where T : class
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentNullException("url");
+                throw new ArgumentNullException(nameof(url));
 
             T result = default(T);
 

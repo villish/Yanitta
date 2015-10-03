@@ -22,14 +22,14 @@ namespace ICSharpCode.AvalonEdit.Utils
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes")]
         public static readonly ImmutableStack<T> Empty = new ImmutableStack<T>();
 
-        private readonly T value;
-        private readonly ImmutableStack<T> next;
+        readonly T value;
+        readonly ImmutableStack<T> next;
 
-        private ImmutableStack()
+        ImmutableStack()
         {
         }
 
-        private ImmutableStack(T value, ImmutableStack<T> next)
+        ImmutableStack(T value, ImmutableStack<T> next)
         {
             this.value = value;
             this.next = next;
@@ -95,7 +95,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         /// <inheritdoc/>

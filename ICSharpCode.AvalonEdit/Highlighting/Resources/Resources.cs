@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             get { return HighlightingManager.Instance.GetDefinitionByExtension(".lua"); }
         }
 
-        private static readonly string Prefix = typeof(Resources).FullName + ".";
+        static readonly string Prefix = typeof(Resources).FullName + ".";
 
         public static Stream OpenStream(string name)
         {

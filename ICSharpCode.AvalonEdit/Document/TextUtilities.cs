@@ -43,22 +43,22 @@ namespace ICSharpCode.AvalonEdit.Document
         #region GetControlCharacterName
 
         // the names of the first 32 ASCII characters = Unicode C0 block
-        private static readonly string[] c0Table = {
-			"NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS", "HT",
-			"LF", "VT", "FF", "CR", "SO", "SI", "DLE", "DC1", "DC2", "DC3",
-			"DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS",
-			"RS", "US"
-		};
+        static readonly string[] c0Table = {
+            "NUL", "SOH", "STX", "ETX", "EOT", "ENQ", "ACK", "BEL", "BS", "HT",
+            "LF", "VT", "FF", "CR", "SO", "SI", "DLE", "DC1", "DC2", "DC3",
+            "DC4", "NAK", "SYN", "ETB", "CAN", "EM", "SUB", "ESC", "FS", "GS",
+            "RS", "US"
+        };
 
         // DEL (ASCII 127) and
         // the names of the control characters in the C1 block (Unicode 128 to 159)
-        private static readonly string[] delAndC1Table = {
-			"DEL",
-			"PAD", "HOP", "BPH", "NBH", "IND", "NEL", "SSA", "ESA", "HTS", "HTJ",
-			"VTS", "PLD", "PLU", "RI", "SS2", "SS3", "DCS", "PU1", "PU2", "STS",
-			"CCH", "MW", "SPA", "EPA", "SOS", "SGCI", "SCI", "CSI", "ST", "OSC",
-			"PM", "APC"
-		};
+        static readonly string[] delAndC1Table = {
+            "DEL",
+            "PAD", "HOP", "BPH", "NBH", "IND", "NEL", "SSA", "ESA", "HTS", "HTJ",
+            "VTS", "PLD", "PLU", "RI", "SS2", "SS3", "DCS", "PU1", "PU2", "STS",
+            "CCH", "MW", "SPA", "EPA", "SOS", "SGCI", "SCI", "CSI", "ST", "OSC",
+            "PM", "APC"
+        };
 
         /// <summary>
         /// Gets the name of the control character.
@@ -90,7 +90,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public static ISegment GetWhitespaceAfter(ITextSource textSource, int offset)
         {
             if (textSource == null)
-                throw new ArgumentNullException("textSource");
+                throw new ArgumentNullException(nameof(textSource));
             int pos;
             for (pos = offset; pos < textSource.TextLength; pos++)
             {
@@ -112,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public static ISegment GetWhitespaceBefore(ITextSource textSource, int offset)
         {
             if (textSource == null)
-                throw new ArgumentNullException("textSource");
+                throw new ArgumentNullException(nameof(textSource));
             int pos;
             for (pos = offset - 1; pos >= 0; pos--)
             {
@@ -134,7 +134,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public static ISegment GetLeadingWhitespace(TextDocument document, DocumentLine documentLine)
         {
             if (documentLine == null)
-                throw new ArgumentNullException("documentLine");
+                throw new ArgumentNullException(nameof(documentLine));
             return GetWhitespaceAfter(document, documentLine.Offset);
         }
 
@@ -148,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public static ISegment GetTrailingWhitespace(TextDocument document, DocumentLine documentLine)
         {
             if (documentLine == null)
-                throw new ArgumentNullException("documentLine");
+                throw new ArgumentNullException(nameof(documentLine));
             ISegment segment = GetWhitespaceBefore(document, documentLine.EndOffset);
             // If the whole line consists of whitespace, we consider all of it as leading whitespace,
             // so return an empty segment as trailing whitespace.
@@ -175,7 +175,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public static ISegment GetSingleIndentationSegment(ITextSource textSource, int offset, int indentationSize)
         {
             if (textSource == null)
-                throw new ArgumentNullException("textSource");
+                throw new ArgumentNullException(nameof(textSource));
             int pos = offset;
             while (pos < textSource.TextLength)
             {
@@ -243,19 +243,19 @@ namespace ICSharpCode.AvalonEdit.Document
         public static int GetNextCaretPosition(ITextSource textSource, int offset, LogicalDirection direction, CaretPositioningMode mode)
         {
             if (textSource == null)
-                throw new ArgumentNullException("textSource");
+                throw new ArgumentNullException(nameof(textSource));
             if (mode != CaretPositioningMode.Normal
                 && mode != CaretPositioningMode.WordBorder
                 && mode != CaretPositioningMode.WordStart
                 && mode != CaretPositioningMode.WordBorderOrSymbol
                 && mode != CaretPositioningMode.WordStartOrSymbol)
             {
-                throw new ArgumentException("Unsupported CaretPositioningMode: " + mode, "mode");
+                throw new ArgumentException("Unsupported CaretPositioningMode: " + mode, nameof(mode));
             }
             if (direction != LogicalDirection.Backward
                 && direction != LogicalDirection.Forward)
             {
-                throw new ArgumentException("Invalid LogicalDirection: " + direction, "direction");
+                throw new ArgumentException("Invalid LogicalDirection: " + direction, nameof(direction));
             }
             int textLength = textSource.TextLength;
             if (textLength <= 0)

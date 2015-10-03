@@ -14,15 +14,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public class VisualLineElementTextRunProperties : TextRunProperties, ICloneable
     {
-        private Brush backgroundBrush;
-        private BaselineAlignment baselineAlignment;
-        private CultureInfo cultureInfo;
-        private double fontHintingEmSize;
-        private double fontRenderingEmSize;
-        private Brush foregroundBrush;
-        private Typeface typeface;
-        private TextDecorationCollection textDecorations;
-        private TextEffectCollection textEffects;
+        Brush backgroundBrush;
+        BaselineAlignment baselineAlignment;
+        CultureInfo cultureInfo;
+        double fontHintingEmSize;
+        double fontRenderingEmSize;
+        Brush foregroundBrush;
+        Typeface typeface;
+        TextDecorationCollection textDecorations;
+        TextEffectCollection textEffects;
 
         /// <summary>
         /// Creates a new VisualLineElementTextRunProperties instance that copies its values
@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public VisualLineElementTextRunProperties(TextRunProperties textRunProperties)
         {
             if (textRunProperties == null)
-                throw new ArgumentNullException("textRunProperties");
+                throw new ArgumentNullException(nameof(textRunProperties));
             backgroundBrush = textRunProperties.BackgroundBrush;
             baselineAlignment = textRunProperties.BaselineAlignment;
             cultureInfo = textRunProperties.CultureInfo;
@@ -107,7 +107,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public void SetCultureInfo(CultureInfo value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             cultureInfo = value;
         }
 
@@ -166,7 +166,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public void SetTypeface(Typeface value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             typeface = value;
         }
 

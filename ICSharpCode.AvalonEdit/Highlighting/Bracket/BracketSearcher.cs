@@ -7,8 +7,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
 {
     internal class BracketSearcher
     {
-        private const string openingBrackets = "([{";
-        private const string closingBrackets = ")]}";
+        const string openingBrackets = "([{";
+        const string closingBrackets = ")]}";
 
         public BracketSearchResult SearchBracket(TextDocument document, int offset)
         {
@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
             return null;
         }
 
-        private void SearchDefinition(TextDocument document, BracketSearchResult result)
+        void SearchDefinition(TextDocument document, BracketSearchResult result)
         {
             if (document.GetCharAt(result.OpeningOffset) != '{')
                 return;
@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
             }
         }
 
-        private bool IsBracketOnly(TextDocument document, DocumentLine documentLine)
+        bool IsBracketOnly(TextDocument document, DocumentLine documentLine)
         {
             var lineText = document.GetText(documentLine).Trim();
             return lineText == "{" || string.IsNullOrEmpty(lineText)
@@ -62,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
                 || lineText.StartsWith("'", StringComparison.Ordinal);
         }
 
-        private static int ScanLineStart(TextDocument document, int offset)
+        static int ScanLineStart(TextDocument document, int offset)
         {
             for (int i = offset - 1; i > 0; --i)
             {
@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
         /// 2 = String<br/>
         /// Block comments and multiline strings are not supported.
         /// </summary>
-        private static int GetStartType(TextDocument document, int linestart, int offset)
+        static int GetStartType(TextDocument document, int linestart, int offset)
         {
             bool inString = false;
             bool inChar = false;
@@ -133,7 +133,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
             return (inString || inChar) ? 2 : result;
         }
 
-        private int SearchBracketBackward(TextDocument document, int offset, char openBracket, char closingBracket)
+        int SearchBracketBackward(TextDocument document, int offset, char openBracket, char closingBracket)
         {
             if (offset + 1 >= document.TextLength) return -1;
             // this method parses a c# document backwards to find the matching bracket
@@ -254,7 +254,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
             return -1;
         }
 
-        private int SearchBracketForward(TextDocument document, int offset, char openBracket, char closingBracket)
+        int SearchBracketForward(TextDocument document, int offset, char openBracket, char closingBracket)
         {
             bool inString = false;
             bool inChar = false;
@@ -374,7 +374,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
             return -1;
         }
 
-        private int QuickSearchBracketBackward(TextDocument document, int offset, char openBracket, char closingBracket)
+        int QuickSearchBracketBackward(TextDocument document, int offset, char openBracket, char closingBracket)
         {
             int brackets = -1;
             // first try "quick find" - find the matching bracket if there is no string/comment in the way
@@ -407,7 +407,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
             return -1;
         }
 
-        private int QuickSearchBracketForward(TextDocument document, int offset, char openBracket, char closingBracket)
+        int QuickSearchBracketForward(TextDocument document, int offset, char openBracket, char closingBracket)
         {
             int brackets = 1;
             // try "quick find" - find the matching bracket if there is no string/comment in the way

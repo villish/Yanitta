@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CompletionList), new FrameworkPropertyMetadata(typeof(CompletionList)));
         }
 
-        private bool isFiltering = true;
+        bool isFiltering = true;
 
         /// <summary>
         /// If true, the CompletionList is filtered to show only matching items. Also enables search by substring.
@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             get { return listBox != null ? listBox.scrollViewer : null; }
         }
 
-        private ObservableCollection<ICompletionData> completionData = new ObservableCollection<ICompletionData>();
+        ObservableCollection<ICompletionData> completionData = new ObservableCollection<ICompletionData>();
 
         /// <summary>
         /// Gets the list to which completion data can be added.
@@ -207,9 +207,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         }
 
         // SelectItem gets called twice for every typed character (once from FormatLine), this helps execute SelectItem only once
-        private string currentText;
+        string currentText;
 
-        private ObservableCollection<ICompletionData> currentList;
+        ObservableCollection<ICompletionData> currentList;
 
         /// <summary>
         /// Selects the best match, and filter the items if turned on using <see cref="IsFiltering" />.
@@ -221,7 +221,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             if (listBox == null)
                 ApplyTemplate();
 
-            if (this.IsFiltering)
+            if (IsFiltering)
             {
                 SelectItemFiltering(text);
             }
@@ -235,12 +235,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         /// <summary>
         /// Filters CompletionList items to show only those matching given query, and selects the best match.
         /// </summary>
-        private void SelectItemFiltering(string query)
+        void SelectItemFiltering(string query)
         {
             // if the user just typed one more character, don't filter all data but just filter what we are already displaying
-            var listToFilter = (this.currentList != null && (!string.IsNullOrEmpty(this.currentText)) && (!string.IsNullOrEmpty(query)) &&
-                                query.StartsWith(this.currentText, StringComparison.Ordinal)) ?
-                this.currentList : this.completionData;
+            var listToFilter = (currentList != null && (!string.IsNullOrEmpty(currentText)) && (!string.IsNullOrEmpty(query)) &&
+                                query.StartsWith(currentText, StringComparison.Ordinal)) ?
+                currentList : completionData;
 
             var matchingItems =
                 from item in listToFilter
@@ -269,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
                 listBoxItems.Add(matchingItem.Item);
                 i++;
             }
-            this.currentList = listBoxItems;
+            currentList = listBoxItems;
             listBox.ItemsSource = listBoxItems;
             SelectIndexCentered(bestIndex);
         }
@@ -277,7 +277,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         /// <summary>
         /// Selects the item that starts with the specified query.
         /// </summary>
-        private void SelectItemWithStart(string query)
+        void SelectItemWithStart(string query)
         {
             if (string.IsNullOrEmpty(query))
                 return;
@@ -325,7 +325,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             SelectIndexCentered(bestIndex);
         }
 
-        private void SelectIndexCentered(int bestIndex)
+        void SelectIndexCentered(int bestIndex)
         {
             if (bestIndex < 0)
             {
@@ -347,10 +347,10 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             }
         }
 
-        private int GetMatchQuality(string itemText, string query)
+        int GetMatchQuality(string itemText, string query)
         {
             if (itemText == null)
-                throw new ArgumentNullException("itemText", "ICompletionData.Text returned null");
+                throw new ArgumentNullException(nameof(itemText), "ICompletionData.Text returned null");
 
             // Qualities:
             //  	8 = full match case sensitive
@@ -396,7 +396,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             return -1;
         }
 
-        private static bool CamelCaseMatch(string text, string query)
+        static bool CamelCaseMatch(string text, string query)
         {
             int i = 0;
             foreach (char upper in text.Where(c => char.IsUpper(c)))

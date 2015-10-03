@@ -8,7 +8,7 @@ namespace ICSharpCode.AvalonEdit.Search
 {
     internal class SearchResultBackgroundRenderer : IBackgroundRenderer
     {
-        private TextSegmentCollection<SearchResult> currentResults = new TextSegmentCollection<SearchResult>();
+        TextSegmentCollection<SearchResult> currentResults = new TextSegmentCollection<SearchResult>();
 
         public TextSegmentCollection<SearchResult> CurrentResults
         {
@@ -30,15 +30,15 @@ namespace ICSharpCode.AvalonEdit.Search
             markerPen = new Pen(markerBrush, 1);
         }
 
-        private Brush markerBrush;
-        private Pen markerPen;
+        Brush markerBrush;
+        Pen markerPen;
 
         public Brush MarkerBrush
         {
             get { return markerBrush; }
             set
             {
-                this.markerBrush = value;
+                markerBrush = value;
                 markerPen = new Pen(markerBrush, 1);
             }
         }
@@ -46,9 +46,9 @@ namespace ICSharpCode.AvalonEdit.Search
         public void Draw(TextView textView, DrawingContext drawingContext)
         {
             if (textView == null)
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
             if (drawingContext == null)
-                throw new ArgumentNullException("drawingContext");
+                throw new ArgumentNullException(nameof(drawingContext));
 
             if (currentResults == null || !textView.VisualLinesValid)
                 return;

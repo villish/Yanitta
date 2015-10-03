@@ -10,7 +10,7 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// </summary>
     public class TextSegmentReadOnlySectionProvider<T> : IReadOnlySectionProvider where T : TextSegment
     {
-        private readonly TextSegmentCollection<T> segments;
+        readonly TextSegmentCollection<T> segments;
 
         /// <summary>
         /// Gets the collection storing the read-only segments.
@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public TextSegmentReadOnlySectionProvider(TextSegmentCollection<T> segments)
         {
             if (segments == null)
-                throw new ArgumentNullException("segments");
+                throw new ArgumentNullException(nameof(segments));
             this.segments = segments;
         }
 
@@ -57,7 +57,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public virtual IEnumerable<ISegment> GetDeletableSegments(ISegment segment)
         {
             if (segment == null)
-                throw new ArgumentNullException("segment");
+                throw new ArgumentNullException(nameof(segment));
 
             int readonlyUntil = segment.Offset;
             foreach (TextSegment ts in segments.FindOverlappingSegments(segment))

@@ -13,9 +13,9 @@ namespace Yanitta
     public class ProcessList : ObservableCollection<WowMemory>, IDisposable
     {
         // Track whether Dispose has been called.
-        private bool disposed = false;
+        bool disposed = false;
 
-        private DispatcherTimer refreshTimer;
+        DispatcherTimer refreshTimer;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="Yanitta.ProcessList"/>
@@ -23,14 +23,14 @@ namespace Yanitta
         public ProcessList()
             : base()
         {
-            this.refreshTimer = new DispatcherTimer();
-            this.refreshTimer.Interval = TimeSpan.FromSeconds(1);
-            this.refreshTimer.Tick += (o, e) => CheckProcess();
-            this.refreshTimer.IsEnabled = true;
-            this.refreshTimer.Start();
+            refreshTimer = new DispatcherTimer();
+            refreshTimer.Interval = TimeSpan.FromSeconds(1);
+            refreshTimer.Tick += (o, e) => CheckProcess();
+            refreshTimer.IsEnabled = true;
+            refreshTimer.Start();
         }
 
-        private void CheckProcess()
+        void CheckProcess()
         {
             if (string.IsNullOrWhiteSpace(Settings.Default.ProcessName))
                 throw new Exception("ProcessName is empty");
@@ -45,16 +45,16 @@ namespace Yanitta
                     Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
                     process.Dispose();
                 }
-                this.Clear();
+                Clear();
             }
 
-            for (int i = this.Count - 1; i >= 0; --i)
+            for (int i = Count - 1; i >= 0; --i)
             {
                 if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
                 {
                     Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
                     this[i].Dispose();
-                    this.RemoveAt(i);
+                    RemoveAt(i);
                 }
             }
 
@@ -69,11 +69,11 @@ namespace Yanitta
 
                     wowMemory.GameExited += (memory) =>
                     {
-                        if (this.Contains(memory))
-                            this.Remove(memory);
+                        if (Contains(memory))
+                            Remove(memory);
                         memory.Dispose();
                     };
-                    this.Add(wowMemory);
+                    Add(wowMemory);
                 }
                 catch (Exception ex)
                 {
@@ -96,24 +96,24 @@ namespace Yanitta
         protected virtual void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if (!this.disposed)
+            if (!disposed)
             {
                 // If disposing equals true, dispose all managed
                 // and unmanaged resources.
                 if (disposing)
                 {
-                    if (this.refreshTimer != null)
+                    if (refreshTimer != null)
                     {
-                        this.refreshTimer.IsEnabled = false;
-                        this.refreshTimer.Stop();
+                        refreshTimer.IsEnabled = false;
+                        refreshTimer.Stop();
                     }
 
                     foreach (var process in this)
                         process.Dispose();
-                    this.Clear();
+                    Clear();
                 }
 
-                this.refreshTimer = null;
+                refreshTimer = null;
 
                 // Note disposing has been done.
                 disposed = true;

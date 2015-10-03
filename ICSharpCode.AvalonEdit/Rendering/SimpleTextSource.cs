@@ -5,8 +5,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 {
     internal sealed class SimpleTextSource : TextSource
     {
-        private readonly string text;
-        private readonly TextRunProperties properties;
+        readonly string text;
+        readonly TextRunProperties properties;
 
         public SimpleTextSource(string text, TextRunProperties properties)
         {

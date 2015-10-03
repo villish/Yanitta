@@ -25,18 +25,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
             : base(1, documentLength)
         {
             if (element == null)
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
 
-            this.Element = element;
+            Element = element;
         }
 
         /// <inheritdoc/>
         public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
 
-            return new InlineObjectRun(1, this.TextRunProperties, this.Element);
+            return new InlineObjectRun(1, TextRunProperties, Element);
         }
     }
 
@@ -45,9 +45,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public class InlineObjectRun : TextEmbeddedObject
     {
-        private UIElement element;
-        private int length;
-        private TextRunProperties properties;
+        UIElement element;
+        int length;
+        TextRunProperties properties;
         internal Size desiredSize;
 
         /// <summary>
@@ -59,11 +59,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public InlineObjectRun(int length, TextRunProperties properties, UIElement element)
         {
             if (length <= 0)
-                throw new ArgumentOutOfRangeException("length", length, "Value must be positive");
+                throw new ArgumentOutOfRangeException(nameof(length), length, "Value must be positive");
             if (properties == null)
-                throw new ArgumentNullException("properties");
+                throw new ArgumentNullException(nameof(properties));
             if (element == null)
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
 
             this.length = length;
             this.properties = properties;
@@ -132,7 +132,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// <inheritdoc/>
         public override Rect ComputeBoundingBox(bool rightToLeft, bool sideways)
         {
-            if (this.element.IsArrangeValid)
+            if (element.IsArrangeValid)
             {
                 double baseline = TextBlock.GetBaselineOffset(element);
                 if (double.IsNaN(baseline))

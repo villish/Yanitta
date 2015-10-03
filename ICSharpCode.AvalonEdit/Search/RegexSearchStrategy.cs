@@ -9,13 +9,13 @@ namespace ICSharpCode.AvalonEdit.Search
 {
     internal class RegexSearchStrategy : ISearchStrategy
     {
-        private readonly Regex searchPattern;
-        private readonly bool matchWholeWords;
+        readonly Regex searchPattern;
+        readonly bool matchWholeWords;
 
         public RegexSearchStrategy(Regex searchPattern, bool matchWholeWords)
         {
             if (searchPattern == null)
-                throw new ArgumentNullException("searchPattern");
+                throw new ArgumentNullException(nameof(searchPattern));
             this.searchPattern = searchPattern;
             this.matchWholeWords = matchWholeWords;
         }
@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.Search
             }
         }
 
-        private static bool IsWordBorder(ITextSource document, int offset)
+        static bool IsWordBorder(ITextSource document, int offset)
         {
             return TextUtilities.GetNextCaretPosition(document, offset - 1, LogicalDirection.Forward, CaretPositioningMode.WordBorder) == offset;
         }

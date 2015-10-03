@@ -40,16 +40,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public SingleCharacterElementGenerator()
         {
-            this.ShowSpaces = true;
-            this.ShowTabs = true;
-            this.ShowBoxForControlCharacters = true;
+            ShowSpaces = true;
+            ShowTabs = true;
+            ShowBoxForControlCharacters = true;
         }
 
         void IBuiltinElementGenerator.FetchOptions(TextEditorOptions options)
         {
-            this.ShowSpaces = options.ShowSpaces;
-            this.ShowTabs = options.ShowTabs;
-            this.ShowBoxForControlCharacters = options.ShowBoxForControlCharacters;
+            ShowSpaces = options.ShowSpaces;
+            ShowTabs = options.ShowTabs;
+            ShowBoxForControlCharacters = options.ShowBoxForControlCharacters;
         }
 
         public override int GetFirstInterestedOffset(int startOffset)
@@ -109,7 +109,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
         }
 
-        private sealed class SpaceTextElement : FormattedTextElement
+        sealed class SpaceTextElement : FormattedTextElement
         {
             public SpaceTextElement(TextLine textLine)
                 : base(textLine, 1)
@@ -132,7 +132,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
         }
 
-        private sealed class TabTextElement : VisualLineElement
+        sealed class TabTextElement : VisualLineElement
         {
             internal readonly TextLine text;
 
@@ -146,12 +146,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
             {
                 // the TabTextElement consists of two TextRuns:
                 // first a TabGlyphRun, then TextCharacters '\t' to let WPF handle the tab indentation
-                if (startVisualColumn == this.VisualColumn)
-                    return new TabGlyphRun(this, this.TextRunProperties);
-                else if (startVisualColumn == this.VisualColumn + 1)
-                    return new TextCharacters("\t", 0, 1, this.TextRunProperties);
+                if (startVisualColumn == VisualColumn)
+                    return new TabGlyphRun(this, TextRunProperties);
+                else if (startVisualColumn == VisualColumn + 1)
+                    return new TextCharacters("\t", 0, 1, TextRunProperties);
                 else
-                    throw new ArgumentOutOfRangeException("startVisualColumn");
+                    throw new ArgumentOutOfRangeException(nameof(startVisualColumn));
             }
 
             public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
@@ -168,15 +168,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
         }
 
-        private sealed class TabGlyphRun : TextEmbeddedObject
+        sealed class TabGlyphRun : TextEmbeddedObject
         {
-            private readonly TabTextElement element;
-            private TextRunProperties properties;
+            readonly TabTextElement element;
+            TextRunProperties properties;
 
             public TabGlyphRun(TabTextElement element, TextRunProperties properties)
             {
                 if (properties == null)
-                    throw new ArgumentNullException("properties");
+                    throw new ArgumentNullException(nameof(properties));
                 this.properties = properties;
                 this.element = element;
             }
@@ -230,7 +230,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
         }
 
-        private sealed class SpecialCharacterBoxElement : FormattedTextElement
+        sealed class SpecialCharacterBoxElement : FormattedTextElement
         {
             public SpecialCharacterBoxElement(TextLine text)
                 : base(text, 1)
@@ -239,13 +239,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
             public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
             {
-                return new SpecialCharacterTextRun(this, this.TextRunProperties);
+                return new SpecialCharacterTextRun(this, TextRunProperties);
             }
         }
 
-        private sealed class SpecialCharacterTextRun : FormattedTextRun
+        sealed class SpecialCharacterTextRun : FormattedTextRun
         {
-            private static readonly SolidColorBrush darkGrayBrush;
+            static readonly SolidColorBrush darkGrayBrush;
 
             static SpecialCharacterTextRun()
             {

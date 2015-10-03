@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         {
             get
             {
-                var path = string.Format(@"pack://application:,,,/ICSharpCode.AvalonEdit;component/Images/{0}.png", this.ImageType);
+                var path = string.Format(@"pack://application:,,,/ICSharpCode.AvalonEdit;component/Images/{0}.png", ImageType);
                 return new BitmapImage(new Uri(path));
             }
         }
@@ -80,7 +80,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 
         public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
         {
-            textArea.Document.Replace(completionSegment, this.Name);
+            textArea.Document.Replace(completionSegment, Name);
         }
 
         public override string ToString()

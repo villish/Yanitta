@@ -20,11 +20,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
         protected VisualLineElement(int visualLength, int documentLength)
         {
             if (visualLength < 1)
-                throw new ArgumentOutOfRangeException("visualLength", visualLength, "Value must be at least 1");
+                throw new ArgumentOutOfRangeException(nameof(visualLength), visualLength, "Value must be at least 1");
             if (documentLength < 0)
-                throw new ArgumentOutOfRangeException("documentLength", documentLength, "Value must be at least 0");
-            this.VisualLength = visualLength;
-            this.DocumentLength = documentLength;
+                throw new ArgumentOutOfRangeException(nameof(documentLength), documentLength, "Value must be at least 0");
+            VisualLength = visualLength;
+            DocumentLength = documentLength;
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
         internal void SetTextRunProperties(VisualLineElementTextRunProperties p)
         {
-            this.TextRunProperties = p;
+            TextRunProperties = p;
         }
 
         /// <summary>
@@ -116,16 +116,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
         protected void SplitHelper(VisualLineElement firstPart, VisualLineElement secondPart, int splitVisualColumn, int splitRelativeTextOffset)
         {
             if (firstPart == null)
-                throw new ArgumentNullException("firstPart");
+                throw new ArgumentNullException(nameof(firstPart));
             if (secondPart == null)
-                throw new ArgumentNullException("secondPart");
+                throw new ArgumentNullException(nameof(secondPart));
             int relativeSplitVisualColumn = splitVisualColumn - VisualColumn;
             int relativeSplitRelativeTextOffset = splitRelativeTextOffset - RelativeTextOffset;
 
             if (relativeSplitVisualColumn <= 0 || relativeSplitVisualColumn >= VisualLength)
-                throw new ArgumentOutOfRangeException("splitVisualColumn", splitVisualColumn, "Value must be between " + (VisualColumn + 1) + " and " + (VisualColumn + VisualLength - 1));
+                throw new ArgumentOutOfRangeException(nameof(splitVisualColumn), splitVisualColumn, "Value must be between " + (VisualColumn + 1) + " and " + (VisualColumn + VisualLength - 1));
             if (relativeSplitRelativeTextOffset < 0 || relativeSplitRelativeTextOffset > DocumentLength)
-                throw new ArgumentOutOfRangeException("splitRelativeTextOffset", splitRelativeTextOffset, "Value must be between " + (RelativeTextOffset) + " and " + (RelativeTextOffset + DocumentLength));
+                throw new ArgumentOutOfRangeException(nameof(splitRelativeTextOffset), splitRelativeTextOffset, "Value must be between " + (RelativeTextOffset) + " and " + (RelativeTextOffset + DocumentLength));
 
             int oldVisualLength = VisualLength;
             int oldDocumentLength = DocumentLength;
@@ -153,7 +153,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public virtual int GetVisualColumn(int relativeTextOffset)
         {
-            if (relativeTextOffset >= this.RelativeTextOffset + DocumentLength)
+            if (relativeTextOffset >= RelativeTextOffset + DocumentLength)
                 return VisualColumn + VisualLength;
             else
                 return VisualColumn;
@@ -165,7 +165,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// <returns>A text offset relative to the visual line start.</returns>
         public virtual int GetRelativeOffset(int visualColumn)
         {
-            if (visualColumn >= this.VisualColumn + VisualLength)
+            if (visualColumn >= VisualColumn + VisualLength)
                 return RelativeTextOffset + DocumentLength;
             else
                 return RelativeTextOffset;
@@ -184,8 +184,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </remarks>
         public virtual int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
         {
-            int stop1 = this.VisualColumn;
-            int stop2 = this.VisualColumn + this.VisualLength;
+            int stop1 = VisualColumn;
+            int stop2 = VisualColumn + VisualLength;
 
             if (direction == LogicalDirection.Backward)
             {

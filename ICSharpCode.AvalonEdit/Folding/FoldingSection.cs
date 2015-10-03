@@ -9,10 +9,10 @@ namespace ICSharpCode.AvalonEdit.Folding
     /// </summary>
     public sealed class FoldingSection : TextSegment
     {
-        private readonly FoldingManager manager;
-        private bool isFolded;
+        readonly FoldingManager manager;
+        bool isFolded;
         internal CollapsedLineSection[] collapsedSections;
-        private string title;
+        string title;
 
         /// <summary>
         /// Gets/sets if the section is folded.
@@ -114,7 +114,7 @@ namespace ICSharpCode.AvalonEdit.Folding
                 if (title != value)
                 {
                     title = value;
-                    if (this.IsFolded && manager != null)
+                    if (IsFolded && manager != null)
                         manager.Redraw(this);
                 }
             }
@@ -136,11 +136,11 @@ namespace ICSharpCode.AvalonEdit.Folding
         internal FoldingSection(FoldingManager manager, int startOffset, int endOffset)
         {
             this.manager = manager;
-            this.StartOffset = startOffset;
-            this.Length = endOffset - startOffset;
+            StartOffset = startOffset;
+            Length = endOffset - startOffset;
         }
 
-        private void RemoveCollapsedLineSection()
+        void RemoveCollapsedLineSection()
         {
             if (collapsedSections != null)
             {

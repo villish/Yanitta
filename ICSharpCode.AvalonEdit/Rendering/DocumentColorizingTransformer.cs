@@ -11,9 +11,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public abstract class DocumentColorizingTransformer : ColorizingTransformer
     {
-        private DocumentLine currentDocumentLine;
-        private int firstLineStart;
-        private int currentDocumentLineStartOffset, currentDocumentLineEndOffset;
+        DocumentLine currentDocumentLine;
+        int firstLineStart;
+        int currentDocumentLineStartOffset, currentDocumentLineEndOffset;
 
         /// <summary>
         /// Gets the current ITextRunConstructionContext.
@@ -24,8 +24,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
         protected override void Colorize(ITextRunConstructionContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
-            this.CurrentContext = context;
+                throw new ArgumentNullException(nameof(context));
+            CurrentContext = context;
 
             currentDocumentLine = context.VisualLine.FirstDocumentLine;
             firstLineStart = currentDocumentLineStartOffset = currentDocumentLine.Offset;
@@ -52,7 +52,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
                 }
             }
             currentDocumentLine = null;
-            this.CurrentContext = null;
+            CurrentContext = null;
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
         protected void ChangeLinePart(int startOffset, int endOffset, Action<VisualLineElement> action)
         {
             if (startOffset < currentDocumentLineStartOffset || startOffset > currentDocumentLineEndOffset)
-                throw new ArgumentOutOfRangeException("startOffset", startOffset, "Value must be between " + currentDocumentLineStartOffset + " and " + currentDocumentLineEndOffset);
+                throw new ArgumentOutOfRangeException(nameof(startOffset), startOffset, "Value must be between " + currentDocumentLineStartOffset + " and " + currentDocumentLineEndOffset);
             if (endOffset < startOffset || endOffset > currentDocumentLineEndOffset)
-                throw new ArgumentOutOfRangeException("endOffset", endOffset, "Value must be between " + startOffset + " and " + currentDocumentLineEndOffset);
-            VisualLine vl = this.CurrentContext.VisualLine;
+                throw new ArgumentOutOfRangeException(nameof(endOffset), endOffset, "Value must be between " + startOffset + " and " + currentDocumentLineEndOffset);
+            VisualLine vl = CurrentContext.VisualLine;
             int visualStart = vl.GetVisualColumn(startOffset - firstLineStart);
             int visualEnd = vl.GetVisualColumn(endOffset - firstLineStart);
             if (visualStart < visualEnd)

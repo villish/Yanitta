@@ -18,12 +18,12 @@ namespace ICSharpCode.AvalonEdit.Search
     /// </summary>
     public class SearchPanel : Control
     {
-        private TextArea textArea;
-        private TextDocument currentDocument;
-        private SearchResultBackgroundRenderer renderer;
-        private SearchResult currentResult;
-        private TextBox searchTextBox;
-        private SearchPanelAdorner adorner;
+        TextArea textArea;
+        TextDocument currentDocument;
+        SearchResultBackgroundRenderer renderer;
+        SearchResult currentResult;
+        TextBox searchTextBox;
+        SearchPanelAdorner adorner;
 
         #region DependencyProperties
 
@@ -125,7 +125,7 @@ namespace ICSharpCode.AvalonEdit.Search
 
         #endregion DependencyProperties
 
-        private static void MarkerBrushChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void MarkerBrushChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             SearchPanel panel = d as SearchPanel;
             if (panel != null)
@@ -139,9 +139,9 @@ namespace ICSharpCode.AvalonEdit.Search
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchPanel), new FrameworkPropertyMetadata(typeof(SearchPanel)));
         }
 
-        private ISearchStrategy strategy;
+        ISearchStrategy strategy;
 
-        private static void SearchPatternChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void SearchPatternChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             SearchPanel panel = d as SearchPanel;
             if (panel != null)
@@ -151,7 +151,7 @@ namespace ICSharpCode.AvalonEdit.Search
             }
         }
 
-        private void UpdateSearch()
+        void UpdateSearch()
         {
             // only reset as long as there are results
             // if no results are found, the "no matches found" message should not flicker.
@@ -175,7 +175,7 @@ namespace ICSharpCode.AvalonEdit.Search
         public void Attach(TextArea textArea)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             this.textArea = textArea;
             var layer = AdornerLayer.GetAdornerLayer(textArea);
             adorner = new SearchPanelAdorner(textArea, this);
@@ -190,12 +190,12 @@ namespace ICSharpCode.AvalonEdit.Search
             textArea.DocumentChanged += textArea_DocumentChanged;
             KeyDown += SearchLayerKeyDown;
 
-            this.CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, (sender, e) => FindNext()));
-            this.CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, (sender, e) => FindPrevious()));
-            this.CommandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, (sender, e) => Close()));
+            CommandBindings.Add(new CommandBinding(SearchCommands.FindNext, (sender, e) => FindNext()));
+            CommandBindings.Add(new CommandBinding(SearchCommands.FindPrevious, (sender, e) => FindPrevious()));
+            CommandBindings.Add(new CommandBinding(SearchCommands.CloseSearchPanel, (sender, e) => Close()));
         }
 
-        private void textArea_DocumentChanged(object sender, EventArgs e)
+        void textArea_DocumentChanged(object sender, EventArgs e)
         {
             if (currentDocument != null)
                 currentDocument.TextChanged -= textArea_Document_TextChanged;
@@ -207,7 +207,7 @@ namespace ICSharpCode.AvalonEdit.Search
             }
         }
 
-        private void textArea_Document_TextChanged(object sender, EventArgs e)
+        void textArea_Document_TextChanged(object sender, EventArgs e)
         {
             DoSearch(false);
         }
@@ -219,7 +219,7 @@ namespace ICSharpCode.AvalonEdit.Search
             searchTextBox = Template.FindName("PART_searchTextBox", this) as TextBox;
         }
 
-        private void ValidateSearchText()
+        void ValidateSearchText()
         {
             if (searchTextBox == null)
                 return;
@@ -281,7 +281,7 @@ namespace ICSharpCode.AvalonEdit.Search
 
         private ToolTip messageView = new ToolTip { Placement = PlacementMode.Bottom, StaysOpen = false };
 
-        private void DoSearch(bool changeSelection)
+        void DoSearch(bool changeSelection)
         {
             renderer.CurrentResults.Clear();
             currentResult = null;
@@ -317,7 +317,7 @@ namespace ICSharpCode.AvalonEdit.Search
             textArea.TextView.InvalidateLayer(KnownLayer.Selection);
         }
 
-        private void SetResult(SearchResult result)
+        void SetResult(SearchResult result)
         {
             textArea.Caret.Offset = currentResult.StartOffset;
             textArea.Selection = Selection.Create(textArea, currentResult.StartOffset, currentResult.EndOffset);
@@ -332,7 +332,7 @@ namespace ICSharpCode.AvalonEdit.Search
             textArea.Caret.Show();
         }
 
-        private void SearchLayerKeyDown(object sender, KeyEventArgs e)
+        void SearchLayerKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -387,7 +387,7 @@ namespace ICSharpCode.AvalonEdit.Search
 
     internal class SearchPanelAdorner : Adorner
     {
-        private SearchPanel panel;
+        SearchPanel panel;
 
         public SearchPanelAdorner(TextArea textArea, SearchPanel panel)
             : base(textArea)

@@ -17,7 +17,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
     /// </remarks>
     public sealed class HighlightedInlineBuilder
     {
-        private sealed class HighlightingState
+        sealed class HighlightingState
         {
             internal Brush Foreground;
             internal FontFamily Family;
@@ -28,22 +28,22 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             {
                 return new HighlightingState
                 {
-                    Foreground = this.Foreground,
-                    Family = this.Family,
-                    Weight = this.Weight,
-                    Style = this.Style
+                    Foreground = Foreground,
+                    Family = Family,
+                    Weight = Weight,
+                    Style = Style
                 };
             }
         }
 
-        private readonly string text;
-        private List<int> stateChangeOffsets = new List<int>();
-        private List<HighlightingState> stateChanges = new List<HighlightingState>();
+        readonly string text;
+        List<int> stateChangeOffsets = new List<int>();
+        List<HighlightingState> stateChanges = new List<HighlightingState>();
 
-        private int GetIndexForOffset(int offset)
+        int GetIndexForOffset(int offset)
         {
             if (offset < 0 || offset > text.Length)
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             int index = stateChangeOffsets.BinarySearch(offset);
             if (index < 0)
             {
@@ -63,7 +63,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public HighlightedInlineBuilder(string text)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             this.text = text;
             stateChangeOffsets.Add(0);
             stateChanges.Add(new HighlightingState());
@@ -83,7 +83,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public void SetHighlighting(int offset, int length, HighlightingColor color)
         {
             if (color == null)
-                throw new ArgumentNullException("color");
+                throw new ArgumentNullException(nameof(color));
             if (color.Foreground == null && color.FontStyle == null && color.FontWeight == null)
             {
                 // Optimization: don't split the HighlightingState when we're not changing

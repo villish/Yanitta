@@ -14,8 +14,8 @@ namespace ICSharpCode.AvalonEdit.Folding
     /// </summary>
     public sealed class FoldingElementGenerator : VisualLineElementGenerator, ITextViewConnect
     {
-        private readonly List<TextView> textViews = new List<TextView>();
-        private FoldingManager foldingManager;
+        readonly List<TextView> textViews = new List<TextView>();
+        FoldingManager foldingManager;
 
         #region FoldingManager property / connecting with TextView
 
@@ -137,9 +137,9 @@ namespace ICSharpCode.AvalonEdit.Folding
             }
         }
 
-        private sealed class FoldingLineElement : FormattedTextElement
+        sealed class FoldingLineElement : FormattedTextElement
         {
-            private readonly FoldingSection fs;
+            readonly FoldingSection fs;
 
             internal Brush textBrush;
 
@@ -151,7 +151,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 
             public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
             {
-                return new FoldingLineTextRun(this, this.TextRunProperties) { textBrush = textBrush };
+                return new FoldingLineTextRun(this, TextRunProperties) { textBrush = textBrush };
             }
 
             protected internal override void OnMouseDown(MouseButtonEventArgs e)
@@ -168,7 +168,7 @@ namespace ICSharpCode.AvalonEdit.Folding
             }
         }
 
-        private sealed class FoldingLineTextRun : FormattedTextRun
+        sealed class FoldingLineTextRun : FormattedTextRun
         {
             internal Brush textBrush;
 
@@ -191,7 +191,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// </summary>
         public static readonly Brush DefaultTextBrush = Brushes.Gray;
 
-        private static Brush textBrush = DefaultTextBrush;
+        static Brush textBrush = DefaultTextBrush;
 
         /// <summary>
         /// Gets/sets the brush used for folding element text.

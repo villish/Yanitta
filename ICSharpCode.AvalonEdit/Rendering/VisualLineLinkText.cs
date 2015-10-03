@@ -38,14 +38,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public VisualLineLinkText(VisualLine parentVisualLine, int length)
             : base(parentVisualLine, length)
         {
-            this.RequireControlModifierForClick = true;
+            RequireControlModifierForClick = true;
         }
 
         /// <inheritdoc/>
         public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
         {
-            this.TextRunProperties.SetForegroundBrush(Brushes.Blue);
-            this.TextRunProperties.SetTextDecorations(TextDecorations.Underline);
+            TextRunProperties.SetForegroundBrush(Brushes.Blue);
+            TextRunProperties.SetTextDecorations(TextDecorations.Underline);
             return base.CreateTextRun(startVisualColumn, context);
         }
 
@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         {
             if (e.ChangedButton == MouseButton.Left && !e.Handled && LinkIsClickable())
             {
-                RequestNavigateEventArgs args = new RequestNavigateEventArgs(this.NavigateUri, this.TargetName);
+                RequestNavigateEventArgs args = new RequestNavigateEventArgs(NavigateUri, TargetName);
                 args.RoutedEvent = Hyperlink.RequestNavigateEvent;
                 FrameworkElement element = e.Source as FrameworkElement;
                 if (element != null)
@@ -93,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
                 {
                     try
                     {
-                        Process.Start(this.NavigateUri.ToString());
+                        Process.Start(NavigateUri.ToString());
                     }
                     catch
                     {
@@ -109,9 +109,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
         {
             return new VisualLineLinkText(ParentVisualLine, length)
             {
-                NavigateUri = this.NavigateUri,
-                TargetName = this.TargetName,
-                RequireControlModifierForClick = this.RequireControlModifierForClick
+                NavigateUri = NavigateUri,
+                TargetName = TargetName,
+                RequireControlModifierForClick = RequireControlModifierForClick
             };
         }
     }

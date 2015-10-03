@@ -13,7 +13,7 @@ namespace ICSharpCode.AvalonEdit.Utils
     /// </remarks>
     internal sealed class CallbackOnDispose : IDisposable
     {
-        private Action action;
+        Action action;
 
         public CallbackOnDispose(Action action)
         {

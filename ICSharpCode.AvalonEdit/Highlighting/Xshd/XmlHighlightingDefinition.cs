@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 
         public XmlHighlightingDefinition(XshdSyntaxDefinition xshd, IHighlightingDefinitionReferenceResolver resolver)
         {
-            this.Name = xshd.Name;
+            Name = xshd.Name;
             // Create HighlightingRuleSet instances
             var rnev = new RegisterNamedElementsVisitor(this);
             xshd.AcceptElements(rnev);
@@ -39,9 +39,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 
         #region RegisterNamedElements
 
-        private sealed class RegisterNamedElementsVisitor : IXshdVisitor
+        sealed class RegisterNamedElementsVisitor : IXshdVisitor
         {
-            private XmlHighlightingDefinition def;
+            XmlHighlightingDefinition def;
 
             internal readonly Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSets
                 = new Dictionary<XshdRuleSet, HighlightingRuleSet>();
@@ -110,15 +110,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 
         #region TranslateElements
 
-        private sealed class TranslateElementVisitor : IXshdVisitor
+        sealed class TranslateElementVisitor : IXshdVisitor
         {
-            private readonly XmlHighlightingDefinition def;
-            private readonly Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSetDict;
-            private readonly Dictionary<HighlightingRuleSet, XshdRuleSet> reverseRuleSetDict;
-            private readonly IHighlightingDefinitionReferenceResolver resolver;
-            private HashSet<XshdRuleSet> processingStartedRuleSets = new HashSet<XshdRuleSet>();
-            private HashSet<XshdRuleSet> processedRuleSets = new HashSet<XshdRuleSet>();
-            private bool ignoreCase;
+            readonly XmlHighlightingDefinition def;
+            readonly Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSetDict;
+            readonly Dictionary<HighlightingRuleSet, XshdRuleSet> reverseRuleSetDict;
+            readonly IHighlightingDefinitionReferenceResolver resolver;
+            HashSet<XshdRuleSet> processingStartedRuleSets = new HashSet<XshdRuleSet>();
+            HashSet<XshdRuleSet> processedRuleSets = new HashSet<XshdRuleSet>();
+            bool ignoreCase;
 
             public TranslateElementVisitor(XmlHighlightingDefinition def, Dictionary<XshdRuleSet, HighlightingRuleSet> ruleSetDict, IHighlightingDefinitionReferenceResolver resolver)
             {
@@ -180,7 +180,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 return rs;
             }
 
-            private static void Merge(HighlightingRuleSet target, HighlightingRuleSet source)
+            static void Merge(HighlightingRuleSet target, HighlightingRuleSet source)
             {
                 target.Rules.AddRange(source.Rules);
                 target.Spans.AddRange(source.Spans);
@@ -261,7 +261,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 return char.IsLetterOrDigit(word[0]) && char.IsLetterOrDigit(word, word.Length - 1);
             }
 
-            private Regex CreateRegex(XshdElement position, string regex, XshdRegexType regexType)
+            Regex CreateRegex(XshdElement position, string regex, XshdRegexType regexType)
             {
                 if (regex == null)
                     throw Error(position, "Regex missing");
@@ -280,7 +280,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 }
             }
 
-            private HighlightingColor GetColor(XshdElement position, XshdReference<XshdColor> colorReference)
+            HighlightingColor GetColor(XshdElement position, XshdReference<XshdColor> colorReference)
             {
                 if (colorReference.InlineElement != null)
                 {
@@ -300,7 +300,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 }
             }
 
-            private IHighlightingDefinition GetDefinition(XshdElement position, string definitionName)
+            IHighlightingDefinition GetDefinition(XshdElement position, string definitionName)
             {
                 if (definitionName == null)
                     return def;
@@ -312,7 +312,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 return d;
             }
 
-            private HighlightingRuleSet GetRuleSet(XshdElement position, XshdReference<XshdRuleSet> ruleSetReference)
+            HighlightingRuleSet GetRuleSet(XshdElement position, XshdReference<XshdRuleSet> ruleSetReference)
             {
                 if (ruleSetReference.InlineElement != null)
                 {
@@ -358,7 +358,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 };
             }
 
-            private static HighlightingColor MergeColor(HighlightingColor baseColor, HighlightingColor newColor)
+            static HighlightingColor MergeColor(HighlightingColor baseColor, HighlightingColor newColor)
             {
                 if (baseColor == null)
                     return newColor;
@@ -397,7 +397,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 
         #endregion TranslateElements
 
-        private static Exception Error(XshdElement element, string message)
+        static Exception Error(XshdElement element, string message)
         {
             if (element.LineNumber > 0)
                 return new HighlightingDefinitionInvalidException(
@@ -406,8 +406,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
                 return new HighlightingDefinitionInvalidException(message);
         }
 
-        private Dictionary<string, HighlightingRuleSet> ruleSetDict = new Dictionary<string, HighlightingRuleSet>();
-        private Dictionary<string, HighlightingColor> colorDict = new Dictionary<string, HighlightingColor>();
+        Dictionary<string, HighlightingRuleSet> ruleSetDict = new Dictionary<string, HighlightingRuleSet>();
+        Dictionary<string, HighlightingColor> colorDict = new Dictionary<string, HighlightingColor>();
 
         public HighlightingRuleSet MainRuleSet { get; private set; }
 
@@ -441,7 +441,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 
         public override string ToString()
         {
-            return this.Name;
+            return Name;
         }
     }
 }

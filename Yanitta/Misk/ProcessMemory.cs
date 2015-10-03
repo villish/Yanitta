@@ -61,8 +61,8 @@ namespace Yanitta
         /// <param name="process"></param>
         public ProcessMemory(Process process)
         {
-            this.Process = process;
-            this.Process.EnableRaisingEvents = true;
+            Process = process;
+            Process.EnableRaisingEvents = true;
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace Yanitta
         public IntPtr Alloc(int size, AllocationType allocType = AllocationType.Commit, MemoryProtection memProtect = MemoryProtection.ExecuteReadWrite)
         {
             if (size <= 0)
-                throw new ArgumentNullException("size");
+                throw new ArgumentNullException(nameof(size));
 
-            var address = VirtualAllocEx(this.Process.Handle, IntPtr.Zero, size, allocType, memProtect);
+            var address = VirtualAllocEx(Process.Handle, IntPtr.Zero, size, allocType, memProtect);
 
             if (address == IntPtr.Zero)
                 throw new Win32Exception();
@@ -93,9 +93,9 @@ namespace Yanitta
         public void Free(IntPtr address, FreeType freeType = FreeType.Release)
         {
             if (address == IntPtr.Zero)
-                throw new ArgumentNullException("address");
+                throw new ArgumentNullException(nameof(address));
 
-            if (!VirtualFreeEx(this.Process.Handle, address, 0, freeType))
+            if (!VirtualFreeEx(Process.Handle, address, 0, freeType))
                 throw new Win32Exception();
         }
 
@@ -108,7 +108,7 @@ namespace Yanitta
         public unsafe byte[] ReadBytes(IntPtr address, int count)
         {
             var bytes = new byte[count];
-            if(!ReadProcessMemory(this.Process.Handle, address, bytes, count, IntPtr.Zero))
+            if(!ReadProcessMemory(Process.Handle, address, bytes, count, IntPtr.Zero))
                 throw new Win32Exception();
             return bytes;
         }
@@ -122,7 +122,7 @@ namespace Yanitta
         public unsafe T Read<T>(IntPtr address) where T : struct
         {
             var result = new byte[Marshal.SizeOf(typeof(T))];
-            ReadProcessMemory(this.Process.Handle, address, result, result.Length, IntPtr.Zero);
+            ReadProcessMemory(Process.Handle, address, result, result.Length, IntPtr.Zero);
             var handle = GCHandle.Alloc(result, GCHandleType.Pinned);
             T returnObject = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
             handle.Free();
@@ -138,7 +138,7 @@ namespace Yanitta
         public string ReadString(IntPtr addess, int length = 100)
         {
             var result = new byte[length];
-            if (!ReadProcessMemory(this.Process.Handle, addess, result, length, IntPtr.Zero))
+            if (!ReadProcessMemory(Process.Handle, addess, result, length, IntPtr.Zero))
                 throw new Win32Exception();
             return Encoding.UTF8.GetString(result.TakeWhile(ret => ret != 0).ToArray());
         }
@@ -160,7 +160,7 @@ namespace Yanitta
             {
                 Marshal.StructureToPtr(value, hObj, false);
                 Marshal.Copy(hObj, buffer, 0, buffer.Length);
-                if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
+                if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                     throw new Win32Exception();
             }
             catch
@@ -189,7 +189,7 @@ namespace Yanitta
             {
                 Marshal.StructureToPtr(value, hObj, false);
                 Marshal.Copy(hObj, buffer, 0, buffer.Length);
-                if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
+                if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                     throw new Win32Exception();
             }
             finally
@@ -205,10 +205,10 @@ namespace Yanitta
         /// <returns>Указатель на участок памяти куда записан массив.</returns>
         public IntPtr Write(byte[] buffer)
         {
-            var addr = this.Alloc(buffer.Length);
+            var addr = Alloc(buffer.Length);
             if (addr == IntPtr.Zero)
                 throw new Win32Exception();
-            this.Write(addr, buffer);
+            Write(addr, buffer);
             return addr;
         }
 
@@ -219,7 +219,7 @@ namespace Yanitta
         /// <param name="buffer">Массив байт.</param>
         public void Write(IntPtr address, byte[] buffer)
         {
-            if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
+            if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
         }
 
@@ -231,7 +231,7 @@ namespace Yanitta
         public void WriteCString(IntPtr address, string str)
         {
             var buffer = Encoding.UTF8.GetBytes(str + '\0');
-            if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
+            if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
         }
 
@@ -244,7 +244,7 @@ namespace Yanitta
         {
             var buffer = Encoding.UTF8.GetBytes(str + '\0');
             var address = Alloc(buffer.Length);
-            if (!WriteProcessMemory(this.Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
+            if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
                 throw new Win32Exception();
             return address;
         }
@@ -260,7 +260,7 @@ namespace Yanitta
         /// </param>
         public void Call_x32(IntPtr injAddress, IntPtr callAddress, params int[] funcArgs)
         {
-            var tHandle = OpenThread(ThreadAccess.All, false, this.Process.Threads[0].Id);
+            var tHandle = OpenThread(ThreadAccess.All, false, Process.Threads[0].Id);
             if (SuspendThread(tHandle) == 0xFFFFFFFF)
                 throw new Win32Exception();
 
@@ -320,11 +320,11 @@ namespace Yanitta
             var oldProtect = MemoryProtection.ReadOnly;
 
             // Save original code and disable protect
-            var oldCode = this.ReadBytes(injAddress, bytes.Count);
-            if (!VirtualProtectEx(this.Process.Handle, injAddress, bytes.Count, MemoryProtection.ExecuteReadWrite, out oldProtect))
+            var oldCode = ReadBytes(injAddress, bytes.Count);
+            if (!VirtualProtectEx(Process.Handle, injAddress, bytes.Count, MemoryProtection.ExecuteReadWrite, out oldProtect))
                 throw new Win32Exception();
 
-            this.Write(injAddress, bytes.ToArray());
+            Write(injAddress, bytes.ToArray());
 
             context.Eip = (uint)injAddress.ToInt32();
 
@@ -334,20 +334,20 @@ namespace Yanitta
             for (int i = 0; i < 0x100; ++i)
             {
                 System.Threading.Thread.Sleep(15);
-                if (this.Read<uint>(retaddr) != 0xDEAD)
+                if (Read<uint>(retaddr) != 0xDEAD)
                     break;
             }
 
             // restore protection and original code
-            this.Write(injAddress, oldCode);
+            Write(injAddress, oldCode);
 
-            if (!FlushInstructionCache(this.Process.Handle, injAddress, bytes.Count))
+            if (!FlushInstructionCache(Process.Handle, injAddress, bytes.Count))
                 throw new Win32Exception();
 
-            if (!VirtualProtectEx(this.Process.Handle, injAddress, bytes.Count, oldProtect, out oldProtect))
+            if (!VirtualProtectEx(Process.Handle, injAddress, bytes.Count, oldProtect, out oldProtect))
                 throw new Win32Exception();
 
-            this.Free(retaddr);
+            Free(retaddr);
         }
 
         public void Call_x64(IntPtr injAddress, IntPtr callAddress, params IntPtr[] funcArgs)
@@ -362,7 +362,7 @@ namespace Yanitta
         /// <returns>абсолютный аддресс в процессе.</returns>
         public IntPtr Rebase(long offset)
         {
-            return new IntPtr(offset + this.Process.MainModule.BaseAddress.ToInt64());
+            return new IntPtr(offset + Process.MainModule.BaseAddress.ToInt64());
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace Yanitta
             get
             {
                 bool wow64Process;
-                IsWow64Process(this.Process.Handle, out wow64Process);
+                IsWow64Process(Process.Handle, out wow64Process);
                 return wow64Process;
             }
         }

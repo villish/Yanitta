@@ -25,15 +25,15 @@ namespace ICSharpCode.AvalonEdit.Document
         /// during Undo events
         internal int state = StateListen;
 
-        private Deque<IUndoableOperation> undostack = new Deque<IUndoableOperation>();
-        private Deque<IUndoableOperation> redostack = new Deque<IUndoableOperation>();
-        private int sizeLimit = int.MaxValue;
+        Deque<IUndoableOperation> undostack = new Deque<IUndoableOperation>();
+        Deque<IUndoableOperation> redostack = new Deque<IUndoableOperation>();
+        int sizeLimit = int.MaxValue;
 
-        private int undoGroupDepth;
-        private int actionCountInUndoGroup;
-        private int optionalActionCount;
-        private object lastGroupDescriptor;
-        private bool allowContinue;
+        int undoGroupDepth;
+        int actionCountInUndoGroup;
+        int optionalActionCount;
+        object lastGroupDescriptor;
+        bool allowContinue;
 
         #region IsOriginalFile implementation
 
@@ -44,9 +44,9 @@ namespace ICSharpCode.AvalonEdit.Document
         /// Negative: number of times redo must be executed until the original state is reached.
         /// Special case: int.MinValue == original state is unreachable
         /// </summary>
-        private int elementsOnUndoUntilOriginalFile;
+        int elementsOnUndoUntilOriginalFile;
 
-        private bool isOriginalFile = true;
+        bool isOriginalFile = true;
 
         /// <summary>
         /// Gets whether the document is currently in its original state (no modifications).
@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.Document
             get { return isOriginalFile; }
         }
 
-        private void RecalcIsOriginalFile()
+        void RecalcIsOriginalFile()
         {
             bool newIsOriginalFile = (elementsOnUndoUntilOriginalFile == 0);
             if (newIsOriginalFile != isOriginalFile)
@@ -84,7 +84,7 @@ namespace ICSharpCode.AvalonEdit.Document
             RecalcIsOriginalFile();
         }
 
-        private void FileModified(int newElementsOnUndoStack)
+        void FileModified(int newElementsOnUndoStack)
         {
             if (elementsOnUndoUntilOriginalFile == int.MinValue)
                 return;
@@ -147,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private void EnforceSizeLimit()
+        void EnforceSizeLimit()
         {
             Debug.Assert(undoGroupDepth == 0);
             while (undostack.Count > sizeLimit)
@@ -253,7 +253,7 @@ namespace ICSharpCode.AvalonEdit.Document
         /// <summary>
         /// Throws an InvalidOperationException if an undo group is current open.
         /// </summary>
-        private void ThrowIfUndoGroupOpen()
+        void ThrowIfUndoGroupOpen()
         {
             if (undoGroupDepth != 0)
             {
@@ -266,7 +266,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private List<TextDocument> affectedDocuments;
+        List<TextDocument> affectedDocuments;
 
         internal void RegisterAffectedDocument(TextDocument document)
         {
@@ -279,7 +279,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private void CallEndUpdateOnAffectedDocuments()
+        void CallEndUpdateOnAffectedDocuments()
         {
             if (affectedDocuments != null)
             {
@@ -394,11 +394,11 @@ namespace ICSharpCode.AvalonEdit.Document
             Push(operation, true);
         }
 
-        private void Push(IUndoableOperation operation, bool isOptional)
+        void Push(IUndoableOperation operation, bool isOptional)
         {
             if (operation == null)
             {
-                throw new ArgumentNullException("operation");
+                throw new ArgumentNullException(nameof(operation));
             }
 
             if (state == StateListen && sizeLimit > 0)
@@ -468,7 +468,7 @@ namespace ICSharpCode.AvalonEdit.Document
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void NotifyPropertyChanged(string propertyName)
+        void NotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));

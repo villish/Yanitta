@@ -25,10 +25,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
             : base(1, documentLength)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             this.text = text;
-            this.BreakBefore = LineBreakCondition.BreakPossible;
-            this.BreakAfter = LineBreakCondition.BreakPossible;
+            BreakBefore = LineBreakCondition.BreakPossible;
+            BreakAfter = LineBreakCondition.BreakPossible;
         }
 
         /// <summary>
@@ -39,10 +39,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
             : base(1, documentLength)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
-            this.textLine = text;
-            this.BreakBefore = LineBreakCondition.BreakPossible;
-            this.BreakAfter = LineBreakCondition.BreakPossible;
+                throw new ArgumentNullException(nameof(text));
+            textLine = text;
+            BreakBefore = LineBreakCondition.BreakPossible;
+            BreakAfter = LineBreakCondition.BreakPossible;
         }
 
         /// <summary>
@@ -53,10 +53,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
             : base(1, documentLength)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
-            this.formattedText = text;
-            this.BreakBefore = LineBreakCondition.BreakPossible;
-            this.BreakAfter = LineBreakCondition.BreakPossible;
+                throw new ArgumentNullException(nameof(text));
+            formattedText = text;
+            BreakBefore = LineBreakCondition.BreakPossible;
+            BreakAfter = LineBreakCondition.BreakPossible;
         }
 
         /// <summary>
@@ -77,10 +77,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
             if (textLine == null)
             {
                 var formatter = TextFormatterFactory.Create(context.TextView);
-                textLine = PrepareText(formatter, this.text, this.TextRunProperties);
-                this.text = null;
+                textLine = PrepareText(formatter, text, TextRunProperties);
+                text = null;
             }
-            return new FormattedTextRun(this, this.TextRunProperties);
+            return new FormattedTextRun(this, TextRunProperties);
         }
 
         /// <summary>
@@ -89,11 +89,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public static TextLine PrepareText(TextFormatter formatter, string text, TextRunProperties properties)
         {
             if (formatter == null)
-                throw new ArgumentNullException("formatter");
+                throw new ArgumentNullException(nameof(formatter));
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             if (properties == null)
-                throw new ArgumentNullException("properties");
+                throw new ArgumentNullException(nameof(properties));
             return formatter.FormatLine(
                 new SimpleTextSource(text, properties),
                 0,
@@ -113,8 +113,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public class FormattedTextRun : TextEmbeddedObject
     {
-        private readonly FormattedTextElement element;
-        private TextRunProperties properties;
+        readonly FormattedTextElement element;
+        TextRunProperties properties;
 
         /// <summary>
         /// Creates a new FormattedTextRun.
@@ -122,9 +122,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public FormattedTextRun(FormattedTextElement element, TextRunProperties properties)
         {
             if (element == null)
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
             if (properties == null)
-                throw new ArgumentNullException("properties");
+                throw new ArgumentNullException(nameof(properties));
             this.properties = properties;
             this.element = element;
         }

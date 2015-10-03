@@ -6,11 +6,11 @@ namespace ICSharpCode.AvalonEdit
 {
     public class InsertionAdorner : Adorner
     {
-        private readonly bool _isSeparatorHorizontal;
+        readonly bool _isSeparatorHorizontal;
         public bool IsInFirstHalf { get; set; }
-        private readonly AdornerLayer _adornerLayer;
-        private static readonly Pen Pen;
-        private static readonly PathGeometry Triangle;
+        readonly AdornerLayer _adornerLayer;
+        static readonly Pen Pen;
+        static readonly PathGeometry Triangle;
 
         // Create the pen and triangle in a static constructor and freeze them to improve performance.
         static InsertionAdorner()
@@ -36,12 +36,12 @@ namespace ICSharpCode.AvalonEdit
         public InsertionAdorner(bool isSeparatorHorizontal, bool isInFirstHalf, UIElement adornedElement, AdornerLayer adornerLayer)
             : base(adornedElement)
         {
-            this._isSeparatorHorizontal = isSeparatorHorizontal;
-            this.IsInFirstHalf = isInFirstHalf;
-            this._adornerLayer = adornerLayer;
-            this.IsHitTestVisible = false;
+            _isSeparatorHorizontal = isSeparatorHorizontal;
+            IsInFirstHalf = isInFirstHalf;
+            _adornerLayer = adornerLayer;
+            IsHitTestVisible = false;
 
-            this._adornerLayer.Add(this);
+            _adornerLayer.Add(this);
         }
 
         // This draws one line and two triangles at each end of the line.
@@ -53,7 +53,7 @@ namespace ICSharpCode.AvalonEdit
             CalculateStartAndEndPoint(out startPoint, out endPoint);
             drawingContext.DrawLine(Pen, startPoint, endPoint);
 
-            if (this._isSeparatorHorizontal)
+            if (_isSeparatorHorizontal)
             {
                 DrawTriangle(drawingContext, startPoint, 0);
                 DrawTriangle(drawingContext, endPoint, 180);
@@ -65,7 +65,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private void DrawTriangle(DrawingContext drawingContext, Point origin, double angle)
+        void DrawTriangle(DrawingContext drawingContext, Point origin, double angle)
         {
             drawingContext.PushTransform(new TranslateTransform(origin.X, origin.Y));
             drawingContext.PushTransform(new RotateTransform(angle));
@@ -76,18 +76,18 @@ namespace ICSharpCode.AvalonEdit
             drawingContext.Pop();
         }
 
-        private void CalculateStartAndEndPoint(out Point startPoint, out Point endPoint)
+        void CalculateStartAndEndPoint(out Point startPoint, out Point endPoint)
         {
             startPoint = new Point();
             endPoint = new Point();
 
-            double width = this.AdornedElement.RenderSize.Width;
-            double height = this.AdornedElement.RenderSize.Height;
+            double width = AdornedElement.RenderSize.Width;
+            double height = AdornedElement.RenderSize.Height;
 
-            if (this._isSeparatorHorizontal)
+            if (_isSeparatorHorizontal)
             {
                 endPoint.X = width;
-                if (!this.IsInFirstHalf)
+                if (!IsInFirstHalf)
                 {
                     startPoint.Y = height;
                     endPoint.Y = height;
@@ -96,7 +96,7 @@ namespace ICSharpCode.AvalonEdit
             else
             {
                 endPoint.Y = height;
-                if (!this.IsInFirstHalf)
+                if (!IsInFirstHalf)
                 {
                     startPoint.X = width;
                     endPoint.X = width;
@@ -106,7 +106,7 @@ namespace ICSharpCode.AvalonEdit
 
         public void Detach()
         {
-            this._adornerLayer.Remove(this);
+            _adornerLayer.Remove(this);
         }
     }
 }

@@ -5172,6 +5172,10 @@ and not HasDebuff("mouseover", 6788) then
     return "mouseover";
 end
 
+if PLAYER.Agro > 0 and not HasDebuff("player", 6788) then
+    return GetNumGroupMembers() == 0;
+end
+
 for _, member in ipairs(PartyLogic.members) do
     if (not HasDebuff(member.Unit, 6788) and not HasBuff(member.Unit, 17))
         or HasBuff("player", 123266) then

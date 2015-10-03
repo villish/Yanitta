@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public class VisualLineText : VisualLineElement
     {
-        private VisualLine parentVisualLine;
+        VisualLine parentVisualLine;
 
         /// <summary>
         /// Gets the parent visual line.
@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             : base(length, length)
         {
             if (parentVisualLine == null)
-                throw new ArgumentNullException("parentVisualLine");
+                throw new ArgumentNullException(nameof(parentVisualLine));
             this.parentVisualLine = parentVisualLine;
         }
 
@@ -48,17 +48,17 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
 
             int relativeOffset = startVisualColumn - VisualColumn;
             StringSegment text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
-            return new TextCharacters(text.Text, text.Offset, text.Count, this.TextRunProperties);
+            return new TextCharacters(text.Text, text.Offset, text.Count, TextRunProperties);
         }
 
         /// <inheritdoc/>
         public override bool IsWhitespace(int visualColumn)
         {
-            int offset = visualColumn - this.VisualColumn + parentVisualLine.FirstDocumentLine.Offset + this.RelativeTextOffset;
+            int offset = visualColumn - VisualColumn + parentVisualLine.FirstDocumentLine.Offset + RelativeTextOffset;
             return char.IsWhiteSpace(parentVisualLine.Document.GetCharAt(offset));
         }
 
@@ -66,12 +66,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int visualColumnLimit, ITextRunConstructionContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
 
             int relativeOffset = visualColumnLimit - VisualColumn;
             StringSegment text = context.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset, relativeOffset);
             CharacterBufferRange range = new CharacterBufferRange(text.Text, text.Offset, text.Count);
-            return new TextSpan<CultureSpecificCharacterBufferRange>(range.Length, new CultureSpecificCharacterBufferRange(this.TextRunProperties.CultureInfo, range));
+            return new TextSpan<CultureSpecificCharacterBufferRange>(range.Length, new CultureSpecificCharacterBufferRange(TextRunProperties.CultureInfo, range));
         }
 
         /// <inheritdoc/>
@@ -84,9 +84,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public override void Split(int splitVisualColumn, IList<VisualLineElement> elements, int elementIndex)
         {
             if (splitVisualColumn <= VisualColumn || splitVisualColumn >= VisualColumn + VisualLength)
-                throw new ArgumentOutOfRangeException("splitVisualColumn", splitVisualColumn, "Value must be between " + (VisualColumn + 1) + " and " + (VisualColumn + VisualLength - 1));
+                throw new ArgumentOutOfRangeException(nameof(splitVisualColumn), splitVisualColumn, "Value must be between " + (VisualColumn + 1) + " and " + (VisualColumn + VisualLength - 1));
             if (elements == null)
-                throw new ArgumentNullException("elements");
+                throw new ArgumentNullException(nameof(elements));
             if (elements[elementIndex] != this)
                 throw new ArgumentException("Invalid elementIndex - couldn't find this element at the index");
             int relativeSplitPos = splitVisualColumn - VisualColumn;
@@ -98,24 +98,24 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// <inheritdoc/>
         public override int GetRelativeOffset(int visualColumn)
         {
-            return this.RelativeTextOffset + visualColumn - this.VisualColumn;
+            return RelativeTextOffset + visualColumn - VisualColumn;
         }
 
         /// <inheritdoc/>
         public override int GetVisualColumn(int relativeTextOffset)
         {
-            return this.VisualColumn + relativeTextOffset - this.RelativeTextOffset;
+            return VisualColumn + relativeTextOffset - RelativeTextOffset;
         }
 
         /// <inheritdoc/>
         public override int GetNextCaretPosition(int visualColumn, LogicalDirection direction, CaretPositioningMode mode)
         {
-            int textOffset = parentVisualLine.StartOffset + this.RelativeTextOffset;
-            int pos = TextUtilities.GetNextCaretPosition(parentVisualLine.Document, textOffset + visualColumn - this.VisualColumn, direction, mode);
-            if (pos < textOffset || pos > textOffset + this.DocumentLength)
+            int textOffset = parentVisualLine.StartOffset + RelativeTextOffset;
+            int pos = TextUtilities.GetNextCaretPosition(parentVisualLine.Document, textOffset + visualColumn - VisualColumn, direction, mode);
+            if (pos < textOffset || pos > textOffset + DocumentLength)
                 return -1;
             else
-                return this.VisualColumn + pos - textOffset;
+                return VisualColumn + pos - textOffset;
         }
     }
 }

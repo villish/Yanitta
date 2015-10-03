@@ -13,7 +13,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
     {
         public VisualLineTextSource(VisualLine visualLine)
         {
-            this.VisualLine = visualLine;
+            VisualLine = visualLine;
         }
 
         public VisualLine VisualLine { get; private set; }
@@ -64,7 +64,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
         }
 
-        private TextRun CreateTextRunForNewLine()
+        TextRun CreateTextRunForNewLine()
         {
             string newlineText = "";
             DocumentLine lastDocumentLine = VisualLine.LastDocumentLine;
@@ -118,8 +118,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
             throw new NotSupportedException();
         }
 
-        private string cachedString;
-        private int cachedStringOffset;
+        string cachedString;
+        int cachedStringOffset;
 
         public StringSegment GetText(int offset, int length)
         {
@@ -131,7 +131,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
                 }
             }
             cachedStringOffset = offset;
-            return new StringSegment(cachedString = this.Document.GetText(offset, length));
+            return new StringSegment(cachedString = Document.GetText(offset, length));
         }
     }
 }

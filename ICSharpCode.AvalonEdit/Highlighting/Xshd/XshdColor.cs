@@ -53,15 +53,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         protected XshdColor(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
-            this.Name = info.GetString("Name");
-            this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
-            this.Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
+                throw new ArgumentNullException(nameof(info));
+            Name = info.GetString("Name");
+            Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
+            Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
             if (info.GetBoolean("HasWeight"))
-                this.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
+                FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
             if (info.GetBoolean("HasStyle"))
-                this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
-            this.ExampleText = info.GetString("ExampleText");
+                FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
+            ExampleText = info.GetString("ExampleText");
         }
 
         /// <summary>
@@ -71,17 +71,17 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
-            info.AddValue("Name", this.Name);
-            info.AddValue("Foreground", this.Foreground);
-            info.AddValue("Background", this.Background);
-            info.AddValue("HasWeight", this.FontWeight.HasValue);
-            if (this.FontWeight.HasValue)
-                info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
-            info.AddValue("HasStyle", this.FontStyle.HasValue);
-            if (this.FontStyle.HasValue)
-                info.AddValue("Style", this.FontStyle.Value.ToString());
-            info.AddValue("ExampleText", this.ExampleText);
+                throw new ArgumentNullException(nameof(info));
+            info.AddValue("Name", Name);
+            info.AddValue("Foreground", Foreground);
+            info.AddValue("Background", Background);
+            info.AddValue("HasWeight", FontWeight.HasValue);
+            if (FontWeight.HasValue)
+                info.AddValue("Weight", FontWeight.Value.ToOpenTypeWeight());
+            info.AddValue("HasStyle", FontStyle.HasValue);
+            if (FontStyle.HasValue)
+                info.AddValue("Style", FontStyle.Value.ToString());
+            info.AddValue("ExampleText", ExampleText);
         }
 
         /// <inheritdoc/>

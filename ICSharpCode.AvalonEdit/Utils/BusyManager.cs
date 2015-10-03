@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         {
             public static readonly BusyLock Failed = new BusyLock(null);
 
-            private readonly List<object> objectList;
+            readonly List<object> objectList;
 
             public BusyLock(List<object> objectList)
             {
@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         }
 
         [ThreadStatic]
-        private static List<object> _activeObjects;
+        static List<object> _activeObjects;
 
         public static BusyLock Enter(object obj)
         {

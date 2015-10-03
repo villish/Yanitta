@@ -12,7 +12,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
     /// </summary>
     public class HighlightingColorizer : DocumentColorizingTransformer
     {
-        private readonly HighlightingRuleSet ruleSet;
+        readonly HighlightingRuleSet ruleSet;
 
         /// <summary>
         /// Creates a new HighlightingColorizer instance.
@@ -21,11 +21,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public HighlightingColorizer(HighlightingRuleSet ruleSet)
         {
             if (ruleSet == null)
-                throw new ArgumentNullException("ruleSet");
+                throw new ArgumentNullException(nameof(ruleSet));
             this.ruleSet = ruleSet;
         }
 
-        private void textView_DocumentChanged(object sender, EventArgs e)
+        void textView_DocumentChanged(object sender, EventArgs e)
         {
             OnDocumentChanged((TextView)sender);
         }
@@ -74,7 +74,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             textView.VisualLineConstructionStarting -= textView_VisualLineConstructionStarting;
         }
 
-        private void textView_VisualLineConstructionStarting(object sender, VisualLineConstructionStartEventArgs e)
+        void textView_VisualLineConstructionStarting(object sender, VisualLineConstructionStartEventArgs e)
         {
             IHighlighter highlighter = ((TextView)sender).Services.GetService(typeof(IHighlighter)) as IHighlighter;
             if (highlighter != null)
@@ -89,14 +89,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private DocumentLine lastColorizedLine;
+        DocumentLine lastColorizedLine;
 
         /// <inheritdoc/>
         protected override void Colorize(ITextRunConstructionContext context)
         {
-            this.lastColorizedLine = null;
+            lastColorizedLine = null;
             base.Colorize(context);
-            if (this.lastColorizedLine != context.VisualLine.LastDocumentLine)
+            if (lastColorizedLine != context.VisualLine.LastDocumentLine)
             {
                 IHighlighter highlighter = context.TextView.Services.GetService(typeof(IHighlighter)) as IHighlighter;
                 if (highlighter != null)
@@ -110,10 +110,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                     lineNumberBeingColorized = 0;
                 }
             }
-            this.lastColorizedLine = null;
+            lastColorizedLine = null;
         }
 
-        private int lineNumberBeingColorized;
+        int lineNumberBeingColorized;
 
         /// <inheritdoc/>
         protected override void ColorizeLine(DocumentLine line)
@@ -132,14 +132,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                                    visualLineElement => ApplyColorToElement(visualLineElement, section.Color));
                 }
             }
-            this.lastColorizedLine = line;
+            lastColorizedLine = line;
         }
 
         /// <summary>
         /// Gets whether the color is empty (has no effect on a VisualLineTextElement).
         /// For example, the C# "Punctuation" is an empty color.
         /// </summary>
-        private bool IsEmptyColor(HighlightingColor color)
+        bool IsEmptyColor(HighlightingColor color)
         {
             if (color == null)
                 return true;
@@ -184,10 +184,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// Hey, the user typed "/*". Don't just recreate that line, but also the next one
         /// because my highlighting state (at end of line) changed!
         /// </remarks>
-        private sealed class TextViewDocumentHighlighter : DocumentHighlighter
+        sealed class TextViewDocumentHighlighter : DocumentHighlighter
         {
-            private readonly HighlightingColorizer colorizer;
-            private readonly TextView textView;
+            readonly HighlightingColorizer colorizer;
+            readonly TextView textView;
 
             public TextViewDocumentHighlighter(HighlightingColorizer colorizer, TextView textView, TextDocument document, HighlightingRuleSet baseRuleSet)
                 : base(document, baseRuleSet)
@@ -208,7 +208,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                     // while scanning the document (above the visible area) for highlighting changes.
                     return;
                 }
-                if (textView.Document != this.Document)
+                if (textView.Document != Document)
                 {
                     // May happen if document on text view was changed but some user code is still using the
                     // existing IHighlighter instance.

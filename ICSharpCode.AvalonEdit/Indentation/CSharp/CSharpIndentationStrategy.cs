@@ -20,10 +20,10 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
         /// </summary>
         public CSharpIndentationStrategy(TextEditorOptions options)
         {
-            this.IndentationString = options.IndentationString;
+            IndentationString = options.IndentationString;
         }
 
-        private string indentationString = "\t";
+        string indentationString = "\t";
 
         /// <summary>
         /// Gets/Sets the indentation string.
@@ -47,9 +47,9 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
         public void Indent(IDocumentAccessor document, bool keepEmptyLines)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             IndentationSettings settings = new IndentationSettings();
-            settings.IndentString = this.IndentationString;
+            settings.IndentString = IndentationString;
             settings.LeaveEmptyLines = keepEmptyLines;
 
             IndentationReformatter r = new IndentationReformatter();

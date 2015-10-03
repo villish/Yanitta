@@ -18,8 +18,8 @@ namespace ICSharpCode.AvalonEdit.Document
     {
         #region Constructor
 
-        private readonly TextDocument document;
-        private LineNode root;
+        readonly TextDocument document;
+        LineNode root;
 
         public DocumentLineTree(TextDocument document)
         {
@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private static void UpdateAfterRotateLeft(LineNode node)
+        static void UpdateAfterRotateLeft(LineNode node)
         {
             UpdateAfterChildrenChange(node);
 
@@ -112,7 +112,7 @@ namespace ICSharpCode.AvalonEdit.Document
         /// <summary>
         /// build a tree from a list of nodes
         /// </summary>
-        private LineNode BuildTree(LineNode[] nodes, int start, int end, int subtreeHeight)
+        LineNode BuildTree(LineNode[] nodes, int start, int end, int subtreeHeight)
         {
             Debug.Assert(start <= end);
             if (start == end)
@@ -135,7 +135,7 @@ namespace ICSharpCode.AvalonEdit.Document
 
         #region GetNodeBy... / Get...FromNode
 
-        private LineNode GetNodeByIndex(int index)
+        LineNode GetNodeByIndex(int index)
         {
             Debug.Assert(index >= 0);
             Debug.Assert(index < root.nodeTotalCount);
@@ -176,7 +176,7 @@ namespace ICSharpCode.AvalonEdit.Document
             return index;
         }
 
-        private LineNode GetNodeByOffset(int offset)
+        LineNode GetNodeByOffset(int offset)
         {
             Debug.Assert(offset >= 0);
             Debug.Assert(offset <= root.nodeTotalLength);
@@ -369,7 +369,7 @@ namespace ICSharpCode.AvalonEdit.Document
             return newLine;
         }
 
-        private void InsertAfter(LineNode node, DocumentLine newLine)
+        void InsertAfter(LineNode node, DocumentLine newLine)
         {
             LineNode newNode = newLine.InitLineNode();
             if (node.right == null)
@@ -389,7 +389,7 @@ namespace ICSharpCode.AvalonEdit.Document
         internal const bool RED = true;
         internal const bool BLACK = false;
 
-        private void InsertAsLeft(LineNode parentNode, LineNode newNode)
+        void InsertAsLeft(LineNode parentNode, LineNode newNode)
         {
             Debug.Assert(parentNode.left == null);
             parentNode.left = newNode;
@@ -399,7 +399,7 @@ namespace ICSharpCode.AvalonEdit.Document
             FixTreeOnInsert(newNode);
         }
 
-        private void InsertAsRight(LineNode parentNode, LineNode newNode)
+        void InsertAsRight(LineNode parentNode, LineNode newNode)
         {
             Debug.Assert(parentNode.right == null);
             parentNode.right = newNode;
@@ -409,7 +409,7 @@ namespace ICSharpCode.AvalonEdit.Document
             FixTreeOnInsert(newNode);
         }
 
-        private void FixTreeOnInsert(LineNode node)
+        void FixTreeOnInsert(LineNode node)
         {
             Debug.Assert(node != null);
             Debug.Assert(node.color == RED);
@@ -477,7 +477,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private void RemoveNode(LineNode removedNode)
+        void RemoveNode(LineNode removedNode)
         {
             if (removedNode.left != null && removedNode.right != null)
             {
@@ -518,7 +518,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private void FixTreeOnDelete(LineNode node, LineNode parentNode)
+        void FixTreeOnDelete(LineNode node, LineNode parentNode)
         {
             Debug.Assert(node == null || node.parent == parentNode);
             if (parentNode == null)
@@ -604,7 +604,7 @@ namespace ICSharpCode.AvalonEdit.Document
             }
         }
 
-        private void ReplaceNode(LineNode replacedNode, LineNode newNode)
+        void ReplaceNode(LineNode replacedNode, LineNode newNode)
         {
             if (replacedNode.parent == null)
             {
@@ -625,7 +625,7 @@ namespace ICSharpCode.AvalonEdit.Document
             replacedNode.parent = null;
         }
 
-        private void RotateLeft(LineNode p)
+        void RotateLeft(LineNode p)
         {
             // let q be p's right child
             LineNode q = p.right;
@@ -643,7 +643,7 @@ namespace ICSharpCode.AvalonEdit.Document
             UpdateAfterRotateLeft(p);
         }
 
-        private void RotateRight(LineNode p)
+        void RotateRight(LineNode p)
         {
             // let q be p's left child
             LineNode q = p.left;
@@ -661,7 +661,7 @@ namespace ICSharpCode.AvalonEdit.Document
             UpdateAfterRotateRight(p);
         }
 
-        private static LineNode Sibling(LineNode node)
+        static LineNode Sibling(LineNode node)
         {
             if (node == node.parent.left)
                 return node.parent.right;
@@ -669,7 +669,7 @@ namespace ICSharpCode.AvalonEdit.Document
                 return node.parent.left;
         }
 
-        private static LineNode Sibling(LineNode node, LineNode parentNode)
+        static LineNode Sibling(LineNode node, LineNode parentNode)
         {
             Debug.Assert(node == null || node.parent == parentNode);
             if (node == parentNode.left)
@@ -678,7 +678,7 @@ namespace ICSharpCode.AvalonEdit.Document
                 return parentNode.left;
         }
 
-        private static bool GetColor(LineNode node)
+        static bool GetColor(LineNode node)
         {
             return node != null ? node.color : BLACK;
         }
@@ -755,11 +755,11 @@ namespace ICSharpCode.AvalonEdit.Document
         void ICollection<DocumentLine>.CopyTo(DocumentLine[] array, int arrayIndex)
         {
             if (array == null)
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             if (array.Length < LineCount)
-                throw new ArgumentException("The array is too small", "array");
+                throw new ArgumentException("The array is too small", nameof(array));
             if (arrayIndex < 0 || arrayIndex + LineCount > array.Length)
-                throw new ArgumentOutOfRangeException("arrayIndex", arrayIndex, "Value must be between 0 and " + (array.Length - LineCount));
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), arrayIndex, "Value must be between 0 and " + (array.Length - LineCount));
             foreach (DocumentLine ls in this)
             {
                 array[arrayIndex++] = ls;
@@ -777,7 +777,7 @@ namespace ICSharpCode.AvalonEdit.Document
             return Enumerate();
         }
 
-        private IEnumerator<DocumentLine> Enumerate()
+        IEnumerator<DocumentLine> Enumerate()
         {
             document.VerifyAccess();
             DocumentLine line = root.LeftMost;
@@ -790,7 +790,7 @@ namespace ICSharpCode.AvalonEdit.Document
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         #endregion IList implementation

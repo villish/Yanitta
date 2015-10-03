@@ -20,24 +20,24 @@ namespace ICSharpCode.AvalonEdit
             Debug.WriteLine("TextEditorAutomationPeer was created");
         }
 
-        private TextEditor TextEditor
+        TextEditor TextEditor
         {
             get { return (TextEditor)base.Owner; }
         }
 
         void IValueProvider.SetValue(string value)
         {
-            this.TextEditor.Text = value;
+            TextEditor.Text = value;
         }
 
         string IValueProvider.Value
         {
-            get { return this.TextEditor.Text; }
+            get { return TextEditor.Text; }
         }
 
         bool IValueProvider.IsReadOnly
         {
-            get { return this.TextEditor.IsReadOnly; }
+            get { return TextEditor.IsReadOnly; }
         }
 
         /// <inheritdoc/>
@@ -48,7 +48,7 @@ namespace ICSharpCode.AvalonEdit
 
             if (patternInterface == PatternInterface.Scroll)
             {
-                ScrollViewer scrollViewer = this.TextEditor.ScrollViewer;
+                ScrollViewer scrollViewer = TextEditor.ScrollViewer;
                 if (scrollViewer != null)
                     return UIElementAutomationPeer.CreatePeerForElement(scrollViewer);
             }
