@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,9 +17,20 @@ namespace Yanitta
             if (value == null || !(value is WowClass))
                 return Binding.DoNothing;
 
+           // App.GetResourceStream()
+
             var name = (WowClass)value == (WowClass)(byte)0 ? "None" : value.ToString();
             var path = string.Format(@"pack://application:,,,/Yanitta;component/Resources/{0}.png", name);
-            return new BitmapImage(new Uri(path));
+            var asm  = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+            try
+            {
+                return new BitmapImage(new Uri(path));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new BitmapImage(new Uri(@"pack://application:,,,/Yanitta;component/Resources/None.png"));
+            }
         }
     }
 
@@ -32,7 +44,7 @@ namespace Yanitta
                 return Binding.DoNothing;
 
             var name = string.Format("{0}_{1}", value.GetType().Name, value);
-            if (parameter is string && !string.IsNullOrWhiteSpace((string)parameter))
+            if (parameter != null && parameter is string && !string.IsNullOrWhiteSpace((string)parameter))
                 name += "_" + parameter;
             return Localization.ResourceManager.GetString(name, CultureInfo.CurrentUICulture);
         }

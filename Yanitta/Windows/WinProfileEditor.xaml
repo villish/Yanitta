@@ -112,9 +112,6 @@
                             <ListView x:Name="rotationList"
                                       IsSynchronizedWithCurrentItem="true"
                                       ItemsSource="{Binding ProfileList/RotationList}"
-                                      avalonedit:DragDropHelper.IsDropTarget="True"
-                                      avalonedit:DragDropHelper.IsDragSource="True"
-                                      avalonedit:DragDropHelper.DragDropTemplate="{StaticResource DragTemplate}"
                                       Grid.Row="1" Margin="0,0,0,5">
                                 <ListView.ContextMenu>
                                     <ContextMenu>
@@ -192,9 +189,6 @@
                             <ListView x:Name="abilityList"
                                       IsSynchronizedWithCurrentItem="True"
                                       ItemsSource="{Binding ProfileList/RotationList/AbilityList}"
-                                      avalonedit:DragDropHelper.IsDropTarget="True"
-                                      avalonedit:DragDropHelper.IsDragSource="True"
-                                      avalonedit:DragDropHelper.DragDropTemplate="{StaticResource DragTemplate}"
                                       Grid.Row="1">
                                 <ListView.ContextMenu>
                                     <ContextMenu>
@@ -399,7 +393,7 @@
         <StatusBar Grid.ColumnSpan="2" Grid.Row="2">
             <TextBlock Text="{x:Static yanitta:Localization.CurentProfile}"/>
             <Image Source="{Binding ProfileList/Class, Converter={yanitta:EnumToImageConverter}}" />
-            <TextBlock Text="{Binding ProfileList/Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Width="100"/>
+            <TextBlock Text="{Binding ProfileList/Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Width="150"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.AbilityCount}"/>
             <TextBlock Text="{Binding ProfileList/RotationList/AbilityList.Count}" Width="30"/>

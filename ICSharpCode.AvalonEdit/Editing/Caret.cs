@@ -201,15 +201,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         {
             get
             {
-                TextDocument document = textArea.Document;
-                if (document == null)
-                {
-                    return 0;
-                }
-                else
-                {
-                    return document.GetOffset(position.Location);
-                }
+                return textArea.Document?.GetOffset(position.Location) ?? 0;
             }
             set
             {
