@@ -24,10 +24,10 @@ namespace ICSharpCode.AvalonEdit.Editing
             return handler;
         }
 
-        private static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
-        private static readonly List<InputBinding>   InputBindings   = new List<InputBinding>();
+        static readonly List<CommandBinding> CommandBindings = new List<CommandBinding>();
+        static readonly List<InputBinding> InputBindings = new List<InputBinding>();
 
-        private static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
+        static void AddBinding(ICommand command, ModifierKeys modifiers, Key key, ExecutedRoutedEventHandler handler)
         {
             CommandBindings.Add(new CommandBinding(command, handler));
             InputBindings.Add(TextAreaDefaultInputHandler.CreateFrozenKeyBinding(command, modifiers, key));
@@ -80,7 +80,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             TextAreaDefaultInputHandler.WorkaroundWPFMemoryLeak(InputBindings);
         }
 
-        private static void OnSelectAll(object target, ExecutedRoutedEventArgs args)
+        static void OnSelectAll(object target, ExecutedRoutedEventArgs args)
         {
             TextArea textArea = GetTextArea(target);
             if (textArea != null && textArea.Document != null)
@@ -91,12 +91,12 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static TextArea GetTextArea(object target)
+        static TextArea GetTextArea(object target)
         {
             return target as TextArea;
         }
 
-        private enum CaretMovementType
+        enum CaretMovementType
         {
             CharLeft,
             CharRight,
@@ -116,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             MultyDown,
         }
 
-        private static ExecutedRoutedEventHandler OnMoveCaret(CaretMovementType direction)
+        static ExecutedRoutedEventHandler OnMoveCaret(CaretMovementType direction)
         {
             return (target, args) =>
             {
@@ -131,7 +131,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             };
         }
 
-        private static ExecutedRoutedEventHandler OnMoveCaretExtendSelection(CaretMovementType direction)
+        static ExecutedRoutedEventHandler OnMoveCaretExtendSelection(CaretMovementType direction)
         {
             return (target, args) =>
             {
@@ -159,12 +159,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Caret movement
 
-        private static void MoveCaret(TextArea textArea, CaretMovementType direction)
+        static void MoveCaret(TextArea textArea, CaretMovementType direction)
         {
-            var caretLine     = textArea.Document.GetLineByNumber(textArea.Caret.Line);
-            var visualLine    = textArea.TextView.GetOrConstructVisualLine(caretLine);
+            var caretLine = textArea.Document.GetLineByNumber(textArea.Caret.Line);
+            var visualLine = textArea.TextView.GetOrConstructVisualLine(caretLine);
             var caretPosition = textArea.Caret.Position;
-            var textLine      = visualLine.GetTextLine(caretPosition.VisualColumn);
+            var textLine = visualLine.GetTextLine(caretPosition.VisualColumn);
 
             switch (direction)
             {
@@ -208,19 +208,19 @@ namespace ICSharpCode.AvalonEdit.Editing
                     break;
 
                 case CaretMovementType.MultyLeft:
-                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line, caretPosition.Column-1);
+                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line, caretPosition.Column - 1);
                     textArea.Caret.DesiredXPos = double.NaN;
                     break;
                 case CaretMovementType.MultyUp:
-                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line-1, caretPosition.Column);
+                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line - 1, caretPosition.Column);
                     textArea.Caret.DesiredXPos = double.NaN;
                     break;
                 case CaretMovementType.MultyRight:
-                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line, caretPosition.Column+1);
+                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line, caretPosition.Column + 1);
                     textArea.Caret.DesiredXPos = double.NaN;
                     break;
                 case CaretMovementType.MultyDown:
-                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line+1, caretPosition.Column);
+                    textArea.Caret.Position = new TextViewPosition(caretPosition.Line + 1, caretPosition.Column);
                     textArea.Caret.DesiredXPos = double.NaN;
                     break;
 
@@ -233,7 +233,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Home/End
 
-        private static void MoveCaretToStartOfLine(TextArea textArea, VisualLine visualLine)
+        static void MoveCaretToStartOfLine(TextArea textArea, VisualLine visualLine)
         {
             int newVC = visualLine.GetNextCaretPosition(-1, LogicalDirection.Forward, CaretPositioningMode.WordStart, textArea.Selection.EnableVirtualSpace);
             if (newVC < 0)
@@ -245,7 +245,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             SetCaretPosition(textArea, newVC, offset);
         }
 
-        private static void MoveCaretToEndOfLine(TextArea textArea, VisualLine visualLine)
+        static void MoveCaretToEndOfLine(TextArea textArea, VisualLine visualLine)
         {
             int newVC = visualLine.VisualLength;
             int offset = visualLine.FirstDocumentLine.Offset + visualLine.GetRelativeOffset(newVC);
@@ -256,7 +256,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region By-character / By-word movement
 
-        private static void MoveCaretRight(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
+        static void MoveCaretRight(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
         {
             int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, LogicalDirection.Forward, mode, textArea.Selection.EnableVirtualSpace);
             if (pos >= 0)
@@ -284,7 +284,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private static void MoveCaretLeft(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
+        static void MoveCaretLeft(TextArea textArea, TextViewPosition caretPosition, VisualLine visualLine, CaretPositioningMode mode)
         {
             int pos = visualLine.GetNextCaretPosition(caretPosition.VisualColumn, LogicalDirection.Backward, mode, textArea.Selection.EnableVirtualSpace);
             if (pos >= 0)
@@ -316,7 +316,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region Line+Page up/down
 
-        private static void MoveCaretUpDown(TextArea textArea, CaretMovementType direction, VisualLine visualLine, TextLine textLine, int caretVisualColumn)
+        static void MoveCaretUpDown(TextArea textArea, CaretMovementType direction, VisualLine visualLine, TextLine textLine, int caretVisualColumn)
         {
             // moving up/down happens using the desired visual X position
             double xPos = textArea.Caret.DesiredXPos;
@@ -400,7 +400,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         #region SetCaretPosition
 
-        private static void SetCaretPosition(TextArea textArea, VisualLine targetVisualLine, TextLine targetLine, int newVisualColumn, bool allowWrapToNextLine)
+        static void SetCaretPosition(TextArea textArea, VisualLine targetVisualLine, TextLine targetLine, int newVisualColumn, bool allowWrapToNextLine)
         {
             int targetLineStartCol = targetVisualLine.GetTextLineVisualStartColumn(targetLine);
             if (!allowWrapToNextLine && newVisualColumn >= targetLineStartCol + targetLine.Length)
@@ -412,7 +412,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             SetCaretPosition(textArea, newVisualColumn, newOffset);
         }
 
-        private static void SetCaretPosition(TextArea textArea, int newVisualColumn, int newOffset)
+        static void SetCaretPosition(TextArea textArea, int newVisualColumn, int newOffset)
         {
             textArea.Caret.Position = new TextViewPosition(textArea.Document.GetLocation(newOffset), newVisualColumn);
             textArea.Caret.DesiredXPos = double.NaN;

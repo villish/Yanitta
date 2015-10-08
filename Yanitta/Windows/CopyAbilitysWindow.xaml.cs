@@ -12,7 +12,7 @@ namespace Yanitta
     {
         public CopyAbilitysWindow(Profile profile)
         {
-            this.DataContext = profile;
+            DataContext = profile;
 
             InitializeComponent();
 
@@ -25,16 +25,16 @@ namespace Yanitta
             get { return cbRotation.SelectedValue<Rotation>().AbilityList.Where(a => a.IsChecked); }
         }
 
-        private void CommandBinding_Copy_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Copy_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (cbRotation.SelectedIndex == -1)
                 throw new YanittaException("Not selected rotation");
-            this.DialogResult = true;
+            DialogResult = true;
         }
 
-        private void CommandBinding_Close_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Close_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            this.DialogResult = false;
+            DialogResult = false;
         }
     }
 }

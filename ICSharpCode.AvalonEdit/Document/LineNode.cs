@@ -38,8 +38,8 @@
 
         internal LineNode InitLineNode()
         {
-            this.nodeTotalCount = 1;
-            this.nodeTotalLength = this.TotalLength;
+            nodeTotalCount = 1;
+            nodeTotalLength = TotalLength;
             return this;
         }
 

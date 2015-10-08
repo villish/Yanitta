@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Document
     /// </example>
     public sealed class TextAnchor
     {
-        private readonly TextDocument document;
+        readonly TextDocument document;
         internal TextAnchorNode node;
 
         internal TextAnchor(TextDocument document)
@@ -114,7 +114,7 @@ namespace ICSharpCode.AvalonEdit.Document
             {
                 document.DebugVerifyAccess();
 
-                TextAnchorNode n = this.node;
+                TextAnchorNode n = node;
                 if (n == null)
                     throw new InvalidOperationException();
 
@@ -143,7 +143,7 @@ namespace ICSharpCode.AvalonEdit.Document
         {
             get
             {
-                return document.GetLineByOffset(this.Offset).LineNumber;
+                return document.GetLineByOffset(Offset).LineNumber;
             }
         }
 
@@ -155,7 +155,7 @@ namespace ICSharpCode.AvalonEdit.Document
         {
             get
             {
-                int offset = this.Offset;
+                int offset = Offset;
                 return offset - document.GetLineByOffset(offset).Offset + 1;
             }
         }
@@ -168,7 +168,7 @@ namespace ICSharpCode.AvalonEdit.Document
         {
             get
             {
-                return document.GetLocation(this.Offset);
+                return document.GetLocation(Offset);
             }
         }
 

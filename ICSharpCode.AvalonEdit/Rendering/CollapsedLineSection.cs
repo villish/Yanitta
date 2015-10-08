@@ -8,14 +8,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public sealed class CollapsedLineSection
     {
-        private DocumentLine start, end;
-        private HeightTree heightTree;
+        DocumentLine start, end;
+        HeightTree heightTree;
 
 #if DEBUG
         internal string ID;
         private static int nextId;
 #else
-		const string ID = "";
+        const string ID = "";
 #endif
 
         internal CollapsedLineSection(HeightTree heightTree, DocumentLine start, DocumentLine end)

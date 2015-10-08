@@ -25,14 +25,14 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// </summary>
     public sealed class RectangleSelection : Selection
     {
-        private TextDocument document;
-        private readonly int startLine, endLine;
-        private readonly double startXPos, endXPos;
-        private readonly int topLeftOffset, bottomRightOffset;
+        TextDocument document;
+        readonly int startLine, endLine;
+        readonly double startXPos, endXPos;
+        readonly int topLeftOffset, bottomRightOffset;
 
-        private readonly List<SelectionSegment> segments = new List<SelectionSegment>();
+        readonly List<SelectionSegment> segments = new List<SelectionSegment>();
 
-        private void InitDocument()
+        void InitDocument()
         {
             document = textArea.Document;
             if (document == null)
@@ -46,42 +46,42 @@ namespace ICSharpCode.AvalonEdit.Editing
             : base(textArea)
         {
             InitDocument();
-            this.startLine = start.Line;
-            this.endLine = end.Line;
-            this.startXPos = GetXPos(textArea, start);
-            this.endXPos = GetXPos(textArea, end);
+            startLine = start.Line;
+            endLine = end.Line;
+            startXPos = GetXPos(textArea, start);
+            endXPos = GetXPos(textArea, end);
             CalculateSegments();
-            this.topLeftOffset = this.segments.First().StartOffset;
-            this.bottomRightOffset = this.segments.Last().EndOffset;
+            topLeftOffset = segments.First().StartOffset;
+            bottomRightOffset = segments.Last().EndOffset;
         }
 
-        private RectangleSelection(TextArea textArea, int startLine, double startXPos, TextViewPosition end)
+        RectangleSelection(TextArea textArea, int startLine, double startXPos, TextViewPosition end)
             : base(textArea)
         {
             InitDocument();
             this.startLine = startLine;
-            this.endLine = end.Line;
+            endLine = end.Line;
             this.startXPos = startXPos;
-            this.endXPos = GetXPos(textArea, end);
+            endXPos = GetXPos(textArea, end);
             CalculateSegments();
-            this.topLeftOffset = this.segments.First().StartOffset;
-            this.bottomRightOffset = this.segments.Last().EndOffset;
+            topLeftOffset = segments.First().StartOffset;
+            bottomRightOffset = segments.Last().EndOffset;
         }
 
-        private RectangleSelection(TextArea textArea, TextViewPosition start, int endLine, double endXPos)
+        RectangleSelection(TextArea textArea, TextViewPosition start, int endLine, double endXPos)
             : base(textArea)
         {
             InitDocument();
-            this.startLine = start.Line;
+            startLine = start.Line;
             this.endLine = endLine;
-            this.startXPos = GetXPos(textArea, start);
+            startXPos = GetXPos(textArea, start);
             this.endXPos = endXPos;
             CalculateSegments();
-            this.topLeftOffset = this.segments.First().StartOffset;
-            this.bottomRightOffset = this.segments.Last().EndOffset;
+            topLeftOffset = segments.First().StartOffset;
+            bottomRightOffset = segments.Last().EndOffset;
         }
 
-        private static double GetXPos(TextArea textArea, TextViewPosition pos)
+        static double GetXPos(TextArea textArea, TextViewPosition pos)
         {
             DocumentLine documentLine = textArea.Document.GetLineByNumber(pos.Line);
             VisualLine visualLine = textArea.TextView.GetOrConstructVisualLine(documentLine);
@@ -90,7 +90,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             return visualLine.GetTextLineVisualXPosition(textLine, vc);
         }
 
-        private int GetVisualColumnFromXPos(int line, double xPos)
+        int GetVisualColumnFromXPos(int line, double xPos)
         {
             var vl = textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(line));
             return vl.GetVisualColumn(new Point(xPos, 0), true);
@@ -100,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public override string GetText()
         {
             StringBuilder b = new StringBuilder();
-            foreach (ISegment s in this.Segments)
+            foreach (ISegment s in Segments)
             {
                 if (b.Length > 0)
                     b.AppendLine();
@@ -118,7 +118,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// <inheritdoc/>
         public override int Length
         {
-            get { return this.Segments.Sum(s => s.Length); }
+            get { return Segments.Sum(s => s.Length); }
         }
 
         /// <inheritdoc/>
@@ -139,7 +139,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             get { return segments; }
         }
 
-        private void CalculateSegments()
+        void CalculateSegments()
         {
             DocumentLine nextLine = document.GetLineByNumber(Math.Min(startLine, endLine));
             do
@@ -161,10 +161,10 @@ namespace ICSharpCode.AvalonEdit.Editing
         public override bool Equals(object obj)
         {
             RectangleSelection r = obj as RectangleSelection;
-            return r != null && r.textArea == this.textArea
-                && r.topLeftOffset == this.topLeftOffset && r.bottomRightOffset == this.bottomRightOffset
-                && r.startLine == this.startLine && r.endLine == this.endLine
-                && r.startXPos == this.startXPos && r.endXPos == this.endXPos;
+            return r != null && r.textArea == textArea
+                && r.topLeftOffset == topLeftOffset && r.bottomRightOffset == bottomRightOffset
+                && r.startLine == startLine && r.endLine == endLine
+                && r.startXPos == startXPos && r.endXPos == endXPos;
         }
 
         /// <inheritdoc/>
@@ -194,7 +194,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public override void ReplaceSelectionWithText(string newText)
         {
             if (newText == null)
-                throw new ArgumentNullException("newText");
+                throw new ArgumentNullException(nameof(newText));
             using (textArea.Document.RunUpdate())
             {
                 TextViewPosition start = new TextViewPosition(document.GetLocation(topLeftOffset), GetVisualColumnFromXPos(startLine, startXPos));
@@ -207,7 +207,7 @@ namespace ICSharpCode.AvalonEdit.Editing
                 if (NewLineFinder.NextNewLine(newText, 0) == SimpleSegment.Invalid)
                 {
                     // insert same text into every line
-                    foreach (SelectionSegment lineSegment in this.Segments.Reverse())
+                    foreach (SelectionSegment lineSegment in Segments.Reverse())
                     {
                         ReplaceSingleLineText(textArea, lineSegment, newText, out insertionLength);
                         totalInsertionLength += insertionLength;
@@ -235,7 +235,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void ReplaceSingleLineText(TextArea textArea, SelectionSegment lineSegment, string newText, out int insertionLength)
+        void ReplaceSingleLineText(TextArea textArea, SelectionSegment lineSegment, string newText, out int insertionLength)
         {
             if (lineSegment.Length == 0)
             {
@@ -273,9 +273,9 @@ namespace ICSharpCode.AvalonEdit.Editing
         public static bool PerformRectangularPaste(TextArea textArea, TextViewPosition startPosition, string text, bool selectInsertedText)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             int newLineCount = text.Count(c => c == '\n'); // TODO might not work in all cases, but single \r line endings are really rare today.
             TextLocation endLocation = new TextLocation(startPosition.Line + newLineCount, startPosition.Column);
             if (endLocation.Line <= textArea.Document.LineCount)

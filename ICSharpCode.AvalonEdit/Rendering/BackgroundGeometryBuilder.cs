@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
     /// </summary>
     public sealed class BackgroundGeometryBuilder
     {
-        private double cornerRadius;
+        double cornerRadius;
 
         /// <summary>
         /// Gets/sets the radius of the rounded corners.
@@ -55,7 +55,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public void AddSegment(TextView textView, ISegment segment)
         {
             if (textView == null)
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
             Size pixelSize = PixelSnapHelpers.GetPixelSize(textView);
             foreach (Rect r in GetRectsForSegment(textView, segment, ExtendToFullWidthAtLineEnd))
             {
@@ -87,13 +87,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
         public static IEnumerable<Rect> GetRectsForSegment(TextView textView, ISegment segment, bool extendToFullWidthAtLineEnd = false)
         {
             if (textView == null)
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
             if (segment == null)
-                throw new ArgumentNullException("segment");
+                throw new ArgumentNullException(nameof(segment));
             return GetRectsForSegmentImpl(textView, segment, extendToFullWidthAtLineEnd);
         }
 
-        private static IEnumerable<Rect> GetRectsForSegmentImpl(TextView textView, ISegment segment, bool extendToFullWidthAtLineEnd)
+        static IEnumerable<Rect> GetRectsForSegmentImpl(TextView textView, ISegment segment, bool extendToFullWidthAtLineEnd)
         {
             Vector scrollOffset = textView.ScrollOffset;
             int segmentStart = segment.Offset;
@@ -214,11 +214,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
             }
         }
 
-        private PathFigureCollection figures = new PathFigureCollection();
-        private PathFigure figure;
-        private int insertionIndex;
-        private double lastTop, lastBottom;
-        private double lastLeft, lastRight;
+        PathFigureCollection figures = new PathFigureCollection();
+        PathFigure figure;
+        int insertionIndex;
+        double lastTop, lastBottom;
+        double lastLeft, lastRight;
 
         /// <summary>
         /// Adds a rectangle to the geometry.
@@ -266,13 +266,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
                     figure.Segments.Insert(insertionIndex, MakeArc(left + cr, lastBottom, dir2));
                 }
             }
-            this.lastTop = top;
-            this.lastBottom = bottom;
-            this.lastLeft = left;
-            this.lastRight = right;
+            lastTop = top;
+            lastBottom = bottom;
+            lastLeft = left;
+            lastRight = right;
         }
 
-        private ArcSegment MakeArc(double x, double y, SweepDirection dir)
+        ArcSegment MakeArc(double x, double y, SweepDirection dir)
         {
             ArcSegment arc = new ArcSegment(
                 new Point(x, y),
@@ -282,7 +282,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
             return arc;
         }
 
-        private static LineSegment MakeLineSegment(double x, double y)
+        static LineSegment MakeLineSegment(double x, double y)
         {
             LineSegment ls = new LineSegment(new Point(x, y), true);
             ls.Freeze();

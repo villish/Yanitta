@@ -7,8 +7,8 @@ namespace Yanitta
 {
     public class ConsoleWriter : TextWriter
     {
-        private static ConsoleWriter Instance;
-        private StreamWriter m_writer;
+        static ConsoleWriter Instance;
+        StreamWriter m_writer;
 
         public ConsoleWriter(string fileName, bool isRegisterUnhandledException)
         {
@@ -78,13 +78,13 @@ namespace Yanitta
             AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
         }
 
-        private void InternalWrite(string text)
+        void InternalWrite(string text)
         {
             if (m_writer != null)
                 m_writer.Write("[{0:HH:mm:ss.fff}] {1}", DateTime.Now, text);
         }
 
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var exception = e.ExceptionObject as Exception;
             if (exception != null)

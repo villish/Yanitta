@@ -51,18 +51,18 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         protected HighlightingColor(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
 
-            this.Name = info.GetString("Name");
+            Name = info.GetString("Name");
 
             if (info.GetBoolean("HasWeight"))
-                this.FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
+                FontWeight = System.Windows.FontWeight.FromOpenTypeWeight(info.GetInt32("Weight"));
 
             if (info.GetBoolean("HasStyle"))
-                this.FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
+                FontStyle = (FontStyle?)new FontStyleConverter().ConvertFromInvariantString(info.GetString("Style"));
 
-            this.Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
-            this.Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
+            Foreground = (HighlightingBrush)info.GetValue("Foreground", typeof(HighlightingBrush));
+            Background = (HighlightingBrush)info.GetValue("Background", typeof(HighlightingBrush));
         }
 
         /// <summary>
@@ -72,21 +72,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
-                throw new ArgumentNullException("info");
+                throw new ArgumentNullException(nameof(info));
 
-            info.AddValue("Name", this.Name);
-            info.AddValue("HasWeight", this.FontWeight.HasValue);
+            info.AddValue("Name", Name);
+            info.AddValue("HasWeight", FontWeight.HasValue);
 
-            if (this.FontWeight.HasValue)
-                info.AddValue("Weight", this.FontWeight.Value.ToOpenTypeWeight());
+            if (FontWeight.HasValue)
+                info.AddValue("Weight", FontWeight.Value.ToOpenTypeWeight());
 
-            info.AddValue("HasStyle", this.FontStyle.HasValue);
+            info.AddValue("HasStyle", FontStyle.HasValue);
 
-            if (this.FontStyle.HasValue)
-                info.AddValue("Style", this.FontStyle.Value.ToString());
+            if (FontStyle.HasValue)
+                info.AddValue("Style", FontStyle.Value.ToString());
 
-            info.AddValue("Foreground", this.Foreground);
-            info.AddValue("Background", this.Background);
+            info.AddValue("Foreground", Foreground);
+            info.AddValue("Background", Background);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// <inheritdoc/>
         public override string ToString()
         {
-            return "[" + GetType() + " " + (string.IsNullOrEmpty(this.Name) ? ToCss() : this.Name) + "]";
+            return "[" + GetType() + " " + (string.IsNullOrEmpty(Name) ? ToCss() : Name) + "]";
         }
     }
 }

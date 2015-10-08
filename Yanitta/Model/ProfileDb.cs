@@ -26,8 +26,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(this.Lua); }
-            set { this.Lua = Extensions.GetTrimValue(value); }
+            get { return Extensions.CreateCDataSection(Lua); }
+            set { Lua = Extensions.GetTrimValue(value); }
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Yanitta
         /// </summary>
         public ProfileDb()
         {
-            this.ProfileList = new ObservableCollection<Profile>();
+            ProfileList = new ObservableCollection<Profile>();
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Yanitta
         /// <returns>Профиль ротаций <see cref="YanittaProfile"/>.</returns>
         public Profile this[WowClass wowClass]
         {
-            get { return this.ProfileList.FirstOrDefault(n => n.Class == wowClass); }
+            get { return ProfileList.FirstOrDefault(n => n.Class == wowClass); }
         }
 
         /// <summary>

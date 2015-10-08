@@ -87,7 +87,7 @@ namespace ICSharpCode.AvalonEdit.Document
     /// </summary>
     public sealed class StringTextSource : ITextSource
     {
-        private readonly string text;
+        readonly string text;
 
         /// <summary>
         /// Creates a new StringTextSource.
@@ -95,7 +95,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public StringTextSource(string text)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             this.text = text;
         }
 
@@ -119,7 +119,7 @@ namespace ICSharpCode.AvalonEdit.Document
         {
             // GetCharAt must throw ArgumentOutOfRangeException, not IndexOutOfRangeException
             if (offset < 0 || offset >= text.Length)
-                throw new ArgumentOutOfRangeException("offset", offset, "offset must be between 0 and " + (text.Length - 1));
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, "offset must be between 0 and " + (text.Length - 1));
             return text[offset];
         }
 
@@ -159,7 +159,7 @@ namespace ICSharpCode.AvalonEdit.Document
     /// </summary>
     public sealed class RopeTextSource : ITextSource
     {
-        private readonly Rope<char> rope;
+        readonly Rope<char> rope;
 
         /// <summary>
         /// Creates a new RopeTextSource.
@@ -167,7 +167,7 @@ namespace ICSharpCode.AvalonEdit.Document
         public RopeTextSource(Rope<char> rope)
         {
             if (rope == null)
-                throw new ArgumentNullException("rope");
+                throw new ArgumentNullException(nameof(rope));
             this.rope = rope;
         }
 

@@ -10,9 +10,9 @@ namespace ICSharpCode.AvalonEdit.Utils
     /// </summary>
     public sealed class RopeTextReader : TextReader
     {
-        private Stack<RopeNode<char>> stack = new Stack<RopeNode<char>>();
-        private RopeNode<char> currentNode;
-        private int indexInsideNode;
+        Stack<RopeNode<char>> stack = new Stack<RopeNode<char>>();
+        RopeNode<char> currentNode;
+        int indexInsideNode;
 
         /// <summary>
         /// Creates a new RopeTextReader.
@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public RopeTextReader(Rope<char> rope)
         {
             if (rope == null)
-                throw new ArgumentNullException("rope");
+                throw new ArgumentNullException(nameof(rope));
 
             // We force the user to iterate through a clone of the rope to keep the API contract of RopeTextReader simple
             // (what happens when a rope is modified while iterating through it?)
@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.Utils
             }
         }
 
-        private void GoToLeftMostLeaf()
+        void GoToLeftMostLeaf()
         {
             while (currentNode.contents == null)
             {
@@ -73,7 +73,7 @@ namespace ICSharpCode.AvalonEdit.Utils
             return result;
         }
 
-        private void GoToNextNode()
+        void GoToNextNode()
         {
             if (stack.Count == 0)
             {

@@ -35,8 +35,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
         /// </summary>
         public LinkElementGenerator()
         {
-            this.linkRegex = defaultLinkRegex;
-            this.RequireControlModifierForClick = true;
+            linkRegex = defaultLinkRegex;
+            RequireControlModifierForClick = true;
         }
 
         /// <summary>
@@ -46,16 +46,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
             : this()
         {
             if (regex == null)
-                throw new ArgumentNullException("regex");
-            this.linkRegex = regex;
+                throw new ArgumentNullException(nameof(regex));
+            linkRegex = regex;
         }
 
         void IBuiltinElementGenerator.FetchOptions(TextEditorOptions options)
         {
-            this.RequireControlModifierForClick = options.RequireControlModifierForHyperlinkClick;
+            RequireControlModifierForClick = options.RequireControlModifierForHyperlinkClick;
         }
 
-        private Match GetMatch(int startOffset, out int matchOffset)
+        Match GetMatch(int startOffset, out int matchOffset)
         {
             int endOffset = CurrentContext.VisualLine.LastDocumentLine.EndOffset;
             StringSegment relevantText = CurrentContext.GetText(startOffset, endOffset - startOffset);
@@ -99,7 +99,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
                 return null;
             VisualLineLinkText linkText = new VisualLineLinkText(CurrentContext.VisualLine, m.Length);
             linkText.NavigateUri = uri;
-            linkText.RequireControlModifierForClick = this.RequireControlModifierForClick;
+            linkText.RequireControlModifierForClick = RequireControlModifierForClick;
             return linkText;
         }
 

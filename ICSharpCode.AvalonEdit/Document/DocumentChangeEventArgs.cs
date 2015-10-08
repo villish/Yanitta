@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Document
             get { return InsertedText.Length; }
         }
 
-        private volatile OffsetChangeMap offsetChangeMap;
+        volatile OffsetChangeMap offsetChangeMap;
 
         /// <summary>
         /// Gets the OffsetChangeMap associated with this document change.
@@ -64,7 +64,7 @@ namespace ICSharpCode.AvalonEdit.Document
 
         internal OffsetChangeMapEntry CreateSingleChangeMapEntry()
         {
-            return new OffsetChangeMapEntry(this.Offset, this.RemovalLength, this.InsertionLength);
+            return new OffsetChangeMapEntry(Offset, RemovalLength, InsertionLength);
         }
 
         /// <summary>
@@ -106,16 +106,16 @@ namespace ICSharpCode.AvalonEdit.Document
             ThrowUtil.CheckNotNull(removedText, "removedText");
             ThrowUtil.CheckNotNull(insertedText, "insertedText");
 
-            this.Offset = offset;
-            this.RemovedText = removedText;
-            this.InsertedText = insertedText;
+            Offset = offset;
+            RemovedText = removedText;
+            InsertedText = insertedText;
 
             if (offsetChangeMap != null)
             {
                 if (!offsetChangeMap.IsFrozen)
                     throw new ArgumentException("The OffsetChangeMap must be frozen before it can be used in DocumentChangeEventArgs");
                 if (!offsetChangeMap.IsValidForDocumentChange(offset, removedText.Length, insertedText.Length))
-                    throw new ArgumentException("OffsetChangeMap is not valid for this document change", "offsetChangeMap");
+                    throw new ArgumentException("OffsetChangeMap is not valid for this document change", nameof(offsetChangeMap));
                 this.offsetChangeMap = offsetChangeMap;
             }
         }
@@ -125,13 +125,13 @@ namespace ICSharpCode.AvalonEdit.Document
         /// </summary>
         public DocumentChangeEventArgs Invert()
         {
-            OffsetChangeMap map = this.OffsetChangeMapOrNull;
+            OffsetChangeMap map = OffsetChangeMapOrNull;
             if (map != null)
             {
                 map = map.Invert();
                 map.Freeze();
             }
-            return new DocumentChangeEventArgs(this.Offset, this.InsertedText, this.RemovedText, map);
+            return new DocumentChangeEventArgs(Offset, InsertedText, RemovedText, map);
         }
     }
 }

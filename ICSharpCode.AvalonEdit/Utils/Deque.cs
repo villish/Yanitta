@@ -10,8 +10,8 @@ namespace ICSharpCode.AvalonEdit.Utils
     [Serializable]
     public sealed class Deque<T> : ICollection<T>
     {
-        private T[] arr = Empty<T>.Array;
-        private int size, head, tail;
+        T[] arr = Empty<T>.Array;
+        int size, head, tail;
 
         /// <inheritdoc/>
         public int Count
@@ -105,7 +105,7 @@ namespace ICSharpCode.AvalonEdit.Utils
             return val;
         }
 
-        private void SetCapacity(int capacity)
+        void SetCapacity(int capacity)
         {
             T[] newArr = new T[capacity];
             CopyTo(newArr, 0);
@@ -133,7 +133,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         bool ICollection<T>.IsReadOnly
@@ -160,7 +160,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             if (head < tail)
             {
                 Array.Copy(arr, head, array, arrayIndex, tail - head);

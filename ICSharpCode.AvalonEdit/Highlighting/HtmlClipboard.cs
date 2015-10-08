@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// <summary>
         /// Builds a header for the CF_HTML clipboard format.
         /// </summary>
-        private static string BuildHeader(int startHTML, int endHTML, int startFragment, int endFragment)
+        static string BuildHeader(int startHTML, int endHTML, int startFragment, int endFragment)
         {
             StringBuilder b = new StringBuilder();
             b.AppendLine("Version:1.0");
@@ -34,9 +34,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public static void SetHtml(DataObject dataObject, string htmlFragment)
         {
             if (dataObject == null)
-                throw new ArgumentNullException("dataObject");
+                throw new ArgumentNullException(nameof(dataObject));
             if (htmlFragment == null)
-                throw new ArgumentNullException("htmlFragment");
+                throw new ArgumentNullException(nameof(htmlFragment));
 
             string htmlStart = @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.0 Transitional//EN"">" + Environment.NewLine
                 + "<HTML>" + Environment.NewLine
@@ -65,9 +65,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public static string CreateHtmlFragment(TextDocument document, IHighlighter highlighter, ISegment segment, HtmlOptions options)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             if (options == null)
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             if (highlighter != null && highlighter.Document != document)
                 throw new ArgumentException("Highlighter does not belong to the specified document.");
             if (segment == null)
@@ -168,7 +168,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// </summary>
         public HtmlOptions()
         {
-            this.TabSize = 4;
+            TabSize = 4;
         }
 
         /// <summary>
@@ -178,8 +178,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             : this()
         {
             if (options == null)
-                throw new ArgumentNullException("options");
-            this.TabSize = options.IndentationSize;
+                throw new ArgumentNullException(nameof(options));
+            TabSize = options.IndentationSize;
         }
 
         /// <summary>
@@ -193,9 +193,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public virtual void WriteStyleAttributeForColor(TextWriter writer, HighlightingColor color)
         {
             if (writer == null)
-                throw new ArgumentNullException("writer");
+                throw new ArgumentNullException(nameof(writer));
             if (color == null)
-                throw new ArgumentNullException("color");
+                throw new ArgumentNullException(nameof(color));
             writer.Write(" style=\"");
             writer.Write(color.ToCss());
             writer.Write("\"");
@@ -207,7 +207,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public virtual bool ColorNeedsSpanForStyling(HighlightingColor color)
         {
             if (color == null)
-                throw new ArgumentNullException("color");
+                throw new ArgumentNullException(nameof(color));
             return !string.IsNullOrEmpty(color.ToCss());
         }
     }

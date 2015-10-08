@@ -13,26 +13,26 @@ namespace ICSharpCode.AvalonEdit
     public class DragDropHelper
     {
         // source and target
-        private readonly DataFormat _format = DataFormats.GetDataFormat("DragDropItemsControl");
-        private Point _initialMousePosition;
-        private Vector _initialMouseOffset;
-        private object _draggedData;
-        private DraggedAdorner _draggedAdorner;
-        private InsertionAdorner _insertionAdorner;
-        private Window _topWindow;
+        readonly DataFormat _format = DataFormats.GetDataFormat("DragDropItemsControl");
+        Point _initialMousePosition;
+        Vector _initialMouseOffset;
+        object _draggedData;
+        DraggedAdorner _draggedAdorner;
+        InsertionAdorner _insertionAdorner;
+        Window _topWindow;
         // source
-        private ItemsControl _sourceItemsControl;
-        private FrameworkElement _sourceItemContainer;
+        ItemsControl _sourceItemsControl;
+        FrameworkElement _sourceItemContainer;
         // target
-        private ItemsControl _targetItemsControl;
-        private FrameworkElement _targetItemContainer;
-        private bool _hasVerticalOrientation;
-        private int _insertionIndex;
-        private bool _isInFirstHalf;
+        ItemsControl _targetItemsControl;
+        FrameworkElement _targetItemContainer;
+        bool _hasVerticalOrientation;
+        int _insertionIndex;
+        bool _isInFirstHalf;
 
         // singleton
-        private static DragDropHelper _instance;
-        private static DragDropHelper Instance
+        static DragDropHelper _instance;
+        static DragDropHelper Instance
         {
             get { return _instance ?? (_instance = new DragDropHelper()); }
         }
@@ -77,7 +77,7 @@ namespace ICSharpCode.AvalonEdit
         public static readonly DependencyProperty DragDropTemplateProperty =
             DependencyProperty.RegisterAttached("DragDropTemplate", typeof(DataTemplate), typeof(DragDropHelper), new UIPropertyMetadata(null));
 
-        private static void IsDragSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        static void IsDragSourceChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var dragSource = obj as ItemsControl;
             if (dragSource != null)
@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private static void IsDropTargetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        static void IsDropTargetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var dropTarget = obj as ItemsControl;
             if (dropTarget != null)
@@ -123,39 +123,39 @@ namespace ICSharpCode.AvalonEdit
 
         // DragSource
 
-        private void DragSource_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        void DragSource_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this._sourceItemsControl = (ItemsControl)sender;
+            _sourceItemsControl = (ItemsControl)sender;
             var visual = e.OriginalSource as Visual;
 
-            this._topWindow = Window.GetWindow(this._sourceItemsControl);
-            this._initialMousePosition = e.GetPosition(this._topWindow);
+            _topWindow = Window.GetWindow(_sourceItemsControl);
+            _initialMousePosition = e.GetPosition(_topWindow);
 
-            this._sourceItemContainer = _sourceItemsControl.ContainerFromElement(visual) as FrameworkElement;
-            if (this._sourceItemContainer != null)
+            _sourceItemContainer = _sourceItemsControl.ContainerFromElement(visual) as FrameworkElement;
+            if (_sourceItemContainer != null)
             {
-                this._draggedData = this._sourceItemContainer.DataContext;
+                _draggedData = _sourceItemContainer.DataContext;
             }
         }
 
         // Drag = mouse down + move by a certain amount
-        private void DragSource_PreviewMouseMove(object sender, MouseEventArgs e)
+        void DragSource_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (this._draggedData != null)
+            if (_draggedData != null)
             {
                 // Only drag when user moved the mouse by a reasonable amount.
-                if (IsMovementBigEnough(this._initialMousePosition, e.GetPosition(this._topWindow)))
+                if (IsMovementBigEnough(_initialMousePosition, e.GetPosition(_topWindow)))
                 {
-                    this._initialMouseOffset = this._initialMousePosition - this._sourceItemContainer.TranslatePoint(new Point(0, 0), this._topWindow);
+                    _initialMouseOffset = _initialMousePosition - _sourceItemContainer.TranslatePoint(new Point(0, 0), _topWindow);
 
-                    var data = new DataObject(this._format.Name, this._draggedData);
+                    var data = new DataObject(_format.Name, _draggedData);
 
                     // Adding events to the window to make sure dragged adorner comes up when mouse is not over a drop target.
-                    bool previousAllowDrop = this._topWindow.AllowDrop;
-                    this._topWindow.AllowDrop = true;
-                    this._topWindow.DragEnter += TopWindow_DragEnter;
-                    this._topWindow.DragOver += TopWindow_DragOver;
-                    this._topWindow.DragLeave += TopWindow_DragLeave;
+                    bool previousAllowDrop = _topWindow.AllowDrop;
+                    _topWindow.AllowDrop = true;
+                    _topWindow.DragEnter += TopWindow_DragEnter;
+                    _topWindow.DragOver += TopWindow_DragOver;
+                    _topWindow.DragLeave += TopWindow_DragLeave;
 
                     DragDropEffects effects = System.Windows.DragDrop.DoDragDrop((DependencyObject)sender, data, DragDropEffects.Move);
 
@@ -166,36 +166,36 @@ namespace ICSharpCode.AvalonEdit
                     // which is when the DoDragDrop synchronous method returns.
                     RemoveDraggedAdorner();
 
-                    this._topWindow.AllowDrop = previousAllowDrop;
-                    this._topWindow.DragEnter -= TopWindow_DragEnter;
-                    this._topWindow.DragOver -= TopWindow_DragOver;
-                    this._topWindow.DragLeave -= TopWindow_DragLeave;
+                    _topWindow.AllowDrop = previousAllowDrop;
+                    _topWindow.DragEnter -= TopWindow_DragEnter;
+                    _topWindow.DragOver -= TopWindow_DragOver;
+                    _topWindow.DragLeave -= TopWindow_DragLeave;
 
-                    this._draggedData = null;
+                    _draggedData = null;
                 }
             }
         }
 
-        private void DragSource_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        void DragSource_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            this._draggedData = null;
+            _draggedData = null;
             CollectionViewSource.GetDefaultView((sender as ItemsControl).ItemsSource).Refresh();
         }
 
         // DropTarget
 
-        private void DropTarget_PreviewDragEnter(object sender, DragEventArgs e)
+        void DropTarget_PreviewDragEnter(object sender, DragEventArgs e)
         {
-            this._targetItemsControl = (ItemsControl)sender;
+            _targetItemsControl = (ItemsControl)sender;
             //var margin = SumMargins(_targetItemsControl);
             //_targetTopMargin = margin.Top;
             //_targetLeftMargin = margin.Left;
-            object draggedItem = e.Data.GetData(this._format.Name);
+            object draggedItem = e.Data.GetData(_format.Name);
 
             DecideDropTarget(e);
             if (draggedItem != null)
             {
-                var position = e.GetPosition(this._topWindow);
+                var position = e.GetPosition(_topWindow);
                 //ScrollIntoView(this._targetItemsControl, position);
                 // Dragged Adorner is created on the first enter only.
                 ShowDraggedAdorner(position);
@@ -204,15 +204,15 @@ namespace ICSharpCode.AvalonEdit
             e.Handled = true;
         }
 
-        private void DropTarget_PreviewDragOver(object sender, DragEventArgs e)
+        void DropTarget_PreviewDragOver(object sender, DragEventArgs e)
         {
-            object draggedItem = e.Data.GetData(this._format.Name);
+            object draggedItem = e.Data.GetData(_format.Name);
 
             DecideDropTarget(e);
             if (draggedItem != null)
             {
                 // Dragged Adorner is only updated here - it has already been created in DragEnter.
-                var position = e.GetPosition(this._topWindow);
+                var position = e.GetPosition(_topWindow);
                 //ScrollIntoView(this._targetItemsControl, position);
 
                 ShowDraggedAdorner(position);
@@ -222,23 +222,23 @@ namespace ICSharpCode.AvalonEdit
             e.Handled = true;
         }
 
-        private void DropTarget_PreviewDrop(object sender, DragEventArgs e)
+        void DropTarget_PreviewDrop(object sender, DragEventArgs e)
         {
-            object draggedItem = e.Data.GetData(this._format.Name);
+            object draggedItem = e.Data.GetData(_format.Name);
             int indexRemoved = -1;
 
             if (draggedItem != null)
             {
                 if ((e.Effects & DragDropEffects.Move) != 0)
                 {
-                    indexRemoved = RemoveItemFromItemsControl(this._sourceItemsControl, draggedItem);
+                    indexRemoved = RemoveItemFromItemsControl(_sourceItemsControl, draggedItem);
                 }
                 // This happens when we drag an item to a later position within the same ItemsControl.
-                if (indexRemoved != -1 && this._sourceItemsControl == this._targetItemsControl && indexRemoved < this._insertionIndex)
+                if (indexRemoved != -1 && _sourceItemsControl == _targetItemsControl && indexRemoved < _insertionIndex)
                 {
-                    this._insertionIndex--;
+                    _insertionIndex--;
                 }
-                InsertItemInItemsControl(this._targetItemsControl, draggedItem, this._insertionIndex);
+                InsertItemInItemsControl(_targetItemsControl, draggedItem, _insertionIndex);
 
                 RemoveDraggedAdorner();
                 RemoveInsertionAdorner();
@@ -247,11 +247,11 @@ namespace ICSharpCode.AvalonEdit
             e.Handled = true;
         }
 
-        private void DropTarget_PreviewDragLeave(object sender, DragEventArgs e)
+        void DropTarget_PreviewDragLeave(object sender, DragEventArgs e)
         {
             // Dragged Adorner is only created once on DragEnter + every time we enter the window.
             // It's only removed once on the DragDrop, and every time we leave the window. (so no need to remove it here)
-            object draggedItem = e.Data.GetData(this._format.Name);
+            object draggedItem = e.Data.GetData(_format.Name);
 
             if (draggedItem != null)
             {
@@ -267,56 +267,56 @@ namespace ICSharpCode.AvalonEdit
         // 3. mouse is over an empty ItemsControl.
         // The goal of this method is to decide on the values of the following properties:
         // targetItemContainer, insertionIndex and isInFirstHalf.
-        private void DecideDropTarget(DragEventArgs e)
+        void DecideDropTarget(DragEventArgs e)
         {
-            int targetItemsControlCount = this._targetItemsControl.Items.Count;
-            object draggedItem = e.Data.GetData(this._format.Name);
+            int targetItemsControlCount = _targetItemsControl.Items.Count;
+            object draggedItem = e.Data.GetData(_format.Name);
 
             if (IsDropDataTypeAllowed(draggedItem))
             {
                 if (targetItemsControlCount > 0)
                 {
-                    this._hasVerticalOrientation = HasVerticalOrientation(this._targetItemsControl.ItemContainerGenerator.ContainerFromIndex(0) as FrameworkElement);
-                    this._targetItemContainer = _targetItemsControl.ContainerFromElement((DependencyObject)e.OriginalSource) as FrameworkElement;
+                    _hasVerticalOrientation = HasVerticalOrientation(_targetItemsControl.ItemContainerGenerator.ContainerFromIndex(0) as FrameworkElement);
+                    _targetItemContainer = _targetItemsControl.ContainerFromElement((DependencyObject)e.OriginalSource) as FrameworkElement;
 
-                    if (this._targetItemContainer != null)
+                    if (_targetItemContainer != null)
                     {
-                        Point positionRelativeToItemContainer = e.GetPosition(this._targetItemContainer);
-                        this._isInFirstHalf = IsInFirstHalf(this._targetItemContainer, positionRelativeToItemContainer, this._hasVerticalOrientation);
-                        this._insertionIndex = this._targetItemsControl.ItemContainerGenerator.IndexFromContainer(this._targetItemContainer);
+                        Point positionRelativeToItemContainer = e.GetPosition(_targetItemContainer);
+                        _isInFirstHalf = IsInFirstHalf(_targetItemContainer, positionRelativeToItemContainer, _hasVerticalOrientation);
+                        _insertionIndex = _targetItemsControl.ItemContainerGenerator.IndexFromContainer(_targetItemContainer);
 
-                        if (!this._isInFirstHalf)
+                        if (!_isInFirstHalf)
                         {
-                            this._insertionIndex++;
+                            _insertionIndex++;
                         }
                     }
                     else
                     {
-                        this._targetItemContainer = this._targetItemsControl.ItemContainerGenerator.ContainerFromIndex(targetItemsControlCount - 1) as FrameworkElement;
-                        this._isInFirstHalf = false;
-                        this._insertionIndex = targetItemsControlCount;
+                        _targetItemContainer = _targetItemsControl.ItemContainerGenerator.ContainerFromIndex(targetItemsControlCount - 1) as FrameworkElement;
+                        _isInFirstHalf = false;
+                        _insertionIndex = targetItemsControlCount;
                     }
                 }
                 else
                 {
-                    this._targetItemContainer = null;
-                    this._insertionIndex = 0;
+                    _targetItemContainer = null;
+                    _insertionIndex = 0;
                 }
             }
             else
             {
-                this._targetItemContainer = null;
-                this._insertionIndex = -1;
+                _targetItemContainer = null;
+                _insertionIndex = -1;
                 e.Effects = DragDropEffects.None;
             }
         }
 
         // Can the dragged data be added to the destination collection?
         // It can if destination is bound to IList<allowed type>, IList or not data bound.
-        private bool IsDropDataTypeAllowed(object draggedItem)
+        bool IsDropDataTypeAllowed(object draggedItem)
         {
             bool isDropDataTypeAllowed;
-            IEnumerable collectionSource = this._targetItemsControl.ItemsSource;
+            IEnumerable collectionSource = _targetItemsControl.ItemsSource;
             if (draggedItem != null)
             {
                 if (collectionSource != null)
@@ -353,21 +353,21 @@ namespace ICSharpCode.AvalonEdit
 
         // Window
 
-        private void TopWindow_DragEnter(object sender, DragEventArgs e)
+        void TopWindow_DragEnter(object sender, DragEventArgs e)
         {
-            ShowDraggedAdorner(e.GetPosition(this._topWindow));
+            ShowDraggedAdorner(e.GetPosition(_topWindow));
             e.Effects = DragDropEffects.None;
             e.Handled = true;
         }
 
-        private void TopWindow_DragOver(object sender, DragEventArgs e)
+        void TopWindow_DragOver(object sender, DragEventArgs e)
         {
-            ShowDraggedAdorner(e.GetPosition(this._topWindow));
+            ShowDraggedAdorner(e.GetPosition(_topWindow));
             e.Effects = DragDropEffects.None;
             e.Handled = true;
         }
 
-        private void TopWindow_DragLeave(object sender, DragEventArgs e)
+        void TopWindow_DragLeave(object sender, DragEventArgs e)
         {
             RemoveDraggedAdorner();
             e.Handled = true;
@@ -376,63 +376,63 @@ namespace ICSharpCode.AvalonEdit
         // Adorners
 
         // Creates or updates the dragged Adorner.
-        private void ShowDraggedAdorner(Point currentPosition)
+        void ShowDraggedAdorner(Point currentPosition)
         {
-            if (this._draggedAdorner == null)
+            if (_draggedAdorner == null)
             {
-                var adornerLayer = AdornerLayer.GetAdornerLayer(this._sourceItemsControl);
-                this._draggedAdorner = new DraggedAdorner(this._draggedData, GetDragDropTemplate(this._sourceItemsControl), this._sourceItemContainer, adornerLayer);
+                var adornerLayer = AdornerLayer.GetAdornerLayer(_sourceItemsControl);
+                _draggedAdorner = new DraggedAdorner(_draggedData, GetDragDropTemplate(_sourceItemsControl), _sourceItemContainer, adornerLayer);
             }
 
-            double left = currentPosition.X - this._initialMousePosition.X + this._initialMouseOffset.X;
+            double left = currentPosition.X - _initialMousePosition.X + _initialMouseOffset.X;
             Debug.WriteLine("Adorner Left: " + left);
-            double top = currentPosition.Y - this._initialMousePosition.Y + this._initialMouseOffset.Y;
+            double top = currentPosition.Y - _initialMousePosition.Y + _initialMouseOffset.Y;
             Debug.WriteLine("Adorner Top: " + top);
-            this._draggedAdorner.SetPosition(left, top);
+            _draggedAdorner.SetPosition(left, top);
         }
 
-        private void RemoveDraggedAdorner()
+        void RemoveDraggedAdorner()
         {
-            if (this._draggedAdorner != null)
+            if (_draggedAdorner != null)
             {
-                this._draggedAdorner.Detach();
-                this._draggedAdorner = null;
+                _draggedAdorner.Detach();
+                _draggedAdorner = null;
             }
         }
 
-        private void CreateInsertionAdorner()
+        void CreateInsertionAdorner()
         {
-            if (this._targetItemContainer != null)
+            if (_targetItemContainer != null)
             {
                 // Here, I need to get adorner layer from targetItemContainer and not targetItemsControl.
                 // This way I get the AdornerLayer within ScrollContentPresenter, and not the one under AdornerDecorator (Snoop is awesome).
                 // If I used targetItemsControl, the adorner would hang out of ItemsControl when there's a horizontal scroll bar.
-                var adornerLayer = AdornerLayer.GetAdornerLayer(this._targetItemContainer);
-                this._insertionAdorner = new InsertionAdorner(this._hasVerticalOrientation, this._isInFirstHalf, this._targetItemContainer, adornerLayer);
+                var adornerLayer = AdornerLayer.GetAdornerLayer(_targetItemContainer);
+                _insertionAdorner = new InsertionAdorner(_hasVerticalOrientation, _isInFirstHalf, _targetItemContainer, adornerLayer);
             }
         }
 
-        private void UpdateInsertionAdornerPosition()
+        void UpdateInsertionAdornerPosition()
         {
-            if (this._insertionAdorner != null)
+            if (_insertionAdorner != null)
             {
-                this._insertionAdorner.IsInFirstHalf = this._isInFirstHalf;
-                this._insertionAdorner.InvalidateVisual();
+                _insertionAdorner.IsInFirstHalf = _isInFirstHalf;
+                _insertionAdorner.InvalidateVisual();
             }
         }
 
-        private void RemoveInsertionAdorner()
+        void RemoveInsertionAdorner()
         {
-            if (this._insertionAdorner != null)
+            if (_insertionAdorner != null)
             {
-                this._insertionAdorner.Detach();
-                this._insertionAdorner = null;
+                _insertionAdorner.Detach();
+                _insertionAdorner = null;
             }
         }
 
         // Finds the orientation of the panel of the ItemsControl that contains the itemContainer passed as a parameter.
         // The orientation is needed to figure out where to draw the adorner that indicates where the item will be dropped.
-        private static bool HasVerticalOrientation(FrameworkElement itemContainer)
+        static bool HasVerticalOrientation(FrameworkElement itemContainer)
         {
             var hasVerticalOrientation = true;
 
@@ -455,7 +455,7 @@ namespace ICSharpCode.AvalonEdit
             return hasVerticalOrientation;
         }
 
-        private static void InsertItemInItemsControl(ItemsControl itemsControl, object itemToInsert, int insertionIndex)
+        static void InsertItemInItemsControl(ItemsControl itemsControl, object itemToInsert, int insertionIndex)
         {
             if (itemToInsert != null)
             {
@@ -484,7 +484,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private static int RemoveItemFromItemsControl(ItemsControl itemsControl, object itemToRemove)
+        static int RemoveItemFromItemsControl(ItemsControl itemsControl, object itemToRemove)
         {
             int indexToBeRemoved = -1;
             if (itemToRemove != null)
@@ -520,7 +520,7 @@ namespace ICSharpCode.AvalonEdit
             return indexToBeRemoved;
         }
 
-        private static bool IsInFirstHalf(FrameworkElement container, Point clickedPoint, bool hasVerticalOrientation)
+        static bool IsInFirstHalf(FrameworkElement container, Point clickedPoint, bool hasVerticalOrientation)
         {
             if (hasVerticalOrientation)
             {
@@ -529,7 +529,7 @@ namespace ICSharpCode.AvalonEdit
             return clickedPoint.X < container.ActualWidth / 2;
         }
 
-        private static bool IsMovementBigEnough(Point initialMousePosition, Point currentPosition)
+        static bool IsMovementBigEnough(Point initialMousePosition, Point currentPosition)
         {
             return (Math.Abs(currentPosition.X - initialMousePosition.X) >= SystemParameters.MinimumHorizontalDragDistance ||
                     Math.Abs(currentPosition.Y - initialMousePosition.Y) >= SystemParameters.MinimumVerticalDragDistance);

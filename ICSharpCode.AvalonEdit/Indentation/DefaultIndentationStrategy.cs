@@ -13,9 +13,9 @@ namespace ICSharpCode.AvalonEdit.Indentation
         public virtual void IndentLine(TextDocument document, DocumentLine line)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             if (line == null)
-                throw new ArgumentNullException("line");
+                throw new ArgumentNullException(nameof(line));
 
             if (line.PreviousLine != null)
             {

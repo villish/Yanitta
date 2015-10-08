@@ -15,13 +15,13 @@ namespace ICSharpCode.AvalonEdit.Highlighting
     /// </remarks>
     public class HighlightingManager : IHighlightingDefinitionReferenceResolver
     {
-        private sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition
+        sealed class DelayLoadedHighlightingDefinition : IHighlightingDefinition
         {
-            private readonly object lockObj = new object();
-            private readonly string name;
-            private Func<IHighlightingDefinition> lazyLoadingFunction;
-            private IHighlightingDefinition definition;
-            private Exception storedException;
+            readonly object lockObj = new object();
+            readonly string name;
+            Func<IHighlightingDefinition> lazyLoadingFunction;
+            IHighlightingDefinition definition;
+            Exception storedException;
 
             public DelayLoadedHighlightingDefinition(string name, Func<IHighlightingDefinition> lazyLoadingFunction)
             {
@@ -42,14 +42,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes",
                                                              Justification = "The exception will be rethrown")]
-            private IHighlightingDefinition GetDefinition()
+            IHighlightingDefinition GetDefinition()
             {
                 Func<IHighlightingDefinition> func;
                 lock (lockObj)
                 {
-                    if (this.definition != null)
-                        return this.definition;
-                    func = this.lazyLoadingFunction;
+                    if (definition != null)
+                        return definition;
+                    func = lazyLoadingFunction;
                 }
                 Exception exception = null;
                 IHighlightingDefinition def = null;
@@ -70,15 +70,15 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                 }
                 lock (lockObj)
                 {
-                    this.lazyLoadingFunction = null;
-                    if (this.definition == null && this.storedException == null)
+                    lazyLoadingFunction = null;
+                    if (definition == null && storedException == null)
                     {
-                        this.definition = def;
-                        this.storedException = exception;
+                        definition = def;
+                        storedException = exception;
                     }
-                    if (this.storedException != null)
-                        throw new HighlightingDefinitionInvalidException("Error delay-loading highlighting definition", this.storedException);
-                    return this.definition;
+                    if (storedException != null)
+                        throw new HighlightingDefinitionInvalidException("Error delay-loading highlighting definition", storedException);
+                    return definition;
                 }
             }
 
@@ -110,14 +110,14 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
             public override string ToString()
             {
-                return this.Name;
+                return Name;
             }
         }
 
-        private readonly object lockObj = new object();
-        private Dictionary<string, IHighlightingDefinition> highlightingsByName = new Dictionary<string, IHighlightingDefinition>();
-        private Dictionary<string, IHighlightingDefinition> highlightingsByExtension = new Dictionary<string, IHighlightingDefinition>(StringComparer.OrdinalIgnoreCase);
-        private List<IHighlightingDefinition> allHighlightings = new List<IHighlightingDefinition>();
+        readonly object lockObj = new object();
+        Dictionary<string, IHighlightingDefinition> highlightingsByName = new Dictionary<string, IHighlightingDefinition>();
+        Dictionary<string, IHighlightingDefinition> highlightingsByExtension = new Dictionary<string, IHighlightingDefinition>(StringComparer.OrdinalIgnoreCase);
+        List<IHighlightingDefinition> allHighlightings = new List<IHighlightingDefinition>();
 
         /// <summary>
         /// Gets a highlighting definition by name.
@@ -174,7 +174,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public void RegisterHighlighting(string name, string[] extensions, IHighlightingDefinition highlighting)
         {
             if (highlighting == null)
-                throw new ArgumentNullException("highlighting");
+                throw new ArgumentNullException(nameof(highlighting));
 
             lock (lockObj)
             {
@@ -202,7 +202,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public void RegisterHighlighting(string name, string[] extensions, Func<IHighlightingDefinition> lazyLoadedHighlighting)
         {
             if (lazyLoadedHighlighting == null)
-                throw new ArgumentNullException("lazyLoadedHighlighting");
+                throw new ArgumentNullException(nameof(lazyLoadedHighlighting));
             RegisterHighlighting(name, extensions, new DelayLoadedHighlightingDefinition(name, lazyLoadedHighlighting));
         }
 
@@ -256,7 +256,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode",
                                                              Justification = "LoadHighlighting is used only in release builds")]
-            private Func<IHighlightingDefinition> LoadHighlighting(string resourceName)
+            Func<IHighlightingDefinition> LoadHighlighting(string resourceName)
             {
                 Func<IHighlightingDefinition> func = delegate
                 {

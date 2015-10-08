@@ -90,15 +90,15 @@ namespace ICSharpCode.AvalonEdit.Document
 
         public SimpleSegment(int offset, int length)
         {
-            this.Offset = offset;
-            this.Length = length;
+            Offset = offset;
+            Length = length;
         }
 
         public SimpleSegment(ISegment segment)
         {
             Debug.Assert(segment != null);
-            this.Offset = segment.Offset;
-            this.Length = segment.Length;
+            Offset = segment.Offset;
+            Length = segment.Length;
         }
 
         public override int GetHashCode()
@@ -116,7 +116,7 @@ namespace ICSharpCode.AvalonEdit.Document
 
         public bool Equals(SimpleSegment other)
         {
-            return this.Offset == other.Offset && this.Length == other.Length;
+            return Offset == other.Offset && Length == other.Length;
         }
 
         public static bool operator ==(SimpleSegment left, SimpleSegment right)
@@ -148,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.Document
     /// <seealso cref="TextSegment"/>
     public sealed class AnchorSegment : ISegment
     {
-        private readonly TextAnchor start, end;
+        readonly TextAnchor start, end;
 
         /// <inheritdoc/>
         public int Offset
@@ -183,13 +183,13 @@ namespace ICSharpCode.AvalonEdit.Document
         public AnchorSegment(TextAnchor start, TextAnchor end)
         {
             if (start == null)
-                throw new ArgumentNullException("start");
+                throw new ArgumentNullException(nameof(start));
             if (end == null)
-                throw new ArgumentNullException("end");
+                throw new ArgumentNullException(nameof(end));
             if (!start.SurviveDeletion)
-                throw new ArgumentException("Anchors for AnchorSegment must use SurviveDeletion", "start");
+                throw new ArgumentException("Anchors for AnchorSegment must use SurviveDeletion", nameof(start));
             if (!end.SurviveDeletion)
-                throw new ArgumentException("Anchors for AnchorSegment must use SurviveDeletion", "end");
+                throw new ArgumentException("Anchors for AnchorSegment must use SurviveDeletion", nameof(end));
             this.start = start;
             this.end = end;
         }
@@ -208,13 +208,13 @@ namespace ICSharpCode.AvalonEdit.Document
         public AnchorSegment(TextDocument document, int offset, int length)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
-            this.start = document.CreateAnchor(offset);
-            this.start.SurviveDeletion = true;
-            this.start.MovementType = AnchorMovementType.AfterInsertion;
-            this.end = document.CreateAnchor(offset + length);
-            this.end.SurviveDeletion = true;
-            this.end.MovementType = AnchorMovementType.BeforeInsertion;
+                throw new ArgumentNullException(nameof(document));
+            start = document.CreateAnchor(offset);
+            start.SurviveDeletion = true;
+            start.MovementType = AnchorMovementType.AfterInsertion;
+            end = document.CreateAnchor(offset + length);
+            end.SurviveDeletion = true;
+            end.MovementType = AnchorMovementType.BeforeInsertion;
         }
 
         /// <inheritdoc/>

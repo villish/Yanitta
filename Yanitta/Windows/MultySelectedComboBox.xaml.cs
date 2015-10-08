@@ -22,7 +22,7 @@ namespace Yanitta
 
         public static DependencyProperty SelectedItemsTextProperty = DependencyProperty.Register("SelectedItemsText", typeof(string), typeof(MultySelectedComboBox));
 
-        private static void OnSelectedItemsPropertyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void OnSelectedItemsPropertyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != e.OldValue)
             {
@@ -39,7 +39,7 @@ namespace Yanitta
             }
         }
 
-        private static void OnEnumSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void OnEnumSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue != e.OldValue)
             {
@@ -92,12 +92,12 @@ namespace Yanitta
         {
             this.control   = control;
             this.isChecked = isChecked;
-            this.Value     = value;
+            Value = value;
         }
 
-        private MultySelectedComboBox control;
+        MultySelectedComboBox control;
 
-        private bool isChecked;
+        bool isChecked;
 
         public TargetType Value { get; set; }
 
@@ -111,9 +111,9 @@ namespace Yanitta
                     isChecked = value;
                     OnPropertyChanged();
 
-                    control.SelectedItems.Remove(this.Value);
+                    control.SelectedItems.Remove(Value);
                     if (value)
-                        control.SelectedItems.Add(this.Value);
+                        control.SelectedItems.Add(Value);
 
                     control.SelectedItems.Sort((a, b) => { return a.CompareTo(b); });
                     control.SelectedItemsText = string.Join(", ", control.SelectedItems);

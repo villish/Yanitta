@@ -8,9 +8,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
     [Serializable]
     public struct XshdReference<T> : IEquatable<XshdReference<T>> where T : XshdElement
     {
-        private string referencedDefinition;
-        private string referencedElement;
-        private T inlineElement;
+        string referencedDefinition;
+        string referencedElement;
+        T inlineElement;
 
         /// <summary>
         /// Gets the reference.
@@ -42,10 +42,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public XshdReference(string referencedDefinition, string referencedElement)
         {
             if (referencedElement == null)
-                throw new ArgumentNullException("referencedElement");
+                throw new ArgumentNullException(nameof(referencedElement));
             this.referencedDefinition = referencedDefinition;
             this.referencedElement = referencedElement;
-            this.inlineElement = null;
+            inlineElement = null;
         }
 
         /// <summary>
@@ -54,9 +54,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public XshdReference(T inlineElement)
         {
             if (inlineElement == null)
-                throw new ArgumentNullException("inlineElement");
-            this.referencedDefinition = null;
-            this.referencedElement = null;
+                throw new ArgumentNullException(nameof(inlineElement));
+            referencedDefinition = null;
+            referencedElement = null;
             this.inlineElement = inlineElement;
         }
 
@@ -91,9 +91,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         public bool Equals(XshdReference<T> other)
         {
             // add comparisions for all members here
-            return this.referencedDefinition == other.referencedDefinition
-                && this.referencedElement == other.referencedElement
-                && this.inlineElement == other.inlineElement;
+            return referencedDefinition == other.referencedDefinition
+                && referencedElement == other.referencedElement
+                && inlineElement == other.inlineElement;
         }
 
         /// <inheritdoc/>
@@ -103,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return GetHashCode(referencedDefinition) ^ GetHashCode(referencedElement) ^ GetHashCode(inlineElement);
         }
 
-        private static int GetHashCode(object o)
+        static int GetHashCode(object o)
         {
             return o != null ? o.GetHashCode() : 0;
         }

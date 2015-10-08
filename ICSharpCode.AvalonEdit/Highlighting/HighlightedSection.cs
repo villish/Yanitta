@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
         int ISegment.EndOffset
         {
-            get { return this.Offset + this.Length; }
+            get { return Offset + Length; }
         }
 
         /// <summary>

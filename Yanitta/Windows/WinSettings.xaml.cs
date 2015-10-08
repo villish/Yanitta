@@ -12,23 +12,24 @@ namespace Yanitta
             InitializeComponent();
         }
 
-        private void CommandBinding_Save_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Save_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Settings.Default.Save();
-            this.Close();
+            Close();
         }
 
-        private void CommandBinding_Open_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Open_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog {
+            var dialog = new OpenFileDialog
+            {
                 FileName = Settings.Default.ProfilesFileName,
-                Filter   = Localization.ProfileFileMask
+                Filter = Localization.ProfileFileMask
             };
             if (dialog.ShowDialog() == true)
                 Settings.Default.ProfilesFileName = dialog.FileName;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Settings.Default.Reload();
         }

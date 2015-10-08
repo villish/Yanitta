@@ -15,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Search
         public static ISearchStrategy Create(string searchPattern, bool ignoreCase, bool matchWholeWords, SearchMode mode)
         {
             if (searchPattern == null)
-                throw new ArgumentNullException("searchPattern");
+                throw new ArgumentNullException(nameof(searchPattern));
             RegexOptions options = RegexOptions.Compiled | RegexOptions.Multiline;
             if (ignoreCase)
                 options |= RegexOptions.IgnoreCase;
@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Search
             }
         }
 
-        private static string ConvertWildcardsToRegex(string searchPattern)
+        static string ConvertWildcardsToRegex(string searchPattern)
         {
             if (string.IsNullOrEmpty(searchPattern))
                 return "";

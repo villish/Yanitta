@@ -8,11 +8,11 @@ namespace ICSharpCode.AvalonEdit.Utils
     /// </summary>
     internal sealed class DelayedEvents
     {
-        private struct EventCall
+        struct EventCall
         {
-            private EventHandler handler;
-            private object sender;
-            private EventArgs e;
+            EventHandler handler;
+            object sender;
+            EventArgs e;
 
             public EventCall(EventHandler handler, object sender, EventArgs e)
             {
@@ -27,7 +27,7 @@ namespace ICSharpCode.AvalonEdit.Utils
             }
         }
 
-        private Queue<EventCall> eventCalls = new Queue<EventCall>();
+        Queue<EventCall> eventCalls = new Queue<EventCall>();
 
         public void DelayedRaise(EventHandler handler, object sender, EventArgs e)
         {

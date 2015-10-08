@@ -10,8 +10,8 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// </summary>
     internal sealed class SimpleSelection : Selection
     {
-        private readonly TextViewPosition start, end;
-        private readonly int startOffset, endOffset;
+        readonly TextViewPosition start, end;
+        readonly int startOffset, endOffset;
 
         /// <summary>
         /// Creates a new SimpleSelection instance.
@@ -21,8 +21,8 @@ namespace ICSharpCode.AvalonEdit.Editing
         {
             this.start = start;
             this.end = end;
-            this.startOffset = textArea.Document.GetOffset(start.Location);
-            this.endOffset = textArea.Document.GetOffset(end.Location);
+            startOffset = textArea.Document.GetOffset(start.Location);
+            endOffset = textArea.Document.GetOffset(end.Location);
         }
 
         /// <inheritdoc/>
@@ -47,10 +47,10 @@ namespace ICSharpCode.AvalonEdit.Editing
         public override void ReplaceSelectionWithText(string newText)
         {
             if (newText == null)
-                throw new ArgumentNullException("newText");
+                throw new ArgumentNullException(nameof(newText));
             using (textArea.Document.RunUpdate())
             {
-                ISegment[] segmentsToDelete = textArea.GetDeletableSegments(this.SurroundingSegment);
+                ISegment[] segmentsToDelete = textArea.GetDeletableSegments(SurroundingSegment);
                 for (int i = segmentsToDelete.Length - 1; i >= 0; i--)
                 {
                     if (i == segmentsToDelete.Length - 1)
@@ -97,7 +97,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public override Selection UpdateOnDocumentChange(DocumentChangeEventArgs e)
         {
             if (e == null)
-                throw new ArgumentNullException("e");
+                throw new ArgumentNullException(nameof(e));
             return Selection.Create(
                 textArea,
                 new TextViewPosition(textArea.Document.GetLocation(e.GetNewOffset(startOffset, AnchorMovementType.Default)), start.VisualColumn),
@@ -148,9 +148,9 @@ namespace ICSharpCode.AvalonEdit.Editing
         {
             SimpleSelection other = obj as SimpleSelection;
             if (other == null) return false;
-            return this.start.Equals(other.start) && this.end.Equals(other.end)
-                && this.startOffset == other.startOffset && this.endOffset == other.endOffset
-                && this.textArea == other.textArea;
+            return start.Equals(other.start) && end.Equals(other.end)
+                && startOffset == other.startOffset && endOffset == other.endOffset
+                && textArea == other.textArea;
         }
 
         /// <inheritdoc/>

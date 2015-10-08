@@ -6,7 +6,7 @@ namespace Yanitta
 {
     public class Offsets
     {
-        private readonly string fileName = Path.Combine(Environment.CurrentDirectory, "offsets.ini");
+        readonly string fileName = Path.Combine(Environment.CurrentDirectory, "offsets.ini");
 
         /// <summary>
         /// Имя персонажа.
@@ -73,13 +73,13 @@ namespace Yanitta
         [DllImport("kernel32.dll")]
         static extern int GetPrivateProfileInt(string lpAppName, string lpKeyName, int nDefault, string lpFileName);
 
-        private long GetValue(string section, string key, string file)
+        long GetValue(string section, string key, string file)
         {
             if (string.IsNullOrWhiteSpace(section))
-                throw new ArgumentNullException("section");
+                throw new ArgumentNullException(nameof(section));
 
             if (string.IsNullOrWhiteSpace(key))
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
 
             var val = GetPrivateProfileInt(section, key, 0, file);
 

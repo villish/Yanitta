@@ -49,7 +49,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public override void ReplaceSelectionWithText(string newText)
         {
             if (newText == null)
-                throw new ArgumentNullException("newText");
+                throw new ArgumentNullException(nameof(newText));
             newText = AddSpacesIfRequired(newText, textArea.Caret.Position, textArea.Caret.Position);
             if (newText.Length > 0)
             {

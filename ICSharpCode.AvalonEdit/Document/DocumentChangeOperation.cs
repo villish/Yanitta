@@ -7,8 +7,8 @@ namespace ICSharpCode.AvalonEdit.Document
     /// </summary>
     internal sealed class DocumentChangeOperation : IUndoableOperationWithContext
     {
-        private TextDocument document;
-        private DocumentChangeEventArgs change;
+        TextDocument document;
+        DocumentChangeEventArgs change;
 
         public DocumentChangeOperation(TextDocument document, DocumentChangeEventArgs change)
         {
@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Document
             Debug.Assert(stack.state == UndoStack.StatePlayback);
             stack.RegisterAffectedDocument(document);
             stack.state = UndoStack.StatePlaybackModifyDocument;
-            this.Undo();
+            Undo();
             stack.state = UndoStack.StatePlayback;
         }
 
@@ -30,7 +30,7 @@ namespace ICSharpCode.AvalonEdit.Document
             Debug.Assert(stack.state == UndoStack.StatePlayback);
             stack.RegisterAffectedDocument(document);
             stack.state = UndoStack.StatePlaybackModifyDocument;
-            this.Redo();
+            Redo();
             stack.state = UndoStack.StatePlayback;
         }
 

@@ -20,12 +20,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// storedSpanStacks[0] = state at beginning of document
         /// storedSpanStacks[i] = state after line i
         /// </summary>
-        private readonly CompressingTreeList<SpanStack> storedSpanStacks = new CompressingTreeList<SpanStack>(object.ReferenceEquals);
+        readonly CompressingTreeList<SpanStack> storedSpanStacks = new CompressingTreeList<SpanStack>(object.ReferenceEquals);
 
-        private readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
-        private readonly TextDocument document;
-        private readonly HighlightingRuleSet baseRuleSet;
-        private bool isHighlighting;
+        readonly CompressingTreeList<bool> isValid = new CompressingTreeList<bool>((a, b) => a == b);
+        readonly TextDocument document;
+        readonly HighlightingRuleSet baseRuleSet;
+        bool isHighlighting;
 
         /// <summary>
         /// Gets the document that this DocumentHighlighter is highlighting.
@@ -41,9 +41,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         public DocumentHighlighter(TextDocument document, HighlightingRuleSet baseRuleSet)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             if (baseRuleSet == null)
-                throw new ArgumentNullException("baseRuleSet");
+                throw new ArgumentNullException(nameof(baseRuleSet));
             this.document = document;
             this.baseRuleSet = baseRuleSet;
             WeakLineTracker.Register(document, this);
@@ -89,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             InvalidateHighlighting();
         }
 
-        private ImmutableStack<HighlightingSpan> initialSpanStack = SpanStack.Empty;
+        ImmutableStack<HighlightingSpan> initialSpanStack = SpanStack.Empty;
 
         /// <summary>
         /// Gets/sets the the initial span stack of the document. Default value is <see cref="SpanStack.Empty" />.
@@ -124,7 +124,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             firstInvalidLine = 1;
         }
 
-        private int firstInvalidLine;
+        int firstInvalidLine;
 
         /// <inheritdoc/>
         public HighlightedLine HighlightLine(int lineNumber)
@@ -167,7 +167,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             return storedSpanStacks[lineNumber];
         }
 
-        private void CheckIsHighlighting()
+        void CheckIsHighlighting()
         {
             if (isHighlighting)
             {
@@ -175,7 +175,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private void HighlightUpTo(int targetLineNumber)
+        void HighlightUpTo(int targetLineNumber)
         {
             Debug.Assert(highlightedLine == null); // ensure this method is only used for
             while (firstInvalidLine < targetLineNumber)
@@ -184,7 +184,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private void HighlightLineAndUpdateTreeList(DocumentLine line, int lineNumber)
+        void HighlightLineAndUpdateTreeList(DocumentLine line, int lineNumber)
         {
             //Debug.WriteLine("Highlight line " + lineNumber + (highlightedLine != null ? "" : " (span stack only)"));
             spanStack = storedSpanStacks[lineNumber - 1];
@@ -214,7 +214,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private static bool EqualSpanStacks(SpanStack a, SpanStack b)
+        static bool EqualSpanStacks(SpanStack a, SpanStack b)
         {
             // We must use value equality between the stacks because TextViewDocumentHighlighter.OnHighlightStateChanged
             // depends on the fact that equal input state + unchanged line contents produce equal output state.
@@ -246,27 +246,27 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
         #region Highlighting Engine
 
-        private SpanStack spanStack;
+        SpanStack spanStack;
 
         // local variables from HighlightLineInternal (are member because they are accessed by HighlighLine helper methods)
-        private string lineText;
+        string lineText;
 
-        private int lineStartOffset;
-        private int position;
+        int lineStartOffset;
+        int position;
 
         /// <summary>
         /// the HighlightedLine where highlighting output is being written to.
         /// if this variable is null, nothing is highlighted and only the span state is updated
         /// </summary>
-        private HighlightedLine highlightedLine;
+        HighlightedLine highlightedLine;
 
-        private void HighlightLineInternal(DocumentLine line)
+        void HighlightLineInternal(DocumentLine line)
         {
             lineStartOffset = line.Offset;
             lineText = document.GetText(line.Offset, line.Length);
             position = 0;
             ResetColorStack();
-            HighlightingRuleSet currentRuleSet = this.CurrentRuleSet;
+            HighlightingRuleSet currentRuleSet = CurrentRuleSet;
             Stack<Match[]> storedMatchArrays = new Stack<Match[]>();
             Match[] matches = AllocateMatchArray(currentRuleSet.Spans.Count);
             Match endSpanMatch = null;
@@ -297,7 +297,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                     position = firstMatch.Index + firstMatch.Length;
                     PopColor(); // pop EndColor
                     spanStack = spanStack.Pop();
-                    currentRuleSet = this.CurrentRuleSet;
+                    currentRuleSet = CurrentRuleSet;
                     //FreeMatchArray(matches);
                     if (storedMatchArrays.Count > 0)
                     {
@@ -324,7 +324,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                     Debug.Assert(index >= 0);
                     HighlightingSpan newSpan = currentRuleSet.Spans[index];
                     spanStack = spanStack.Push(newSpan);
-                    currentRuleSet = this.CurrentRuleSet;
+                    currentRuleSet = CurrentRuleSet;
                     storedMatchArrays.Push(matches);
                     matches = AllocateMatchArray(currentRuleSet.Spans.Count);
                     PushColor(newSpan.StartColor);
@@ -339,7 +339,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             PopAllColors();
         }
 
-        private void HighlightNonSpans(int until)
+        void HighlightNonSpans(int until)
         {
             Debug.Assert(position <= until);
             if (position == until)
@@ -377,9 +377,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             position = until;
         }
 
-        private static readonly HighlightingRuleSet emptyRuleSet = new HighlightingRuleSet() { Name = "EmptyRuleSet" };
+        static readonly HighlightingRuleSet emptyRuleSet = new HighlightingRuleSet() { Name = "EmptyRuleSet" };
 
-        private HighlightingRuleSet CurrentRuleSet
+        HighlightingRuleSet CurrentRuleSet
         {
             get
             {
@@ -394,10 +394,10 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 
         #region Color Stack Management
 
-        private Stack<HighlightedSection> highlightedSectionStack;
-        private HighlightedSection lastPoppedSection;
+        Stack<HighlightedSection> highlightedSectionStack;
+        HighlightedSection lastPoppedSection;
 
-        private void ResetColorStack()
+        void ResetColorStack()
         {
             Debug.Assert(position == 0);
             lastPoppedSection = null;
@@ -415,7 +415,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private void PushColor(HighlightingColor color)
+        void PushColor(HighlightingColor color)
         {
             if (highlightedLine == null)
                 return;
@@ -442,7 +442,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private void PopColor()
+        void PopColor()
         {
             if (highlightedLine == null)
                 return;
@@ -457,7 +457,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             }
         }
 
-        private void PopAllColors()
+        void PopAllColors()
         {
             if (highlightedSectionStack != null)
             {
@@ -473,7 +473,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// <summary>
         /// Returns the first match from the array or endSpanMatch.
         /// </summary>
-        private static Match Minimum(Match[] arr, Match endSpanMatch)
+        static Match Minimum(Match[] arr, Match endSpanMatch)
         {
             Match min = null;
             foreach (Match v in arr)
@@ -487,7 +487,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
                 return min;
         }
 
-        private static Match[] AllocateMatchArray(int count)
+        static Match[] AllocateMatchArray(int count)
         {
             if (count == 0)
                 return Empty<Match>.Array;

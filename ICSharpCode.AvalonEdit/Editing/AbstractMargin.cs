@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             set { SetValue(TextViewProperty, value); }
         }
 
-        private static void OnTextViewChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
+        static void OnTextViewChanged(DependencyObject dp, DependencyPropertyChangedEventArgs e)
         {
             AbstractMargin margin = (AbstractMargin)dp;
             margin.wasAutoAddedToTextView = false;
@@ -42,16 +42,16 @@ namespace ICSharpCode.AvalonEdit.Editing
         }
 
         // automatically set/unset TextView property using ITextViewConnect
-        private bool wasAutoAddedToTextView;
+        bool wasAutoAddedToTextView;
 
         void ITextViewConnect.AddToTextView(TextView textView)
         {
-            if (this.TextView == null)
+            if (TextView == null)
             {
-                this.TextView = textView;
+                TextView = textView;
                 wasAutoAddedToTextView = true;
             }
-            else if (this.TextView != textView)
+            else if (TextView != textView)
             {
                 throw new InvalidOperationException("This margin belongs to a different TextView.");
             }
@@ -59,14 +59,14 @@ namespace ICSharpCode.AvalonEdit.Editing
 
         void ITextViewConnect.RemoveFromTextView(TextView textView)
         {
-            if (wasAutoAddedToTextView && this.TextView == textView)
+            if (wasAutoAddedToTextView && TextView == textView)
             {
-                this.TextView = null;
+                TextView = null;
                 Debug.Assert(!wasAutoAddedToTextView); // setting this.TextView should have unset this flag
             }
         }
 
-        private TextDocument document;
+        TextDocument document;
 
         /// <summary>
         /// Gets the document associated with the margin.
@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             TextViewDocumentChanged(null, null);
         }
 
-        private void TextViewDocumentChanged(object sender, EventArgs e)
+        void TextViewDocumentChanged(object sender, EventArgs e)
         {
             OnDocumentChanged(document, TextView != null ? TextView.Document : null);
         }

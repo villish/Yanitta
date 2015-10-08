@@ -13,8 +13,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
 
         public BracketSearchResult(int openingOffset, int closingOffset)
         {
-            this.OpeningOffset = openingOffset;
-            this.ClosingOffset = closingOffset;
+            OpeningOffset = openingOffset;
+            ClosingOffset = closingOffset;
         }
     }
 }

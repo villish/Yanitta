@@ -68,7 +68,7 @@ namespace ICSharpCode.AvalonEdit
 
         #region ShowSpaces / ShowTabs / ShowEndOfLine / ShowBoxForControlCharacters
 
-        private bool showSpaces;
+        bool showSpaces;
 
         /// <summary>
         /// Gets/Sets whether to show · for spaces.
@@ -88,7 +88,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool showTabs;
+        bool showTabs;
 
         /// <summary>
         /// Gets/Sets whether to show » for tabs.
@@ -108,7 +108,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool showEndOfLine;
+        bool showEndOfLine;
 
         /// <summary>
         /// Gets/Sets whether to show ¶ at the end of lines.
@@ -128,7 +128,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool showBoxForControlCharacters = true;
+        bool showBoxForControlCharacters = true;
 
         /// <summary>
         /// Gets/Sets whether to show a box with the hex code for control characters.
@@ -152,7 +152,7 @@ namespace ICSharpCode.AvalonEdit
 
         #region EnableHyperlinks
 
-        private bool enableHyperlinks = true;
+        bool enableHyperlinks = true;
 
         /// <summary>
         /// Gets/Sets whether to enable clickable hyperlinks in the editor.
@@ -172,7 +172,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool enableEmailHyperlinks = true;
+        bool enableEmailHyperlinks = true;
 
         /// <summary>
         /// Gets/Sets whether to enable clickable hyperlinks for e-mail addresses in the editor.
@@ -192,7 +192,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool requireControlModifierForHyperlinkClick = true;
+        bool requireControlModifierForHyperlinkClick = true;
 
         /// <summary>
         /// Gets/Sets whether the user needs to press Control to click hyperlinks.
@@ -222,7 +222,7 @@ namespace ICSharpCode.AvalonEdit
         // The fields should be accessed only by their property - the fields might not be used
         // if someone overrides the property.
 
-        private int _indentationSize = 4;
+        int _indentationSize = 4;
 
         /// <summary>
         /// Gets/Sets the width of one indentation unit.
@@ -235,11 +235,11 @@ namespace ICSharpCode.AvalonEdit
             set
             {
                 if (value < 1)
-                    throw new ArgumentOutOfRangeException("value", value, "value must be positive");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value must be positive");
                 // sanity check; a too large value might cause WPF to crash internally much later
                 // (it only crashed in the hundred thousands for me; but might crash earlier with larger fonts)
                 if (value > 1000)
-                    throw new ArgumentOutOfRangeException("value", value, "indentation size is too large");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "indentation size is too large");
                 if (_indentationSize != value)
                 {
                     _indentationSize = value;
@@ -249,7 +249,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool _convertTabsToSpaces;
+        bool _convertTabsToSpaces;
 
         /// <summary>
         /// Gets/Sets whether to use spaces for indentation instead of tabs.
@@ -286,9 +286,9 @@ namespace ICSharpCode.AvalonEdit
         public virtual string GetIndentationString(int column)
         {
             if (column < 1)
-                throw new ArgumentOutOfRangeException("column", column, "Value must be at least 1.");
+                throw new ArgumentOutOfRangeException(nameof(column), column, "Value must be at least 1.");
 
-            int indentationSize = this.IndentationSize;
+            int indentationSize = IndentationSize;
             if (ConvertTabsToSpaces)
             {
                 return new string(' ', indentationSize - ((column - 1) % indentationSize));
@@ -301,7 +301,7 @@ namespace ICSharpCode.AvalonEdit
 
         #endregion TabSize / IndentationSize / ConvertTabsToSpaces / GetIndentationString
 
-        private bool cutCopyWholeLine = true;
+        bool cutCopyWholeLine = true;
 
         /// <summary>
         /// Gets/Sets whether copying without a selection copies the whole current line.
@@ -320,7 +320,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool allowScrollBelowDocument;
+        bool allowScrollBelowDocument;
 
         /// <summary>
         /// Gets/Sets whether the user can scroll below the bottom of the document.
@@ -340,7 +340,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private double wordWrapIndentation = 0;
+        double wordWrapIndentation = 0;
 
         /// <summary>
         /// Gets/Sets the indentation used for all lines except the first when word-wrapping.
@@ -353,7 +353,7 @@ namespace ICSharpCode.AvalonEdit
             set
             {
                 if (double.IsNaN(value) || double.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value", value, "value must not be NaN/infinity");
+                    throw new ArgumentOutOfRangeException(nameof(value), value, "value must not be NaN/infinity");
                 if (value != wordWrapIndentation)
                 {
                     wordWrapIndentation = value;
@@ -362,7 +362,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool inheritWordWrapIndentation = true;
+        bool inheritWordWrapIndentation = true;
 
         /// <summary>
         /// Gets/Sets whether the indentation is inherited from the first line when word-wrapping.
@@ -383,7 +383,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool enableRectangularSelection = true;
+        bool enableRectangularSelection = true;
 
         /// <summary>
         /// Enables rectangular selection (press ALT and select a rectangle)
@@ -402,7 +402,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool enableTextDragDrop = true;
+        bool enableTextDragDrop = true;
 
         /// <summary>
         /// Enable dragging text within the text area.
@@ -421,7 +421,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        private bool enableVirtualSpace;
+        bool enableVirtualSpace;
 
         /// <summary>
         /// Gets/Sets whether the user can set the caret behind the line ending

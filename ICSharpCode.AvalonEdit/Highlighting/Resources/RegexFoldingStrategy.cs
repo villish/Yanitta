@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
-                    this.startPattern = new Regex(value, PatternRegexOption);
+                    startPattern = new Regex(value, PatternRegexOption);
             }
         }
 
@@ -32,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
-                    this.endPattern = new Regex(value, PatternRegexOption);
+                    endPattern = new Regex(value, PatternRegexOption);
             }
         }
 
@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             set
             {
                 if (!string.IsNullOrWhiteSpace(value))
-                    this.commentPattern = new Regex(value, RegexOptions.Compiled | RegexOptions.Singleline);
+                    commentPattern = new Regex(value, RegexOptions.Compiled | RegexOptions.Singleline);
             }
         }
 
@@ -51,9 +51,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
         /// </summary>
         public RegexFoldingStrategy()
         {
-            this.StartPattern   = @"(?<start>\b(function|while|if|for)\b|{|--\[\[)";
-            this.EndPattern     = @"(?<end>\b(end)\b|}|]])";
-            this.CommentPattern = @"^\s*--[^\[]";
+            StartPattern = @"(?<start>\b(function|while|if|for)\b|{|--\[\[)";
+            EndPattern = @"(?<end>\b(end)\b|}|]])";
+            CommentPattern = @"^\s*--[^\[]";
         }
 
         /// <summary>

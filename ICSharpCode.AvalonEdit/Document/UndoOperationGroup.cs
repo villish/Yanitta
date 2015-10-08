@@ -10,13 +10,13 @@ namespace ICSharpCode.AvalonEdit.Document
     /// </summary>
     internal sealed class UndoOperationGroup : IUndoableOperationWithContext
     {
-        private IUndoableOperation[] undolist;
+        IUndoableOperation[] undolist;
 
         public UndoOperationGroup(Deque<IUndoableOperation> stack, int numops)
         {
             if (stack == null)
             {
-                throw new ArgumentNullException("stack");
+                throw new ArgumentNullException(nameof(stack));
             }
 
             Debug.Assert(numops > 0, "UndoOperationGroup : numops should be > 0");

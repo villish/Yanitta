@@ -17,9 +17,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
     {
         public const string Namespace = "http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008";
 
-        private static XmlSchemaSet schemaSet;
+        static XmlSchemaSet schemaSet;
 
-        private static XmlSchemaSet SchemaSet
+        static XmlSchemaSet SchemaSet
         {
             get
             {
@@ -39,7 +39,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return ParseDefinition(reader);
         }
 
-        private static XshdSyntaxDefinition ParseDefinition(XmlReader reader)
+        static XshdSyntaxDefinition ParseDefinition(XmlReader reader)
         {
             Debug.Assert(reader.LocalName == "SyntaxDefinition");
             XshdSyntaxDefinition def = new XshdSyntaxDefinition();
@@ -53,7 +53,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return def;
         }
 
-        private static void ParseElements(ICollection<XshdElement> c, XmlReader reader)
+        static void ParseElements(ICollection<XshdElement> c, XmlReader reader)
         {
             if (reader.IsEmptyElement)
                 return;
@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private static XshdRuleSet ParseRuleSet(XmlReader reader)
+        static XshdRuleSet ParseRuleSet(XmlReader reader)
         {
             XshdRuleSet ruleSet = new XshdRuleSet();
             SetPosition(ruleSet, reader);
@@ -104,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return ruleSet;
         }
 
-        private static XshdRule ParseRule(XmlReader reader)
+        static XshdRule ParseRule(XmlReader reader)
         {
             XshdRule rule = new XshdRule();
             SetPosition(rule, reader);
@@ -121,7 +121,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return rule;
         }
 
-        private static XshdKeywords ParseKeywords(XmlReader reader)
+        static XshdKeywords ParseKeywords(XmlReader reader)
         {
             XshdKeywords keywords = new XshdKeywords();
             SetPosition(keywords, reader);
@@ -135,7 +135,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return keywords;
         }
 
-        private static XshdImport ParseImport(XmlReader reader)
+        static XshdImport ParseImport(XmlReader reader)
         {
             XshdImport import = new XshdImport();
             SetPosition(import, reader);
@@ -145,7 +145,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return import;
         }
 
-        private static XshdSpan ParseSpan(XmlReader reader)
+        static XshdSpan ParseSpan(XmlReader reader)
         {
             XshdSpan span = new XshdSpan();
             SetPosition(span, reader);
@@ -193,12 +193,12 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return span;
         }
 
-        private static Exception Error(XmlReader reader, string message)
+        static Exception Error(XmlReader reader, string message)
         {
             return Error(reader as IXmlLineInfo, message);
         }
 
-        private static Exception Error(IXmlLineInfo lineInfo, string message)
+        static Exception Error(IXmlLineInfo lineInfo, string message)
         {
             if (lineInfo != null)
                 return new HighlightingDefinitionInvalidException(HighlightingLoader.FormatExceptionMessage(message, lineInfo.LineNumber, lineInfo.LinePosition));
@@ -209,7 +209,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         /// <summary>
         /// Sets the element's position to the XmlReader's position.
         /// </summary>
-        private static void SetPosition(XshdElement element, XmlReader reader)
+        static void SetPosition(XshdElement element, XmlReader reader)
         {
             IXmlLineInfo lineInfo = reader as IXmlLineInfo;
             if (lineInfo != null)
@@ -219,7 +219,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private static XshdReference<XshdRuleSet> ParseRuleSetReference(XmlReader reader)
+        static XshdReference<XshdRuleSet> ParseRuleSetReference(XmlReader reader)
         {
             string ruleSet = reader.GetAttribute("ruleSet");
             if (ruleSet != null)
@@ -241,7 +241,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private static void CheckElementName(XmlReader reader, string name)
+        static void CheckElementName(XmlReader reader, string name)
         {
             if (name != null)
             {
@@ -254,7 +254,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 
         #region ParseColor
 
-        private static XshdColor ParseNamedColor(XmlReader reader)
+        static XshdColor ParseNamedColor(XmlReader reader)
         {
             XshdColor color = ParseColorAttributes(reader);
             // check removed: invisible named colors may be useful now that apps can read highlighting data
@@ -266,7 +266,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return color;
         }
 
-        private static XshdReference<XshdColor> ParseColorReference(XmlReader reader)
+        static XshdReference<XshdColor> ParseColorReference(XmlReader reader)
         {
             string color = reader.GetAttribute("color");
             if (color != null)
@@ -287,7 +287,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             }
         }
 
-        private static XshdColor ParseColorAttributes(XmlReader reader)
+        static XshdColor ParseColorAttributes(XmlReader reader)
         {
             XshdColor color = new XshdColor();
             SetPosition(color, reader);
@@ -303,7 +303,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         internal readonly static FontWeightConverter FontWeightConverter = new FontWeightConverter();
         internal readonly static FontStyleConverter FontStyleConverter = new FontStyleConverter();
 
-        private static HighlightingBrush ParseColor(IXmlLineInfo lineInfo, string color)
+        static HighlightingBrush ParseColor(IXmlLineInfo lineInfo, string color)
         {
             if (string.IsNullOrEmpty(color))
                 return null;
@@ -323,21 +323,21 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
             return new SystemColorHighlightingBrush(property);
         }
 
-        private static HighlightingBrush FixedColorHighlightingBrush(Color? color)
+        static HighlightingBrush FixedColorHighlightingBrush(Color? color)
         {
             if (color == null)
                 return null;
             return new SimpleHighlightingBrush(color.Value);
         }
 
-        private static FontWeight? ParseFontWeight(string fontWeight)
+        static FontWeight? ParseFontWeight(string fontWeight)
         {
             if (string.IsNullOrEmpty(fontWeight))
                 return null;
             return (FontWeight?)FontWeightConverter.ConvertFromInvariantString(fontWeight);
         }
 
-        private static FontStyle? ParseFontStyle(string fontStyle)
+        static FontStyle? ParseFontStyle(string fontStyle)
         {
             if (string.IsNullOrEmpty(fontStyle))
                 return null;

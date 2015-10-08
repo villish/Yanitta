@@ -22,9 +22,9 @@ namespace ICSharpCode.AvalonEdit.Editing
             DefaultStyleKeyProperty.OverrideMetadata(typeof(LineNumberMargin), new FrameworkPropertyMetadata(typeof(LineNumberMargin)));
         }
 
-        private TextArea textArea;
-        private Typeface typeface;
-        private double emSize;
+        TextArea textArea;
+        Typeface typeface;
+        double emSize;
 
         /// <inheritdoc/>
         protected override Size MeasureOverride(Size availableSize)
@@ -44,8 +44,8 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// <inheritdoc/>
         protected override void OnRender(DrawingContext drawingContext)
         {
-            var textView = this.TextView;
-            var renderSize = this.RenderSize;
+            var textView = TextView;
+            var renderSize = RenderSize;
 
             if (textView != null && textView.VisualLinesValid)
             {
@@ -114,9 +114,9 @@ namespace ICSharpCode.AvalonEdit.Editing
             return ReceiveWeakEvent(managerType, sender, e);
         }
 
-        private int maxLineNumberLength = 1;
+        int maxLineNumberLength = 1;
 
-        private void OnDocumentLineCountChanged()
+        void OnDocumentLineCountChanged()
         {
             int documentLineCount = Document != null ? Document.LineCount : 1;
             int newLength = documentLineCount.ToString(CultureInfo.CurrentCulture).Length;
@@ -133,13 +133,13 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void TextViewVisualLinesChanged(object sender, EventArgs e)
+        void TextViewVisualLinesChanged(object sender, EventArgs e)
         {
             InvalidateVisual();
         }
 
-        private AnchorSegment selectionStart;
-        private bool selecting;
+        AnchorSegment selectionStart;
+        bool selecting;
 
         /// <inheritdoc/>
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
@@ -173,7 +173,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private SimpleSegment GetTextLineSegment(MouseEventArgs e)
+        SimpleSegment GetTextLineSegment(MouseEventArgs e)
         {
             var pos = e.GetPosition(TextView);
             pos.X = 0;
@@ -194,7 +194,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             return new SimpleSegment(startOffset, endOffset - startOffset);
         }
 
-        private void ExtendSelection(SimpleSegment currentSeg)
+        void ExtendSelection(SimpleSegment currentSeg)
         {
             if (currentSeg.Offset < selectionStart.Offset)
             {

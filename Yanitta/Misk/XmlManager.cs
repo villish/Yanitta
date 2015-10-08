@@ -47,10 +47,10 @@ namespace Yanitta
         public static void Save<T>(string path, T obj) where T : class
         {
             if (string.IsNullOrWhiteSpace(path))
-                throw new ArgumentNullException("path");
+                throw new ArgumentNullException(nameof(path));
 
             if (obj == null)
-                throw new ArgumentNullException("obj");
+                throw new ArgumentNullException(nameof(obj));
 
             using (var fstream = File.Open(path, FileMode.Create))
             {

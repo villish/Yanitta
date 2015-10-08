@@ -114,8 +114,8 @@ namespace ICSharpCode.AvalonEdit.Document
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("value", "Offset must not be negative");
-                if (this.StartOffset != value)
+                    throw new ArgumentOutOfRangeException(nameof(value), "Offset must not be negative");
+                if (StartOffset != value)
                 {
                     // need a copy of the variable because ownerTree.Remove() sets this.ownerTree to null
                     ISegmentTree ownerTree = this.ownerTree;
@@ -149,7 +149,7 @@ namespace ICSharpCode.AvalonEdit.Document
             {
                 int newLength = value - StartOffset;
                 if (newLength < 0)
-                    throw new ArgumentOutOfRangeException("value", "EndOffset must be greater or equal to StartOffset");
+                    throw new ArgumentOutOfRangeException(nameof(value), "EndOffset must be greater or equal to StartOffset");
                 Length = newLength;
             }
         }
@@ -169,7 +169,7 @@ namespace ICSharpCode.AvalonEdit.Document
             set
             {
                 if (value < 0)
-                    throw new ArgumentOutOfRangeException("value", "Length must not be negative");
+                    throw new ArgumentOutOfRangeException(nameof(value), "Length must not be negative");
                 segmentLength = value;
                 if (ownerTree != null)
                     ownerTree.UpdateAugmentedData(this);

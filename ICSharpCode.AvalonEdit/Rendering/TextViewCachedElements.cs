@@ -7,8 +7,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 {
     internal sealed class TextViewCachedElements : IDisposable
     {
-        private TextFormatter formatter;
-        private Dictionary<string, TextLine> nonPrintableCharacterTexts;
+        TextFormatter formatter;
+        Dictionary<string, TextLine> nonPrintableCharacterTexts;
 
         public TextLine GetTextForNonPrintableCharacter(string text, ITextRunConstructionContext context)
         {

@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public IEnumerable<ISegment> GetDeletableSegments(ISegment segment)
         {
             if (segment == null)
-                throw new ArgumentNullException("segment");
+                throw new ArgumentNullException(nameof(segment));
             // the segment is always deletable
             return ExtensionMethods.Sequence(segment);
         }

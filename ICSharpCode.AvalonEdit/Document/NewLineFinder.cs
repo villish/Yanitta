@@ -5,7 +5,7 @@ namespace ICSharpCode.AvalonEdit.Document
 {
     internal static class NewLineFinder
     {
-        private static readonly char[] newline = { '\r', '\n' };
+        static readonly char[] newline = { '\r', '\n' };
 
         internal static readonly string[] NewlineStrings = { "\r\n", "\r", "\n" };
 
@@ -62,9 +62,9 @@ namespace ICSharpCode.AvalonEdit.Document
         public static int FindNextNewLine(ITextSource text, int offset, out string newLineType)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             if (offset < 0 || offset > text.TextLength)
-                throw new ArgumentOutOfRangeException("offset", offset, "offset is outside of text source");
+                throw new ArgumentOutOfRangeException(nameof(offset), offset, "offset is outside of text source");
             SimpleSegment s = NewLineFinder.NextNewLine(text, offset);
             if (s == SimpleSegment.Invalid)
             {

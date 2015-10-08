@@ -7,30 +7,30 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
 {
     public class BracketHighlightRenderer : IBackgroundRenderer
     {
-        private BracketSearchResult result;
-        private Pen borderPen;
-        private Brush backgroundBrush;
-        private TextView textView;
+        BracketSearchResult result;
+        Pen borderPen;
+        Brush backgroundBrush;
+        TextView textView;
 
         public void SetHighlight(BracketSearchResult result)
         {
             if (this.result != result)
             {
                 this.result = result;
-                textView.InvalidateLayer(this.Layer);
+                textView.InvalidateLayer(Layer);
             }
         }
 
         public BracketHighlightRenderer(TextView textView)
         {
             if (textView == null)
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
 
             this.textView = textView;
             this.textView.BackgroundRenderers.Add(this);
 
-            this.borderPen = new Pen(new SolidColorBrush(Color.FromArgb(0xFF, 0x71, 0x0B, 0xCB)), 1);
-            this.backgroundBrush = new SolidColorBrush(Color.FromArgb(0xFF,0x71,0x0B,0xCB));
+            borderPen = new Pen(new SolidColorBrush(Color.FromArgb(0xFF, 0x71, 0x0B, 0xCB)), 1);
+            backgroundBrush = new SolidColorBrush(Color.FromArgb(0xFF,0x71,0x0B,0xCB));
         }
 
         public KnownLayer Layer
@@ -40,7 +40,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Bracket
 
         public void Draw(TextView textView, DrawingContext drawingContext)
         {
-            if (this.result == null)
+            if (result == null)
                 return;
 
             var builder = new BackgroundGeometryBuilder();

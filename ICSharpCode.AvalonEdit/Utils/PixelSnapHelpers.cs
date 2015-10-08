@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static Size GetPixelSize(Visual visual)
         {
             if (visual == null)
-                throw new ArgumentNullException("visual");
+                throw new ArgumentNullException(nameof(visual));
             PresentationSource source = PresentationSource.FromVisual(visual);
             if (source != null)
             {

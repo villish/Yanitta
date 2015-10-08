@@ -26,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static bool CreateCaret(Visual owner, Size size)
         {
             if (owner == null)
-                throw new ArgumentNullException("owner");
+                throw new ArgumentNullException(nameof(owner));
             HwndSource source = PresentationSource.FromVisual(owner) as HwndSource;
             if (source != null)
             {
@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public static bool SetCaretPosition(Visual owner, Point position)
         {
             if (owner == null)
-                throw new ArgumentNullException("owner");
+                throw new ArgumentNullException(nameof(owner));
             HwndSource source = PresentationSource.FromVisual(owner) as HwndSource;
             if (source != null)
             {
@@ -68,7 +68,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         }
 
         [SuppressUnmanagedCodeSecurity]
-        private static class SafeNativeMethods
+        static class SafeNativeMethods
         {
             [DllImport("user32.dll")]
             public static extern int GetCaretBlinkTime();

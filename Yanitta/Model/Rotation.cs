@@ -13,19 +13,19 @@ namespace Yanitta
     [Serializable]
     public class Rotation : ViewModelBase, ICloneable
     {
-        private string name;
+        string name;
         /// <summary>
         /// Наименование ротации.
         /// </summary>
         [XmlAttribute]
         public string Name
         {
-            get { return this.name; }
+            get { return name; }
             set
             {
-                if (this.name != value)
+                if (name != value)
                 {
-                    this.name = value;
+                    name = value;
                     OnPropertyChanged();
                 }
             }
@@ -48,9 +48,9 @@ namespace Yanitta
         /// </summary>
         public Rotation()
         {
-            this.HotKey      = new HotKey();
-            this.AbilityList = new ObservableCollection<Ability>();
-            this.name        = "none";
+            HotKey = new HotKey();
+            AbilityList = new ObservableCollection<Ability>();
+            name = "none";
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(this.Lua); }
-            set { this.Lua = Extensions.GetTrimValue(value); }
+            get { return Extensions.CreateCDataSection(Lua); }
+            set { Lua = Extensions.GetTrimValue(value); }
         }
 
         /// <summary>
@@ -75,12 +75,12 @@ namespace Yanitta
         public object Clone()
         {
             var rotation = new Rotation {
-                Name   = this.Name + " (Копия)",
-                Lua    = this.Lua,
+                Name   = Name + " (Копия)",
+                Lua    = Lua,
                 HotKey = new HotKey(),
             };
 
-            foreach (var ability in this.AbilityList)
+            foreach (var ability in AbilityList)
                 rotation.AbilityList.Add(ability.Clone());
             return rotation;
         }

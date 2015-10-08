@@ -13,7 +13,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         protected override void InsertItem(int index, T item)
         {
             if (item == null)
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             base.InsertItem(index, item);
         }
 
@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         protected override void SetItem(int index, T item)
         {
             if (item == null)
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             base.SetItem(index, item);
         }
     }

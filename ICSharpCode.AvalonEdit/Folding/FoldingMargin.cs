@@ -89,7 +89,7 @@ namespace ICSharpCode.AvalonEdit.Folding
             set { SetValue(SelectedFoldingMarkerBackgroundBrushProperty, value); }
         }
 
-        private static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        static void OnUpdateBrushes(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.Property.Name == FoldingMarkerBrushProperty.Name)
                 foldingControlPen = MakeFrozenPen((Brush)e.NewValue);
@@ -141,9 +141,9 @@ namespace ICSharpCode.AvalonEdit.Folding
             TextViewVisualLinesChanged(null, null);
         }
 
-        private List<FoldingMarginMarker> markers = new List<FoldingMarginMarker>();
+        List<FoldingMarginMarker> markers = new List<FoldingMarginMarker>();
 
-        private void TextViewVisualLinesChanged(object sender, EventArgs e)
+        void TextViewVisualLinesChanged(object sender, EventArgs e)
         {
             foreach (FoldingMarginMarker m in markers)
             {
@@ -191,10 +191,10 @@ namespace ICSharpCode.AvalonEdit.Folding
             return markers[index];
         }
 
-        private static Pen foldingControlPen = MakeFrozenPen((Brush)FoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
-        private static Pen selectedFoldingControlPen = MakeFrozenPen((Brush)SelectedFoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
+        static Pen foldingControlPen = MakeFrozenPen((Brush)FoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
+        static Pen selectedFoldingControlPen = MakeFrozenPen((Brush)SelectedFoldingMarkerBrushProperty.DefaultMetadata.DefaultValue);
 
-        private static Pen MakeFrozenPen(Brush brush)
+        static Pen MakeFrozenPen(Brush brush)
         {
             Pen pen = new Pen(brush, 1);
             pen.Freeze();
@@ -224,7 +224,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// Calculates fold lines for all folding sections that start in front of the current view
         /// and run into the current view.
         /// </summary>
-        private void CalculateFoldLinesForFoldingsActiveAtStart(List<TextLine> allTextLines, Pen[] colors, Pen[] endMarker)
+        void CalculateFoldLinesForFoldingsActiveAtStart(List<TextLine> allTextLines, Pen[] colors, Pen[] endMarker)
         {
             int viewStartOffset = TextView.VisualLines[0].FirstDocumentLine.Offset;
             int viewEndOffset = TextView.VisualLines.Last().LastDocumentLine.EndOffset;
@@ -269,7 +269,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// <summary>
         /// Calculates fold lines for all folding sections that start inside the current view
         /// </summary>
-        private void CalculateFoldLinesForMarkers(List<TextLine> allTextLines, Pen[] colors, Pen[] endMarker)
+        void CalculateFoldLinesForMarkers(List<TextLine> allTextLines, Pen[] colors, Pen[] endMarker)
         {
             foreach (FoldingMarginMarker marker in markers)
             {
@@ -300,7 +300,7 @@ namespace ICSharpCode.AvalonEdit.Folding
         /// Draws the lines for the folding sections (vertical line with 'color', horizontal lines with 'endMarker')
         /// Each entry in the input arrays corresponds to one TextLine.
         /// </summary>
-        private void DrawFoldLines(DrawingContext drawingContext, Pen[] colors, Pen[] endMarker)
+        void DrawFoldLines(DrawingContext drawingContext, Pen[] colors, Pen[] endMarker)
         {
             // Because we are using PenLineCap.Flat (the default), for vertical lines,
             // Y coordinates must be on pixel boundaries, whereas the X coordinate must be in the
@@ -338,13 +338,13 @@ namespace ICSharpCode.AvalonEdit.Folding
             }
         }
 
-        private double GetVisualPos(VisualLine vl, TextLine tl, double pixelHeight)
+        double GetVisualPos(VisualLine vl, TextLine tl, double pixelHeight)
         {
             double pos = vl.GetTextLineVisualYPosition(tl, VisualYPosition.TextMiddle) - TextView.VerticalOffset;
             return PixelSnapHelpers.PixelAlign(pos, pixelHeight);
         }
 
-        private int GetTextLineIndexFromOffset(List<TextLine> textLines, int offset)
+        int GetTextLineIndexFromOffset(List<TextLine> textLines, int offset)
         {
             int lineNumber = TextView.Document.GetLineByOffset(offset).LineNumber;
             VisualLine vl = TextView.GetVisualLine(lineNumber);

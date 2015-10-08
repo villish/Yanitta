@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.Document
             x = column;
         }
 
-        private int x, y;
+        int x, y;
 
         /// <summary>
         /// Gets the line number.
@@ -65,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.Document
         /// </summary>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "(Line {1}, Col {0})", this.x, this.y);
+            return string.Format(CultureInfo.InvariantCulture, "(Line {1}, Col {0})", x, y);
         }
 
         /// <summary>

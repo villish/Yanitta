@@ -12,10 +12,10 @@ namespace Yanitta
     public class HotKey : ViewModelBase
     {
         [XmlIgnore]
-        private Key key;
+        Key key;
 
         [XmlIgnore]
-        private ModifierKeys modifier;
+        ModifierKeys modifier;
 
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace Yanitta
         /// <param name="modifier"></param>
         public HotKey(Key key, ModifierKeys modifier)
         {
-            this.Key = key;
-            this.Modifier = modifier;
+            Key = key;
+            Modifier = modifier;
         }
 
         /// <summary>
@@ -44,12 +44,12 @@ namespace Yanitta
         [NotifyParentProperty(true)]
         public Key Key
         {
-            get { return this.key; }
+            get { return key; }
             set
             {
-                if (this.key != value)
+                if (key != value)
                 {
-                    this.key = value;
+                    key = value;
                     OnPropertyChanged("Key");
                 }
             }
@@ -61,12 +61,12 @@ namespace Yanitta
         [XmlAttribute]
         public ModifierKeys Modifier
         {
-            get { return this.modifier; }
+            get { return modifier; }
             set
             {
-                if (this.Modifier != value)
+                if (Modifier != value)
                 {
-                    this.modifier = value;
+                    modifier = value;
                     OnPropertyChanged("Modifier");
                 }
             }
@@ -78,7 +78,7 @@ namespace Yanitta
         [XmlIgnore]
         public int RawHotKey
         {
-            get { return KeyInterop.VirtualKeyFromKey(this.Key) << 16 | (int)this.Modifier & 0xFFFF; }
+            get { return KeyInterop.VirtualKeyFromKey(Key) << 16 | (int)Modifier & 0xFFFF; }
         }
 
         /// <summary>
@@ -86,19 +86,19 @@ namespace Yanitta
         /// </summary>
         public bool IsEmpty
         {
-            get { return this.Key == Key.None || this.Modifier == ModifierKeys.None; }
+            get { return Key == Key.None || Modifier == ModifierKeys.None; }
         }
 
         [XmlIgnore]
         public bool Control
         {
-            get { return (this.modifier & ModifierKeys.Control) != 0; }
+            get { return (modifier & ModifierKeys.Control) != 0; }
             set
             {
                 if (value)
-                    this.modifier |= ModifierKeys.Control;
+                    modifier |= ModifierKeys.Control;
                 else
-                    this.modifier &= ~ModifierKeys.Control;
+                    modifier &= ~ModifierKeys.Control;
 
                 OnPropertyChanged("Control");
                 OnPropertyChanged("Modifier");
@@ -108,13 +108,13 @@ namespace Yanitta
         [XmlIgnore]
         public bool Shift
         {
-            get { return (this.modifier & ModifierKeys.Shift) != 0; }
+            get { return (modifier & ModifierKeys.Shift) != 0; }
             set
             {
                 if (value)
-                    this.modifier |= ModifierKeys.Shift;
+                    modifier |= ModifierKeys.Shift;
                 else
-                    this.modifier &= ~ModifierKeys.Shift;
+                    modifier &= ~ModifierKeys.Shift;
 
                 OnPropertyChanged("Shift");
                 OnPropertyChanged("Modifier");
@@ -124,13 +124,13 @@ namespace Yanitta
         [XmlIgnore]
         public bool Alt
         {
-            get { return (this.modifier & ModifierKeys.Alt) != 0; }
+            get { return (modifier & ModifierKeys.Alt) != 0; }
             set
             {
                 if (value)
-                    this.modifier |= ModifierKeys.Alt;
+                    modifier |= ModifierKeys.Alt;
                 else
-                    this.modifier &= ~ModifierKeys.Alt;
+                    modifier &= ~ModifierKeys.Alt;
 
                 OnPropertyChanged("Alt");
                 OnPropertyChanged("Modifier");
@@ -140,13 +140,13 @@ namespace Yanitta
         [XmlIgnore]
         public bool Windows
         {
-            get { return (this.modifier & ModifierKeys.Windows) != 0; }
+            get { return (modifier & ModifierKeys.Windows) != 0; }
             set
             {
                 if (value)
-                    this.modifier |= ModifierKeys.Windows;
+                    modifier |= ModifierKeys.Windows;
                 else
-                    this.modifier &= ~ModifierKeys.Windows;
+                    modifier &= ~ModifierKeys.Windows;
 
                 OnPropertyChanged("Windows");
                 OnPropertyChanged("Modifier");
@@ -163,7 +163,7 @@ namespace Yanitta
             if (!(obj is HotKey))
                 return false;
             var mhotKey = obj as HotKey;
-            return (this.Key == mhotKey.Key && this.Modifier == mhotKey.Modifier);
+            return (Key == mhotKey.Key && Modifier == mhotKey.Modifier);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Yanitta
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return this.RawHotKey ^ this.RawHotKey;
+            return RawHotKey ^ RawHotKey;
         }
 
         /// <summary>
@@ -181,16 +181,16 @@ namespace Yanitta
         /// <returns></returns>
         public override string ToString()
         {
-            if (this.Key == Key.None)
+            if (Key == Key.None)
                 return "(Empty)";
 
-            if (this.Modifier == ModifierKeys.None)
-                return this.Key.ToString();
+            if (Modifier == ModifierKeys.None)
+                return Key.ToString();
 
-            var modstr = this.Modifier.ToString()
+            var modstr = Modifier.ToString()
                 .Replace(',', '+')
                 .Replace(" ",  "");
-            return modstr + "+" + this.Key;
+            return modstr + "+" + Key;
         }
     }
 }

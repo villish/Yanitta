@@ -41,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
     [Serializable]
     internal sealed class SimpleHighlightingBrush : HighlightingBrush, ISerializable
     {
-        private readonly SolidColorBrush brush;
+        readonly SolidColorBrush brush;
 
         public SimpleHighlightingBrush(SolidColorBrush brush)
         {
@@ -64,9 +64,9 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             return brush.ToString();
         }
 
-        private SimpleHighlightingBrush(SerializationInfo info, StreamingContext context)
+        SimpleHighlightingBrush(SerializationInfo info, StreamingContext context)
         {
-            this.brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(info.GetString("color")));
+            brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(info.GetString("color")));
             brush.Freeze();
         }
 
@@ -82,7 +82,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
     [Serializable]
     internal sealed class SystemColorHighlightingBrush : HighlightingBrush, ISerializable
     {
-        private readonly PropertyInfo property;
+        readonly PropertyInfo property;
 
         public SystemColorHighlightingBrush(PropertyInfo property)
         {
@@ -101,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
             return property.Name;
         }
 
-        private SystemColorHighlightingBrush(SerializationInfo info, StreamingContext context)
+        SystemColorHighlightingBrush(SerializationInfo info, StreamingContext context)
         {
             property = typeof(SystemColors).GetProperty(info.GetString("propertyName"));
             if (property == null)

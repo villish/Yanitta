@@ -23,7 +23,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         public InsightWindow(TextArea textArea)
             : base(textArea)
         {
-            this.CloseAutomatically = true;
+            CloseAutomatically = true;
             AttachEvents();
         }
 
@@ -32,8 +32,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         {
             base.OnSourceInitialized(e);
 
-            Rect caret = this.TextArea.Caret.CalculateCaretRectangle();
-            Point pointOnScreen = this.TextArea.TextView.PointToScreen(caret.Location - this.TextArea.TextView.ScrollOffset);
+            Rect caret = TextArea.Caret.CalculateCaretRectangle();
+            Point pointOnScreen = TextArea.TextView.PointToScreen(caret.Location - TextArea.TextView.ScrollOffset);
             Rect workingArea = System.Windows.Forms.Screen.FromPoint(pointOnScreen.ToSystemDrawing()).WorkingArea.ToWpf().TransformFromDevice(this);
 
             MaxHeight = workingArea.Height;
@@ -49,27 +49,27 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         /// <inheritdoc/>
         protected override bool CloseOnFocusLost
         {
-            get { return this.CloseAutomatically; }
+            get { return CloseAutomatically; }
         }
 
-        private void AttachEvents()
+        void AttachEvents()
         {
-            this.TextArea.Caret.PositionChanged += CaretPositionChanged;
+            TextArea.Caret.PositionChanged += CaretPositionChanged;
         }
 
         /// <inheritdoc/>
         protected override void DetachEvents()
         {
-            this.TextArea.Caret.PositionChanged -= CaretPositionChanged;
+            TextArea.Caret.PositionChanged -= CaretPositionChanged;
             base.DetachEvents();
         }
 
-        private void CaretPositionChanged(object sender, EventArgs e)
+        void CaretPositionChanged(object sender, EventArgs e)
         {
-            if (this.CloseAutomatically)
+            if (CloseAutomatically)
             {
-                int offset = this.TextArea.Caret.Offset;
-                if (offset < this.StartOffset || offset > this.EndOffset)
+                int offset = TextArea.Caret.Offset;
+                if (offset < StartOffset || offset > EndOffset)
                 {
                     Close();
                 }

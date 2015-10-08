@@ -19,7 +19,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public static Selection Create(TextArea textArea, int startOffset, int endOffset)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             if (startOffset == endOffset)
                 return textArea.emptySelection;
             else
@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         internal static Selection Create(TextArea textArea, TextViewPosition start, TextViewPosition end)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             if (textArea.Document.GetOffset(start.Location) == textArea.Document.GetOffset(end.Location) && start.VisualColumn == end.VisualColumn)
                 return textArea.emptySelection;
             else
@@ -44,7 +44,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         public static Selection Create(TextArea textArea, ISegment segment)
         {
             if (segment == null)
-                throw new ArgumentNullException("segment");
+                throw new ArgumentNullException(nameof(segment));
             return Create(textArea, segment.Offset, segment.EndOffset);
         }
 
@@ -56,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         protected Selection(TextArea textArea)
         {
             if (textArea == null)
-                throw new ArgumentNullException("textArea");
+                throw new ArgumentNullException(nameof(textArea));
             this.textArea = textArea;
         }
 
@@ -100,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             return newText;
         }
 
-        private bool InsertVirtualSpaces(string newText, TextViewPosition start, TextViewPosition end)
+        bool InsertVirtualSpaces(string newText, TextViewPosition start, TextViewPosition end)
         {
             return (!string.IsNullOrEmpty(newText) || !(IsInVirtualSpace(start) && IsInVirtualSpace(end)))
                 && newText != "\r\n"
@@ -108,7 +108,7 @@ namespace ICSharpCode.AvalonEdit.Editing
                 && newText != "\r";
         }
 
-        private bool IsInVirtualSpace(TextViewPosition pos)
+        bool IsInVirtualSpace(TextViewPosition pos)
         {
             return pos.VisualColumn > textArea.TextView.GetOrConstructVisualLine(textArea.Document.GetLineByNumber(pos.Line)).VisualLength;
         }
@@ -158,7 +158,7 @@ namespace ICSharpCode.AvalonEdit.Editing
         {
             get
             {
-                ISegment surroundingSegment = this.SurroundingSegment;
+                ISegment surroundingSegment = SurroundingSegment;
                 if (surroundingSegment == null)
                     return false;
                 int start = surroundingSegment.Offset;
@@ -208,11 +208,11 @@ namespace ICSharpCode.AvalonEdit.Editing
         public string CreateHtmlFragment(HtmlOptions options)
         {
             if (options == null)
-                throw new ArgumentNullException("options");
+                throw new ArgumentNullException(nameof(options));
             IHighlighter highlighter = textArea.GetService(typeof(IHighlighter)) as IHighlighter;
             StringBuilder html = new StringBuilder();
             bool first = true;
-            foreach (ISegment selectedSegment in this.Segments)
+            foreach (ISegment selectedSegment in Segments)
             {
                 if (first)
                     first = false;
@@ -236,11 +236,11 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// otherwise, false.</returns>
         public virtual bool Contains(int offset)
         {
-            if (this.IsEmpty)
+            if (IsEmpty)
                 return false;
-            if (this.SurroundingSegment.Contains(offset))
+            if (SurroundingSegment.Contains(offset))
             {
-                foreach (ISegment s in this.Segments)
+                foreach (ISegment s in Segments)
                 {
                     if (s.Contains(offset))
                     {

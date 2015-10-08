@@ -20,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
         /// </summary>
         public bool? IgnoreCase { get; set; }
 
-        private readonly NullSafeCollection<XshdElement> elements = new NullSafeCollection<XshdElement>();
+        readonly NullSafeCollection<XshdElement> elements = new NullSafeCollection<XshdElement>();
 
         /// <summary>
         /// Gets the collection of elements.

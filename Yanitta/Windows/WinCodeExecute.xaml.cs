@@ -9,17 +9,17 @@ namespace Yanitta.Windows
         {
             InitializeComponent();
 
-            if (this.cbProcess.Items.Count > 0)
-                this.cbProcess.SelectedIndex = 0;
+            if (cbProcess.Items.Count > 0)
+                cbProcess.SelectedIndex = 0;
         }
 
-        private void CommandBinding_Exec_Executed(object sender, ExecutedRoutedEventArgs e)
+        void CommandBinding_Exec_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (!string.IsNullOrWhiteSpace(this.teCode.Text))
+            if (!string.IsNullOrWhiteSpace(teCode.Text))
             {
-                var code = string.IsNullOrWhiteSpace(this.teCode.SelectedText)
-                    ? this.teCode.Text
-                    : this.teCode.SelectedText;
+                var code = string.IsNullOrWhiteSpace(teCode.SelectedText)
+                    ? teCode.Text
+                    : teCode.SelectedText;
                 var process = cbProcess.SelectedValue as WowMemory;
                 if (process != null)
                 {

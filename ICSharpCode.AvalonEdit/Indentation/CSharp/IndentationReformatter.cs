@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
         /// <summary>
         /// An indentation block. Tracks the state of the indentation.
         /// </summary>
-        private struct Block
+        struct Block
         {
             /// <summary>
             /// The indentation outside of the block.
@@ -93,23 +93,23 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
                 return string.Format(
                     CultureInfo.InvariantCulture,
                     "[Block StartLine={0}, LastWord='{1}', Continuation={2}, OneLineBlock={3}, PreviousOneLineBlock={4}]",
-                    this.StartLine, this.LastWord, this.Continuation, this.OneLineBlock, this.PreviousOneLineBlock);
+                    StartLine, LastWord, Continuation, OneLineBlock, PreviousOneLineBlock);
             }
         }
 
-        private StringBuilder wordBuilder;
-        private Stack<Block> blocks; // blocks contains all blocks outside of the current
-        private Block block;  // block is the current block
+        StringBuilder wordBuilder;
+        Stack<Block> blocks; // blocks contains all blocks outside of the current
+        Block block;  // block is the current block
 
-        private bool inString;
-        private bool inChar;
-        private bool verbatim;
-        private bool escape;
+        bool inString;
+        bool inChar;
+        bool verbatim;
+        bool escape;
 
-        private bool lineComment;
-        private bool blockComment;
+        bool lineComment;
+        bool blockComment;
 
-        private char lastRealChar; // last non-comment char
+        char lastRealChar; // last non-comment char
 
         public void Reformat(IDocumentAccessor doc, IndentationSettings set)
         {
@@ -488,7 +488,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
             }
         }
 
-        private static string Repeat(string text, int count)
+        static string Repeat(string text, int count)
         {
             if (count == 0)
                 return string.Empty;
@@ -500,7 +500,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
             return b.ToString();
         }
 
-        private static bool IsSingleStatementKeyword(string keyword)
+        static bool IsSingleStatementKeyword(string keyword)
         {
             switch (keyword)
             {
@@ -518,7 +518,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
             }
         }
 
-        private static bool TrimEnd(IDocumentAccessor doc)
+        static bool TrimEnd(IDocumentAccessor doc)
         {
             string line = doc.Text;
             if (!Char.IsWhiteSpace(line[line.Length - 1])) return false;

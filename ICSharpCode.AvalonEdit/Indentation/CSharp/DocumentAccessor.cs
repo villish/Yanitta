@@ -29,9 +29,9 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
     /// </summary>
     public sealed class TextDocumentAccessor : IDocumentAccessor
     {
-        private readonly TextDocument doc;
-        private readonly int minLine;
-        private readonly int maxLine;
+        readonly TextDocument doc;
+        readonly int minLine;
+        readonly int maxLine;
 
         /// <summary>
         /// Creates a new TextDocumentAccessor.
@@ -39,10 +39,10 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
         public TextDocumentAccessor(TextDocument document)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             doc = document;
-            this.minLine = 1;
-            this.maxLine = doc.LineCount;
+            minLine = 1;
+            maxLine = doc.LineCount;
         }
 
         /// <summary>
@@ -51,15 +51,15 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
         public TextDocumentAccessor(TextDocument document, int minLine, int maxLine)
         {
             if (document == null)
-                throw new ArgumentNullException("document");
+                throw new ArgumentNullException(nameof(document));
             doc = document;
             this.minLine = minLine;
             this.maxLine = maxLine;
         }
 
-        private int num;
-        private string text;
-        private DocumentLine line;
+        int num;
+        string text;
+        DocumentLine line;
 
         /// <inheritdoc/>
         public bool IsReadOnly { get { return num < minLine; } }
@@ -67,7 +67,7 @@ namespace ICSharpCode.AvalonEdit.Indentation.CSharp
         /// <inheritdoc/>
         public int LineNumber { get { return num; } }
 
-        private bool lineDirty;
+        bool lineDirty;
 
         /// <inheritdoc/>
         public string Text

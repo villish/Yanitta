@@ -8,9 +8,9 @@ namespace ICSharpCode.AvalonEdit.Utils
     /// </summary>
     public struct StringSegment : IEquatable<StringSegment>
     {
-        private readonly string text;
-        private readonly int offset;
-        private readonly int count;
+        readonly string text;
+        readonly int offset;
+        readonly int count;
 
         /// <summary>
         /// Creates a new StringSegment.
@@ -18,11 +18,11 @@ namespace ICSharpCode.AvalonEdit.Utils
         public StringSegment(string text, int offset, int count)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             if (offset < 0 || offset > text.Length)
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             if (offset + count > text.Length)
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             this.text = text;
             this.offset = offset;
             this.count = count;
@@ -34,10 +34,10 @@ namespace ICSharpCode.AvalonEdit.Utils
         public StringSegment(string text)
         {
             if (text == null)
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             this.text = text;
-            this.offset = 0;
-            this.count = text.Length;
+            offset = 0;
+            count = text.Length;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Utils
         public bool Equals(StringSegment other)
         {
             // add comparisions for all members here
-            return object.ReferenceEquals(this.text, other.text) && offset == other.offset && count == other.count;
+            return object.ReferenceEquals(text, other.text) && offset == other.offset && count == other.count;
         }
 
         /// <inheritdoc/>

@@ -16,15 +16,15 @@ namespace ICSharpCode.AvalonEdit.Editing
     /// </summary>
     public sealed class Caret
     {
-        private readonly TextArea textArea;
-        private readonly TextView textView;
-        private readonly CaretLayer caretAdorner;
-        private bool visible;
+        readonly TextArea textArea;
+        readonly TextView textView;
+        readonly CaretLayer caretAdorner;
+        bool visible;
 
         internal Caret(TextArea textArea)
         {
             this.textArea = textArea;
-            this.textView = textArea.TextView;
+            textView = textArea.TextView;
             position = new TextViewPosition(1, 1, 0);
 
             caretAdorner = new CaretLayer(textView);
@@ -33,7 +33,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             textView.ScrollOffsetChanged += TextView_ScrollOffsetChanged;
         }
 
-        private void TextView_VisualLinesChanged(object sender, EventArgs e)
+        void TextView_VisualLinesChanged(object sender, EventArgs e)
         {
             if (visible)
             {
@@ -45,7 +45,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             InvalidateVisualColumn();
         }
 
-        private void TextView_ScrollOffsetChanged(object sender, EventArgs e)
+        void TextView_ScrollOffsetChanged(object sender, EventArgs e)
         {
             if (caretAdorner != null)
             {
@@ -53,8 +53,8 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private double desiredXPos = double.NaN;
-        private TextViewPosition position;
+        double desiredXPos = double.NaN;
+        TextViewPosition position;
 
         /// <summary>
         /// Gets/Sets the position of the caret.
@@ -111,7 +111,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
             set
             {
-                this.Position = new TextViewPosition(value);
+                Position = new TextViewPosition(value);
             }
         }
 
@@ -123,7 +123,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             get { return position.Line; }
             set
             {
-                this.Position = new TextViewPosition(value, position.Column);
+                Position = new TextViewPosition(value, position.Column);
             }
         }
 
@@ -135,7 +135,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             get { return position.Column; }
             set
             {
-                this.Position = new TextViewPosition(position.Line, value);
+                Position = new TextViewPosition(position.Line, value);
             }
         }
 
@@ -151,11 +151,11 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
             set
             {
-                this.Position = new TextViewPosition(position.Line, position.Column, value);
+                Position = new TextViewPosition(position.Line, position.Column, value);
             }
         }
 
-        private bool isInVirtualSpace;
+        bool isInVirtualSpace;
 
         /// <summary>
         /// Gets whether the caret is in virtual space.
@@ -169,11 +169,11 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private int storedCaretOffset;
+        int storedCaretOffset;
 
         internal void OnDocumentChanging()
         {
-            storedCaretOffset = this.Offset;
+            storedCaretOffset = Offset;
             InvalidateVisualColumn();
         }
 
@@ -187,7 +187,7 @@ namespace ICSharpCode.AvalonEdit.Editing
                 if (document != null)
                 {
                     // keep visual column
-                    this.Position = new TextViewPosition(document.GetLocation(newCaretOffset), position.VisualColumn);
+                    Position = new TextViewPosition(document.GetLocation(newCaretOffset), position.VisualColumn);
                 }
             }
             storedCaretOffset = -1;
@@ -208,8 +208,8 @@ namespace ICSharpCode.AvalonEdit.Editing
                 TextDocument document = textArea.Document;
                 if (document != null)
                 {
-                    this.Position = new TextViewPosition(document.GetLocation(value));
-                    this.DesiredXPos = double.NaN;
+                    Position = new TextViewPosition(document.GetLocation(value));
+                    DesiredXPos = double.NaN;
                 }
             }
         }
@@ -224,7 +224,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             set { desiredXPos = value; }
         }
 
-        private void ValidatePosition()
+        void ValidatePosition()
         {
             if (position.Line < 1)
                 position.Line = 1;
@@ -260,9 +260,9 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// </summary>
         public event EventHandler PositionChanged;
 
-        private bool raisePositionChangedOnUpdateFinished;
+        bool raisePositionChangedOnUpdateFinished;
 
-        private void RaisePositionChanged()
+        void RaisePositionChanged()
         {
             if (textArea.Document != null && textArea.Document.IsInUpdate)
             {
@@ -288,9 +288,9 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private bool visualColumnValid;
+        bool visualColumnValid;
 
-        private void ValidateVisualColumn()
+        void ValidateVisualColumn()
         {
             if (!visualColumnValid)
             {
@@ -304,7 +304,7 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private void InvalidateVisualColumn()
+        void InvalidateVisualColumn()
         {
             visualColumnValid = false;
         }
@@ -313,10 +313,10 @@ namespace ICSharpCode.AvalonEdit.Editing
         /// Validates the visual column of the caret using the specified visual line.
         /// The visual line must contain the caret offset.
         /// </summary>
-        private void RevalidateVisualColumn(VisualLine visualLine)
+        void RevalidateVisualColumn(VisualLine visualLine)
         {
             if (visualLine == null)
-                throw new ArgumentNullException("visualLine");
+                throw new ArgumentNullException(nameof(visualLine));
 
             // mark column as validated
             visualColumnValid = true;
@@ -376,12 +376,12 @@ namespace ICSharpCode.AvalonEdit.Editing
                         newOffset = newOffsetForwards;
                     }
                 }
-                this.Position = new TextViewPosition(textView.Document.GetLocation(newOffset), newVisualColumn);
+                Position = new TextViewPosition(textView.Document.GetLocation(newOffset), newVisualColumn);
             }
             isInVirtualSpace = (position.VisualColumn > visualLine.VisualLength);
         }
 
-        private Rect CalcCaretRectangle(VisualLine visualLine)
+        Rect CalcCaretRectangle(VisualLine visualLine)
         {
             if (!visualColumnValid)
             {
@@ -389,8 +389,8 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
 
             TextLine textLine = visualLine.GetTextLine(position.VisualColumn);
-            double xPos       = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
-            double lineTop    = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
+            double xPos = visualLine.GetTextLineVisualXPosition(textLine, position.VisualColumn);
+            double lineTop = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextTop);
             double lineBottom = visualLine.GetTextLineVisualYPosition(textLine, VisualYPosition.TextBottom);
 
             return new Rect(xPos, lineTop, SystemParameters.CaretWidth, lineBottom - lineTop);
@@ -448,10 +448,10 @@ namespace ICSharpCode.AvalonEdit.Editing
             }
         }
 
-        private bool showScheduled;
-        private bool hasWin32Caret;
+        bool showScheduled;
+        bool hasWin32Caret;
 
-        private void ShowInternal()
+        void ShowInternal()
         {
             showScheduled = false;
 
