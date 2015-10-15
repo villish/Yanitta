@@ -150,7 +150,7 @@ namespace ICSharpCode.AvalonEdit
 
         void TextViewMouseHover(object sender, MouseEventArgs e)
         {
-            TextViewPosition? position = TextArea.TextView.GetPosition(
+            var position = TextArea.TextView.GetPosition(
                                         e.GetPosition(TextArea.TextView)
                                         + TextArea.TextView.ScrollOffset
                                         );
@@ -320,7 +320,7 @@ namespace ICSharpCode.AvalonEdit
         ///
         /// </summary>
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(TextEditor),
-            new PropertyMetadata(string.Empty, TextEditor.OnTextPropertyTextChanged));
+            new PropertyMetadata(string.Empty, OnTextPropertyTextChanged));
 
         private static void OnTextPropertyTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
