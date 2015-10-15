@@ -11110,6 +11110,7 @@ return true;
       </Ability>
     </Rotation>
   </Profile>
+  <Profile Class="DeamonHunter" />
   <Profile Class="None">
     <Rotation Name="Малигос">
       <HotKey Key="M" Modifier="Alt Shift" />

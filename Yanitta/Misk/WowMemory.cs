@@ -60,7 +60,7 @@ namespace Yanitta
         bool isInGame;
 
         /// <summary>
-        /// Текущий процесс <see cref="Yanitta.ProcessMemory"/>
+        /// Текущий процесс <see cref="ProcessMemory"/>
         /// </summary>
         public ProcessMemory Memory { get; private set; }
 
@@ -75,16 +75,14 @@ namespace Yanitta
         /// </summary>
         public int ProcessId
         {
-            get { return Memory == null ? 0 : Memory.Process.Id; }
+            get { return Memory?.Process?.Id ?? 0; }
         }
 
         public string ProcessName
         {
             get
             {
-                return string.Format("{0}_{1}",
-                    Memory.Process.ProcessName,
-                    Memory.Process.MainModule.FileVersionInfo.FilePrivatePart);
+                return $"{Memory.Process.ProcessName}_{Memory.Process.MainModule.FileVersionInfo.FilePrivatePart}";
             }
         }
 
@@ -159,9 +157,7 @@ namespace Yanitta
             if (process == null)
                 throw new ArgumentNullException(nameof(process));
 
-            var section = string.Format("{0}_{1}",
-                process.ProcessName,
-                process.MainModule.FileVersionInfo.FilePrivatePart);
+            var section = $"{process.ProcessName}_{process.MainModule.FileVersionInfo.FilePrivatePart}";
 
             Offsets = new Offsets(section);
             if (Offsets == null)
@@ -342,12 +338,9 @@ namespace Yanitta
                 UnhookWindowsHookEx(keyboardHook);
             KeyBoardProck = null;
 
-            if (Memory != null && !Memory.Process.HasExited)
+            if (IsInGame && Memory?.Process?.HasExited == true)
             {
-                if (IsInGame && Memory != null)
-                {
-                    LuaExecute(StopCode);
-                }
+                LuaExecute(StopCode);
             }
 
             keyboardHook = IntPtr.Zero;

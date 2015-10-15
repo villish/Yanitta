@@ -128,10 +128,6 @@
   <ItemGroup>
     <Compile Include="CodeCompletion\WowApi.cs" />
     <Compile Include="CodeCompletion\IntelliSienceManager.cs" />
-    <Compile Include="DragDrop\DragDropHelperControl.cs" />
-    <Compile Include="DragDrop\DragDropHelper.cs" />
-    <Compile Include="DragDrop\DraggedAdorner.cs" />
-    <Compile Include="DragDrop\InsertionAdorner.cs" />
     <Compile Include="Highlighting\Bracket\BracketHighlightRenderer.cs" />
     <Compile Include="Highlighting\Bracket\BracketSearcher.cs" />
     <Compile Include="Highlighting\Bracket\BracketSearchResult.cs" />
@@ -378,11 +374,5 @@
     <Resource Include="Images\Paste.png" />
     <Resource Include="Images\Redo.png" />
     <Resource Include="Images\Undo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="DragDrop\Generic.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
 </Project>

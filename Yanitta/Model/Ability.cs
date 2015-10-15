@@ -95,6 +95,7 @@ namespace Yanitta
         /// <returns></returns>
         public override string ToString()
         {
+            var T = "    ";
             // переменные
             //var target            = this.Target.ToString().ToLower();
             var cancelChannel     = CancelChannel.ToString().ToLower();
@@ -104,24 +105,26 @@ namespace Yanitta
             var isMovingCheck     = IsMovingCheck.ToString().ToLower();
             var name              = Name.Replace("\"", @"\""");
 
+            // targets
+            var targetList = string.Join($",\n{T + T + T}",
+                TargetList.OrderBy(n => n).Select(n =>
+                    $"{{ Target = \"{n.ToString().ToLower()}\" }}"));
+
             // код
             var lua = string.IsNullOrWhiteSpace(Lua) ? "return false;" : Lua;
+            var funcContent = string.Join($"\n{T + T + T}",
+                lua.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
 
             var builder = new StringBuilder();
-            builder.AppendFormatLine("    {{   SpellId = {0,6}, Name = \"{1}\",", SpellID, name);
-            builder.AppendFormatLine("        IsMovingCheck     = \"{0}\",", isMovingCheck);
-            builder.AppendFormatLine("        RecastDelay       = {0},", RecastDelay);
-            builder.AppendFormatLine("        DropChanel        = {0},",     cancelChannel);
-            builder.AppendFormatLine("        CancelCasting     = {0},",     cancelCasting);
-            builder.AppendFormatLine("        IsCheckInCombat   = {0},",     isUseIncombat);
-            builder.AppendFormatLine("        IsUsableCheck     = {0},",     isUsableCheck);
-
-            builder.AppendFormatLine("        TargetList = {{\n            {0}\n        }},",
-                string.Join(",\n            ", TargetList.OrderBy(n => n).Select(n =>
-                    string.Format("{{ Target = \"{0}\" }}", n.ToString().ToLower()))));
-
-            builder.AppendFormatLine("        Func = function(ability, targetInfo, target)\n            {0}\n        end",
-                string.Join("\n            ", lua.Split(new [] {'\r','\n'}, StringSplitOptions.RemoveEmptyEntries)));
+            builder.AppendLine($"    {{   SpellId = {SpellID,6}, Name = \"{name}\",");
+            builder.AppendLine($"        IsMovingCheck     = \"{isMovingCheck}\",");
+            builder.AppendLine($"        RecastDelay       = {RecastDelay},");
+            builder.AppendLine($"        DropChanel        = {cancelChannel},");
+            builder.AppendLine($"        CancelCasting     = {cancelCasting},");
+            builder.AppendLine($"        IsCheckInCombat   = {isUseIncombat},");
+            builder.AppendLine($"        IsUsableCheck     = {isUsableCheck},");
+            builder.AppendLine($"        TargetList = {{\n{T + T + T}{targetList}\n{T + T}}},");
+            builder.AppendLine($"        Func = function(ability, targetInfo, target)\n{T + T + T}{funcContent}\n{T + T}end");
             builder.Append("    }");
 
             return builder.ToString();

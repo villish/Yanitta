@@ -429,4 +429,7 @@
   <data name="RecastDelayToolTip" xml:space="preserve">
     <value>Delay your next spell of the same in the same target in seconds.</value>
   </data>
+  <data name="WowClass_DeamonHunter" xml:space="preserve">
+    <value>Deamon Hunter</value>
+  </data>
 </root>

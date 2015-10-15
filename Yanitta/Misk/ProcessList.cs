@@ -18,7 +18,7 @@ namespace Yanitta
         DispatcherTimer refreshTimer;
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Yanitta.ProcessList"/>
+        /// Инициализирует новый экземпляр класса <see cref="ProcessList"/>
         /// </summary>
         public ProcessList()
             : base()

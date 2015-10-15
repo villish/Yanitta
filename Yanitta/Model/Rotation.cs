@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -13,7 +11,7 @@ namespace Yanitta
     [Serializable]
     public class Rotation : ViewModelBase, ICloneable
     {
-        string name;
+        string name = "none";
         /// <summary>
         /// Наименование ротации.
         /// </summary>
@@ -41,17 +39,7 @@ namespace Yanitta
         /// Горячие клавиши для управления ротацией.
         /// </summary>
         [XmlElement]
-        public HotKey HotKey { get; set; }
-
-        /// <summary>
-        /// Создает новый экземпляр класс <see cref="Yanitta.Rotation"/>.
-        /// </summary>
-        public Rotation()
-        {
-            HotKey = new HotKey();
-            AbilityList = new ObservableCollection<Ability>();
-            name = "none";
-        }
+        public HotKey HotKey { get; set; } = new HotKey();
 
         /// <summary>
         /// [not used] use for serialization.
@@ -67,7 +55,7 @@ namespace Yanitta
         /// Список способностей в порядке их приоритета.
         /// </summary>
         [XmlElement("Ability")]
-        public ObservableCollection<Ability> AbilityList { get; set; }
+        public ObservableCollection<Ability> AbilityList { get; set; } = new ObservableCollection<Ability>();
 
         /// <summary>
         /// Создает новый экземпляр класса с текщими значениями.

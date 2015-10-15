@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 
-using System.Text;
-
 namespace ICSharpCode.AvalonEdit.Utils
 {
     // Class used to represent a node in the tree.

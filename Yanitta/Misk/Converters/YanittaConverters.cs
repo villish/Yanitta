@@ -16,9 +16,11 @@ namespace Yanitta
             if (value == null || !(value is WowClass))
                 return Binding.DoNothing;
 
-            var name = (WowClass)value == (WowClass)(byte)0 ? "None" : value.ToString();
-            var path = string.Format(@"pack://application:,,,/Yanitta;component/Resources/{0}.png", name);
-            return new BitmapImage(new Uri(path));
+            var img = Application.Current.TryFindResource(value.ToString()) as Image;
+            if (img == null)
+                img = Application.Current.TryFindResource("None") as Image;
+
+            return new BitmapImage(new Uri(img.Source.ToString()));
         }
     }
 
@@ -32,7 +34,7 @@ namespace Yanitta
                 return Binding.DoNothing;
 
             var name = string.Format("{0}_{1}", value.GetType().Name, value);
-            if (parameter is string && !string.IsNullOrWhiteSpace((string)parameter))
+            if (parameter != null && parameter is string && !string.IsNullOrWhiteSpace((string)parameter))
                 name += "_" + parameter;
             return Localization.ResourceManager.GetString(name, CultureInfo.CurrentUICulture);
         }
