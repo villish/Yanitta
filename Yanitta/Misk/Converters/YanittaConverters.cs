@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -17,20 +16,11 @@ namespace Yanitta
             if (value == null || !(value is WowClass))
                 return Binding.DoNothing;
 
-           // App.GetResourceStream()
+            var img = Application.Current.TryFindResource(value.ToString()) as Image;
+            if (img == null)
+                img = Application.Current.TryFindResource("None") as Image;
 
-            var name = (WowClass)value == (WowClass)(byte)0 ? "None" : value.ToString();
-            var path = string.Format(@"pack://application:,,,/Yanitta;component/Resources/{0}.png", name);
-            var asm  = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-            try
-            {
-                return new BitmapImage(new Uri(path));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return new BitmapImage(new Uri(@"pack://application:,,,/Yanitta;component/Resources/None.png"));
-            }
+            return new BitmapImage(new Uri(img.Source.ToString()));
         }
     }
 

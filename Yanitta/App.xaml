@@ -45,6 +45,20 @@
                     <Image Width="20" x:Key="AddIcon"    Source="/Resources/Add.png" />
                     <Image Width="20" x:Key="CopyIcon"   Source="/Resources/Clipboard.png" />
                     <Image Width="20" x:Key="DeleteIcon" Source="/Resources/Denided.png" />
+
+                    <Image x:Key="None"         Source="/Resources/None.png" />
+                    <Image x:Key="Warrior"      Source="/Resources/Warrior.png" />
+                    <Image x:Key="Paladin"      Source="/Resources/Paladin.png" />
+                    <Image x:Key="Hunter"       Source="/Resources/Hunter.png" />
+                    <Image x:Key="Rogue"        Source="/Resources/Rogue.png" />
+                    <Image x:Key="Priest"       Source="/Resources/Priest.png" />
+                    <Image x:Key="DeathKnight"  Source="/Resources/DeathKnight.png" />
+                    <Image x:Key="Shaman"       Source="/Resources/Shaman.png" />
+                    <Image x:Key="Mage"         Source="/Resources/Mage.png" />
+                    <Image x:Key="Warlock"      Source="/Resources/Warlock.png" />
+                    <Image x:Key="Monk"         Source="/Resources/Monk.png" />
+                    <Image x:Key="Druid"        Source="/Resources/Druid.png" />
+                    <!--<Image x:Key="DeamonHunter" Source="/Resources/DeamonHunter.png" />-->
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
