@@ -34,20 +34,12 @@ namespace Yanitta
         /// Список профилей.
         /// </summary>
         [XmlElement("Profile")]
-        public ObservableCollection<Profile> ProfileList { get; set; }
+        public ObservableCollection<Profile> ProfileList { get; set; } = new ObservableCollection<Profile>();
 
         /// <summary>
         /// Текущий экземпляр базы данных.
         /// </summary>
         public static ProfileDb Instance { get; set; }
-
-        /// <summary>
-        /// Инициализирует новый экземпляр объекта <see cref="Yanitta.ProfileDb"/>
-        /// </summary>
-        public ProfileDb()
-        {
-            ProfileList = new ObservableCollection<Profile>();
-        }
 
         /// <summary>
         /// Возвращает профиль для указанного класса.
@@ -68,7 +60,7 @@ namespace Yanitta
         {
             try
             {
-                XmlManager.Save(Settings.Default.ProfilesFileName, ProfileDb.Instance);
+                XmlManager.Save(Settings.Default.ProfilesFileName, Instance);
                 Console.WriteLine("Profiles Saved!");
             }
             catch (Exception ex)

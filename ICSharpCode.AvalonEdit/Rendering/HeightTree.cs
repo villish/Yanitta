@@ -3,7 +3,6 @@ using ICSharpCode.AvalonEdit.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {

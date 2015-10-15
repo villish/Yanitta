@@ -22,7 +22,7 @@ namespace Yanitta
 
         public IEnumerable<Ability> SelectedAbilitys
         {
-            get { return cbRotation.SelectedValue<Rotation>().AbilityList.Where(a => a.IsChecked); }
+            get { return (cbRotation?.SelectedValue as Rotation)?.AbilityList?.Where(a => a.IsChecked); }
         }
 
         void CommandBinding_Copy_Executed(object sender, ExecutedRoutedEventArgs e)

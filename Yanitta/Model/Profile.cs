@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -39,14 +37,6 @@ namespace Yanitta
         /// Список ротаций профиля.
         /// </summary>
         [XmlElement("Rotation")]
-        public ObservableCollection<Rotation> RotationList { get; set; }
-
-        /// <summary>
-        /// Создает новый экземпляр класса <see cref="Yanitta.Profile"/>
-        /// </summary>
-        public Profile()
-        {
-            RotationList = new ObservableCollection<Rotation>();
-        }
+        public ObservableCollection<Rotation> RotationList { get; set; } = new ObservableCollection<Rotation>();
     }
 }

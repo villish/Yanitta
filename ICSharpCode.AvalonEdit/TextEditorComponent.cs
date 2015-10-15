@@ -1,6 +1,4 @@
 ﻿using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Rendering;
 using System;
 using System.ComponentModel;
 

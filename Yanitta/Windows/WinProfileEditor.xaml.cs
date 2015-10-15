@@ -21,17 +21,17 @@ namespace Yanitta
 
         Profile CurrentProfile
         {
-            get { return profiLeList.SelectedValue<Profile>(); }
+            get { return profiLeList?.SelectedValue as Profile; }
         }
 
         Rotation CurrentRotation
         {
-            get { return rotationList.SelectedValue<Rotation>(); }
+            get { return rotationList?.SelectedValue as Rotation; }
         }
 
         Ability CurrentAbility
         {
-            get { return abilityList.SelectedValue<Ability>(); }
+            get { return abilityList?.SelectedValue as Ability; }
         }
 
         void InitialiseEmptyProfiles()
