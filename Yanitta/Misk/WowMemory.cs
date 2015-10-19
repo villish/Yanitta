@@ -127,7 +127,7 @@ namespace Yanitta
                     Class = value ? (WowClass)Memory.Read<byte>(Memory.Rebase(Offsets.PlayerClass)) : WowClass.None;
                     Name = value ? Memory.ReadString(Memory.Rebase(Offsets.PlayerName)) : string.Empty;
 
-                    if (Class < WowClass.None || Class > WowClass.Druid)
+                    if (Class < WowClass.None || !Enum.IsDefined(typeof(WowClass), Class))
                         throw new Exception("Unsuported wow class: " + Class);
 
                     ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
