@@ -157,7 +157,7 @@ namespace Yanitta
 
             Offsets = new Offsets(section);
             if (Offsets == null)
-                throw new NullReferenceException(string.Format("Current game version ({0}) not supported!", section));
+                throw new NullReferenceException($"Current game version ({section}) not supported!");
 
             Memory = new ProcessMemory(process);
 
@@ -194,12 +194,9 @@ namespace Yanitta
                     //Debug.WriteLine("[{3}] Mod: {0}, Key: {1} ({2})", Keyboard.Modifiers, key, VkCode, nCode);
                     foreach (var rotation in Rotations)
                     {
-                        if (rotation.HotKey.Modifier == Keyboard.Modifiers
-                            && rotation.HotKey.Key == key)
+                        if (rotation.HotKey.Modifier == Keyboard.Modifiers && rotation.HotKey.Key == key)
                         {
-                            Console.WriteLine("Процесс: [{0}] {1} <{2}> Запуск ротации \"{3}\" ({4})",
-                                ProcessId, Class, Name, rotation.Name, rotation.HotKey);
-
+                            Console.WriteLine($"Process: [{ProcessId}] {Class} <{Name}> Start rotation: \"{rotation.Name}\" ({rotation.HotKey})");
                             ExecuteProfile(rotation);
                             return (IntPtr)1;
                         }
@@ -241,7 +238,7 @@ namespace Yanitta
             builder.AppendLine(ProfileDb.Instance.Lua);
             builder.AppendLine();
 
-            builder.AppendFormatLine($"ABILITY_TABLE = {{\n{string.Join(",\n", rotation.AbilityList)}\n}};");
+            builder.AppendLine($"ABILITY_TABLE = {{\n{string.Join(",\n", rotation.AbilityList)}\n}};");
             builder.AppendLine();
 
             builder.AppendLine(ProfileDb.Instance[Class].Lua);
@@ -251,10 +248,10 @@ namespace Yanitta
             builder.AppendLine(rotation.Lua);
             builder.AppendLine();
 
-            builder.AppendFormatLine(@"DebugMode = {0};", Settings.Default.DebugMode.ToString().ToLower());
+            builder.AppendLine($"DebugMode = {Settings.Default.DebugMode.ToString().ToLower()};");
             // Запуск ротации
-            builder.AppendFormatLine("assert(type(ChangeRotation) == \"function\", 'Не найдена функция \"ChangeRotation\"');");
-            builder.AppendFormatLine($"ChangeRotation(\"{rotation.Name}\");");
+            builder.AppendLine("assert(type(ChangeRotation) == \"function\", 'Не найдена функция \"ChangeRotation\"');");
+            builder.AppendLine($"ChangeRotation(\"{rotation.Name}\");");
 
             var code = builder.ToString();
 
