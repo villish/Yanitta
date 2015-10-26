@@ -308,19 +308,61 @@ PartyLogic = {
     MAIN_CLASS_SPELL = 0,
 
     MAIN_CLASS_SPELL_TABLE = {
-        WARRIOR     = { Range = 0,   Meele = 0 },   --
-        PALADIN     = { Range = 0,   Meele = 0 },   --
-        HUNTER      = { Range = 0,   Meele = 0 },   --
-        ROGUE       = { Range = 0,   Meele = 0 },   --
-        PRIEST      = { Range = 2061,Meele = 0 },   -- Исцеление
-        DEATHKNIGHT = { Range = 0,   Meele = 0 },   --
-        SHAMAN      = { Range = 8004,Meele = 0 },   -- Исцеляющий сплеск
-        MAGE        = { Range = 0,   Meele = 0 },   --
-        WARLOCK     = { Range = 0,   Meele = 0 },   --
-        MONK        = { Range = 0,   Meele = 0 },   --
-        DRUID       = { Range = 774, Meele = 0 },   -- Омоложение
+        -- Death Knight
+        [250] = { Range = 0, Meele = 49998 }, -- Blood
+        [251] = { Range = 0, Meele = 0 }, -- Frost
+        [252] = { Range = 0, Meele = 0 }, -- Unholy
+        -- Druid
+        [102] = { Range = 744, Meele = 0 }, -- Balance
+        [103] = { Range = 744, Meele = 0 }, -- Feral Combat
+        [104] = { Range = 744, Meele = 0 }, -- Guardian
+        [105] = { Range = 744, Meele = 0 }, -- Restoration
+        -- Hunter
+        [253] = { Range = 0, Meele = 0 }, -- Beast Mastery
+        [254] = { Range = 0, Meele = 0 }, -- Marksmanship
+        [255] = { Range = 0, Meele = 0 }, -- Survival
+        -- Mage
+        [062] = { Range = 0, Meele = 0 }, -- Arcane
+        [063] = { Range = 0, Meele = 0 }, -- Fire
+        [064] = { Range = 0, Meele = 0 }, -- Frost
+        -- Monk
+        [268] = { Range = 0, Meele = 0 }, -- Brewmaster
+        [269] = { Range = 0, Meele = 0 }, -- Windwalker
+        [270] = { Range = 0, Meele = 0 }, -- Mistweaver
+        -- Paladin
+        [065] = { Range = 19750, Meele = 0 }, -- Holy
+        [066] = { Range = 0, Meele = 35395 }, -- Protection
+        [070] = { Range = 0, Meele = 35395 }, -- Retribution
+        -- Priest
+        [256] = { Range = 2061, Meele = 0 }, -- Discipline
+        [257] = { Range = 2061, Meele = 0 }, -- Holy
+        [258] = { Range = 589, Meele = 0 }, -- Shadow
+        -- Rogue
+        [259] = { Range = 0, Meele = 0 }, -- Assassination
+        [260] = { Range = 0, Meele = 0 }, -- Combat
+        [261] = { Range = 0, Meele = 0 }, -- Subtlety
+        -- Shaman
+        [262] = { Range = 8004, Meele = 0 }, -- Elemental
+        [263] = { Range = 8004, Meele = 0 }, -- Enhancement
+        [264] = { Range = 8004, Meele = 0 }, -- Restoration
+        -- Warlock
+        [265] = { Range = 0, Meele = 0 }, -- Affliction
+        [266] = { Range = 0, Meele = 0 }, -- Demonology
+        [267] = { Range = 0, Meele = 0 }, -- Destruction
+        -- Warrior
+        [071] = { Range = 0, Meele = 0 }, -- Arms
+        [072] = { Range = 0, Meele = 0 }, -- Fury
+        [073] = { Range = 0, Meele = 0 }, -- Protection
+
+        -- Deamon Hunter
+        -- [0] = { Range = 0, Meele = 0 },
+        -- [0] = { Range = 0, Meele = 0 },
+        -- [0] = { Range = 0, Meele = 0 },
         GetMainClassSpell = function(self)
-            return self[select(2, UnitClass("player"))];
+            local currentSpec = GetSpecialization();
+            local currentSpecId = currentSpec and GetSpecializationInfo(currentSpec);
+            return self[currentSpecId]
+                    or { Range = 0, Meele = 0 }; -- dummy
         end
     },
 
