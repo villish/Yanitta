@@ -125,16 +125,12 @@ namespace Yanitta
                     OnPropertyChanged("IsInGame");
 
                     Class = value ? (WowClass)Memory.Read<byte>(Memory.Rebase(Offsets.PlayerClass)) : WowClass.None;
-                    Name = value ? Memory.ReadString(Memory.Rebase(Offsets.PlayerName)) : string.Empty;
+                    Name  = value ? Memory.ReadString(Memory.Rebase(Offsets.PlayerName)) : string.Empty;
 
-                    if (Class < WowClass.None || Class > WowClass.Druid)
+                    if (!Enum.IsDefined(typeof(WowClass), Class))
                         throw new Exception("Unsuported wow class: " + Class);
 
-                    ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged -= OnRotationListChange;
-                    ProfileDb.Instance[WowClass.None].RotationList.CollectionChanged += OnRotationListChange;
-
-                    ProfileDb.Instance[Class].RotationList.CollectionChanged -= OnRotationListChange;
-                    ProfileDb.Instance[Class].RotationList.CollectionChanged += OnRotationListChange;
+                    ProfileDb.Instance.SetNotifyer(Class, OnRotationListChange);
 
                     OnPropertyChanged("Class");
                     OnPropertyChanged("Name");
