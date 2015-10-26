@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
@@ -49,6 +50,24 @@ namespace Yanitta
         public Profile this[WowClass wowClass]
         {
             get { return ProfileList.FirstOrDefault(n => n.Class == wowClass); }
+        }
+
+        public void SetNotifyer(WowClass wowClass, NotifyCollectionChangedEventHandler eventHandler)
+        {
+            if (ProfileList.Any(n => n.Class == WowClass.None))
+            {
+                this[WowClass.None].RotationList.CollectionChanged -= eventHandler;
+                this[WowClass.None].RotationList.CollectionChanged += eventHandler;
+            }
+
+            if (wowClass != WowClass.None)
+            {
+                if (ProfileList.Any(n => n.Class == wowClass))
+                {
+                    this[wowClass].RotationList.CollectionChanged -= eventHandler;
+                    this[wowClass].RotationList.CollectionChanged += eventHandler;
+                }
+            }
         }
 
         /// <summary>
