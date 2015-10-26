@@ -42,7 +42,7 @@ namespace Yanitta
             {
                 foreach (var process in this)
                 {
-                    Debug.WriteLine("Dispose dead process [" + process.ProcessId + "]");
+                    Debug.WriteLine($"Dispose dead process [{ process.ProcessId}]");
                     process.Dispose();
                 }
                 Clear();
@@ -52,7 +52,7 @@ namespace Yanitta
             {
                 if (!wowProcessList.Any(n => n.Id == this[i].ProcessId))
                 {
-                    Debug.WriteLine("Dispose dead process [" + this[i].ProcessId + "]");
+                    Debug.WriteLine($"Dispose dead process [{this[i].ProcessId}]");
                     this[i].Dispose();
                     RemoveAt(i);
                 }

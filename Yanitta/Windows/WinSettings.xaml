@@ -6,7 +6,7 @@
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="WindowSettings"
         Width="470"
-        Height="160"
+        Height="148.927"
         ShowInTaskbar="False"
         Style="{DynamicResource KamillaStyle}"
         Icon="/Yanitta;component/Resources/Background_Downloader.png"
@@ -29,7 +29,7 @@
 
     <StackPanel DataContext="{Binding Source={x:Static settings:Settings.Default}}">
         <StackPanel Orientation="Horizontal">
-            <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" />
+            <CheckBox Margin="10,0,0,0" Content="DebugMode" IsChecked="{Binding DebugMode}" VerticalAlignment="Center"/>
             <Separator BorderThickness="1" Margin="10,0,0,0" />
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Language: " VerticalAlignment="Center"/>
@@ -52,8 +52,6 @@
         </StackPanel>
 
         <Separator />
-        <Separator />
-
         <Button Width="123" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Command="{StaticResource Save}" Content="Save" />
     </StackPanel>
 </Window>

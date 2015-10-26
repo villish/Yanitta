@@ -8,6 +8,8 @@ namespace Yanitta
     public abstract class ConverterBase<T>
         : MarkupExtension, IValueConverter where T : class, new()
     {
+        static T converter = new T();
+
         public ConverterBase()
             : base()
         {
@@ -22,11 +24,7 @@ namespace Yanitta
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            if (m_converter == null)
-                m_converter = new T();
-            return m_converter;
+            return converter;
         }
-
-        static T m_converter = null;
     }
 }

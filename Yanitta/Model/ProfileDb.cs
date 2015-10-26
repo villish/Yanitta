@@ -13,7 +13,7 @@ namespace Yanitta
     /// </summary>
     [Serializable]
     [XmlRoot("Profiles")]
-    public class ProfileDb
+    public class ProfileDb : ViewModelBase
     {
         /// <summary>
         /// Код ядра бота.
@@ -27,8 +27,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(Lua); }
-            set { Lua = Extensions.GetTrimValue(value); }
+            get { return CreateCDataSection(Lua); }
+            set { Lua = GetTrimValue(value); }
         }
 
         /// <summary>
@@ -52,6 +52,11 @@ namespace Yanitta
             get { return ProfileList.FirstOrDefault(n => n.Class == wowClass); }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="wowClass"></param>
+        /// <param name="eventHandler"></param>
         public void SetNotifyer(WowClass wowClass, NotifyCollectionChangedEventHandler eventHandler)
         {
             if (ProfileList.Any(n => n.Class == WowClass.None))

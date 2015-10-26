@@ -9,7 +9,7 @@ namespace Yanitta
     /// Контейнер ротаций и способностей привязанный к конкретному классу <see cref="Yanitta.WowClass"/>.
     /// </summary>
     [Serializable]
-    public class Profile
+    public class Profile : ViewModelBase
     {
         /// <summary>
         /// Класс персонажа.
@@ -29,8 +29,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(Lua); }
-            set { Lua = Extensions.GetTrimValue(value); }
+            get { return CreateCDataSection(Lua); }
+            set { Lua = GetTrimValue(value); }
         }
 
         /// <summary>

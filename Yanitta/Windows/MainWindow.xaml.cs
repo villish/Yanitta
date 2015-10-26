@@ -24,7 +24,7 @@ namespace Yanitta
 
         void Window_Closing(object sender, CancelEventArgs e)
         {
-            App.Current.Shutdown();
+            Application.Current.Shutdown();
         }
 
         void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)

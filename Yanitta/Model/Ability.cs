@@ -11,7 +11,7 @@ namespace Yanitta
     /// Описывает состав из кода и статических проверок при вычислении на доступность чтения заклинания.
     /// </summary>
     [Serializable]
-    public class Ability
+    public class Ability : ViewModelBase
     {
         /// <summary>
         /// Служебное поле.
@@ -80,8 +80,8 @@ namespace Yanitta
         [XmlElement("Lua")]
         public XmlCDataSection _lua
         {
-            get { return Extensions.CreateCDataSection(Lua); }
-            set { Lua = Extensions.GetTrimValue(value); }
+            get { return CreateCDataSection(Lua); }
+            set { Lua = GetTrimValue(value); }
         }
 
         public Ability()
@@ -96,8 +96,6 @@ namespace Yanitta
         public override string ToString()
         {
             var T = "    ";
-            // переменные
-            //var target            = this.Target.ToString().ToLower();
             var cancelChannel     = CancelChannel.ToString().ToLower();
             var cancelCasting     = CancelCasting.ToString().ToLower();
             var isUseIncombat     = IsUseIncombat.ToString().ToLower();
