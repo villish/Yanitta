@@ -22,7 +22,7 @@ moving_spell_table = {
     79206,  -- Благосклонность предков (Шанам)
     108839, -- Плавучая льдина
     165803, -- Награнд (талбук)
-    172106,      -- Дух лисы (Охотник)
+    172106, -- Дух лисы (Охотник)
 };
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
@@ -128,7 +128,7 @@ end
 -- Проверка, была ли зажата клавиша модификатор mk*
 function IsModKeyDown(m_key)
     if not GetCurrentKeyBoardFocus() then
-        return (m_key == mkLeftShift    and IsLeftShiftKeyDown()   ) or
+        return  (m_key == mkLeftShift    and IsLeftShiftKeyDown()   ) or
                 (m_key == mkLeftControl  and IsLeftControlKeyDown() ) or
                 (m_key == mkLeftAlt      and IsLeftAltKeyDown()     ) or
                 (m_key == mkRightShift   and IsRightShiftKeyDown()  ) or
@@ -956,6 +956,8 @@ if type(AddonFrame) == "table" then
     AddonFrame.Buttons = {};
 end
 
+
+
 if type(AddonFrame) ~= "table" then
     AddonFrame = CreateFrame("Frame");
     AddonFrame:SetScript("OnUpdate", AddonFrame_OnUpdate);
@@ -964,6 +966,7 @@ if type(AddonFrame) ~= "table" then
     AddonFrame:SetWidth(600);
     AddonFrame.Buttons = {};
     AddonFrame.Msg = AddonFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
+    
     AddonFrame.Msg:SetAllPoints();
     AddonFrame.print = function(msg, con)
         AddonFrame.Msg:SetText(msg);
@@ -8873,7 +8876,11 @@ chi    = UnitPower("player",  12); -- chi
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftShift) then
-
+    if not HasDebuff(target, 138130, "PLAYER") then
+        if not UnitIsUnit("target", target) then
+            return true;
+        end
+    end
 end
 ]]></Lua>
       </Ability>
@@ -11111,7 +11118,7 @@ return true;
     </Rotation>
   </Profile>
   <Profile Class="DeamonHunter" />
-  <Profile Class="None">
+  <Profile Class="Default">
     <Rotation Name="Малигос">
       <HotKey Key="M" Modifier="Alt Shift" />
       <Ability Name="Инициализация">
