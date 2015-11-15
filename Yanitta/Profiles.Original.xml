@@ -7054,7 +7054,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
-if IsModKeyDown(mkLeftShift) or PLAYER.IsMounted or IsStealthed() then
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 ]]></Lua>
@@ -11117,8 +11117,15 @@ return true;
       </Ability>
     </Rotation>
   </Profile>
-  <Profile Class="DeamonHunter" />
-  <Profile Class="Default">
+  <Profile Class="DeamonHunter">
+    <Rotation Name="Havoc">
+      <HotKey Key="X" Modifier="Alt" />
+    </Rotation>
+    <Rotation Name="Vengeance">
+      <HotKey Key="Z" Modifier="Alt" />
+    </Rotation>
+  </Profile>
+  <Profile Class="None">
     <Rotation Name="Малигос">
       <HotKey Key="M" Modifier="Alt Shift" />
       <Ability Name="Инициализация">

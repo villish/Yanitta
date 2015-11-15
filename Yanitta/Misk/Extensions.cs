@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization.Json;
@@ -10,14 +9,6 @@ namespace Yanitta
 {
     public static class Extensions
     {
-        public static void AppendFormatLine(this StringBuilder builder, string format, params object[] args)
-        {
-            if (args == null || args.Length == 0)
-                builder.AppendLine(format);
-            else
-                builder.AppendFormat(CultureInfo.InvariantCulture, format, args).AppendLine();
-        }
-
         public static string GetTrimValue(XmlCDataSection cdataSection)
         {
             if (cdataSection == null || string.IsNullOrWhiteSpace(cdataSection.Value))
