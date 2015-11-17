@@ -19,14 +19,7 @@ namespace Yanitta
         public string Name
         {
             get { return name; }
-            set
-            {
-                if (name != value)
-                {
-                    name = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { Set(ref name, value); }
         }
 
         /// <summary>

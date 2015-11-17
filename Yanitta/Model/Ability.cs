@@ -17,18 +17,20 @@ namespace Yanitta
         /// Служебное поле.
         /// </summary>
         [XmlIgnore]
-        public bool IsChecked              { get; set; }
+        public bool IsChecked { get; set; }
 
+        string name;
         /// <summary>
         /// Наименование способности.
         /// </summary>
         [XmlAttribute]
-        public string Name                 { get; set; }
+        public string Name { get { return name; } set { Set(ref name, value); } }
 
+        uint spellid;
         /// <summary>
         /// Ид заклинания.
         /// </summary>
-        public uint SpellID                { get; set; }
+        public uint SpellID { get { return spellid; } set { Set(ref spellid, value); } }
 
         /// <summary>
         /// Тип цели.
@@ -36,37 +38,44 @@ namespace Yanitta
         [XmlElement("Target")]
         public List<TargetType> TargetList { get; set; }
 
+        bool cencelchanel;
         /// <summary>
         /// Прерывать канальные заклинания.
         /// </summary>
-        public bool CancelChannel          { get; set; }
+        public bool CancelChannel { get { return cencelchanel; } set { Set(ref cencelchanel, value); } }
 
+        bool cencelcasting;
         /// <summary>
         /// Прерывать чтение заклинаний.
         /// </summary>
-        public bool CancelCasting          { get; set; }
+        public bool CancelCasting { get { return cencelcasting; } set { Set(ref cencelcasting, value); } }
 
+        bool useincombat;
         /// <summary>
         /// Проверка нахождения в бою.
         /// </summary>
-        public bool IsUseIncombat          { get; set; }
+        public bool IsUseIncombat { get { return useincombat; } set { Set(ref useincombat, value); } }
 
+        bool isusablecheck;
         /// <summary>
         /// Проверка на доступность заклинания.
         /// По умолчанию должно быть включено.
         /// </summary>
-        public bool IsUsableCheck          { get; set; }
+        public bool IsUsableCheck { get { return isusablecheck; } set { Set(ref isusablecheck, value); } }
 
+
+        float recastdelay;
         /// <summary>
         /// Задержка на произнесение следующего заклинания.
         /// Если 0, тогда не делать проверку.
         /// </summary>
-        public float RecastDelay           { get; set; }
+        public float RecastDelay { get { return recastdelay; } set { Set(ref recastdelay, value); } }
 
+        MovingStates movingstate;
         /// <summary>
         /// Проверка, движения персонажа.
         /// </summary>
-        public MovingStates IsMovingCheck  { get; set; }
+        public MovingStates IsMovingCheck { get { return movingstate; } set { Set(ref movingstate, value); } }
 
         /// <summary>
         /// Луа код для проверки использования способности.

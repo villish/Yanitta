@@ -45,14 +45,7 @@ namespace Yanitta
         public Key Key
         {
             get { return key; }
-            set
-            {
-                if (key != value)
-                {
-                    key = value;
-                    OnPropertyChanged("Key");
-                }
-            }
+            set { Set(ref key, value); }
         }
 
         /// <summary>
@@ -62,14 +55,7 @@ namespace Yanitta
         public ModifierKeys Modifier
         {
             get { return modifier; }
-            set
-            {
-                if (Modifier != value)
-                {
-                    modifier = value;
-                    OnPropertyChanged("Modifier");
-                }
-            }
+            set { Set(ref modifier, value); }
         }
 
         /// <summary>
