@@ -760,7 +760,7 @@ function CheckAndCastAbility(ability, targetInfo)
         end
     end
 
-    if ability.CancelCasting or ability.DropChanel then
+    if ability.CancelCasting then
         SpellStopCasting();
     end
 
