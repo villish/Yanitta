@@ -243,8 +243,8 @@ namespace Yanitta
 
             builder.AppendLine(ProfileDb.Instance[Class].Lua);
             builder.AppendLine();
-            // у профилей по умолчанию не должно быть кода профиля.
-            //builder.AppendLine(ProfileDb.Instance[WowClass.None].Lua);
+
+            builder.AppendLine(ProfileDb.Instance[WowClass.None].Lua);
             builder.AppendLine(rotation.Lua);
             builder.AppendLine();
 

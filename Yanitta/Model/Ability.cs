@@ -36,7 +36,7 @@ namespace Yanitta
         /// Тип цели.
         /// </summary>
         [XmlElement("Target")]
-        public List<TargetType> TargetList { get; set; }
+        public List<TargetType> TargetList { get; set; } = new List<TargetType>();
 
         bool cencelchanel;
         /// <summary>
@@ -63,7 +63,6 @@ namespace Yanitta
         /// </summary>
         public bool IsUsableCheck { get { return isusablecheck; } set { Set(ref isusablecheck, value); } }
 
-
         float recastdelay;
         /// <summary>
         /// Задержка на произнесение следующего заклинания.
@@ -81,7 +80,7 @@ namespace Yanitta
         /// Луа код для проверки использования способности.
         /// </summary>
         [XmlIgnore]
-        public string Lua                  { get; set; }
+        public string Lua { get; set; }
 
         /// <summary>
         ///
@@ -91,11 +90,6 @@ namespace Yanitta
         {
             get { return CreateCDataSection(Lua); }
             set { Lua = GetTrimValue(value); }
-        }
-
-        public Ability()
-        {
-            TargetList = new List<TargetType>();
         }
 
         /// <summary>

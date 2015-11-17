@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 namespace Yanitta
 {
     /// <summary>
-    /// Контейнер ротаций и способностей привязанный к конкретному классу <see cref="Yanitta.WowClass"/>.
+    /// Контейнер ротаций и способностей привязанный к конкретному классу <see cref="WowClass"/>.
     /// </summary>
     [Serializable]
     public class Profile : ViewModelBase
