@@ -94,7 +94,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="JSON\Spell.cs" />
     <Compile Include="Windows\CopyAbilitysWindow.xaml.cs">
       <DependentUpon>CopyAbilitysWindow.xaml</DependentUpon>
     </Compile>

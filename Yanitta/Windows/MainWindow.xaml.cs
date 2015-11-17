@@ -57,7 +57,10 @@ namespace Yanitta
             try
             {
                 var fileName = (string)e.Parameter;
-                Process.Start(fileName);
+                var text = System.IO.File.ReadAllText(fileName);
+                var window = App.ShowWindow<WinCodeExecute>();
+                window.Title = fileName;
+                window.teCode.Text = text;
             }
             catch (Exception ex)
             {

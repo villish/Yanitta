@@ -1,41 +1,50 @@
 ﻿<Window x:Class="Yanitta.Windows.HelpWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Name="helpWin"
         Style="{StaticResource KamillaStyle}"
         Topmost="True"
         ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
-        Title="HelpWindow" Height="300" Width="300" WindowStyle="ToolWindow">
+        Title="HelpWindow" Height="500" Width="400" WindowStyle="ToolWindow">
 
     <Window.CommandBindings>
         <CommandBinding Command="Help" Executed="CommandBinding_GetSpellData_Executed" />
     </Window.CommandBindings>
+
     <Window.InputBindings>
         <KeyBinding Command="Help" Key="F1" />
+        <KeyBinding Command="Help" Key="F5" />
         <KeyBinding Command="Help" Key="Enter" />
     </Window.InputBindings>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Image Name="spellIcon" Margin="3"/>
+    <FlowDocumentScrollViewer>
+        <FlowDocument>
+            <BlockUIContainer>
+                <Image Width="120" Source="{Binding IconSource}" Margin="3"/>
+            </BlockUIContainer>
+            <Paragraph>
+                <Run Text="Id: " FontWeight="Bold" Foreground="Cyan"/>
+                <Run Text="{Binding Id}" />
+                <LineBreak/>
 
-        <StackPanel Grid.Column="1">
-            <TextBox   Name="spellId"       FontWeight="Bold" Foreground="Cyan" TextAlignment="Right"/>
-            <TextBlock Name="spellName"     FontWeight="Bold" Foreground="Cyan"/>
-            <TextBlock Name="spellRange"    FontWeight="Bold" Foreground="Cyan"/>
-            <TextBlock Name="spellCost"     FontWeight="Bold" Foreground="Cyan"/>
-            <TextBlock Name="spellCastTime" FontWeight="Bold" Foreground="Cyan"/>
-        </StackPanel>
+                <Run Text="Name: " FontWeight="Bold" Foreground="Cyan"/>
+                <Run Text="{Binding Name}"/>
+                <LineBreak/>
 
-        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Name="spellDescription" TextWrapping="Wrap" Margin="0,5,0,0" />
+                <Run Text="Range: " FontWeight="Bold" Foreground="Cyan"/>
+                <Run Text="{Binding Range}" />
+                <LineBreak/>
 
-    </Grid>
+                <Run Text="Power cost: " FontWeight="Bold" Foreground="Cyan"/>
+                <Run Text="{Binding PowerCost}" />
+                <LineBreak/>
+
+                <Run Text="Cast time: " FontWeight="Bold" Foreground="Cyan"/>
+                <Run Text="{Binding CastTime}" />
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="{Binding Description}" />
+            </Paragraph>
+        </FlowDocument>
+    </FlowDocumentScrollViewer>
 </Window>

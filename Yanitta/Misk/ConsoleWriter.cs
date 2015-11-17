@@ -23,7 +23,7 @@ namespace Yanitta
                 AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             }
 
-            m_writer.WriteLine("===================== START {0:dd.MM.yyyy} =====================", DateTime.Now);
+            m_writer.WriteLine($"===================== START {DateTime.Now:dd.MM.yyyy} =====================");
         }
 
         public static void Initialize(string fileName, bool isRegisterUnhandledException = false)
@@ -69,7 +69,7 @@ namespace Yanitta
             base.Close();
             if (m_writer != null)
             {
-                m_writer.WriteLine("====================== END {0:dd.MM.yyyy} ======================", DateTime.Now);
+                m_writer.WriteLine($"====================== END {DateTime.Now:dd.MM.yyyy} ======================");
                 Debug.Listeners.Clear();
                 Trace.Listeners.Clear();
                 m_writer.Close();
@@ -81,7 +81,7 @@ namespace Yanitta
         void InternalWrite(string text)
         {
             if (m_writer != null)
-                m_writer.Write("[{0:HH:mm:ss.fff}] {1}", DateTime.Now, text);
+                m_writer.Write($"[{DateTime.Now:HH:mm:ss.fff}] {text}");
         }
 
         void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

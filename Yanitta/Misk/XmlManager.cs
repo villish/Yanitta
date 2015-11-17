@@ -25,13 +25,11 @@ namespace Yanitta
                 var serialiser = new XmlSerializer(typeof(T));
 
                 serialiser.UnknownAttribute += (o, e) => {
-                    Console.WriteLine("Unknown attribute: {0} at line: {1} position: {2}",
-                        e.Attr, e.LineNumber, e.LinePosition);
+                    Console.WriteLine($"Unknown attribute: {e.Attr} at line: {e.LineNumber} position: {e.LinePosition}");
                 };
 
                 serialiser.UnknownElement += (o, e) => {
-                    Console.WriteLine("Unknown Element: {0} at line: {1} position: {2}",
-                        e.Element, e.LineNumber, e.LinePosition);
+                    Console.WriteLine($"Unknown Element: {e.Element} at line: {e.LineNumber} position: {e.LinePosition}");
                 };
 
                 return (T)serialiser.Deserialize(fstream);
