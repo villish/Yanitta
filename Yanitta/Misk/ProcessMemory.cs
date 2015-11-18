@@ -121,10 +121,13 @@ namespace Yanitta
         /// <returns>Значение указанного типа.</returns>
         public unsafe T Read<T>(IntPtr address) where T : struct
         {
-            var result = new byte[Marshal.SizeOf(typeof(T))];
+            var type = typeof(T);
+            if (type.IsEnum)
+                type = Enum.GetUnderlyingType(type);
+            var result = new byte[Marshal.SizeOf(type)];
             ReadProcessMemory(Process.Handle, address, result, result.Length, IntPtr.Zero);
             var handle = GCHandle.Alloc(result, GCHandleType.Pinned);
-            T returnObject = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(T));
+            T returnObject = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), type);
             handle.Free();
             return returnObject;
         }

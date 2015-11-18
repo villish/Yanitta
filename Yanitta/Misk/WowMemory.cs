@@ -12,7 +12,7 @@ using Yanitta.Properties;
 namespace Yanitta
 {
     /// <summary>
-    /// Определяет обработчик для <see cref="Yanitta.WowMemory"/>.
+    /// Определяет обработчик для <see cref="WowMemory"/>.
     /// </summary>
     /// <param name="memory"></param>
     public delegate void WowMemoryHandler(WowMemory memory);
@@ -56,8 +56,10 @@ namespace Yanitta
 
         // Сохраним ссылку на обработчик, чтобы ее не трогал сборщик мусора.
         KeyBoardProc KeyBoardProck;
-
         bool isInGame;
+        IntPtr keyboardHook;
+        bool IsDisposed;
+        DispatcherTimer mTimer;
 
         /// <summary>
         /// Текущий процесс <see cref="ProcessMemory"/>
@@ -66,25 +68,12 @@ namespace Yanitta
 
         public Offsets Offsets { get; private set; }
 
-        IntPtr keyboardHook;
-        bool IsDisposed;
-        DispatcherTimer mTimer;
-
         /// <summary>
         /// Id процесса.
         /// </summary>
-        public int ProcessId
-        {
-            get { return Memory?.Process?.Id ?? 0; }
-        }
+        public int ProcessId => Memory?.Process?.Id ?? 0;
 
-        public string ProcessName
-        {
-            get
-            {
-                return $"{Memory.Process.ProcessName}_{Memory.Process.MainModule.FileVersionInfo.FilePrivatePart}";
-            }
-        }
+        public string ProcessName => $"{Memory.Process.ProcessName}_{Memory.Process.MainModule.FileVersionInfo.FilePrivatePart}";
 
         public IEnumerable<Rotation> Rotations
         {
@@ -92,10 +81,10 @@ namespace Yanitta
             {
                 if (IsInGame)
                 {
-                    foreach (var rotation in ProfileDb.Instance[Class].RotationList)
+                    foreach (var rotation in ProfileDb.Instance[Class]?.RotationList)
                         yield return rotation;
 
-                    foreach (var rotation in ProfileDb.Instance[WowClass.None].RotationList)
+                    foreach (var rotation in ProfileDb.Instance[WowClass.None]?.RotationList)
                         yield return rotation;
                 }
             }
@@ -124,24 +113,19 @@ namespace Yanitta
                     isInGame = value;
                     OnPropertyChanged("IsInGame");
 
-                    Class = value ? (WowClass)Memory.Read<byte>(Memory.Rebase(Offsets.PlayerClass)) : WowClass.None;
+                    Class = value ? Memory.Read<WowClass>(Memory.Rebase(Offsets.PlayerClass)) : WowClass.None;
                     Name  = value ? Memory.ReadString(Memory.Rebase(Offsets.PlayerName)) : string.Empty;
 
                     if (!Enum.IsDefined(typeof(WowClass), Class))
                         throw new Exception("Unsuported wow class: " + Class);
 
-                    ProfileDb.Instance.SetNotifyer(Class, OnRotationListChange);
+                    ProfileDb.Instance.SetNotifyer(Class, (o, e) => OnPropertyChanged("Rotations"));
 
                     OnPropertyChanged("Class");
                     OnPropertyChanged("Name");
                     OnPropertyChanged("Rotations");
                 };
             }
-        }
-
-        void OnRotationListChange(object sender, EventArgs e)
-        {
-            OnPropertyChanged("Rotations");
         }
 
         /// <summary>
@@ -291,10 +275,7 @@ namespace Yanitta
             }
         }
 
-        public override string ToString()
-        {
-            return $"[{ProcessId}] {Name} ({Class})";
-        }
+        public override string ToString() => $"[{ProcessId}] {Name} ({Class})";
 
         ~WowMemory()
         {
