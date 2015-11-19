@@ -123,7 +123,7 @@ namespace Yanitta
         {
             var type = typeof(T);
             if (type.IsEnum)
-                type = Enum.GetUnderlyingType(type);
+                type = type.GetEnumUnderlyingType();
             var result = new byte[Marshal.SizeOf(type)];
             ReadProcessMemory(Process.Handle, address, result, result.Length, IntPtr.Zero);
             var handle = GCHandle.Alloc(result, GCHandleType.Pinned);

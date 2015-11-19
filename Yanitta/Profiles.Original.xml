@@ -8894,9 +8894,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Рука-копье">
@@ -9200,10 +9198,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if chi > 2 and not UnitIsPlayer("target") and
-    UnitHealth("target") < UnitHealthMax("player") then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Рука-копье">
