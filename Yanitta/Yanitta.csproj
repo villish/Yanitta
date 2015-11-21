@@ -94,6 +94,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Misk\Extensions.cs" />
     <Compile Include="Windows\CopyAbilitysWindow.xaml.cs">
       <DependentUpon>CopyAbilitysWindow.xaml</DependentUpon>
     </Compile>

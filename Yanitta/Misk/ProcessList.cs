@@ -15,18 +15,16 @@ namespace Yanitta
         // Track whether Dispose has been called.
         bool disposed = false;
 
-        DispatcherTimer refreshTimer;
+        DispatcherTimer refreshTimer = new DispatcherTimer {
+            Interval = TimeSpan.FromSeconds(1)
+        };
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ProcessList"/>
         /// </summary>
         public ProcessList()
-            : base()
         {
-            refreshTimer = new DispatcherTimer();
-            refreshTimer.Interval = TimeSpan.FromSeconds(1);
             refreshTimer.Tick += (o, e) => CheckProcess();
-            refreshTimer.IsEnabled = true;
             refreshTimer.Start();
         }
 
@@ -102,12 +100,7 @@ namespace Yanitta
                 // and unmanaged resources.
                 if (disposing)
                 {
-                    if (refreshTimer != null)
-                    {
-                        refreshTimer.IsEnabled = false;
-                        refreshTimer.Stop();
-                    }
-
+                    refreshTimer?.Stop();
                     foreach (var process in this)
                         process.Dispose();
                     Clear();
