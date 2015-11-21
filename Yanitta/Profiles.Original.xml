@@ -966,7 +966,7 @@ if type(AddonFrame) ~= "table" then
     AddonFrame:SetWidth(600);
     AddonFrame.Buttons = {};
     AddonFrame.Msg = AddonFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
-    
+
     AddonFrame.Msg:SetAllPoints();
     AddonFrame.print = function(msg, con)
         AddonFrame.Msg:SetText(msg);
@@ -1378,7 +1378,7 @@ if isAltMod and not HasBuff("player", 112048) then
     -- Провести расчеты по определению эфективности использования "Блок щитом" / "Непроницаемый щит"
     local value = select(5, HasBuff("player", 158300));
     local def_val = IsInRaid() and 150 or 100;
-    
+
     -- Если есть здоровье - набираем ярость для большей эфективности щита
     -- Надо еще добавить проверку на наличе бафа "Решимости"
     if PLAYER:Power() > 55 and PLAYER.HP > 20 then
@@ -2433,7 +2433,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- 
+--
 if isInMeele and not HasBuff("player", 169667) then
     if PLAYER:Power() > 25 and SpellCD(23922) <= 1.5 then
         -- 169686 Неприклонные удары
@@ -2627,7 +2627,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if hollyPower > 2 and select(2, HasBuff("player", 114637)) < 4 then
-    if select(3, HasBuff("player", 156322, "PLAYER")) < 4 then 
+    if select(3, HasBuff("player", 156322, "PLAYER")) < 4 then
         return true;
     end
 end
@@ -4812,11 +4812,11 @@ end
         <Lua><![CDATA[
 if not IsPassiveSpell(GetSpellInfo(5171)) then
     local name, count, rem = HasBuff("player", 5171);
-    
+
     if rem == 0 then
         return true;
     end
-    
+
     if UnitExists("target") and GetComboPoints("player", "target") > 4 then
         if rem < 4 then
             return true;
@@ -6461,7 +6461,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---Вливание тьмы 
+--Вливание тьмы
 if UnitExists("pet") and select(2, HasBuff("player", 91342, "PLAYER")) > 4 then
     return true;
 end
@@ -11162,7 +11162,7 @@ return true;
       </Ability>
     </Rotation>
   </Profile>
-  <Profile Class="DeamonHunter">
+  <Profile Class="DemonHunter">
     <Rotation Name="Сокрушение">
       <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Удар демона">

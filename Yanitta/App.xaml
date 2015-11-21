@@ -58,7 +58,7 @@
                     <Image x:Key="Warlock"      Source="/Resources/Warlock.png" />
                     <Image x:Key="Monk"         Source="/Resources/Monk.png" />
                     <Image x:Key="Druid"        Source="/Resources/Druid.png" />
-                    <!--<Image x:Key="DeamonHunter" Source="/Resources/DeamonHunter.png" />-->
+                    <Image x:Key="DemonHunter"  Source="/Resources/DemonHunter.png" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
