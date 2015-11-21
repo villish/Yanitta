@@ -24,21 +24,6 @@
         <RoutedUICommand x:Key="MoveRotation" />
         <RoutedUICommand x:Key="MoveAbility" />
         <RoutedUICommand x:Key="CopyFromRotation" />
-
-        <DataTemplate x:Key="DragTemplate">
-            <DataTemplate.Resources>
-                <Style TargetType="Image">
-                    <Setter Property="Width" Value="50" />
-                    <Setter Property="Height" Value="50" />
-                    <Setter Property="Margin" Value="5" />
-                </Style>
-            </DataTemplate.Resources>
-            <StackPanel Orientation="Horizontal">
-                <Image Source="{Binding Path=Location}" Margin="2" />
-                <TextBlock Text="{Binding Path=Firstname}" Margin="2" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Text="{Binding Path=Lastname}"  Margin="2" TextAlignment="Center" FontWeight="Bold" />
-            </StackPanel>
-        </DataTemplate>
     </Window.Resources>
 
     <Window.InputBindings>
@@ -61,7 +46,7 @@
         <CommandBinding Command="{StaticResource CopyFromRotation}" Executed="CommandBinding_CopyFromRotation_Executed" />
     </Window.CommandBindings>
 
-    <Grid x:Name="mainGrid" DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
+    <Grid DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="23" />
             <RowDefinition />
@@ -155,13 +140,13 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <ToolBar VerticalAlignment="Top" >
-                                <Button x:Name="bAddAbility" Command="{StaticResource AddAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddAbility}">
+                                <Button Command="{StaticResource AddAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddAbility}">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
-                                <Button x:Name="bCopyAbility" Command="{StaticResource CopyAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyAbility}">
+                                <Button  Command="{StaticResource CopyAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyAbility}">
                                     <Image Source="/Yanitta;component/Resources/Clipboard.png" />
                                 </Button>
-                                <Button x:Name="bDeleteAbility" Command="{StaticResource DeleteAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
+                                <Button Command="{StaticResource DeleteAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
