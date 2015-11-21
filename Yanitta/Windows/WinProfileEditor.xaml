@@ -162,7 +162,7 @@
                                 </Button>
                                 <Separator />
                                 <TextBlock Text="{x:Static yanitta:Localization.Ability_Filter}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                <TextBox Name="tbAbilityFilter" Width="150" TextChanged="tbAbilityFilter_TextChanged"/>
+                                <TextBox Width="150" TextChanged="tbAbilityFilter_TextChanged" />
                             </ToolBar>
                             <ListView x:Name="abilityList"
                                       IsSynchronizedWithCurrentItem="True"
@@ -251,8 +251,9 @@
                         <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
                             <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="344*"/>
-                                    <ColumnDefinition Width="321*"/>
+                                    <ColumnDefinition Width="86*"/>
+                                    <ColumnDefinition Width="45*"/>
+                                    <ColumnDefinition Width="80"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -296,12 +297,15 @@
                                                ToolTip="{x:Static yanitta:Localization.RecastDelayToolTip}" VerticalAlignment="Center" MaxLength="4" />
                                 </Grid>
 
-                                <StackPanel Grid.Column="1">
+                                <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
                                     <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"  Content="{x:Static yanitta:Localization.IsUseIncombat}"  ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding IsUsableCheck}"  Content="{x:Static yanitta:Localization.IsUsableCheck}"  ToolTip="{x:Static yanitta:Localization.IsUsableCheckToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="{x:Static yanitta:Localization.CancelCasting}"  ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"  Content="{x:Static yanitta:Localization.CancelChanel}"   ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                                 </StackPanel>
+
+                                <Image Grid.Column="2" VerticalAlignment="Top"
+                                       Source="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=ProfileList/ImageSource}" />
                             </Grid>
                         </GroupBox>
                     </Grid>
