@@ -30,7 +30,7 @@ namespace Yanitta
             var item = value as DependencyObject;
             var view = ItemsControl.ItemsControlFromItemContainer(item);
             var index = view.ItemContainerGenerator.IndexFromContainer(item);
-            return index + 1;
+            return ++index;
         }
     }
 }

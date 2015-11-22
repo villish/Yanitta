@@ -102,7 +102,7 @@ namespace Yanitta
                 {
                     refreshTimer?.Stop();
                     foreach (var process in this)
-                        process.Dispose();
+                        process?.Dispose();
                     Clear();
                 }
 

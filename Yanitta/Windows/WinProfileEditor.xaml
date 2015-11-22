@@ -297,13 +297,14 @@
                                                ToolTip="{x:Static yanitta:Localization.RecastDelayToolTip}" VerticalAlignment="Center" MaxLength="4" />
                                 </Grid>
 
-                                <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
+                                <StackPanel Grid.Column="1">
                                     <CheckBox Margin="3" IsChecked="{Binding IsUseIncombat}"  Content="{x:Static yanitta:Localization.IsUseIncombat}"  ToolTip="{x:Static yanitta:Localization.IsInCombatToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding IsUsableCheck}"  Content="{x:Static yanitta:Localization.IsUsableCheck}"  ToolTip="{x:Static yanitta:Localization.IsUsableCheckToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="{x:Static yanitta:Localization.CancelCasting}"  ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"  Content="{x:Static yanitta:Localization.CancelChanel}"   ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                                 </StackPanel>
 
+                                <!-- todo: maybe use parent source -->
                                 <Image Grid.Column="2" VerticalAlignment="Top"
                                        Source="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=ProfileList/ImageSource}" />
                             </Grid>
