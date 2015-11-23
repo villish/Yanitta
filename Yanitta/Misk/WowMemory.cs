@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -124,7 +125,11 @@ namespace Yanitta
                     if (!Enum.IsDefined(typeof(WowClass), Class))
                         throw new Exception("Unsuported wow class: " + Class);
 
-                    ProfileDb.Instance.SetNotifyer(Class, (o, e) => OnPropertyChanged("Rotations"));
+                    foreach (var item in ProfileDb.Instance?.ProfileList)
+                    {
+                        item.RotationList.CollectionChanged -= OnRotationListChanged;
+                        item.RotationList.CollectionChanged += OnRotationListChanged;
+                    }
 
                     OnPropertyChanged("Class");
                     OnPropertyChanged("ImageSource");
@@ -133,6 +138,8 @@ namespace Yanitta
                 }
             }
         }
+
+        void OnRotationListChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged("Rotations");
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="Yanitta.WowMemory"/>.
@@ -205,7 +212,6 @@ namespace Yanitta
             {
                 IsInGame = false;
                 GameExited?.Invoke(this);
-
                 Console.WriteLine("Wow process exited!");
                 Dispose();
                 return false;
@@ -311,10 +317,8 @@ namespace Yanitta
                 UnhookWindowsHookEx(keyboardHook);
             KeyBoardProck = null;
 
-            if (IsInGame && Memory?.Process?.HasExited == true)
-            {
+            if (IsInGame && Memory?.Process?.HasExited != true)
                 LuaExecute(StopCode);
-            }
 
             keyboardHook = IntPtr.Zero;
             Memory = null;
