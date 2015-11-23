@@ -34,35 +34,17 @@ namespace Yanitta
             Instance = new ConsoleWriter(fileName, isRegisterUnhandledException);
         }
 
-        public override Encoding Encoding
-        {
-            get { return Encoding.UTF8; }
-        }
+        public override Encoding Encoding => Encoding.UTF8;
 
-        public override void WriteLine(string value)
-        {
-            InternalWrite(value + Environment.NewLine);
-        }
+        public override void WriteLine(string value) => InternalWrite(value + Environment.NewLine);
 
-        public override void WriteLine(string format, params object[] arg)
-        {
-            InternalWrite(string.Format(format, arg) + Environment.NewLine);
-        }
+        public override void WriteLine(string format, params object[] arg) => InternalWrite(string.Format(format, arg) + Environment.NewLine);
 
-        public override void WriteLine()
-        {
-            InternalWrite(Environment.NewLine);
-        }
+        public override void WriteLine() => InternalWrite(Environment.NewLine);
 
-        public override void Write(string value)
-        {
-            InternalWrite(value);
-        }
+        public override void Write(string value) => InternalWrite(value);
 
-        public override void Write(string format, params object[] arg)
-        {
-            InternalWrite(string.Format(format, arg));
-        }
+        public override void Write(string format, params object[] arg) => InternalWrite(string.Format(format, arg));
 
         public override void Close()
         {
@@ -80,8 +62,7 @@ namespace Yanitta
 
         void InternalWrite(string text)
         {
-            if (m_writer != null)
-                m_writer.Write($"[{DateTime.Now:HH:mm:ss.fff}] {text}");
+            m_writer?.Write($"[{DateTime.Now:HH:mm:ss.fff}] {text}");
         }
 
         void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -93,8 +74,7 @@ namespace Yanitta
 
         public static void CloseWriter()
         {
-            if (Instance != null)
-                Instance.Close();
+            Instance?.Close();
         }
     }
 }

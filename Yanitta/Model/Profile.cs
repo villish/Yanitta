@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -32,6 +35,9 @@ namespace Yanitta
             get { return CreateCDataSection(Lua); }
             set { Lua = GetTrimValue(value); }
         }
+
+        [XmlIgnore]
+        public BitmapImage ImageSource => Extensions.GetClassIcon(Class);
 
         /// <summary>
         /// Список ротаций профиля.

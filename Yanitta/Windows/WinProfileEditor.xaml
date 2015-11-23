@@ -24,21 +24,6 @@
         <RoutedUICommand x:Key="MoveRotation" />
         <RoutedUICommand x:Key="MoveAbility" />
         <RoutedUICommand x:Key="CopyFromRotation" />
-
-        <DataTemplate x:Key="DragTemplate">
-            <DataTemplate.Resources>
-                <Style TargetType="Image">
-                    <Setter Property="Width" Value="50" />
-                    <Setter Property="Height" Value="50" />
-                    <Setter Property="Margin" Value="5" />
-                </Style>
-            </DataTemplate.Resources>
-            <StackPanel Orientation="Horizontal">
-                <Image Source="{Binding Path=Location}" Margin="2" />
-                <TextBlock Text="{Binding Path=Firstname}" Margin="2" TextAlignment="Center" FontWeight="Bold" />
-                <TextBlock Text="{Binding Path=Lastname}"  Margin="2" TextAlignment="Center" FontWeight="Bold" />
-            </StackPanel>
-        </DataTemplate>
     </Window.Resources>
 
     <Window.InputBindings>
@@ -61,7 +46,7 @@
         <CommandBinding Command="{StaticResource CopyFromRotation}" Executed="CommandBinding_CopyFromRotation_Executed" />
     </Window.CommandBindings>
 
-    <Grid x:Name="mainGrid" DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
+    <Grid DataContext="{Binding Source={x:Static yanitta:ProfileDb.Instance}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="23" />
             <RowDefinition />
@@ -155,13 +140,13 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <ToolBar VerticalAlignment="Top" >
-                                <Button x:Name="bAddAbility" Command="{StaticResource AddAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddAbility}">
+                                <Button Command="{StaticResource AddAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.AddAbility}">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
-                                <Button x:Name="bCopyAbility" Command="{StaticResource CopyAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyAbility}">
+                                <Button  Command="{StaticResource CopyAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.CopyAbility}">
                                     <Image Source="/Yanitta;component/Resources/Clipboard.png" />
                                 </Button>
-                                <Button x:Name="bDeleteAbility" Command="{StaticResource DeleteAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
+                                <Button Command="{StaticResource DeleteAbility}" Foreground="Transparent" ToolTip="{x:Static yanitta:Localization.DeleteAbility}">
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
@@ -177,7 +162,7 @@
                                 </Button>
                                 <Separator />
                                 <TextBlock Text="{x:Static yanitta:Localization.Ability_Filter}" VerticalAlignment="Center" HorizontalAlignment="Left" />
-                                <TextBox Name="tbAbilityFilter" Width="150" TextChanged="tbAbilityFilter_TextChanged"/>
+                                <TextBox Width="150" TextChanged="tbAbilityFilter_TextChanged" />
                             </ToolBar>
                             <ListView x:Name="abilityList"
                                       IsSynchronizedWithCurrentItem="True"
@@ -188,23 +173,7 @@
                                         <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl}, Converter={yanitta:ItemsControlIndexConverter}}" />
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}" />
                                         <GridViewColumn Width="150" DisplayMemberBinding="{Binding Name}" Header="{x:Static yanitta:Localization.Name}" />
-
-                                        <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" x:Name="hIsMovingCheck">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <ComboBox Width="{Binding Width, ConverterParameter=-10, Converter={yanitta:ResizeConverter}, ElementName=hIsMovingCheck}"
-                                                              ItemsSource="{Binding Source={StaticResource MovingValues}}"
-                                                              SelectedValue="{Binding IsMovingCheck}" ToolTip="{x:Static yanitta:Localization.IsMovingCheckToolTip}">
-                                                        <ComboBox.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding ., Converter={yanitta:EnumToLocalizedSrtConverter}}"
-                                                                           ToolTip="{Binding ., ConverterParameter=ToolTip, Converter={yanitta:EnumToLocalizedSrtConverter}}"/>
-                                                            </DataTemplate>
-                                                        </ComboBox.ItemTemplate>
-                                                    </ComboBox>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
+                                        <GridViewColumn Header="{x:Static yanitta:Localization.IsMovingCheck}" Width="100" DisplayMemberBinding="{Binding IsMovingCheck, Converter={yanitta:EnumToLocalizedSrtConverter}}"/>
 
                                         <GridViewColumn Width="50" Header="{x:Static yanitta:Localization.IsUseIncombat}">
                                             <GridViewColumn.CellTemplate>
@@ -282,8 +251,9 @@
                         <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
                             <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="344*"/>
-                                    <ColumnDefinition Width="321*"/>
+                                    <ColumnDefinition Width="86*"/>
+                                    <ColumnDefinition Width="45*"/>
+                                    <ColumnDefinition Width="80"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -333,6 +303,10 @@
                                     <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="{x:Static yanitta:Localization.CancelCasting}"  ToolTip="{x:Static yanitta:Localization.CancelCastingToolTip}"/>
                                     <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"  Content="{x:Static yanitta:Localization.CancelChanel}"   ToolTip="{x:Static yanitta:Localization.CancelChanelToolTip}"/>
                                 </StackPanel>
+
+                                <!-- todo: maybe use parent source -->
+                                <Image Grid.Column="2" VerticalAlignment="Top"
+                                       Source="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=ProfileList/ImageSource}" />
                             </Grid>
                         </GroupBox>
                     </Grid>
@@ -350,8 +324,8 @@
         <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1" HorizontalContentAlignment="Center" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding Class, Converter={yanitta:EnumToImageConverter}}" Width="64"
-                                    ToolTip="{Binding Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Cursor="Hand" />
+                    <Image Source="{Binding ImageSource}" Width="64"
+                        ToolTip="{Binding Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Cursor="Hand" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -368,7 +342,7 @@
 
         <StatusBar Grid.ColumnSpan="2" Grid.Row="2">
             <TextBlock Text="{x:Static yanitta:Localization.CurentProfile}"/>
-            <Image Source="{Binding ProfileList/Class, Converter={yanitta:EnumToImageConverter}}" />
+            <Image Source="{Binding ProfileList/ImageSource}" />
             <TextBlock Text="{Binding ProfileList/Class, Converter={yanitta:EnumToLocalizedSrtConverter}}" Width="150"/>
             <Separator />
             <TextBlock Text="{x:Static yanitta:Localization.AbilityCount}"/>

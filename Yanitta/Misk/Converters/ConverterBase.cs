@@ -10,21 +10,13 @@ namespace Yanitta
     {
         static T converter = new T();
 
-        public ConverterBase()
-            : base()
-        {
-        }
+        public override object ProvideValue(IServiceProvider serviceProvider) => converter;
 
         public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
 
         public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
-        }
-
-        public override object ProvideValue(IServiceProvider serviceProvider)
-        {
-            return converter;
         }
     }
 }

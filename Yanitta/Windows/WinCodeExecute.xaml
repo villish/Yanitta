@@ -9,16 +9,12 @@
     FontFamily="../Resources/#MORPHEUS"
     Icon="/Yanitta;component/Resources/PTR_client.png">
 
-    <Window.Resources>
-        <RoutedUICommand x:Key="Exec" />
-    </Window.Resources>
-
     <Window.CommandBindings>
-        <CommandBinding Command="{StaticResource Exec}" Executed="CommandBinding_Exec_Executed" />
+        <CommandBinding Command="Play" Executed="CommandBinding_Exec_Executed" />
     </Window.CommandBindings>
 
     <Window.InputBindings>
-        <KeyBinding Command="{StaticResource Exec}" Key="F5" />
+        <KeyBinding Command="Play" Key="F5" />
     </Window.InputBindings>
 
     <Grid DataContext="{Binding Source={StaticResource processList}}">
@@ -29,7 +25,7 @@
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{x:Static yanitta:Localization.ProcessName}" VerticalAlignment="Center" />
             <ComboBox Width="200" Name="cbProcess" ItemsSource="{Binding}" DisplayMemberPath="." />
-            <Button Content="{x:Static yanitta:Localization.CommandRun}" Margin="10,0,0,0" Width="100" Command="{StaticResource Exec}" />
+            <Button Content="{x:Static yanitta:Localization.CommandRun}" Margin="10,0,0,0" Width="100" Command="Play" />
         </StackPanel>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="#FF17AD1A">
             <avalonedit:TextEditor Name="teCode" FontFamily="Consolas" />

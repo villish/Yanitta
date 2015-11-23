@@ -17,7 +17,7 @@
         Warlock     = 09,
         Monk        = 10,
         Druid       = 11,
-        DeamonHunter= 12,
+        DemonHunter = 12,
     }
 
     /// <summary>

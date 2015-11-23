@@ -207,14 +207,15 @@ namespace Yanitta
             var abilityView = CollectionViewSource.GetDefaultView(abilityList.ItemsSource);
             if (abilityView != null)
             {
-                if (string.IsNullOrWhiteSpace(tbAbilityFilter.Text))
+                var text = (sender as TextBox)?.Text;
+                if (string.IsNullOrWhiteSpace(text))
                 {
                     abilityView.Filter = null;
                 }
                 else
                 {
                     int spellId = 0;
-                    if (int.TryParse(tbAbilityFilter.Text, out spellId))
+                    if (int.TryParse(text, out spellId))
                     {
                         abilityView.Filter = new Predicate<object>((raw_ability) =>
                         {
@@ -231,7 +232,7 @@ namespace Yanitta
                             var ability = raw_ability as Ability;
                             if (ability == null || string.IsNullOrWhiteSpace(ability.Name))
                                 return false;
-                            return ability.Name.IndexOf(tbAbilityFilter.Text, StringComparison.CurrentCultureIgnoreCase) > -1;
+                            return ability.Name.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) > -1;
                         });
                     }
                 }

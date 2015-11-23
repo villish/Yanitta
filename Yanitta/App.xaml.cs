@@ -10,12 +10,7 @@ namespace Yanitta
 {
     public partial class App : Application
     {
-        public static ProcessList ProcessList { get; set; }
-
-        static App()
-        {
-            ProcessList = new ProcessList();
-        }
+        public static ProcessList ProcessList { get; set; } = new ProcessList();
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -50,7 +45,7 @@ namespace Yanitta
             {
                 ProfileDb.Instance = new ProfileDb();
                 File.WriteAllText(fileName, "");
-                StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
+                ShowWindow<WinProfileEditor>();
             }
             else
             {
@@ -66,7 +61,7 @@ namespace Yanitta
 
         public static T ShowWindow<T>() where T : Window, new()
         {
-            var window = App.Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
+            var window = Current.Windows.OfType<T>().FirstOrDefault() ?? new T();
 
             window.Show();
 
@@ -82,7 +77,6 @@ namespace Yanitta
         protected override void OnExit(ExitEventArgs e)
         {
             ProfileDb.Save();
-            Console.WriteLine("Yanitta stoped ... !");
             ConsoleWriter.CloseWriter();
             base.OnExit(e);
         }

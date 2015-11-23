@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Yanitta.Properties;
 
@@ -60,7 +61,9 @@ namespace Yanitta
         bool isInGame;
         IntPtr keyboardHook;
         bool IsDisposed;
-        DispatcherTimer mTimer;
+        DispatcherTimer mTimer = new DispatcherTimer {
+            Interval = TimeSpan.FromMilliseconds(500)
+        };
 
         /// <summary>
         /// Текущий процесс <see cref="ProcessMemory"/>
@@ -96,6 +99,8 @@ namespace Yanitta
         /// </summary>
         public WowClass Class { get; private set; }
 
+        public BitmapImage ImageSource => Extensions.GetClassIcon(Class);
+
         /// <summary>
         /// Имя персонажа.
         /// </summary>
@@ -127,9 +132,10 @@ namespace Yanitta
                     }
 
                     OnPropertyChanged("Class");
+                    OnPropertyChanged("ImageSource");
                     OnPropertyChanged("Name");
                     OnPropertyChanged("Rotations");
-                };
+                }
             }
         }
 
@@ -152,18 +158,17 @@ namespace Yanitta
 
             Memory = new ProcessMemory(process);
 
-            mTimer = new DispatcherTimer();
-            mTimer.Interval = TimeSpan.FromMilliseconds(500);
-            mTimer.Tick += (o, e) => {
-                if (CheckProcess())
-                    IsInGame = Memory.Read<byte>(Memory.Rebase(Offsets.IsInGame)) != 0;
-            };
-
             // Мы должны сохранить ссылку на делегат, чтобы его не трогал сборщик мусора
             KeyBoardProck = new KeyBoardProc(HookCallback);
             keyboardHook = SetWindowsHookEx(13, KeyBoardProck, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
 
-            mTimer.IsEnabled = true;
+            mTimer.Tick += (o, e) => {
+                if (CheckProcess())
+                {
+                    var ingame = Memory.Read<byte>(Memory.Rebase(Offsets.IsInGame));
+                    IsInGame = ingame != 0;
+                }
+            };
             mTimer.Start();
         }
 
@@ -308,7 +313,6 @@ namespace Yanitta
                 return;
 
             mTimer?.Stop();
-
             if (keyboardHook != IntPtr.Zero)
                 UnhookWindowsHookEx(keyboardHook);
             KeyBoardProck = null;
