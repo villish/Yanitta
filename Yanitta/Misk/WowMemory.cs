@@ -98,7 +98,7 @@ namespace Yanitta
         /// </summary>
         public WowClass Class { get; private set; }
 
-        public BitmapImage ImageSource => Extensions.GetClassIcon(Class);
+        public BitmapImage ImageSource => Extensions.GetIconFromEnum(Class);
 
         /// <summary>
         /// Имя персонажа.

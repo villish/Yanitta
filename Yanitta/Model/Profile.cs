@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
@@ -37,12 +36,23 @@ namespace Yanitta
         }
 
         [XmlIgnore]
-        public BitmapImage ImageSource => Extensions.GetClassIcon(Class);
+        public BitmapImage ImageSource => Extensions.GetIconFromEnum(Class);
 
         /// <summary>
         /// Список ротаций профиля.
         /// </summary>
         [XmlElement("Rotation")]
         public ObservableCollection<Rotation> RotationList { get; set; } = new ObservableCollection<Rotation>();
+
+        [XmlIgnore]
+        public IEnumerable<WowSpecializations> SpecList
+        {
+            get
+            {
+                foreach (WowSpecializations spec in Enum.GetValues(typeof(WowSpecializations)))
+                    if ((int)spec >> 16 == (byte)Class || spec == WowSpecializations.None)
+                        yield return spec;
+            }
+        }
     }
 }

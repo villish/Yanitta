@@ -306,6 +306,43 @@
   <ItemGroup>
     <Resource Include="Resources\DemonHunter.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\DeathKnight_Blood.png" />
+    <Resource Include="Resources\DeathKnight_Frost.png" />
+    <Resource Include="Resources\DeathKnight_Unholy.png" />
+    <Resource Include="Resources\Druid_Balance.png" />
+    <Resource Include="Resources\Druid_Feral.png" />
+    <Resource Include="Resources\Druid_Guardian.png" />
+    <Resource Include="Resources\Druid_Restoration.png" />
+    <Resource Include="Resources\Hunter_Beastmaster.png" />
+    <Resource Include="Resources\Hunter_Marksmanship.png" />
+    <Resource Include="Resources\Hunter_Survival.png" />
+    <Resource Include="Resources\Mage_Arcane.png" />
+    <Resource Include="Resources\Mage_Fire.png" />
+    <Resource Include="Resources\Mage_Frost.png" />
+    <Resource Include="Resources\Monk_Brewmaster.png" />
+    <Resource Include="Resources\Monk_MistWeaver.png" />
+    <Resource Include="Resources\Monk_WindWalker.png" />
+    <Resource Include="Resources\Paladin_Holy.png" />
+    <Resource Include="Resources\Paladin_Protection.png" />
+    <Resource Include="Resources\Paladin_Retribution.png" />
+    <Resource Include="Resources\Priest_Discipline.png" />
+    <Resource Include="Resources\Priest_Holy.png" />
+    <Resource Include="Resources\Priest_Shadow.png" />
+    <Resource Include="Resources\Rogue_Assassination.png" />
+    <Resource Include="Resources\Rogue_Combat.png" />
+    <Resource Include="Resources\Rogue_Subtlety.png" />
+    <Resource Include="Resources\Shaman_Elemental.png" />
+    <Resource Include="Resources\Shaman_Enhancement.png" />
+    <Resource Include="Resources\Shaman_Restoration.png" />
+    <Resource Include="Resources\specs.txt" />
+    <Resource Include="Resources\Warlock_Affliction.png" />
+    <Resource Include="Resources\Warlock_Demonology.png" />
+    <Resource Include="Resources\Warlock_Destruction.png" />
+    <Resource Include="Resources\Warrior_Arms.png" />
+    <Resource Include="Resources\Warrior_Fury.png" />
+    <Resource Include="Resources\Warrior_Protection.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

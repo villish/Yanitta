@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -21,6 +22,21 @@ namespace Yanitta
             get { return name; }
             set { Set(ref name, value); }
         }
+
+        WowSpecializations spec;
+
+        /// <summary>
+        ///
+        /// </summary>
+        [XmlAttribute]
+        public WowSpecializations Spec
+        {
+            get { return spec; }
+            set { Set(ref spec, value, "Spec", "ImageSource"); }
+        }
+
+        [XmlIgnore]
+        public BitmapImage ImageSource => Extensions.GetIconFromEnum(spec);
 
         /// <summary>
         /// Код Lua привязанный к ротации.
