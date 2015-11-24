@@ -28,12 +28,15 @@ namespace Yanitta
         public event PropertyChangedEventHandler PropertyChanged;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void Set<T>(ref T field, T value, [CallerMemberName]string propertyName = "")
+        protected void Set<T>(ref T field, T value, [CallerMemberName]string propertyName = "", params string[] fields)
         {
             if (!EqualityComparer<T>.Default.Equals(field, value))
             {
                 field = value;
                 OnPropertyChanged(propertyName);
+
+                foreach (var fname in fields)
+                    OnPropertyChanged(fname);
             }
         }
 

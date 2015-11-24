@@ -246,7 +246,15 @@
                             </TabItem>
                         </TabControl>
                         <GroupBox Header="{x:Static yanitta:Localization.Rotation}">
-                            <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Center" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <ComboBox Margin="5" ItemsSource="{Binding ProfileList/SpecList}" SelectedValue="{Binding ProfileList/RotationList/Spec}" />
+                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Center" Grid.Column="1" />
+                            </Grid>
+
                         </GroupBox>
                         <GroupBox Header="{x:Static yanitta:Localization.Ability}" Grid.Row="1">
                             <Grid DataContext="{Binding ProfileList/RotationList/AbilityList}">
@@ -306,7 +314,7 @@
 
                                 <!-- todo: maybe use parent source -->
                                 <Image Grid.Column="2" VerticalAlignment="Top"
-                                       Source="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=ProfileList/ImageSource}" />
+                                       Source="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=ProfileList/RotationList/ImageSource}" />
                             </Grid>
                         </GroupBox>
                     </Grid>

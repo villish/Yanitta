@@ -1175,7 +1175,7 @@ function NeedMassReflect()
     end
 end
 ]]></Lua>
-    <Rotation Name="Защита">
+    <Rotation Name="Защита" Spec="Warrior_Protection">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -1629,7 +1629,7 @@ return isInMeele;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Неистовство">
+    <Rotation Name="Неистовство" Spec="Warrior_Fury">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = 0;
@@ -1938,7 +1938,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Оружие">
+    <Rotation Name="Оружие" Spec="Warrior_Arms">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = 0;
@@ -2269,7 +2269,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Гладиатор">
+    <Rotation Name="Гладиатор" Spec="Warrior_Protection">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -2550,7 +2550,7 @@ return true;
 useCooldown = true;
 setAoE      = nil;
 ]]></Lua>
-    <Rotation Name="Защита">
+    <Rotation Name="Защита" Spec="Paladin_Protection">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -2836,10 +2836,10 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Лекарь">
+    <Rotation Name="Лекарь" Spec="Paladin_Holy">
       <HotKey Key="Z" Modifier="Alt" />
     </Rotation>
-    <Rotation Name="Воздаяние">
+    <Rotation Name="Воздаяние" Spec="Paladin_Retribution">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -3114,7 +3114,7 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
-    <Rotation Name="Выживание">
+    <Rotation Name="Выживание" Spec="Hunter_Survival">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 NOTIFY_CAST_TABLE[19801] = "|cff15bd05>> Снимаю исступление!";
@@ -3509,7 +3509,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Стрельба">
+    <Rotation Name="Стрельба" Spec="Hunter_Marksmanship">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 NOTIFY_CAST_TABLE[19801] = "|cff15bd05>> Снимаю исступление!";
@@ -3878,7 +3878,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Повелитель зверей">
+    <Rotation Name="Повелитель зверей" Spec="Hunter_Beastmaster">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 NOTIFY_CAST_TABLE[19801] = "|cff15bd05>> Снимаю исступление!";
@@ -4272,7 +4272,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Farm">
+    <Rotation Name="Farm" Spec="None">
       <HotKey Key="B" Modifier="Alt" />
       <Ability Name="Укус змеи">
         <SpellID>1978</SpellID>
@@ -4394,7 +4394,7 @@ function EVENT_MODS.LOOT_OPENED()
     end
 end
 ]]></Lua>
-    <Rotation Name="Бой">
+    <Rotation Name="Бой" Spec="Rogue_Combat">
       <HotKey Key="Z" Modifier="Alt" />
       <Ability Name="Инициализаця">
         <SpellID>0</SpellID>
@@ -4710,7 +4710,7 @@ return not isInRange;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Ликвидация">
+    <Rotation Name="Ликвидация" Spec="Rogue_Assassination">
       <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Инициализаця">
         <SpellID>0</SpellID>
@@ -4912,10 +4912,10 @@ return IsSpellInRange(GetSpellInfo(1329), "target") ~= 1;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Скрытность">
+    <Rotation Name="Скрытность" Spec="Rogue_Subtlety">
       <HotKey Key="C" Modifier="Alt" />
     </Rotation>
-    <Rotation Name="Фарм ларей">
+    <Rotation Name="Фарм ларей" Spec="None">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 mTempTable = { };
@@ -5016,7 +5016,7 @@ useCooldown = true;
 setAoE      = nil;
 useAutoDispell = true;
 ]]></Lua>
-    <Rotation Name="Послушание">
+    <Rotation Name="Послушание" Spec="Priest_Discipline">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 useAutoDispell = true;
@@ -5387,10 +5387,10 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Свет">
+    <Rotation Name="Свет" Spec="Priest_Holy">
       <HotKey Key="Z" Modifier="Alt" />
     </Rotation>
-    <Rotation Name="Тьма">
+    <Rotation Name="Тьма" Spec="Priest_Shadow">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -5748,7 +5748,7 @@ DK_RUNES = {
     end
 };
 ]]></Lua>
-    <Rotation Name="Кровь">
+    <Rotation Name="Кровь" Spec="DeathKnight_Blood">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 --if DebugMode then
@@ -6038,7 +6038,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Лед">
+    <Rotation Name="Лед" Spec="DeathKnight_Frost">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 simulacrSpellTable = {
@@ -6333,7 +6333,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Нечестивость">
+    <Rotation Name="Нечестивость" Spec="DeathKnight_Unholy">
       <HotKey Key="C" Modifier="Alt" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -6532,7 +6532,7 @@ return true;
     </Rotation>
   </Profile>
   <Profile Class="Shaman">
-    <Rotation Name="Стихии">
+    <Rotation Name="Стихии" Spec="Shaman_Elemental">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -6796,7 +6796,7 @@ return PartyLogic:GetDispellInfo(target);
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Совершенствование">
+    <Rotation Name="Совершенствование" Spec="Shaman_Enhancement">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -7006,7 +7006,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Исцеление">
+    <Rotation Name="Исцеление" Spec="Shaman_Restoration">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -7272,7 +7272,7 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
-    <Rotation Name="Огонь">
+    <Rotation Name="Огонь" Spec="Mage_Fire">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 PYRO_TABLE = {
@@ -7612,7 +7612,7 @@ return not HasBuff("player", 1459);
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Лед">
+    <Rotation Name="Лед" Spec="Mage_Frost">
       <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Руна мощи">
         <SpellID>116011</SpellID>
@@ -7857,7 +7857,7 @@ return not HasBuff("player", 7302);
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Тайная магия">
+    <Rotation Name="Тайная магия" Spec="Mage_Arcane">
       <HotKey Key="C" Modifier="Alt" />
     </Rotation>
   </Profile>
@@ -7866,7 +7866,7 @@ return not HasBuff("player", 7302);
 setAoE = false;
 useCooldown = true;
 ]]></Lua>
-    <Rotation Name="Демонология">
+    <Rotation Name="Демонология" Spec="Warlock_Demonology">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
@@ -8056,7 +8056,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Разрушение">
+    <Rotation Name="Разрушение" Spec="Warlock_Destruction">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 useChaosBold = true;
@@ -8439,7 +8439,7 @@ return isInRange;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Колдовство">
+    <Rotation Name="Колдовство" Spec="Warlock_Affliction">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 bossTargetState = false;
@@ -8791,7 +8791,7 @@ end
     <Lua><![CDATA[
 useCooldown = true;
 ]]></Lua>
-    <Rotation Name="Танцующий с ветром">
+    <Rotation Name="Танцующий с ветром" Spec="Monk_Windwalker">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -9101,7 +9101,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Хмелевар">
+    <Rotation Name="Хмелевар" Spec="Monk_Brewmaster">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -9464,7 +9464,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Ткач туманов">
+    <Rotation Name="Ткач туманов" Spec="Monk_Mistweaver">
       <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Благотворный туман">
         <SpellID>116964</SpellID>
@@ -9525,7 +9525,7 @@ setAoE      = nil;
 isCat       = nil;
 useAutoDispell = true;
 ]]></Lua>
-    <Rotation Name="Лекарь">
+    <Rotation Name="Лекарь" Spec="Druid_Restoration">
       <HotKey Key="Z" Modifier="Alt" />
       <Lua><![CDATA[
 useAutoDispell = true;
@@ -10047,7 +10047,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Страж">
+    <Rotation Name="Страж" Spec="Druid_Guardian">
       <HotKey Key="X" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -10332,7 +10332,7 @@ return not isCat;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Сила зверя">
+    <Rotation Name="Сила зверя" Spec="Druid_Feral">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -10680,7 +10680,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Баланс">
+    <Rotation Name="Баланс" Spec="Druid_Balance">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = false;
@@ -11112,7 +11112,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Фарм репы">
+    <Rotation Name="Фарм репы" Spec="None">
       <HotKey Key="N" Modifier="Alt" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -11168,7 +11168,7 @@ return true;
     </Rotation>
   </Profile>
   <Profile Class="DemonHunter">
-    <Rotation Name="Сокрушение">
+    <Rotation Name="Сокрушение" Spec="DemonHunter_Havoc">
       <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Удар демона">
         <SpellID>0</SpellID>
@@ -11221,12 +11221,12 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
     </Rotation>
-    <Rotation Name="Месть">
+    <Rotation Name="Месть" Spec="DemonHunter_Vengeance">
       <HotKey Key="Z" Modifier="Alt" />
     </Rotation>
   </Profile>
   <Profile Class="None">
-    <Rotation Name="Малигос">
+    <Rotation Name="Малигос" Spec="None">
       <HotKey Key="M" Modifier="Alt Shift" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -11330,7 +11330,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Серебряный авангард (Турнир)">
+    <Rotation Name="Серебряный авангард (Турнир)" Spec="None">
       <HotKey Key="T" Modifier="Alt Shift" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -11424,7 +11424,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Ульдуар - Левиафан">
+    <Rotation Name="Ульдуар - Левиафан" Spec="None">
       <HotKey Key="C" Modifier="Alt Shift" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -11491,7 +11491,7 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Волчеры (Сбежавшая курица)">
+    <Rotation Name="Волчеры (Сбежавшая курица)" Spec="None">
       <HotKey Key="K" Modifier="Alt Shift" />
       <Ability Name="Сбежавшая курица">
         <SpellID>0</SpellID>

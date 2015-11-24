@@ -59,6 +59,43 @@
                     <Image x:Key="Monk"         Source="/Resources/Monk.png" />
                     <Image x:Key="Druid"        Source="/Resources/Druid.png" />
                     <Image x:Key="DemonHunter"  Source="/Resources/DemonHunter.png" />
+
+                    <Image x:Key="Mage_Arcane"  			Source="/Resources/Mage_Arcane.png" />
+                    <Image x:Key="Mage_Fire"  				Source="/Resources/Mage_Fire.png" />
+                    <Image x:Key="Mage_Frost"  				Source="/Resources/Mage_Frost.png" />
+                    <Image x:Key="Paladin_Holy"  			Source="/Resources/Paladin_Holy.png" />
+                    <Image x:Key="Paladin_Protection"  		Source="/Resources/Paladin_Protection.png" />
+                    <Image x:Key="Paladin_Retribution"  	Source="/Resources/Paladin_Retribution.png" />
+                    <Image x:Key="Warrior_Arms"  			Source="/Resources/Warrior_Arms.png" />
+                    <Image x:Key="Warrior_Fury"  			Source="/Resources/Warrior_Fury.png" />
+                    <Image x:Key="Warrior_Protection"  		Source="/Resources/Warrior_Protection.png" />
+                    <Image x:Key="Druid_Balance"  			Source="/Resources/Druid_Balance.png" />
+                    <Image x:Key="Druid_Feral"  			Source="/Resources/Druid_Feral.png" />
+                    <Image x:Key="Druid_Guardian"  			Source="/Resources/Druid_Guardian.png" />
+                    <Image x:Key="Druid_Restoration"  		Source="/Resources/Druid_Restoration.png" />
+                    <Image x:Key="DeathKnight_Blood"  		Source="/Resources/DeathKnight_Blood.png" />
+                    <Image x:Key="DeathKnight_Frost"  		Source="/Resources/DeathKnight_Frost.png" />
+                    <Image x:Key="DeathKnight_Unholy"  		Source="/Resources/DeathKnight_Unholy.png" />
+                    <Image x:Key="Hunter_Beastmaster"  		Source="/Resources/Hunter_Beastmaster.png" />
+                    <Image x:Key="Hunter_Marksmanship"  	Source="/Resources/Hunter_Marksmanship.png" />
+                    <Image x:Key="Hunter_Survival"  		Source="/Resources/Hunter_Survival.png" />
+                    <Image x:Key="Priest_Discipline"  		Source="/Resources/Priest_Discipline.png" />
+                    <Image x:Key="Priest_Holy"  			Source="/Resources/Priest_Holy.png" />
+                    <Image x:Key="Priest_Shadow"  			Source="/Resources/Priest_Shadow.png" />
+                    <Image x:Key="Rogue_Assassination"  	Source="/Resources/Rogue_Assassination.png" />
+                    <Image x:Key="Rogue_Combat"  			Source="/Resources/Rogue_Combat.png" />
+                    <Image x:Key="Rogue_Subtlety"  			Source="/Resources/Rogue_Subtlety.png" />
+                    <Image x:Key="Shaman_Elemental"  		Source="/Resources/Shaman_Elemental.png" />
+                    <Image x:Key="Shaman_Enhancement"  		Source="/Resources/Shaman_Enhancement.png" />
+                    <Image x:Key="Shaman_Restoration"  		Source="/Resources/Shaman_Restoration.png" />
+                    <Image x:Key="Warlock_Affliction"  		Source="/Resources/Warlock_Affliction.png" />
+                    <Image x:Key="Warlock_Demonology"  		Source="/Resources/Warlock_Demonology.png" />
+                    <Image x:Key="Warlock_Destruction"  	Source="/Resources/Warlock_Destruction.png" />
+                    <Image x:Key="Monk_Brewmaster"  		Source="/Resources/Monk_Brewmaster.png" />
+                    <Image x:Key="Monk_Windwalker"  		Source="/Resources/Monk_Windwalker.png" />
+                    <Image x:Key="Monk_Mistweaver"  		Source="/Resources/Monk_Mistweaver.png" />
+                    <Image x:Key="DemonHunter_Havoc"  		Source="/Resources/DemonHunter_Havoc.png" />
+                    <Image x:Key="DemonHunter_Vengeance"  	Source="/Resources/DemonHunter_Vengeance.png" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
