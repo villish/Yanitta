@@ -9366,7 +9366,7 @@ if setAoE and not HasBuff("player", 116847) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар кружкой">
+      <Ability Name="Удар бочонком">
         <SpellID>121253</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
