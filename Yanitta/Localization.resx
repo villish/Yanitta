@@ -1,17 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -431,5 +431,113 @@
   </data>
   <data name="WowClass_DeamonHunter" xml:space="preserve">
     <value>Deamon Hunter</value>
+  </data>
+  <data name="WowSpecializations_Mage_Arcane" xml:space="preserve">
+    <value>Arcane</value>
+  </data>
+  <data name="WowSpecializations_Mage_Fire" xml:space="preserve">
+    <value>Fire</value>
+  </data>
+  <data name="WowSpecializations_Mage_Frost" xml:space="preserve">
+    <value>Frost</value>
+  </data>
+  <data name="WowSpecializations_DeathKnight_Blood" xml:space="preserve">
+    <value>Blood</value>
+  </data>
+  <data name="WowSpecializations_DeathKnight_Frost" xml:space="preserve">
+    <value>Frost</value>
+  </data>
+  <data name="WowSpecializations_DeathKnight_Unholy" xml:space="preserve">
+    <value>Unholy</value>
+  </data>
+  <data name="WowSpecializations_DemonHunter_Havoc" xml:space="preserve">
+    <value>Havoc</value>
+  </data>
+  <data name="WowSpecializations_DemonHunter_Vengeance" xml:space="preserve">
+    <value>Vengeance</value>
+  </data>
+  <data name="WowSpecializations_Druid_Balance" xml:space="preserve">
+    <value>Balance</value>
+  </data>
+  <data name="WowSpecializations_Druid_Feral" xml:space="preserve">
+    <value>Feral</value>
+  </data>
+  <data name="WowSpecializations_Druid_Guardian" xml:space="preserve">
+    <value>Guardian</value>
+  </data>
+  <data name="WowSpecializations_Druid_Restoration" xml:space="preserve">
+    <value>Restoration</value>
+  </data>
+  <data name="WowSpecializations_Hunter_Beastmaster" xml:space="preserve">
+    <value>Beastmaster</value>
+  </data>
+  <data name="WowSpecializations_Hunter_Marksmanship" xml:space="preserve">
+    <value>Marksmanship</value>
+  </data>
+  <data name="WowSpecializations_Hunter_Survival" xml:space="preserve">
+    <value>Survival</value>
+  </data>
+  <data name="WowSpecializations_Monk_Brewmaster" xml:space="preserve">
+    <value>Brewmaster</value>
+  </data>
+  <data name="WowSpecializations_Monk_Mistweaver" xml:space="preserve">
+    <value>Mistweaver</value>
+  </data>
+  <data name="WowSpecializations_Monk_Windwalker" xml:space="preserve">
+    <value>Windwalker</value>
+  </data>
+  <data name="WowSpecializations_Priest_Discipline" xml:space="preserve">
+    <value>Discipline</value>
+  </data>
+  <data name="WowSpecializations_Priest_Holy" xml:space="preserve">
+    <value>Holy</value>
+  </data>
+  <data name="WowSpecializations_Priest_Shadow" xml:space="preserve">
+    <value>Shadow</value>
+  </data>
+  <data name="WowSpecializations_Rogue_Assassination" xml:space="preserve">
+    <value>Assassination</value>
+  </data>
+  <data name="WowSpecializations_Rogue_Combat" xml:space="preserve">
+    <value>Combat</value>
+  </data>
+  <data name="WowSpecializations_Rogue_Subtlety" xml:space="preserve">
+    <value>Subtlety</value>
+  </data>
+  <data name="WowSpecializations_Shaman_Elemental" xml:space="preserve">
+    <value>Elemental</value>
+  </data>
+  <data name="WowSpecializations_Shaman_Enhancement" xml:space="preserve">
+    <value>Enhancement</value>
+  </data>
+  <data name="WowSpecializations_Shaman_Restoration" xml:space="preserve">
+    <value>Restoration</value>
+  </data>
+  <data name="WowSpecializations_Warlock_Affliction" xml:space="preserve">
+    <value>Affliction</value>
+  </data>
+  <data name="WowSpecializations_Warlock_Demonology" xml:space="preserve">
+    <value>Demonology</value>
+  </data>
+  <data name="WowSpecializations_Warlock_Destruction" xml:space="preserve">
+    <value>Destruction</value>
+  </data>
+  <data name="WowSpecializations_Warrior_Arms" xml:space="preserve">
+    <value>Arms</value>
+  </data>
+  <data name="WowSpecializations_Warrior_Fury" xml:space="preserve">
+    <value>Fury</value>
+  </data>
+  <data name="WowSpecializations_Warrior_Protection" xml:space="preserve">
+    <value>Protection</value>
+  </data>
+  <data name="WowSpecializations_Paladin_Holy" xml:space="preserve">
+    <value>Holy</value>
+  </data>
+  <data name="WowSpecializations_Paladin_Protection" xml:space="preserve">
+    <value>Protection</value>
+  </data>
+  <data name="WowSpecializations_Paladin_Retribution" xml:space="preserve">
+    <value>Retribution</value>
   </data>
 </root>

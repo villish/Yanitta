@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,6 +41,24 @@ namespace Yanitta
             {
                 if (!ProfileDb.Instance.ProfileList.Any(profile => profile.Class == wowClass))
                     ProfileDb.Instance.ProfileList.Add(new Profile { Class = wowClass });
+            }
+
+            foreach (var profile in ProfileDb.Instance.ProfileList)
+            {
+                foreach (WowSpecializations spec in Enum.GetValues(typeof(WowSpecializations)))
+                {
+                    if (((int)spec >> 16) == (byte)profile.Class)
+                    {
+                        if (!profile.RotationList.Any(r => r.Spec == spec))
+                        {
+                            var name = Localization.ResourceManager.GetString($"WowSpecializations_{spec}", CultureInfo.CurrentUICulture);
+                            var rotation = new Rotation { Spec = spec, Name = name };
+                            if (profile.RotationList.Count < Keys.Length)
+                                rotation.HotKey = new HotKey(Keys[profile.RotationList.Count], ModifierKeys.Alt);
+                            profile.RotationList.Add(rotation);
+                        }
+                    }
+                }
             }
 
             // Профиль общих ротаций должен быть в самом низу.

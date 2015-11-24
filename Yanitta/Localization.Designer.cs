@@ -1004,5 +1004,329 @@ namespace Yanitta {
                 return ResourceManager.GetString("WowClass_Warrior", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Blood.
+        /// </summary>
+        public static string WowSpecializations_DeathKnight_Blood {
+            get {
+                return ResourceManager.GetString("WowSpecializations_DeathKnight_Blood", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Frost.
+        /// </summary>
+        public static string WowSpecializations_DeathKnight_Frost {
+            get {
+                return ResourceManager.GetString("WowSpecializations_DeathKnight_Frost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Unholy.
+        /// </summary>
+        public static string WowSpecializations_DeathKnight_Unholy {
+            get {
+                return ResourceManager.GetString("WowSpecializations_DeathKnight_Unholy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Havoc.
+        /// </summary>
+        public static string WowSpecializations_DemonHunter_Havoc {
+            get {
+                return ResourceManager.GetString("WowSpecializations_DemonHunter_Havoc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Vengeance.
+        /// </summary>
+        public static string WowSpecializations_DemonHunter_Vengeance {
+            get {
+                return ResourceManager.GetString("WowSpecializations_DemonHunter_Vengeance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Balance.
+        /// </summary>
+        public static string WowSpecializations_Druid_Balance {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Druid_Balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Feral.
+        /// </summary>
+        public static string WowSpecializations_Druid_Feral {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Druid_Feral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Guardian.
+        /// </summary>
+        public static string WowSpecializations_Druid_Guardian {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Druid_Guardian", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Restoration.
+        /// </summary>
+        public static string WowSpecializations_Druid_Restoration {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Druid_Restoration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Beastmaster.
+        /// </summary>
+        public static string WowSpecializations_Hunter_Beastmaster {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Hunter_Beastmaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Marksmanship.
+        /// </summary>
+        public static string WowSpecializations_Hunter_Marksmanship {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Hunter_Marksmanship", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Survival.
+        /// </summary>
+        public static string WowSpecializations_Hunter_Survival {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Hunter_Survival", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Arcane.
+        /// </summary>
+        public static string WowSpecializations_Mage_Arcane {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Mage_Arcane", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Fire.
+        /// </summary>
+        public static string WowSpecializations_Mage_Fire {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Mage_Fire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Frost.
+        /// </summary>
+        public static string WowSpecializations_Mage_Frost {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Mage_Frost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Brewmaster.
+        /// </summary>
+        public static string WowSpecializations_Monk_Brewmaster {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Monk_Brewmaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Mistweaver.
+        /// </summary>
+        public static string WowSpecializations_Monk_Mistweaver {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Monk_Mistweaver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Windwalker.
+        /// </summary>
+        public static string WowSpecializations_Monk_Windwalker {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Monk_Windwalker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Holy.
+        /// </summary>
+        public static string WowSpecializations_Paladin_Holy {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Paladin_Holy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Protection.
+        /// </summary>
+        public static string WowSpecializations_Paladin_Protection {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Paladin_Protection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Retribution.
+        /// </summary>
+        public static string WowSpecializations_Paladin_Retribution {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Paladin_Retribution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Discipline.
+        /// </summary>
+        public static string WowSpecializations_Priest_Discipline {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Priest_Discipline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Holy.
+        /// </summary>
+        public static string WowSpecializations_Priest_Holy {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Priest_Holy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Shadow.
+        /// </summary>
+        public static string WowSpecializations_Priest_Shadow {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Priest_Shadow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Assassination.
+        /// </summary>
+        public static string WowSpecializations_Rogue_Assassination {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Rogue_Assassination", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Combat.
+        /// </summary>
+        public static string WowSpecializations_Rogue_Combat {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Rogue_Combat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Subtlety.
+        /// </summary>
+        public static string WowSpecializations_Rogue_Subtlety {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Rogue_Subtlety", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Elemental.
+        /// </summary>
+        public static string WowSpecializations_Shaman_Elemental {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Shaman_Elemental", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Enhancement.
+        /// </summary>
+        public static string WowSpecializations_Shaman_Enhancement {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Shaman_Enhancement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Restoration.
+        /// </summary>
+        public static string WowSpecializations_Shaman_Restoration {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Shaman_Restoration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Affliction.
+        /// </summary>
+        public static string WowSpecializations_Warlock_Affliction {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Warlock_Affliction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Demonology.
+        /// </summary>
+        public static string WowSpecializations_Warlock_Demonology {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Warlock_Demonology", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Destruction.
+        /// </summary>
+        public static string WowSpecializations_Warlock_Destruction {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Warlock_Destruction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Arms.
+        /// </summary>
+        public static string WowSpecializations_Warrior_Arms {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Warrior_Arms", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Fury.
+        /// </summary>
+        public static string WowSpecializations_Warrior_Fury {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Warrior_Fury", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Protection.
+        /// </summary>
+        public static string WowSpecializations_Warrior_Protection {
+            get {
+                return ResourceManager.GetString("WowSpecializations_Warrior_Protection", resourceCulture);
+            }
+        }
     }
 }
