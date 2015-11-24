@@ -335,7 +335,6 @@
     <Resource Include="Resources\Shaman_Elemental.png" />
     <Resource Include="Resources\Shaman_Enhancement.png" />
     <Resource Include="Resources\Shaman_Restoration.png" />
-    <Resource Include="Resources\specs.txt" />
     <Resource Include="Resources\Warlock_Affliction.png" />
     <Resource Include="Resources\Warlock_Demonology.png" />
     <Resource Include="Resources\Warlock_Destruction.png" />
