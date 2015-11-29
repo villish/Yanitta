@@ -25,7 +25,7 @@
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
 
-                    <!--WowClass-->
+                    <!--MovingStates-->
                     <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="MovingValues">
                         <ObjectDataProvider.MethodParameters>
                             <x:Type TypeName="yanitta:MovingStates" />
@@ -42,6 +42,7 @@
                     <!--Collections-->
                     <CollectionViewSource x:Key="processList" Source="{Binding Source={x:Static yanitta:App.ProcessList}}" />
 
+                    <!--#region Images -->
                     <Image Width="20" x:Key="AddIcon"    Source="/Resources/Add.png" />
                     <Image Width="20" x:Key="CopyIcon"   Source="/Resources/Clipboard.png" />
                     <Image Width="20" x:Key="DeleteIcon" Source="/Resources/Denided.png" />
@@ -96,6 +97,8 @@
                     <Image x:Key="Monk_Mistweaver"  		Source="/Resources/Monk_Mistweaver.png" />
                     <Image x:Key="DemonHunter_Havoc"  		Source="/Resources/DemonHunter_Havoc.png" />
                     <Image x:Key="DemonHunter_Vengeance"  	Source="/Resources/DemonHunter_Vengeance.png" />
+                    <!--#endregion -->
+
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -38,8 +38,6 @@ namespace Yanitta
                 Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
 
             var fileName = Settings.Default.ProfilesFileName;
-            Console.WriteLine("Yanitta startup!...");
-
             // Если файл профиля отсутствует, создаем новый (пустой) и запускаем редактор профилей.
             if (!File.Exists(fileName))
             {

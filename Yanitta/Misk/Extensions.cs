@@ -7,10 +7,10 @@ namespace Yanitta
 {
     static class Extensions
     {
-        public static BitmapImage GetIconFromEnum(Enum evalue)
+        public static BitmapImage GetIconFromEnum(Enum value)
         {
-            var img = Application.Current.TryFindResource(evalue.ToString()) as Image;
-            if (img == null)
+            var img = Application.Current.TryFindResource(value?.ToString()) as Image;
+            if (img?.Source == null)
                 img = Application.Current.TryFindResource("None") as Image;
             if (img?.Source == null)
                 return null;
