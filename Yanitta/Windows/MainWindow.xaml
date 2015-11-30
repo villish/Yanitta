@@ -35,7 +35,7 @@
 
     <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyle}">
         <Rectangle Fill="Black" Margin="10,80,10,60"/>
-        <Image Width="750" MouseDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
+        <Image Width="750" MouseLeftButtonDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
         <Button Width="100" Height="24" Margin="507,55,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenSettings}" Content="{x:Static yanitta:Localization.Setting}" />
         <Button Width="100" Height="24" Margin="37,55,0,0"   HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenProfiles}" Content="{x:Static yanitta:Localization.Constructor}" />
         <Button Width="100" Height="24" Margin="151,55,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenCodeExec}" Content="{x:Static yanitta:Localization.CodeConsole}" />
