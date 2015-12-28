@@ -9153,6 +9153,21 @@ if IsModKeyDown(mkLeftShift) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Статуя быка">
+        <SpellID>115315</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>false</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMouseButtonDown(3) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -9171,7 +9186,6 @@ end
 isInMeele  = IsSpellInRange(GetSpellInfo(100787), "target") == 1;
 energy     = PLAYER:Power();
 chi        = PLAYER:Power(SPELL_POWER_CHI);
-
 additionalChi = IsSpellKnown(115396) and 1 or 0;
 ]]></Lua>
       </Ability>
@@ -9329,6 +9343,19 @@ if PLAYER.HP < 80 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Удар бочонком">
+        <SpellID>121253</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Пламенное дыхание">
         <SpellID>115181</SpellID>
         <Target>Target</Target>
@@ -9364,19 +9391,6 @@ end
 if setAoE and not HasBuff("player", 116847) then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар бочонком">
-        <SpellID>121253</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Танцующий журавль">
