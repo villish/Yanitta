@@ -1246,6 +1246,21 @@ end
 return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
+      <Ability Name="Опустошитель">
+        <SpellID>152277</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMouseButtonDown(3) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
