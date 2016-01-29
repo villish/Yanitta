@@ -918,9 +918,12 @@ end
 function AddonFrame_AbilityLoop()
     for _,ability in ipairs(ABILITY_TABLE) do
         if not ability.Failed then
-            for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
-                if not targetInfo.IsDisable and CheckAndCastAbility(ability, targetInfo) then
-                    return;
+            local targetList = ability.TargetList or { "none" };
+            for _,targetInfo in ipairs(targetList) do
+                if not targetInfo.IsDisable then
+                    if CheckAndCastAbility(ability, targetInfo) then
+                        return;
+                    end
                 end
             end
         end
