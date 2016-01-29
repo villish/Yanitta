@@ -737,7 +737,14 @@ function CheckAndCastAbility(ability, targetInfo)
         return;
     end
 
-    local result = ability.Func(ability, targetInfo, targetInfo.Target);
+    local status, result = pcall(ability.Func, ability, targetInfo, targetInfo.Target);
+    if not status then
+        ability.Failed = true;
+        print("|cfff5360c>>|r|cff6f0a9a"..ability.Name.."|r|cfff5360c"..tostring(result).."|r");
+        print(result);
+        return;
+    end
+
     if not result then
         return;
     elseif type(result) == "string" then
@@ -910,9 +917,11 @@ end
 
 function AddonFrame_AbilityLoop()
     for _,ability in ipairs(ABILITY_TABLE) do
-        for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
-            if not targetInfo.IsDisable and CheckAndCastAbility(ability, targetInfo) then
-                return;
+        if not ability.Failed then
+            for _,targetInfo in ipairs(ability.TargetList or { "none" }) do
+                if not targetInfo.IsDisable and CheckAndCastAbility(ability, targetInfo) then
+                    return;
+                end
             end
         end
     end
