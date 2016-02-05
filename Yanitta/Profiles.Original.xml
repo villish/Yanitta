@@ -737,14 +737,7 @@ function CheckAndCastAbility(ability, targetInfo)
         return;
     end
 
-    local status, result = pcall(ability.Func, ability, targetInfo, targetInfo.Target);
-    if not status then
-        ability.Failed = true;
-        print("|cfff5360c>>|r|cff6f0a9a"..ability.Name.."|r|cfff5360c"..tostring(result).."|r");
-        print(result);
-        return;
-    end
-
+    local result = ability.Func(ability, targetInfo, targetInfo.Target);
     if not result then
         return;
     elseif type(result) == "string" then
