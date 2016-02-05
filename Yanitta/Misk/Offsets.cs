@@ -56,6 +56,10 @@ namespace Yanitta
         /// </summary>
         public long InjectedAddress;
 
+        public long ObjectMr;
+        public long ObjTrack;
+        public long TestClnt;
+
         public Offsets(string section)
         {
             if (!File.Exists(fileName))
@@ -66,6 +70,10 @@ namespace Yanitta
             IsInGame        = GetValue(section, "IsInGame", fileName);
             ExecuteBuffer   = GetValue(section, "ExecBuff", fileName);
             InjectedAddress = GetValue(section, "Inj_Addr", fileName);
+
+            ObjectMr        = GetValue(section, "ObjectMr", fileName);
+            ObjTrack        = GetValue(section, "ObjTrack", fileName);
+            TestClnt        = GetValue(section, "TestClnt", fileName);
         }
 
         #region WinApi
