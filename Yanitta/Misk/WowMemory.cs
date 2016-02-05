@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -283,6 +284,40 @@ namespace Yanitta
                 Memory.Free(code);
                 Memory.Free(path);
             }
+        }
+
+        public RelayCommand<object> Test => new RelayCommand<object>((x) => TestBoober());
+        private void TestBoober()
+        {
+            var objManager = Memory.Read<IntPtr>(Memory.Rebase(Offsets.ObjectMr));
+            var playerGuid = Memory.Read<WowGuid>(objManager + FieldOffsets.Player);
+            Console.WriteLine(playerGuid);
+            byte found = 0;
+            Console.WriteLine("start >>>");
+            var baseAddr = Memory.Read<IntPtr>(objManager + FieldOffsets.FirstObject);
+            var cur = new WowObject(Memory, baseAddr);
+            while (cur.BaseAddr != IntPtr.Zero && (cur.BaseAddr.ToInt64() & 1) == 0)
+            {
+                //Console.WriteLine(cur.Guid);
+                if (cur.Type == 5 && cur.IsBoobing && cur.CreatedBy == playerGuid)
+                {
+                    Console.WriteLine("Found boober: " + cur.Guid);
+                    found = 1;
+                    // write boobers guid to "mouseover"
+                    Memory.Write(Memory.Rebase(Offsets.ObjTrack), cur.Guid);
+                    break;
+                }
+
+                cur.BaseAddr = Memory.Read<IntPtr>(cur.BaseAddr + FieldOffsets.NextObject);
+            }
+
+            Console.WriteLine("stop >>>");
+
+            // lua_pushboolean(state, found)
+            // 6A 00          push    found ; change
+            // FF 75 08       push    [ebp+arg_0]
+            // E8 9F B2 CD FF call    lua_pushboolean
+            Memory.Write(Memory.Rebase(Offsets.TestClnt), found);
         }
 
         public override string ToString() => $"[{ProcessId}] {Name} ({Class})";

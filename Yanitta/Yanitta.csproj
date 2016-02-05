@@ -95,6 +95,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Misk\Extensions.cs" />
+    <Compile Include="Misk\WowObject.cs" />
+    <Compile Include="Misk\WowGuid.cs" />
+    <Compile Include="Model\RelayCommand.cs" />
     <Compile Include="Windows\CopyAbilitysWindow.xaml.cs">
       <DependentUpon>CopyAbilitysWindow.xaml</DependentUpon>
     </Compile>

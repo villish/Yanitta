@@ -60,6 +60,7 @@
                             <TextBlock Text="{Binding ProcessId}"   Width="50"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                             <TextBlock Text="{Binding Name}"        Width="120" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                             <TextBlock Text="{Binding ProcessName}" Width="120" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                            <Button Content="Test" Command="{Binding Test}" Width="50"/>
                         </StackPanel>
                     </Border>
                     <HierarchicalDataTemplate.ItemTemplate>
