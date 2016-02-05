@@ -59,6 +59,7 @@ namespace Yanitta
         public long ObjectMr;
         public long ObjTrack;
         public long TestClnt;
+        public long FishEnbl;
 
         public Offsets(string section)
         {
@@ -71,9 +72,10 @@ namespace Yanitta
             ExecuteBuffer   = GetValue(section, "ExecBuff", fileName);
             InjectedAddress = GetValue(section, "Inj_Addr", fileName);
 
-            ObjectMr        = GetValue(section, "ObjectMr", fileName);
-            ObjTrack        = GetValue(section, "ObjTrack", fileName);
-            TestClnt        = GetValue(section, "TestClnt", fileName);
+            ObjectMr = GetValueOrZero(section, "ObjectMr", fileName);
+            ObjTrack = GetValueOrZero(section, "ObjTrack", fileName);
+            TestClnt = GetValueOrZero(section, "TestClnt", fileName);
+            FishEnbl = GetValueOrZero(section, "FishEnbl", fileName);
         }
 
         #region WinApi
@@ -94,6 +96,18 @@ namespace Yanitta
             if (val == 0L)
                 throw new NullReferenceException("key");
 
+            return val;
+        }
+
+        long GetValueOrZero(string section, string key, string file)
+        {
+            if (string.IsNullOrWhiteSpace(section))
+                throw new ArgumentNullException(nameof(section));
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
+
+            var val = GetPrivateProfileInt(section, key, 0, file);
             return val;
         }
 

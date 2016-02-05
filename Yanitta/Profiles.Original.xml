@@ -25,6 +25,8 @@ moving_spell_table = {
     172106, -- Дух лисы (Охотник)
 };
 
+SetPOIIconOverlapDistance(12.00);
+
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
 --  Имя эффекта
@@ -11547,6 +11549,9 @@ end
     </Rotation>
     <Rotation Name="Рыбалка" Spec="None">
       <HotKey Key="F" Modifier="Alt Shift" />
+      <Lua><![CDATA[
+SetPOIIconOverlapDistance(12.01);
+]]></Lua>
       <Ability Name="Щелкнуть по крючку">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -11557,13 +11562,18 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsFishingLoot() then
+if IsFishingLoot()
+or IsMounted()
+or IsStealthed()
+or IsFlying()
+or IsAltKeyDown()
+or UnitAffectingCombat("player") then
     return true;
 end
 
 if UnitChannelInfo("player") then
     if IsTestBuild() then
-        print("Поймали рыбу!");
+        print("|cff6f0a9a>>Поймали рыбку!|r");
         InteractUnit("mouseover");
         return true;
     end
