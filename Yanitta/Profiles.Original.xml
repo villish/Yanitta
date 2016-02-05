@@ -11540,5 +11540,46 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
+    <Rotation Name="Рыбалка" Spec="None">
+      <HotKey Key="F" Modifier="Alt Shift" />
+      <Ability Name="Щелкнуть по крючку">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsFishingLoot() then
+    return true;
+end
+
+if UnitChannelInfo("player") then
+    if IsTestBuild() then
+        print("Поймали рыбу!");
+        InteractUnit("mouseover");
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Рыбная ловля">
+        <SpellID>131474</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>false</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if not IsFishingLoot() then
+    return true;
+end
+]]></Lua>
+      </Ability>
+    </Rotation>
   </Profile>
 </Profiles>
