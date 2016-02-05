@@ -170,8 +170,8 @@ namespace Yanitta
                     IsInGame = ingame != 0;
                     if (IsInGame && Offsets.FishEnbl != 0)
                     {
-                        var isBotEnable = Memory.Read<float>(Memory.Rebase(Offsets.FishEnbl)) == 12.01;
-                        if (isBotEnable)
+                        var isBotEnable = Memory.Read<float>(Memory.Rebase(Offsets.FishEnbl));
+                        if (Math.Abs(isBotEnable - 12.01f) < float.Epsilon)
                             TestBoober();
                     }
                 }

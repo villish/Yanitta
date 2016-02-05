@@ -1106,6 +1106,7 @@ function ChangeRotation(rotation)
         AddonFrame:UnregisterAllEvents();
         AddonFrame.print("|cfff5360cРотация отключена.|r", true);
         PlaySound("PAPERDOLLCLOSE", "Master");
+        SetPOIIconOverlapDistance(12.00);
     elseif rotation then
         AddonFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
         AddonFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
