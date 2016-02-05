@@ -63,7 +63,7 @@ namespace Yanitta
         IntPtr keyboardHook;
         bool IsDisposed;
         DispatcherTimer mTimer = new DispatcherTimer {
-            Interval = TimeSpan.FromMilliseconds(500)
+            Interval = TimeSpan.FromMilliseconds(1000)
         };
 
         /// <summary>
@@ -168,6 +168,10 @@ namespace Yanitta
                 {
                     var ingame = Memory.Read<byte>(Memory.Rebase(Offsets.IsInGame));
                     IsInGame = ingame != 0;
+                    if (IsInGame)
+                    {
+                        TestBoober();
+                    }
                 }
             };
             mTimer.Start();
@@ -291,6 +295,8 @@ namespace Yanitta
         {
             var objManager = Memory.Read<IntPtr>(Memory.Rebase(Offsets.ObjectMr));
             var playerGuid = Memory.Read<WowGuid>(objManager + FieldOffsets.Player);
+
+            var state = Memory.Read<byte>(Memory.Rebase(Offsets.TestClnt));
             Console.WriteLine(playerGuid);
             byte found = 0;
             Console.WriteLine("start >>>");
@@ -317,7 +323,11 @@ namespace Yanitta
             // 6A 00          push    found ; change
             // FF 75 08       push    [ebp+arg_0]
             // E8 9F B2 CD FF call    lua_pushboolean
-            Memory.Write(Memory.Rebase(Offsets.TestClnt), found);
+            if (state != found)
+            {
+                Console.WriteLine($"Write state: state {state} / found {found}");
+                Memory.Write(Memory.Rebase(Offsets.TestClnt), found);
+            }
         }
 
         public override string ToString() => $"[{ProcessId}] {Name} ({Class})";
