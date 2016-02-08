@@ -48,6 +48,9 @@ namespace Yanitta
         [DllImport("user32.dll", SetLastError = true)]
         static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
         #endregion
 
         /// <summary>
@@ -366,6 +369,11 @@ namespace Yanitta
         public IntPtr Rebase(long offset)
         {
             return new IntPtr(offset + Process.MainModule.BaseAddress.ToInt64());
+        }
+
+        public IntPtr SendMessage(uint msg, IntPtr wParam, IntPtr lParam)
+        {
+            return SendMessage(Process.MainWindowHandle, msg, wParam, lParam);
         }
 
         /// <summary>

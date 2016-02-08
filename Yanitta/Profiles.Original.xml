@@ -11567,9 +11567,16 @@ if IsFishingLoot()
 or IsMounted()
 or IsStealthed()
 or IsFlying()
-or IsAltKeyDown()
+or IsModKeyDown(mkLeftAlt)
 or UnitAffectingCombat("player") then
     return true;
+end
+
+if select(2, UnitClass("player")) == "DRUID" then
+    local f = GetShapeshiftForm();
+    if f ~= 0 and f ~= 4 then
+        return true;
+    end
 end
 
 if UnitChannelInfo("player") then

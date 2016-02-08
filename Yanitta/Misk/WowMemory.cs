@@ -310,7 +310,14 @@ namespace Yanitta
                 if (cur.Type == 5 && cur.IsBoobing && cur.CreatedBy == playerGuid)
                 {
                     Console.WriteLine("Found boober: " + cur.Guid);
+
                     found = 1;
+                    Memory.SendMessage(0x100, new IntPtr(0x41), IntPtr.Zero); // A
+                    Memory.SendMessage(0x101, new IntPtr(0x41), IntPtr.Zero); // A
+
+                    Memory.SendMessage(0x100, new IntPtr(0x44), IntPtr.Zero); // D
+                    Memory.SendMessage(0x101, new IntPtr(0x44), IntPtr.Zero); // D
+
                     // write boobers guid to "mouseover"
                     Memory.Write(Memory.Rebase(Offsets.ObjTrack), cur.Guid);
                     break;
