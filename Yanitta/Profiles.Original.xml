@@ -8780,6 +8780,21 @@ if PowerByPercent("player", SPELL_POWER_MANA) < 60
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Похищение жизни">
+        <SpellID>689</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if PLAYER.HP < 80 then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Похищение души">
         <SpellID>103103</SpellID>
         <Target>Target</Target>
@@ -11552,6 +11567,22 @@ end
       <HotKey Key="F" Modifier="Alt Shift" />
       <Lua><![CDATA[
 SetPOIIconOverlapDistance(12.01);
+isFishPause = false;
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
+    if state == 0 then return end; -- release key
+
+    if modifier == "LCTRL" then
+        if isFishPause then
+            isFishPause = false;
+            SetPOIIconOverlapDistance(12.01);
+            AddonFrame.print("|cff00ff00Ловим рыбку!", true);
+        else
+            isFishPause = true;
+            SetPOIIconOverlapDistance(12.00);
+            AddonFrame.print("|cffff0000>>Пауза<<", true);
+        end
+    end
+end
 ]]></Lua>
       <Ability Name="Щелкнуть по крючку">
         <SpellID>0</SpellID>
@@ -11563,6 +11594,10 @@ SetPOIIconOverlapDistance(12.01);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if isFishPause then
+    return true;
+end
+
 if IsFishingLoot()
 or IsMounted()
 or IsStealthed()
@@ -11585,6 +11620,11 @@ if UnitChannelInfo("player") then
         InteractUnit("mouseover");
         return true;
     end
+end
+
+-- Плот рыболова (предмет и бафф)
+if select(3, HasBuff("player", 124036)) < 30 then
+    UseItemById(85500);
 end
 ]]></Lua>
       </Ability>
