@@ -11568,6 +11568,8 @@ end
       <Lua><![CDATA[
 SetPOIIconOverlapDistance(12.01);
 isFishPause = false;
+autoUseLure = false;
+
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -11582,7 +11584,32 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
             AddonFrame.print("|cffff0000>>Пауза<<", true);
         end
     end
+
+    if modifier == "RCTRL" then
+        if autoUseLure then
+            autoUseLure = false;
+            AddonFrame.print("|cffff0000>>Автонаживка не используется!<<", true);
+        else
+            autoUseLure = true;
+            AddonFrame.print("|cff00ff00Автонживка!", true);
+        end
+    end
 end
+
+ZONE_BUFF_TABLE = {
+    -- == ДРЕНОР == --
+    --[978] = { item = 0, buff = 0 }, -- Ашран
+    --[945] = { item = 0, buff = 0 }, -- Танаанские джунгли
+    [949] = { item = 110274, buff = 158031 }, -- Горгронд (Наживка для безротого скрытиуса)
+    [947] = { item = 110290, buff = 158035 }, -- Долина Призрачной Луны (Наживка для слепого озерного осетра)
+    [950] = { item = 110289, buff = 158034 }, -- Награнд (Наживка для толстопузика)
+    [948] = { item = 110293, buff = 158038 }, -- Пики Арака (Наживка на глубинного угря-мешкорота)
+    [946] = { item = 110294, buff = 158039 }, -- Таладор (Наживка для хлыстохвоста Черноводья)
+    [941] = { item = 110291, buff = 158036 }, -- Хребет Ледяного Огня (Наживка для огненного аммонита)
+
+    -- == ЛЕГИОН == --
+    --[0] = { item = 0, buff = 0 },
+};
 ]]></Lua>
       <Ability Name="Щелкнуть по крючку">
         <SpellID>0</SpellID>
@@ -11621,10 +11648,34 @@ if UnitChannelInfo("player") then
         return true;
     end
 end
-
+]]></Lua>
+      </Ability>
+      <Ability Name="Наживки/Бафы">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
 -- Плот рыболова (предмет и бафф)
 if select(3, HasBuff("player", 124036)) < 30 then
     UseItemById(85500);
+end
+
+if autoUseLure then
+    -- Автоприменение наживки в зависимости от зоны
+    local zone = GetCurrentMapAreaID();
+    local val = ZONE_BUFF_TABLE[zone];
+    if val then
+        assert(val.item ~= 0, string.format("Для зоны (%d) не указан Id предмета!"));
+        assert(val.buff ~= 0, string.format("Для зоны (%d) не указан Id бафа!"));
+        if not HasBuff("player", val.buff) then
+            UseItemById(val.item);
+        end
+    end
 end
 ]]></Lua>
       </Ability>
