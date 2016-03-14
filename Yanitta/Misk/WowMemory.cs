@@ -166,8 +166,7 @@ namespace Yanitta
             mTimer.Tick += (o, e) => {
                 if (CheckProcess())
                 {
-                    var ingame = Memory.Read<byte>(Memory.Rebase(Offsets.IsInGame));
-                    IsInGame = ingame != 0;
+                    IsInGame = Memory.Read<bool>(Memory.Rebase(Offsets.IsInGame));
                     if (IsInGame && Offsets.FishEnbl != 0)
                     {
                         var isBotEnable = Memory.Read<float>(Memory.Rebase(Offsets.FishEnbl));

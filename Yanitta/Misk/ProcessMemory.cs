@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -16,7 +17,7 @@ namespace Yanitta
     {
         #region API
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2"), DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
+        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "2"), DllImport("kernel32", SetLastError = true, ExactSpelling = true)]
         static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, AllocationType flAllocationType, MemoryProtection flProtect);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
         static extern IntPtr OpenThread(ThreadAccess DesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwThreadId);
@@ -27,7 +28,11 @@ namespace Yanitta
         [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
         static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, IntPtr lpNumberOfBytesWritten);
         [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, IntPtr lpBuffer, int nSize, IntPtr lpNumberOfBytesWritten);
+        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
         static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, IntPtr lpNumberOfBytesRead);
+        [SuppressMessage("Microsoft.Portability", "CA1901:PInvokeDeclarationsShouldBePortable", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
+        static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] IntPtr lpBuffer, int dwSize, IntPtr lpNumberOfBytesRead);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
         static extern uint SuspendThread(IntPtr thandle);
         [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32", SetLastError = true)]
@@ -59,7 +64,7 @@ namespace Yanitta
         public Process Process { get; private set; }
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Yanitta.ProcessMemory"/>.
+        /// Инициализирует новый экземпляр класса <see cref="ProcessMemory"/>.
         /// </summary>
         /// <param name="process"></param>
         public ProcessMemory(Process process)
@@ -124,15 +129,11 @@ namespace Yanitta
         /// <returns>Значение указанного типа.</returns>
         public unsafe T Read<T>(IntPtr address) where T : struct
         {
-            var type = typeof(T);
-            if (type.IsEnum)
-                type = Enum.GetUnderlyingType(type);
-            var result = new byte[Marshal.SizeOf(type)];
-            ReadProcessMemory(Process.Handle, address, result, result.Length, IntPtr.Zero);
-            var handle = GCHandle.Alloc(result, GCHandleType.Pinned);
-            T returnObject = (T)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), type);
-            handle.Free();
-            return returnObject;
+            fixed (byte* pointer = new byte[MarshalCache<T>.Size])
+            {
+                ReadProcessMemory(Process.Handle, address, new IntPtr(pointer), MarshalCache<T>.Size, IntPtr.Zero);
+                return (T)Marshal.PtrToStructure(new IntPtr(pointer), MarshalCache<T>.RealType);
+            }
         }
 
         /// <summary>
@@ -157,25 +158,17 @@ namespace Yanitta
         /// <returns>Указатель на участок памяти куда записано значение.</returns>
         public IntPtr Write<T>(T value) where T : struct
         {
-            var buffer  = new byte[Marshal.SizeOf(value)];
-            var hObj    = Marshal.AllocHGlobal(buffer.Length);
-            var address = Alloc(buffer.Length);
+            var address = Alloc(MarshalCache<T>.Size);
             if (address == IntPtr.Zero)
                 throw new Win32Exception();
             try
             {
-                Marshal.StructureToPtr(value, hObj, false);
-                Marshal.Copy(hObj, buffer, 0, buffer.Length);
-                if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
-                    throw new Win32Exception();
+                Write(address, value);
             }
             catch
             {
                 Free(address);
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(hObj);
+                address = IntPtr.Zero;
             }
 
             return address;
@@ -187,21 +180,11 @@ namespace Yanitta
         /// <typeparam name="T">Тип записываемого значения.</typeparam>
         /// <param name="address">Указатель на участок памяти куда надо записать значение.</param>
         /// <param name="value">Значение, которое надо записать в память процесса.</param>
-        public void Write<T>(IntPtr address, T value) where T : struct
+        public unsafe void Write<T>(IntPtr address, T value) where T : struct
         {
-            var buffer = new byte[Marshal.SizeOf(value)];
-            var hObj   = Marshal.AllocHGlobal(buffer.Length);
-            try
-            {
-                Marshal.StructureToPtr(value, hObj, false);
-                Marshal.Copy(hObj, buffer, 0, buffer.Length);
-                if (!WriteProcessMemory(Process.Handle, address, buffer, buffer.Length, IntPtr.Zero))
-                    throw new Win32Exception();
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(hObj);
-            }
+            void* pointer = MarshalCache<T>.GetUnsafePtr(ref value);
+            if (!WriteProcessMemory(Process.Handle, address, new IntPtr(pointer), MarshalCache<T>.Size, IntPtr.Zero))
+                throw new Win32Exception();
         }
 
         /// <summary>
@@ -398,6 +381,52 @@ namespace Yanitta
                 return wow64Process;
             }
         }
+    }
+
+    public unsafe static class MarshalCache<T>
+    {
+        internal unsafe delegate void* GetUnsafePtrDelegate(ref T value);
+
+        public static Type RealType { get; }
+        public static int Size { get; }
+        public static TypeCode TypeCode { get; }
+
+        internal static GetUnsafePtrDelegate GetUnsafePtr { get; }
+
+        static MarshalCache()
+        {
+            RealType = typeof(T);
+            TypeCode = Type.GetTypeCode(RealType);
+
+            if (RealType == typeof(bool))
+            {
+                Size = 1;
+            }
+            else if (RealType.IsEnum)
+            {
+                var underlying = RealType.GetEnumUnderlyingType();
+                Size     = Marshal.SizeOf(underlying);
+                RealType = underlying;
+                TypeCode = Type.GetTypeCode(RealType);
+            }
+            else
+            {
+                Size = Marshal.SizeOf(RealType);
+            }
+
+            var name = $"GetPinnedPtr<{typeof(T).FullName}>";
+            var method = new DynamicMethod(name, typeof(void*), new[] { typeof(T).MakeByRefType() }, typeof(MarshalCache<>).Module);
+            var il = method.GetILGenerator();
+
+            var opcode = IntPtr.Size == 4 ? OpCodes.Conv_U : OpCodes.Conv_U8;
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(opcode);
+            il.Emit(OpCodes.Ret);
+
+            GetUnsafePtr = (GetUnsafePtrDelegate)method.CreateDelegate(typeof(GetUnsafePtrDelegate));
+        }
+
     }
 
     #region Enums
