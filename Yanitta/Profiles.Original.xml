@@ -26,6 +26,7 @@ moving_spell_table = {
 };
 
 SetPOIIconOverlapDistance(12.00);
+EVENT_MODS.MODIFIER_STATE_CHANGED = nil;
 
 -- Возвращает, есть ли один из перечисленных бафов на персонаже
 -- Возвращает:
@@ -11691,6 +11692,75 @@ end
         <Lua><![CDATA[
 if not IsFishingLoot() then
     return true;
+end
+]]></Lua>
+      </Ability>
+    </Rotation>
+    <Rotation Name="Утилизация" Spec="None">
+      <HotKey Key="U" Modifier="Alt Shift" />
+      <Lua><![CDATA[
+autoOpenEnabled = false
+
+UTILS_CONTAINER = {
+    114116, -- Сумка с утилем
+    114120, -- Большой ящик с утилем
+};
+
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
+    if state == 0 then return end; -- release key
+    if modifier = "RSHIFT" then
+        if not autoOpenEnabled then
+            autoOpenEnabled = true;
+            AddonFrame.print("|cff00ff00 Auto open ENABLE", true);
+        elseif autoOpenEnabled then
+            autoOpenEnabled = false;
+            AddonFrame.print("|cffff0000 Auto open DISABLE", true);
+        end
+    elseif modifier = "RCTRL" then
+        local max_count = 0;
+        for bag = 2, 3 do
+            for slot = 1, GetContainerNumSlots(bag) do
+                local item = GetContainerItemLink(bag, slot);
+                if item and max_count < 10 then
+                    local _,_,quality,_,_,_,_,_,_,_,price = GetItemInfo(item);
+                    if quality < 4 and price > 0 then
+                        PickupContainerItem(bag, slot);
+                        PickupMerchantItem();
+                        print("Sold: "..item);
+                        max_count = max_count + 1;
+                    end
+                end
+            end
+        end
+    end
+end
+]]></Lua>
+      <Ability Name="Большой ящик с утилем">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if autoOpenEnabled then
+    -- Продаем только из сумок 2 и 3
+    local free = select('#', GetContainerFreeSlots(3))
+    if free > 3 then
+        for _, itemId in ipairs(UTILS_CONTAINER) do
+            if not UnitCastingInfo("player") then
+                local count = GetItemCount(itemId);
+                if (count or 0) > 0 then
+                    local start,duration,enable = GetItemCooldown(itemId);
+                    if start == 0 and duration == 0 and enable then
+                        UseItemByName(itemId);
+                    end
+                end
+            end
+        end
+    end
 end
 ]]></Lua>
       </Ability>
