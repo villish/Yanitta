@@ -11708,7 +11708,7 @@ UTILS_CONTAINER = {
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
-    if modifier = "RSHIFT" then
+    if modifier == "RSHIFT" then
         if not autoOpenEnabled then
             autoOpenEnabled = true;
             AddonFrame.print("|cff00ff00 Auto open ENABLE", true);
@@ -11716,9 +11716,9 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
             autoOpenEnabled = false;
             AddonFrame.print("|cffff0000 Auto open DISABLE", true);
         end
-    elseif modifier = "RCTRL" then
+    elseif modifier == "RCTRL" then
         local max_count = 0;
-        for bag = 2, 3 do
+        for bag = 1, 2 do
             for slot = 1, GetContainerNumSlots(bag) do
                 local item = GetContainerItemLink(bag, slot);
                 if item and max_count < 10 then
@@ -11726,7 +11726,7 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
                     if quality < 4 and price > 0 then
                         PickupContainerItem(bag, slot);
                         PickupMerchantItem();
-                        print("Sold: "..item);
+                        print("Продано: "..item);
                         max_count = max_count + 1;
                     end
                 end
@@ -11746,9 +11746,9 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if autoOpenEnabled then
-    -- Продаем только из сумок 2 и 3
-    local free = select('#', GetContainerFreeSlots(3))
-    if free > 3 then
+    -- Продаем только из сумок 1 и 2
+    local freeSlots = #GetContainerFreeSlots(2);
+    if freeSlots > 3 then
         for _, itemId in ipairs(UTILS_CONTAINER) do
             if not UnitCastingInfo("player") then
                 local count = GetItemCount(itemId);
@@ -11760,6 +11760,9 @@ if autoOpenEnabled then
                 end
             end
         end
+    else
+        autoOpenEnabled = false;
+        AddonFrame.print("|cffff0000 Auto open DISABLE", true);
     end
 end
 ]]></Lua>
