@@ -8466,6 +8466,22 @@ return isInRange;
     <Rotation Name="Колдовство" Spec="Warlock_Affliction">
       <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
+AhonyImmune = {
+    ids = {
+        33113, -- Огненный левиафан (Ульдуар)
+    },
+    IsImmune = function(self, target)
+        if UnitExists(target) then
+            local id = UnitId(target);
+            for i,v in ipairs(self.ids) do
+                if v == id then
+                    return true;
+                end
+            end
+        end
+    end
+};
+
 bossTargetState = false;
 SetTargetListState(bossTargetState, "boss%d");
 
@@ -8703,7 +8719,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 7 then
+if not AhonyImmune:IsImmune(target)
+and select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 7 then
     return true;
 end
 ]]></Lua>
