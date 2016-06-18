@@ -1,7 +1,7 @@
 ﻿namespace Yanitta
 {
     /// <summary>
-    /// Перечень доступных классов.
+    /// 
     /// </summary>
     public enum WowClass : byte
     {
@@ -21,7 +21,7 @@
     }
 
     /// <summary>
-    /// Тип цели.
+    /// Target type.
     /// </summary>
     public enum TargetType
     {
@@ -43,7 +43,7 @@
     }
 
     /// <summary>
-    /// Тип движения персонажа.
+    /// Moving state.
     /// </summary>
     public enum MovingStates
     {

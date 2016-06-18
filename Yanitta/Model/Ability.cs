@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace Yanitta
 {
     /// <summary>
-    /// Описывает состав из кода и статических проверок при вычислении на доступность чтения заклинания.
+    /// Ability structure.
     /// </summary>
     [Serializable]
     public class Ability : ViewModelBase
@@ -21,63 +21,62 @@ namespace Yanitta
 
         string name;
         /// <summary>
-        /// Наименование способности.
+        /// Ability name.
         /// </summary>
         [XmlAttribute]
         public string Name { get { return name; } set { Set(ref name, value); } }
 
         uint spellid;
         /// <summary>
-        /// Ид заклинания.
+        /// Spell id.
         /// </summary>
         public uint SpellID { get { return spellid; } set { Set(ref spellid, value); } }
 
         /// <summary>
-        /// Тип цели.
+        /// Target type.
         /// </summary>
         [XmlElement("Target")]
         public List<TargetType> TargetList { get; set; } = new List<TargetType>();
 
         bool cencelchanel;
         /// <summary>
-        /// Прерывать канальные заклинания.
+        /// Cencel channel spells.
         /// </summary>
         public bool CancelChannel { get { return cencelchanel; } set { Set(ref cencelchanel, value); } }
 
         bool cencelcasting;
         /// <summary>
-        /// Прерывать чтение заклинаний.
+        /// Cancel spell casting.
         /// </summary>
         public bool CancelCasting { get { return cencelcasting; } set { Set(ref cencelcasting, value); } }
 
         bool useincombat;
         /// <summary>
-        /// Проверка нахождения в бою.
+        /// Combat check.
         /// </summary>
         public bool IsUseIncombat { get { return useincombat; } set { Set(ref useincombat, value); } }
 
-        bool isusablecheck;
+        bool isusablecheck = true;
         /// <summary>
-        /// Проверка на доступность заклинания.
-        /// По умолчанию должно быть включено.
+        /// Usable spell check.
         /// </summary>
         public bool IsUsableCheck { get { return isusablecheck; } set { Set(ref isusablecheck, value); } }
 
         float recastdelay;
         /// <summary>
-        /// Задержка на произнесение следующего заклинания.
-        /// Если 0, тогда не делать проверку.
+        /// Delay for cast next spell.
+        /// If 0 then not set delay.
         /// </summary>
         public float RecastDelay { get { return recastdelay; } set { Set(ref recastdelay, value); } }
 
         MovingStates movingstate;
         /// <summary>
-        /// Проверка, движения персонажа.
+        /// Moving state.
         /// </summary>
         public MovingStates IsMovingCheck { get { return movingstate; } set { Set(ref movingstate, value); } }
 
         /// <summary>
-        /// Луа код для проверки использования способности.
+        /// Lua code to check for the use of ability.
         /// </summary>
         [XmlIgnore]
         public string Lua { get; set; }
@@ -111,7 +110,7 @@ namespace Yanitta
                 TargetList.OrderBy(n => n).Select(n =>
                     $"{{ Target = \"{n.ToString().ToLower()}\" }}"));
 
-            // код
+            // code
             var lua = string.IsNullOrWhiteSpace(Lua) ? "return false;" : Lua;
             var funcContent = string.Join($"\n{T + T + T}",
                 lua.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));

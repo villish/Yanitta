@@ -8,7 +8,7 @@ using Yanitta.Properties;
 namespace Yanitta
 {
     /// <summary>
-    /// Самообновляемый список процессов.
+    /// Process list.
     /// </summary>
     public class ProcessList : ObservableCollection<WowMemory>, IDisposable
     {
@@ -20,7 +20,7 @@ namespace Yanitta
         };
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="ProcessList"/>
+        /// Inicialise new instace of the <see cref="ProcessList"/>
         /// </summary>
         public ProcessList()
         {

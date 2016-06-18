@@ -8,19 +8,19 @@ using System.Xml.Serialization;
 namespace Yanitta
 {
     /// <summary>
-    /// Контейнер ротаций и способностей привязанный к конкретному классу <see cref="WowClass"/>.
+    /// Profile structure.
     /// </summary>
     [Serializable]
     public class Profile : ViewModelBase
     {
         /// <summary>
-        /// Класс персонажа.
+        /// Character's class.
         /// </summary>
         [XmlAttribute("Class")]
         public WowClass Class { get; set; }
 
         /// <summary>
-        /// Код Lua привязанный к профилю.
+        /// Lua code.
         /// </summary>
         [XmlIgnore]
         public string Lua { get; set; }
@@ -39,7 +39,7 @@ namespace Yanitta
         public BitmapImage ImageSource => Extensions.GetIconFromEnum(Class);
 
         /// <summary>
-        /// Список ротаций профиля.
+        /// Rotation list.
         /// </summary>
         [XmlElement("Rotation")]
         public ObservableCollection<Rotation> RotationList { get; set; } = new ObservableCollection<Rotation>();

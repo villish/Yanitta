@@ -45,10 +45,10 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Сериализирует объект в файл.
+        /// Serialize object to file.
         /// </summary>
-        /// <typeparam name="T">Тип объекта для сериализации.</typeparam>
-        /// <param name="path">Файл который надо сериализовать.</param>
+        /// <typeparam name="T">Object type.</typeparam>
+        /// <param name="path">File path.</param>
         /// <param name="obj">Объект для сериализации.</param>
         public static void Save<T>(string path, T obj) where T : class, new()
         {

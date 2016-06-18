@@ -8,14 +8,14 @@ using Yanitta.Properties;
 namespace Yanitta
 {
     /// <summary>
-    /// База профилей.
+    /// Profile DataBase.
     /// </summary>
     [Serializable]
     [XmlRoot("Profiles")]
     public class ProfileDb : ViewModelBase
     {
         /// <summary>
-        /// Код ядра бота.
+        /// Main Lua code.
         /// </summary>
         [XmlIgnore]
         public string Lua { get; set; }
@@ -31,31 +31,26 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Список профилей.
+        /// Profile list.
         /// </summary>
         [XmlElement("Profile")]
         public ObservableCollection<Profile> ProfileList { get; set; } = new ObservableCollection<Profile>();
 
         /// <summary>
-        /// Текущий экземпляр базы данных.
+        /// Current database instance.
         /// </summary>
         public static ProfileDb Instance { get; set; }
 
         /// <summary>
-        /// Возвращает профиль для указанного класса.
+        /// Return current <see cref="Profile"/>.
         /// </summary>
-        /// <param name="wowClass">Класс персонажа.</param>
-        /// <returns>Профиль ротаций <see cref="YanittaProfile"/>.</returns>
-        public Profile this[WowClass wowClass]
-        {
-            get { return ProfileList.FirstOrDefault(n => n.Class == wowClass); }
-        }
+        /// <param name="wowClass">Character's <see cref="WowClass"></param>
+        /// <returns><see cref="Profile"/>.</returns>
+        public Profile this[WowClass wowClass] => ProfileList.FirstOrDefault(n => n.Class == wowClass);
 
         /// <summary>
-        /// Сохраняет базу данных в файл.
+        /// Save batabase to file.
         /// </summary>
-        /// <param name="fileName">Имя файла базы данных.</param>
-        /// <param name="incVersion">Указывает увеличивать ли версию базы данных.</param>
         public static void Save()
         {
             try

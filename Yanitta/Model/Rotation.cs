@@ -7,14 +7,14 @@ using System.Xml.Serialization;
 namespace Yanitta
 {
     /// <summary>
-    /// Боевая ротация для персонажа.
+    /// Rotation structure.
     /// </summary>
     [Serializable]
     public class Rotation : ViewModelBase, ICloneable
     {
         string name = "none";
         /// <summary>
-        /// Наименование ротации.
+        /// Rotation name.
         /// </summary>
         [XmlAttribute]
         public string Name
@@ -26,7 +26,7 @@ namespace Yanitta
         WowSpecializations spec;
 
         /// <summary>
-        ///
+        /// Rotation spec.
         /// </summary>
         [XmlAttribute]
         public WowSpecializations Spec
@@ -39,13 +39,13 @@ namespace Yanitta
         public BitmapImage ImageSource => Extensions.GetIconFromEnum(spec);
 
         /// <summary>
-        /// Код Lua привязанный к ротации.
+        /// Lua code.
         /// </summary>
         [XmlIgnore]
         public string Lua { get; set; }
 
         /// <summary>
-        /// Горячие клавиши для управления ротацией.
+        /// HotKey for startup/stop rotation.
         /// </summary>
         [XmlElement]
         public HotKey HotKey { get; set; } = new HotKey();
@@ -61,7 +61,7 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Список способностей в порядке их приоритета.
+        /// Ability list.
         /// </summary>
         [XmlElement("Ability")]
         public ObservableCollection<Ability> AbilityList { get; set; } = new ObservableCollection<Ability>();

@@ -8,52 +8,10 @@ namespace Yanitta
     {
         readonly string fileName = Path.Combine(Environment.CurrentDirectory, "offsets.ini");
 
-        /// <summary>
-        /// Имя персонажа.
-        ///
-        /// Lua function UnitName - в самом конце функции
-        /// v3 = sub_A30173(); -- GetPlayerName
-        /// sub_4C7477(a1, v3);
-        /// sub_4C72F7(a1);
-        /// return 2;
-        /// </summary>
         public long PlayerName;
-
-        /// <summary>
-        /// Класс персонажа
-        ///
-        /// Lua function UnitClass
-        ///   else
-        ///  {
-        ///    v3 = sub_A30197();  // GetPlayerClass
-        ///    v4 = sub_4027A0((int)&dword_11A1C88, (unsigned __int8)v3);
-        ///    v5 = sub_A3019D();
-        ///    v6 = sub_73EB65(v4, (unsigned __int8)v5, 0);
-        ///  }
-        /// </summary>
         public long PlayerClass;
-
-        /// <summary>
-        /// Нахождение в мире
-        ///
-        /// Lua function PlaySound
-        ///   if ( !(unsigned __int8)sub_40B039() && (!sub_7D875E() || byte_12AB65E /*IsInWorld*/) )
-        /// </summary>
         public long IsInGame;
-
-        /// <summary>
-        /// Адрес функции FrameScript::ExecuteBuffer
-        ///
-        /// Lua function RunScript
-        /// </summary>
         public long ExecuteBuffer;
-
-        /// <summary>
-        /// Адресс вставки байт кода
-        ///
-        /// По строке 'compat.lua' ищем функцию инициализации Lua
-        /// Начало этой функции и есть адресом.
-        /// </summary>
         public long InjectedAddress;
 
         public long ObjectMr;

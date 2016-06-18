@@ -96,19 +96,19 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Класс персонажа.
+        /// Class of the character.
         /// </summary>
         public WowClass Class { get; private set; }
 
         public BitmapImage ImageSource => Extensions.GetIconFromEnum(Class);
 
         /// <summary>
-        /// Имя персонажа.
+        /// Character name.
         /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
-        /// Состояние, находится ли персонаж в игровом мире.
+        /// Is in game.
         /// </summary>
         public bool IsInGame
         {
@@ -143,7 +143,7 @@ namespace Yanitta
         void OnRotationListChanged(object sender, NotifyCollectionChangedEventArgs e) => OnPropertyChanged("Rotations");
 
         /// <summary>
-        /// Инициализирует новый экземпляр класса <see cref="Yanitta.WowMemory"/>.
+        /// Create new instance of the <see cref="WowMemory"/>.
         /// </summary>
         /// <param name="process">Процесс WoW.</param>
         public WowMemory(Process process)
@@ -296,16 +296,14 @@ namespace Yanitta
         {
             var objManager = Memory.Read<IntPtr>(Memory.Rebase(Offsets.ObjectMr));
             var playerGuid = Memory.Read<WowGuid>(objManager + FieldOffsets.Player);
+            var state      = Memory.Read<byte>(Memory.Rebase(Offsets.TestClnt));
+            var baseAddr   = Memory.Read<IntPtr>(objManager + FieldOffsets.FirstObject);
 
-            var state = Memory.Read<byte>(Memory.Rebase(Offsets.TestClnt));
-            Console.WriteLine(playerGuid);
-            byte found = 0;
-            Console.WriteLine("start >>>");
-            var baseAddr = Memory.Read<IntPtr>(objManager + FieldOffsets.FirstObject);
             var cur = new WowObject(Memory, baseAddr);
+
+            byte found = 0;
             while (cur.BaseAddr != IntPtr.Zero && (cur.BaseAddr.ToInt64() & 1) == 0)
             {
-                //Console.WriteLine(cur.Guid);
                 if (cur.Type == 5 && cur.IsBoobing && cur.CreatedBy == playerGuid)
                 {
                     Console.WriteLine("Found boober: " + cur.Guid);
