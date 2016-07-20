@@ -10433,11 +10433,6 @@ end
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
-moonTargetList = { };
-
---RegisterKeyHandler('F');
-RegisterKeyHandler('R');
-RegisterKeyHandler('T');
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -10457,21 +10452,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
-        end
-    end
-end
-
--- Будем отслеживать был ли наложен дот во время усиления
-function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
-          sourceGUID,srcName,  sourceFlags,sourceFlags2,
-          destGUID,  destName, destFlags,  destFlags2,
-          spellId,   spellName,spellSchool)
-    if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
-        -- Солнечный/Лунный огонь
-        if destGUID and (spellId == 93402 or spellId == 8921) then
-            if HasBuff("player", 112071) then -- Парад планет
-                moonTargetList[destGUID] = GetTime();
-            end
         end
     end
 end
@@ -10648,60 +10628,6 @@ end
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-    </Rotation>
-    <Rotation Name="Фарм репы" Spec="None">
-      <HotKey Key="N" Modifier="Alt" />
-      <Ability Name="Инициализация">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or GetShapeshiftForm() ~= 0 then
-    return true;
-end
-
--- 64399 Боевой штандарт координации
-UseItemById(64399);
-
-TargetNearestEnemy();
-]]></Lua>
-      </Ability>
-      <Ability Name="Лунный огонь">
-        <SpellID>8921</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- and string.match(UnitName("target"), "^(.+).жных морей$")
-if UnitExists("target") and not UnitIsDeadOrGhost("target") then
-    if PLAYER.IsMoving or not HasDebuff("target", 8921) then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Гнев">
-        <SpellID>5176</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
 ]]></Lua>
