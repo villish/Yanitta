@@ -5738,57 +5738,9 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
-
-DK_RUNES = {
-    Init = function(self)
-        self.BLOOD  = { Rem = 0, Count = 0, FullCount = 0 };
-        self.UNHOLY = { Rem = 0, Count = 0, FullCount = 0 };
-        self.FROST  = { Rem = 0, Count = 0, FullCount = 0 };
-        self.DEATH  = { Rem = 0, Count = 0, FullCount = 0 };
-        self.Total  = 0;
-        self.Power  = UnitPower("player", SPELL_POWER_RUNIC_POWER);
-
-        for slot = 1, 6 do
-            local runeType        = GetRuneType(slot);
-            local runeCount       = GetRuneCount(slot);
-            local start, duration = GetRuneCooldown(slot);
-            local rune_name       = RUNE_MAPPING[runeType]; -- from RuneFrame.lua
-
-            self.Total = self.Total + runeCount;
-
-            self[rune_name].Rem       = (start + duration) - GetTime();
-            self[rune_name].Count     = runeCount + self[rune_name].Count;
-            self[rune_name].FullCount = runeCount + self[rune_name].FullCount;
-
-            -- Руна сметри может быть использована в качестве любой из рун.
-            -- надо тестить
-            if runeType == 4 then
-                self.BLOOD.FullCount  = self.BLOOD.FullCount  + runeCount;
-                self.UNHOLY.FullCount = self.UNHOLY.FullCount + runeCount;
-                self.FROST.FullCount  = self.FROST.FullCount  + runeCount;
-            end
-            --print(rune_name.." Remains: "..runes[rune_name].Rem.." Count: "..runes[rune_name].Count);
-        end
-    end
-};
 ]]></Lua>
     <Rotation Name="Кровь" Spec="DeathKnight_Blood">
       <HotKey Key="X" Modifier="Alt" />
-      <Lua><![CDATA[
---if DebugMode then
---    AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
---    function EVENT_MODS.UI_ERROR_MESSAGE(msg)
---        print(msg);
---        print(format("Blood: %d Frost: %d Unholy: %d Death: %d",
---            runes.BLOOD.Count,
---            runes.FROST.Count,
---            runes.UNHOLY.Count,
---            runes.DEATH.Count
---        ));
---        print("===============");
---    end
---end
-]]></Lua>
       <Ability Name="Смерть и разложение">
         <SpellID>43265</SpellID>
         <Target>MouseLocation</Target>
@@ -5816,14 +5768,6 @@ return IsModKeyDown(mkLeftShift);
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
-
--- Перейти в стойку защиты
-if GetSpecialization() == 1 and GetShapeshiftForm() ~= 1 then
-    CastShapeshiftForm(1); -- blood
-end
-
-DK_RUNES:Init();
-isInMeele = IsSpellInRange(GetSpellInfo(45462), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Заморозка разума">
@@ -5841,81 +5785,8 @@ isInMeele = IsSpellInRange(GetSpellInfo(45462), "target") == 1;
 return useInterrupt and CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Кровь вампира">
-        <SpellID>55233</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PLAYER.HP < 30 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Костяной щит">
-        <SpellID>49222</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasBuff("player", 49222) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Незыблемость льда">
-        <SpellID>48792</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and PLAYER.HP <= 40 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Захват рун">
-        <SpellID>48982</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>1</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---if PLAYER.Agro > 2 and PLAYER.HP < 70 and isInMeele then
---    return true;
---end
-]]></Lua>
-      </Ability>
-      <Ability Name="Танцующее руническое оружие">
-        <SpellID>49028</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return useCooldown and isInMeele and PLAYER.HP < 60;
-]]></Lua>
-      </Ability>
-      <Ability Name="Вспышка болезни">
-        <SpellID>77575</SpellID>
+      <Ability Name="Прикосновение смерти">
+        <SpellID>195292</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5924,64 +5795,8 @@ return useCooldown and isInMeele and PLAYER.HP < 60;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local diseases = {
-    55078, -- Кровавая чума
-    55095, -- Озноб
-};
-if not HasDebuff(target, diseases, "PLAYER") then
+if select(3, HasDebuff(target, 55078, "PLAYER")) < 4 then
     return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар чумы">
-        <SpellID>45462</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Кровавая чума
-if not HasDebuff("target", 55078, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяное прикосновение">
-        <SpellID>45477</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasDebuff("target", 55095, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровоотвод">
-        <SpellID>45529</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local blood = DK_RUNES.BLOOD.FullCount;
-local frost = DK_RUNES.FROST.FullCount;
-local unholy= DK_RUNES.UNHOLY.FullCount;
-
-if blood == 0 or unholy == 0 or frost == 0 then
-    if select(2, HasBuff("player", 114851)) >= 5 then
-        return true;
-    end
 end
 ]]></Lua>
       </Ability>
@@ -5995,13 +5810,11 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- local value = select(5, HasBuff("player", 158300));
--- local def_val = IsInRaid() and 100 or 50;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Вскипание крови">
-        <SpellID>50842</SpellID>
+      <Ability Name="Дробление хребта">
+        <SpellID>195182</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -6010,15 +5823,28 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if select(2, HasBuff("player", 195181)) < 7 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вскипание крови">
+        <SpellID>50842</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>false</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
 if isInMeele then
-    if setAoE or HasBuff("player", 81141) or DK_RUNES.BLOOD.Count > 1 then
-        return true;
-    end
+    return true;
 end
 ]]></Lua>
       </Ability>
       <Ability Name="Жнец душ">
-        <SpellID>114866</SpellID>
+        <SpellID>130736</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -6032,18 +5858,19 @@ if not setAoE and HealthByPercent(target) <= 35 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Лик смерти">
-        <SpellID>47541</SpellID>
+      <Ability Name="Удар в сердце">
+        <SpellID>206930</SpellID>
         <Target>Target</Target>
-        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if GetRuneCount(1) > 2 then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Усиление рунического оружия">
@@ -6056,7 +5883,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele and DK_RUNES.Total == 0 and PLAYER.HP < 50 then
+if useCooldown and PLAYER.HP < 50 then
     return true;
 end
 ]]></Lua>
