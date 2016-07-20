@@ -5768,6 +5768,8 @@ return IsModKeyDown(mkLeftShift);
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
+
+isInMeele = IsSpellInRange(GetSpellInfo(isInMeele), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Заморозка разума">
@@ -10498,28 +10500,6 @@ end
 
 isInRange = IsSpellInRange(GetSpellInfo(5176), "target") == 1;
 power     = UnitPower("player", SPELL_POWER_ECLIPSE);
-
--- Чистим список целей обдотаных под бафом
-for key, lastCast in pairs(moonTargetList) do
-    if lastCast < GetTime() - 30 then
-        moonTargetList[key] = nil;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Знак дикой природы">
-        <SpellID>1126</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not (GetRaidBuffTrayAuraInfo(1) and GetRaidBuffTrayAuraInfo(9)) then
-    return true;
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Возрождение">
@@ -10532,40 +10512,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Перк "Усиленное возрождение" (157301)
-if not PLAYER.IsMoving or (PLAYER.IsMoving and IsSpellKnown(157301)) then
-    return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Астаральный скачек">
-        <SpellID>102280</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsKeyDown("R") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Тревожный рев">
-        <SpellID>106898</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsKeyDown("T") then
-    return true;
-end
+return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Дубовая кора">
@@ -10580,54 +10527,6 @@ end
         <Lua><![CDATA[
 if HealthByPercent("player") < 25 then
     return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Умиротворение">
-        <SpellID>2908</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsInGroup() or IsInRaid() then
-    return CheckEnrage(target);
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Дикий гриб">
-        <SpellID>88747</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsMouseButtonDown(3) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ураган">
-        <SpellID>16914</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftControl) then
-    -- Отключено
-    return false;
 end
 ]]></Lua>
       </Ability>
@@ -10646,11 +10545,9 @@ end
 return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Омоложение">
-        <SpellID>774</SpellID>
-        <Target>Focus</Target>
-        <Target>Player</Target>
-        <Target>Mouseover</Target>
+      <Ability Name="Звездопад">
+        <SpellID>191034</SpellID>
+        <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -10658,37 +10555,13 @@ return CheckInterrupt(target);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local hp = 90;
-if IsInRaid() then
-    hp = 50;
-elseif GetNumGroupMembers() < 6 and GetNumGroupMembers() > 1 then
-    hp = 70;
-end
-
-if HealthByPercent(target) < hp and not HasBuff(target, 774) then
+if IsModKeyDown(mkLeftShift) then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Перевоплощение: Избранный Элуны">
-        <SpellID>102560</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and isInRange then
-    if power < -2 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Парад планет">
-        <SpellID>112071</SpellID>
+        <SpellID>194223</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -10698,31 +10571,11 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange then
-    if power < -2 then
-        return true;
-    end
+    return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Звездопад">
-        <SpellID>48505</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInRange and setAoE then
-    -- Доработать, правильно указать бонус
-   -- if GetEclipseDirection() == "moon" and power < 0 then
-        return true;
-   -- end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Лунный/Солнечный огонь">
+      <Ability Name="Лунный огонь">
         <SpellID>8921</SpellID>
         <Target>Target</Target>
         <Target>Focus</Target>
@@ -10734,31 +10587,24 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local debuff = (power > 0) and 164815 or 164812; -- -100 lunar 0 solar 100
-local sm_fire, _, sm_fire_rem = HasDebuff(target, debuff, "PLAYER");
-
--- Если парад планет подходит к концу, обновим доты (за 4 сек)
-local celest,_,celest_rem = HasBuff("player", 112071);
-if celest and celest_rem < 5 then
-    -- Проверяем тольоко по Лунному огню, так как он короче по времени действия
-    if select(3, HasBuff(target, 164815, "PLAYER")) < 15 then
-        if (moonTargetList[UnitGUID(target)] or 0) < GetTime()-4 then
-            print("Обновляем доту перед окончанием парада планет!");
-            return true;
-        end
-    end
+if PLAYER.IsMoving or select(3, HasDebuff(target, 164812, "PLAYER")) < 7 then
+    return true;
 end
-
--- Под бафом "Парад планет" должны быть обе доты
-if celest then
-    if not HasDebuff(target, 164815, "PLAYER") or
-       not HasDebuff(target, 164812, "PLAYER") then
-       return true;
-    end
-end
-
-local emprovement = (power > 0) and 171744 or 171743;
-if not sm_fire or sm_fire_rem < 3 or (sm_fire_rem < 12 and HasBuff("player", emprovement)) then
+]]></Lua>
+      </Ability>
+      <Ability Name="Солнечный огонь">
+        <SpellID>93402</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, 164815, "PLAYER")) < 6 then
     return true;
 end
 ]]></Lua>
@@ -10773,43 +10619,13 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE then
-    -- Изначально Звездный поток имеет 3 заряда
-    local charges = PLAYER.IsMoving and 1 or 2;
-    local buffs = (power > 0) and 164545 or 164547; -- -100 lunar 0 solar 100
-    if GetSpellCharges(78674) > charges
-        or (select(3, HasBuff("player", 112071)) > 1 and not HasBuff("player", buffs)) then
-        return true;
-    elseif power < 0 and GetEclipseDirection() == "moon" then
-        return not HasBuff("player", 164547); -- Лунное могущество
-    elseif power > 0 and GetEclipseDirection() == "sun" then
-        return not HasBuff("player", 164545); -- Солнечное могущество
-    end
-elseif GetSpellCharges(78674) > 2 then
+if UnitPower("player") > 50 then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Лунный/Солнечный огонь">
-        <SpellID>8921</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Если двигаемся, спамим Лунный/Солнечный огонь
-if PLAYER.IsMoving then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Гнев">
-        <SpellID>5176</SpellID>
+      <Ability Name="Звездный огонь">
+        <SpellID>194153</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -10818,19 +10634,13 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
--- Используем только с бонусом солнечного затмения
--- -100 lunar 0 solar 100
-if power > 0 then
-    if GetEclipseDirection() == "sun" then
-        return true;
-    elseif GetEclipseDirection() == "moon" and power > 35 then
-        return true;
-    end
+if setAoE or HasBuff("player", 164547) then
+    return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Звездный огонь">
-        <SpellID>2912</SpellID>
+      <Ability Name="Гнев">
+        <SpellID>190984</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -10840,21 +10650,6 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Знак дикой природы">
-        <SpellID>1126</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not (GetRaidBuffTrayAuraInfo(1) and GetRaidBuffTrayAuraInfo(9)) then
-    return true;
-end
 ]]></Lua>
       </Ability>
     </Rotation>
