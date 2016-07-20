@@ -7298,99 +7298,6 @@ end
 ]]></Lua>
     <Rotation Name="Огонь" Spec="Mage_Fire">
       <HotKey Key="V" Modifier="Alt" />
-      <Lua><![CDATA[
-PYRO_TABLE = {
-    clearTime = 20, -- таблица накомленного урона от воспламенения
-    pyroTable = {},
-
-    Clear = function(self)
-        -- Очистка таблицы от старых записей
-        for guid, dmgTable in pairs(self.pyroTable) do
-            -- Если юнит давно не получал урон (или помер внезапно :))
-            if (dmgTable.LastTime or 0) < GetTime() - self.clearTime then
-                self.pyroTable[guid] = nil;
-                --print('clean targer');
-            else
-                -- так же держим в актуале нанесенный урон за последние xx сек.
-                for dmgTime, dmgVal in pairs(dmgTable.Values) do
-                    if dmgTime < GetTime() - self.clearTime then
-                        dmgTable.Values[dmgTime] = nil;
-                    end
-                end
-            end
-        end
-    end,
-
-    Tick = function(self, destGUID, amount)
-        local dmgTable = self.pyroTable[destGUID] or { LastTime = 0, Values = {}};
-        timestamp = GetTime();
-        dmgTable.LastTime = timestamp;
-        dmgTable.Values[timestamp] = amount;
-        self.pyroTable[destGUID] = dmgTable;
-    end,
-
-    -- Урон нанесенный заклинанием (12654 - Воспламенение) за последнее время
-    GetIgniteDamage = function(self, target, sec)
-        local guid = UnitGUID(target or "target");
-        local dmgTable = self.pyroTable[guid];
-        if not dmgTable then
-            return 0;
-        end
-        local damage = 0;
-        for dmgTime, dmgVal in pairs(dmgTable.Values or {}) do
-            if dmgTime >= GetTime()-sec then
-                damage = damage + dmgVal;
-            end
-        end
-
-        return damage;
-    end,
-
-    -- Модификатор наносимого урона по цели
-    GetDmgMod = function(self, target)
-        local modif = 0;
-
-        -- Например бафф увеличивает наносимый урон на 50%
-        --if HasBuff("player", 111111) then
-        --    modif = modif + 50;
-        --end
-
-        -- Например дебафф увеличивает получаемый урон на 20%
-        --if HasDebuff(target, 111111) then
-        --    modif = modif + 20;
-        --end
-
-        return (modif == 0 and 1 or (modif/100));
-    end,
-};
-
-function EVENT_MODS.COMBAT_LOG_EVENT_UNFILTERED(timestamp, subEvent, hideCaster,
-          sourceGUID,srcName,  sourceFlags,sourceFlags2,
-          destGUID,  destName, destFlags,  destFlags2,
-          spellId,   spellName,spellSchool,amount,   overkill,school,
-          resisted,  blocked,  absorbed,   critical, glancing,crushing)
-
-    if subEvent == "SPELL_PERIODIC_DAMAGE" then
-        -- Собираем урон по заклинанию (12654 - Воспламенение)
-        if spellId == 12654 and UnitGUID("player") == sourceGUID then
-            PYRO_TABLE:Tick(destGUID, amount);
-        end
-    end
-end
-]]></Lua>
-      <Ability Name="Руна мощи">
-        <SpellID>116011</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkRightAlt);
-]]></Lua>
-      </Ability>
       <Ability Name="Огненный столб">
         <SpellID>2120</SpellID>
         <Target>MouseLocation</Target>
@@ -7438,16 +7345,6 @@ isInRange = IsSpellInRange(GetSpellInfo(2948), "target") == 1;
 if PowerByPercent("player") < 50 then
     UseItemById(36799);
 end
-
-PYRO_TABLE:Clear();
-
--- Усли у нас есть прок Огненной глыбы!, преклащаем каст Огненного шара или Ожога
---local castedSpell = UnitCastingInfo("player");
---if castedSpell == GetSpellInfo(133) or castedSpell == GetSpellInfo(2943) then
---    if HasBuff("player", 48108) and UnitAffectingCombat("player") then
---        SpellStopCasting();
---    end
---end
 ]]></Lua>
       </Ability>
       <Ability Name="Замедленное падение">
@@ -7497,23 +7394,6 @@ return CheckInterrupt(target);
 return isInRange and useCooldown;
 ]]></Lua>
       </Ability>
-      <Ability Name="Ледяной заслон">
-        <SpellID>111264</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if GetNumGroupMembers() == 0 then
-    if not HasBuff("player", 111264) then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Огненная глыба">
         <SpellID>11366</SpellID>
         <Target>Target</Target>
@@ -7533,8 +7413,6 @@ end
       <Ability Name="Живая бомба">
         <SpellID>44457</SpellID>
         <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -7551,33 +7429,17 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Возгорание">
-        <SpellID>11129</SpellID>
-        <Target>Target</Target>
+        <SpellID>190319</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
+        <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Вешаем возгорание только после крита Огненной бомбы (и/или) наличия сильной доты.
--- Так же важно использовать возгорание под прок тринек
-if useCooldown then
-    -- TODO: необходимо вычислить коефициент урона
-    local koef = 2.75;
-    local glyphMod  = HasGlyph(56368) and 2 or 1; -- Символ возгорания
-    local fdamage   = GetSpellBonusDamage(3); -- fire spell bonus damage
-    local igniteDmg = PYRO_TABLE:GetIgniteDamage(target, 8*glyphMod); -- Урон от воспламенения за последние 8 сек
-    local modif     = PYRO_TABLE:GetDmgMod(target); -- Модификатор наносимого урона
-    local hasIgnite = HasDebuff(target, 12654, "PLAYER"); -- Воспламенение
-
-    if hasIgnite and (igniteDmg > ((koef*fdamage*glyphMod)/modif)) then
-        UseItemBySlot(INVSLOT_HAND);
-        UseItemBySlot(INVSLOT_TRINKET1);
-        UseItemBySlot(INVSLOT_TRINKET1);
-        print("ignite:", igniteDmg, "SpellBonus:", fdamage);
-        return true;
-    end
+if useCooldown and isInRange then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -7620,19 +7482,6 @@ return true;
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Чародейская гениальность">
-        <SpellID>1459</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not HasBuff("player", 1459);
 ]]></Lua>
       </Ability>
     </Rotation>
