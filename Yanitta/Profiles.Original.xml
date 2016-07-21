@@ -1745,19 +1745,6 @@ end
 isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
 ]]></Lua>
       </Ability>
-      <Ability Name="Победный раж">
-        <SpellID>34428</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return HealthByPercent("player") < 90;
-]]></Lua>
-      </Ability>
       <Ability Name="Зуботычина">
         <SpellID>6552</SpellID>
         <Target>Target</Target>
@@ -1769,19 +1756,6 @@ return HealthByPercent("player") < 90;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
-]]></Lua>
-      </Ability>
-      <Ability Name="Разрушительный крик">
-        <SpellID>102060</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return isInMeele and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Ярость берсерка">
@@ -1816,7 +1790,7 @@ if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSE
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Безразсудство">
+      <Ability Name="Боевой крик">
         <SpellID>1719</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -1852,7 +1826,7 @@ end
       </Ability>
       <Ability Name="Вихрь">
         <SpellID>1680</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -1862,12 +1836,25 @@ end
         <Lua><![CDATA[
 local setAoE = setAoE or 0;
 if isInMeele then
-    if setAoE == 2 then
+    if setAoE == 2 or HasBuff("player", 215570) then -- Пушечное ядро
         return true;
     elseif setAoE == 1 then
-        return select(2, HasBuff("player", 12950)) < 2;
+        return not HasBuff("player", 85739); -- Кровавый фарш
     end
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Буйство">
+        <SpellID>184367</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Казнь">
@@ -1906,7 +1893,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE < 2;
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Рев дракона">
@@ -1922,8 +1909,8 @@ return setAoE < 2;
 return isInMeele;
 ]]></Lua>
       </Ability>
-      <Ability Name="Зверский удар">
-        <SpellID>100130</SpellID>
+      <Ability Name="Кровожадность">
+        <SpellID>23881</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -1932,11 +1919,11 @@ return isInMeele;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE < 2;
+return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Кровожадность">
-        <SpellID>23881</SpellID>
+      <Ability Name="Неистовый удар с плеча">
+        <SpellID>100130</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
