@@ -10288,7 +10288,9 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitPower("player") > 50 then
+local min_power = select(5, GetTalentInfo(5, 1, 1)) and 60 or 50;
+
+if UnitPower("player") > min_power then
     return true;
 end
 ]]></Lua>
