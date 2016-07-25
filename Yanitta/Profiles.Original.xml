@@ -1166,23 +1166,6 @@ function NeedReflect(unitEnemy, unitFreind)
         end
     end
 end
-
-function NeedMassReflect()
-    local reflect_buff = { 23920, 114028 };
-    if not HasBuff("player", reflect_buff) or SpellCD(23920) > 0 then
-        if IsInArenaTeam() then
-            for i = 1, 5 do
-                for j = 1, 5 do
-                    if UnitExists("party"..i) and UnitExists("arena"..j) then
-                        return NeedReflect("party"..i, "arena"..j);
-                    end
-                end
-            end
-        else
-            return NeedReflect("target", "player");
-        end
-    end
-end
 ]]></Lua>
     <Rotation Name="Защита" Spec="Warrior_Protection">
       <HotKey Key="X" Modifier="Alt" />
@@ -1285,14 +1268,22 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- Перейти в стойку защиты
-if GetSpecialization() == 3 and GetShapeshiftForm() ~= 2 then
-    CastShapeshiftForm(2);
-end
+isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;
 
-isInMeele  = IsSpellInRange(GetSpellInfo(78), "target") == 1;
-hasAPbuff  = HasBuff("player", { 57330, 19506});
-rage       = UnitPower("player");
+]]></Lua>
+      </Ability>
+      <Ability Name="Отражение заклинания">
+        <SpellID>23920</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Код профиля
+return NeedReflect(target, "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Ударная волна">
@@ -1321,21 +1312,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
-]]></Lua>
-      </Ability>
-      <Ability Name="Разрушительный крик">
-        <SpellID>102060</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and SpellCD(6552) > 0 and CheckInterrupt("target") then
-    return true;
-end
 ]]></Lua>
       </Ability>
       <Ability Name="Победный раж">
@@ -1384,8 +1360,8 @@ if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSE
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Непроницаемый щит">
-        <SpellID>112048</SpellID>
+      <Ability Name="Сосредоточенная ярость">
+        <SpellID>204488</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -1394,24 +1370,26 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isAltMod and not HasBuff("player", 112048) then
-    -- Величина решимости в %, максимум 350%
-    -- Необходимо вычислить, надо ли делать проверку на наличие решимости
-    -- чтобы накладывать щит.
-
-    -- Провести расчеты по определению эфективности использования "Блок щитом" / "Непроницаемый щит"
-    local value = select(5, HasBuff("player", 158300));
-    local def_val = IsInRaid() and 150 or 100;
-
-    -- Если есть здоровье - набираем ярость для большей эфективности щита
-    -- Надо еще добавить проверку на наличе бафа "Решимости"
-    if PLAYER:Power() > 55 and PLAYER.HP > 20 then
-        return value > def_val;
-        --return true;
-    -- Если здоровья мало - используем щит когда это возможно
-    -- Надо подкорректировать количество минимального здоровья
-    elseif PLAYER:Power() > 30 and PLAYER.HP <= 20 then
-        return true;
+if isInMeele and not HasBuff("player", 202574) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Стойкость к боли">
+        <SpellID>190456</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and HasBuff("player", 202574) then
+    if PLAYER.Agro > 2 and not HasBuff("player", 190456) then
+        if PLAYER:Power() > 30 then
+            return true;
+        end
     end
 end
 ]]></Lua>
@@ -1427,7 +1405,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 132404 Блок щитом
-if PLAYER:Power() >= 60 and PLAYER.Agro > 2 and not HasBuff("player", 132404) then
+if PLAYER.Agro > 2 and not HasBuff("player", 132404) then
     return true;
 end
 ]]></Lua>
@@ -1443,21 +1421,6 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 30 and PLAYER.Agro > 2 and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Одобряющий клич">
-        <SpellID>97462</SpellID>
-        <Target>None</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PLAYER.HP < 25 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1492,40 +1455,7 @@ if PLAYER.HP <= 50 and isInMeele and useCooldown then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Сокрушительный Бросок">
-        <SpellID>64382</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- 5 - RightControl
-if IsModKeyDown(5) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровавая баня">
-        <SpellID>12292</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and isInMeele then
-    if UnitHealth(target) > (UnitHealthMax("player") * 3) then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар грома (AOE)">
+      <Ability Name="Удар грома">
         <SpellID>6343</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -1553,64 +1483,9 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Казнь">
-        <SpellID>5308</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Отражение заклинания">
-        <SpellID>23920</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Код профиля
-return NeedReflect(target, "player");
-]]></Lua>
-      </Ability>
-      <Ability Name="Массовое отражение заклинаний">
-        <SpellID>114028</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return NeedMassReflect();
-]]></Lua>
-      </Ability>
-      <Ability Name="Подрезать сухожилья">
-        <SpellID>1715</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPlayer(target) and not HasDebuff(target, 1715) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Реванш">
         <SpellID>6572</SpellID>
-        <Target>Target</Target>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -1619,24 +1494,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- дает 20 ярости
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар героя">
-        <SpellID>78</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Это заклинание не затрагивает ГКД
--- (Ультиматум - 122510)
-if HasBuff("player", 122510) then
-    return true;
-end
+return isInMeele;
 ]]></Lua>
       </Ability>
       <Ability Name="Сокрушение">
@@ -2066,36 +1924,7 @@ return useInterrupt and CheckInterrupt("target");
 return NeedReflect(target, "player");
 ]]></Lua>
       </Ability>
-      <Ability Name="Массовое отражение заклинаний">
-        <SpellID>114028</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Код профиля
-return NeedMassReflect();
-]]></Lua>
-      </Ability>
-      <Ability Name="Подрезать сухожилья">
-        <SpellID>1715</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPlayer(target) and not HasDebuff(target, 1715) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Безразсудство">
+      <Ability Name="Боевой крик">
         <SpellID>1719</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
