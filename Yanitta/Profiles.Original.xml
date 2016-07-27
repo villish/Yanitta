@@ -9433,21 +9433,6 @@ if isCat and isInMeele and energy <= 35 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Берсерк">
-        <SpellID>106952</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and isInMeele and useCooldown and energy < 70 then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Перевоплощение: Король джунглей">
         <SpellID>102543</SpellID>
         <Target>None</Target>
