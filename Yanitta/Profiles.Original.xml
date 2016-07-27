@@ -1269,7 +1269,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
 end
 
 isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;
-
 ]]></Lua>
       </Ability>
       <Ability Name="Отражение заклинания">
@@ -2529,8 +2528,8 @@ if useCooldown and hollyPower <= 2 and isInMeele then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Смертный приговор">
-        <SpellID>114157</SpellID>
+      <Ability Name="Правосудие">
+        <SpellID>20271</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2539,20 +2538,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return useCooldown;
-]]></Lua>
-      </Ability>
-      <Ability Name="Вердикт храмовника">
-        <SpellID>85256</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not setAoE and hollyPower > 4;
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Божественная буря">
@@ -2568,8 +2554,8 @@ return not setAoE and hollyPower > 4;
 return (isInMeele and ( (setAoE and hollyPower > 2) or HasBuff("player", 144595) ~= nil));
 ]]></Lua>
       </Ability>
-      <Ability Name="Молот гнева">
-        <SpellID>24275</SpellID>
+      <Ability Name="Клинок справедливости">
+        <SpellID>184575</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2578,11 +2564,11 @@ return (isInMeele and ( (setAoE and hollyPower > 2) or HasBuff("player", 144595)
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return hollyPower < 4;
 ]]></Lua>
       </Ability>
-      <Ability Name="Экзорцизм">
-        <SpellID>879</SpellID>
+      <Ability Name="Вердикт храмовника">
+        <SpellID>85256</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2591,37 +2577,26 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return hollyPower > 4;
+]]></Lua>
+      </Ability>
+      <Ability Name="Отмщение вершителя правосудия">
+        <SpellID>215661</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if hollyPower > 4 or HasBuff("player", 223819) then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Удар воина Света">
         <SpellID>35395</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Молот праведника">
-        <SpellID>53595</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Правосудие">
-        <SpellID>20271</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
