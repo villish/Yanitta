@@ -9821,12 +9821,12 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
+if GetShapeshiftForm() ~= 2 then
+    return true;
+end
+
 -- 69369d
 isInMeele  = IsSpellInRange(GetSpellInfo(5221), "target") == 1;
-energy     = UnitPower("player");
-combopoint = GetComboPoints("player");
-isBear     = GetShapeshiftForm() == 1;
-isCat      = GetShapeshiftForm() == 2;
 ]]></Lua>
       </Ability>
       <Ability Name="Возрождение">
@@ -9874,8 +9874,8 @@ return false;-- надо доработать
 return useInterrupt and CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Дикий рев">
-        <SpellID>52610</SpellID>
+      <Ability Name="Берсерк">
+        <SpellID>106951</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -9884,8 +9884,10 @@ return useInterrupt and CheckInterrupt(target);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and isInMeele and select(3, HasBuff("player", 52610)) < 2 then
-    return true;
+if isInMeele and useCooldown then
+    if UnitPower("player") > 50 then
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -9899,22 +9901,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and isInMeele and energy <= 35 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Берсерк">
-        <SpellID>106952</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and isInMeele and useCooldown and energy < 70 then
+if isInMeele and UnitPower("player") < 50 then
     return true;
 end
 ]]></Lua>
@@ -9951,6 +9938,21 @@ if HasBuff("player", 69369) and HealthByPercent(terget) < 90 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Дикий рев">
+        <SpellID>52610</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and select(3, HasBuff("player", 52610)) > 7 then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Взбучка">
         <SpellID>106832</SpellID>
         <Target>Target</Target>
@@ -9961,7 +9963,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and isInMeele and setAoE then
+if isInMeele and setAoE then
     if select(3, HasDebuff("target", 106830, "PLAYER")) < 2 then
         return true;
     end
@@ -9978,7 +9980,22 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and setAoE and isInMeele then
+if setAoE and isInMeele then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Разорвать">
+        <SpellID>1079</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") > 4 and select(3, HasDebuff("target", 1079)) < 6 then
     return true;
 end
 ]]></Lua>
@@ -9993,36 +10010,8 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat then
-    local rip = select(3, HasDebuff("target", 1079, "PLAYER"));
-
-    if combopoint > 4 and UnitExists("target")
-        and (UnitHealth("target") * 2) < UnitHealthMax("player") then
-        return true;
-    elseif rip > 8 and energy >= 50 and combopoint > 4 then
-        return true;
-    elseif HealthByPercent("target") < 25 then
-        if (rip < 2 and combopoint > 1) or (combopoint > 4 and energy >= 50) then
-            return true;
-        end
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Разорвать">
-        <SpellID>1079</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat then
-    if combopoint > 4 and select(3, HasDebuff("target", 1079)) < 5 then
-        return true;
-    end
+if GetComboPoints("player", "target") > 4 and UnitPower("player") >= 40 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -10036,7 +10025,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and select(3, HasDebuff("target", 1822)) < 3 then
+if select(3, HasDebuff("target", 1822)) < 3 then
     return true;
 end
 ]]></Lua>
@@ -10051,69 +10040,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isCat and combopoint < 5 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Неистовое восстановление">
-        <SpellID>22842</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return isBear and UnitPower("player") > 40 and HealthByPercent("player") < 80;
-]]></Lua>
-      </Ability>
-      <Ability Name="Увечте">
-        <SpellID>33917</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return isBear;
-]]></Lua>
-      </Ability>
-      <Ability Name="Взбучка">
-        <SpellID>77758</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isBear and IsSpellInRange(GetSpellInfo(33917), "target") == 1 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Омоложеине">
-        <SpellID>774</SpellID>
-        <Target>Focus</Target>
-        <Target>Player</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsSpellKnown(157280) -- перк "Усиленное омоложение"
-    and HealthByPercent(target) < 80
-    and not HasBuff(target, 774, "PLAYER") then
-    return true;
-end
+return UnitPower("player") >= 50;
 ]]></Lua>
       </Ability>
     </Rotation>
@@ -10319,6 +10246,22 @@ end
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+    </Rotation>
+    <Rotation Name="none" Spec="None">
+      <HotKey Key="B" Modifier="Alt" />
+      <Ability Name="Rip">
+        <SpellID>1079</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
 ]]></Lua>
