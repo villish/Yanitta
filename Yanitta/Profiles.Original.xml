@@ -7028,34 +7028,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
-      <Ability Name="Неистовство тьмы">
-        <SpellID>30283</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>true</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsMouseButtonDown(3);
-]]></Lua>
-      </Ability>
-      <Ability Name="Катаклизм">
-        <SpellID>152108</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if IsModKeyDown(mkLeftShift) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -7084,8 +7056,8 @@ if IsMouseButtonDown(4) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Запрет чар">
-        <SpellID>132409</SpellID>
+      <Ability Name="Замок мира теней">
+        <SpellID>171140</SpellID>
         <Target>Target</Target>
         <Target>Focus</Target>
         <Target>Mouseover</Target>
@@ -7101,21 +7073,6 @@ if CheckInterrupt(target) then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Черная душа: Страдание">
-        <SpellID>113860</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if useCooldown and not HasBuff("player", 113860) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Семя порчи">
         <SpellID>27243</SpellID>
         <Target>Target</Target>
@@ -7126,91 +7083,10 @@ end
         <RecastDelay>3</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE and isInRange and soulShards > 0 and SpellCD(74434) == 0 then
-    if UnitExists(target)
-        and UnitCanAttack("player", target)
-        and not UnitIsDeadOrGhost(target)
-        and not UnitIsFriend("player", target) then
-        if not HasDebuff(target, ability.SpellId, "PLAYER") then
-            -- Горящая душа (без ГКД)
-            CastSpellByName(GetSpellInfo(74434));
-            return true;
-        end
+if setAoE and isInRange then
+    if not HasDebuff(target, ability.SpellId, "PLAYER") then
+        return true;
     end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Обмен душ">
-        <SpellID>86121</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <Target>Boss1</Target>
-        <Target>Boss2</Target>
-        <Target>Boss3</Target>
-        <Target>Boss4</Target>
-        <Target>Boss5</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---[[
-
-Не использовать!!!
-Сильно большой расход осколков.
-
-if soulShards > 1 and SpellCD(74434) == 0 then
-    local dotList = {
-        980,    -- Агония
-        172,    -- Порча
-        30108,  -- Нестабильное колдовство
-    };
-    if IsSpellInRange(GetSpellInfo(86121), target) == 1 then
-        -- Если нету ни одного дебафа
-        -- если у цели меньше 20% здоровья
-        -- если мы двигаемся
-        if HealthByPercent("target") <= 20 or PLAYER.IsMoving then
-            -- Проверяем только "Нестабильное колдовство"
-            -- так как маленькая продолжительность и есть время каста
-            -- так же не будем терять ДПС при перебежках.
-            if select(3, HasDebuff(target, 30108, "PLAYER")) < 3 then
-                -- Горящая душа (без ГКД)
-                CastSpellByName(GetSpellInfo(74434));
-                return true;
-            end
-        -- Накладываем через горящую душу когда дотов вообще нету
-        elseif not HasDebuff(target, dotList, "PLAYER") then
-            -- Горящая душа (без ГКД)
-            CastSpellByName(GetSpellInfo(74434));
-            return true;
-        end
-    end
-end
-]]
-]]></Lua>
-      </Ability>
-      <Ability Name="Нестабильное колдовство">
-        <SpellID>30108</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <Target>Boss1</Target>
-        <Target>Boss2</Target>
-        <Target>Boss3</Target>
-        <Target>Boss4</Target>
-        <Target>Boss5</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>1</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -7232,7 +7108,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not AhonyImmune:IsImmune(target)
-and select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 7 then
+and select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
     return true;
 end
 ]]></Lua>
@@ -7254,13 +7130,60 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if not HasDebuff(target, ability.SpellId, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вытягивание жизни">
+        <SpellID>63106</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 5 then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Горящая душа">
-        <SpellID>74434</SpellID>
+      <Ability Name="Нестабильное колдовство">
+        <SpellID>30108</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <Target>Boss1</Target>
+        <Target>Boss2</Target>
+        <Target>Boss3</Target>
+        <Target>Boss4</Target>
+        <Target>Boss5</Target>
+        <CancelChannel>true</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>1</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
+    -- Изваяние души
+    if UnitId(target) ~= 103679 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Жизнеотвод">
+        <SpellID>1454</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -7269,43 +7192,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- 152109 - Горящая душа: Блуждающий дух
-if isInRange and IsSpellKnown(152109) then
-    if select(2, HasBuff("player", 157698)) < 10 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Блуждающий дух">
-        <SpellID>48181</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>3</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Жизнеотвод">
-        <SpellID>1454</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PowerByPercent("player", SPELL_POWER_MANA) < 60
-    and HealthByPercent("player") > 80 then
+if PowerByPercent("player") < 60 then
     return true;
 end
 ]]></Lua>
@@ -7320,37 +7207,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.HP < 80 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Похищение души">
-        <SpellID>103103</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Узы тьмы">
-        <SpellID>109773</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not (GetRaidBuffTrayAuraInfo(5) and GetRaidBuffTrayAuraInfo(8)) then
-    return true;
-end
 ]]></Lua>
       </Ability>
     </Rotation>
