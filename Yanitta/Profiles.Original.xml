@@ -1909,18 +1909,36 @@ return PLAYER.HP <= 80;
 return useInterrupt and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
-      <Ability Name="Отражение заклинания">
-        <SpellID>23920</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Ярость Берсерка">
+        <SpellID>18499</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Код профиля
-return NeedReflect(target, "player");
+--[[
+STUN_MECHANIC
+SCHOOL_INTERRUPT
+DISARM
+PACIFYSILENCE
+SILENCE
+ROOT
+PACIFY
+STUN
+FEAR
+CHARM
+CONFUSE
+POSSESS
+]]
+
+-- надо правильно определить типы снимаемого контроля
+local t = C_LossOfControl.GetEventInfo(1);
+if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSESS' then
+    return true;
+end
 ]]></Lua>
       </Ability>
       <Ability Name="Боевой крик">
@@ -1940,8 +1958,8 @@ if useCooldown and isInMeele then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Размашистые удары">
-        <SpellID>12328</SpellID>
+      <Ability Name="Разсекающий удар">
+        <SpellID>845</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -1950,7 +1968,22 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE > 0;
+if isInMeele and setAoE > 0 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Вихрь">
+        <SpellID>1680</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInMeele and setAoE > 0;
 ]]></Lua>
       </Ability>
       <Ability Name="Кровопускание">
@@ -1968,8 +2001,36 @@ if select(3, HasDebuff(target, 772, "PLAYER")) < 5 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Удар колосса">
+        <SpellID>167105</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasDebuff(target, 208086, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Казнь">
         <SpellID>5308</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Превоскходство">
+        <SpellID>7384</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -1994,27 +2055,8 @@ return true;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Ярость Берсерка">
-        <SpellID>18499</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPVP("player") then
-    if not HasFullControl() then
-        return true;
-    end
-elseif isInMeele and PLAYER:Power() < 20 and not HasBuff("player", 12880) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровавая Баня">
-        <SpellID>12292</SpellID>
+      <Ability Name="Мощный удар">
+        <SpellID>1464</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2023,88 +2065,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар колосса">
-        <SpellID>167105</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Рев дракона">
-        <SpellID>118000</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар грома">
-        <SpellID>6343</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and setAoE > 0
-    -- Глубокие раны
-    and not HasDebuff("target", 115767, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Вихрь">
-        <SpellID>1680</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return isInMeele and
-    (setAoE > 1 or PLAYER:Power() > 50 or HasDebuff(target, 167105, "PLAYER"));
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар громовержца">
-        <SpellID>107570</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitIsPVP("player") then
-    if UnitIsControlling("mouseover") then
-        return "mouseover";
-    end
--- Удар колосса
-elseif HasDebuff("target", 86346, "PLAYER") then
-    return "target";
-end
+return setAoE == 0;
 ]]></Lua>
       </Ability>
     </Rotation>
