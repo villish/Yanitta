@@ -4429,7 +4429,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-isInMeele = IsSpellInRange(GetSpellInfo(isInMeele), "target") == 1;
+isInMeele = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Заморозка разума">
