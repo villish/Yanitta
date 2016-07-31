@@ -1166,6 +1166,32 @@ function NeedReflect(unitEnemy, unitFreind)
         end
     end
 end
+
+function IsLossOfControl()
+    --[[
+    STUN_MECHANIC
+    SCHOOL_INTERRUPT
+    DISARM
+    PACIFYSILENCE
+    SILENCE
+    ROOT
+    PACIFY
+    STUN
+    FEAR
+    CHARM
+    CONFUSE
+    POSSESS
+    ]]
+    local list = { 'FEAR',  'PACIFY', 'CHARM', 'CONFUSE', 'POSSESS' };
+    local locType = C_LossOfControl.GetEventInfo(1);
+    if locType then
+        for _, t in ipairs(list) do
+            if t == locType then
+                return true;
+            end
+        end
+    end
+end
 ]]></Lua>
     <Rotation Name="Защита" Spec="Warrior_Protection">
       <HotKey Key="X" Modifier="Alt" />
@@ -1338,25 +1364,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---[[
-STUN_MECHANIC
-SCHOOL_INTERRUPT
-DISARM
-PACIFYSILENCE
-SILENCE
-ROOT
-PACIFY
-STUN
-FEAR
-CHARM
-CONFUSE
-POSSESS
-]]
-
-local t = C_LossOfControl.GetEventInfo(1);
-if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSESS' then
-    return true;
-end
+return IsLossOfControl();
 ]]></Lua>
       </Ability>
       <Ability Name="Сосредоточенная ярость">
@@ -1625,26 +1633,7 @@ return useInterrupt and CheckInterrupt("target");
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---[[
-STUN_MECHANIC
-SCHOOL_INTERRUPT
-DISARM
-PACIFYSILENCE
-SILENCE
-ROOT
-PACIFY
-STUN
-FEAR
-CHARM
-CONFUSE
-POSSESS
-]]
-
--- надо правильно определить типы снимаемого контроля
-local t = C_LossOfControl.GetEventInfo(1);
-if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSESS' then
-    return true;
-end
+return IsLossOfControl();
 ]]></Lua>
       </Ability>
       <Ability Name="Боевой крик">
@@ -1919,26 +1908,7 @@ return useInterrupt and CheckInterrupt("target");
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
---[[
-STUN_MECHANIC
-SCHOOL_INTERRUPT
-DISARM
-PACIFYSILENCE
-SILENCE
-ROOT
-PACIFY
-STUN
-FEAR
-CHARM
-CONFUSE
-POSSESS
-]]
-
--- надо правильно определить типы снимаемого контроля
-local t = C_LossOfControl.GetEventInfo(1);
-if t == 'FEAR' or r == 'PACIFY' or r == 'CHARM' or t == 'CONFUSE' or t == 'POSSESS' then
-    return true;
-end
+return IsLossOfControl();
 ]]></Lua>
       </Ability>
       <Ability Name="Боевой крик">
