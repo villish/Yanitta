@@ -1511,7 +1511,7 @@ return isInMeele;
       </Ability>
     </Rotation>
     <Rotation Name="Неистовство" Spec="Warrior_Fury">
-      <HotKey Key="Z" Modifier="Alt" />
+      <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 setAoE = 0;
 useCooldown = true;
