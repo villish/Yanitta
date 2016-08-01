@@ -1,5 +1,7 @@
 # Yanitta
 
+# Progress (15/36)
+
 |Class|Spec|Status|
 |---|---|---|
 |Warrior|Arms|Basic|
@@ -28,7 +30,7 @@
 |Mage|Frost|
 |Warlock|Affliction|Basic|
 |Warlock|Demonology|Basic|
-|Warlock|Destruction|
+|Warlock|Destruction|Basic|
 |Monk|Brewmaster|
 |Monk|Windwalker|
 |Monk|Mistweaver|
