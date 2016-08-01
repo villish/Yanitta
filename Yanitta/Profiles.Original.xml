@@ -5731,7 +5731,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftShift);
+return IsMouseButtonDown(3);
 ]]></Lua>
       </Ability>
       <Ability Name="Метеор">
@@ -5780,7 +5780,6 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- надо тестировать
 if not IsFalling() then
     falingStartTime = 0;
 elseif IsFalling() and (falingStartTime or 0) == 0 then
@@ -5827,7 +5826,6 @@ return isInRange and useCooldown;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Огненная глыба! (48108)
 if HasBuff("player", 48108) then
     return true;
 end
@@ -5843,11 +5841,9 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if IsSpellInRange(GetSpellInfo(2948), target) == 1 then
-    if not HasDebuff(target, ability.SpellId, "PLAYER")
-       and not HasBuff("player", 48107) then
-        return true;
-    end
+if not HasDebuff(target, ability.SpellId, "PLAYER")
+   and not HasBuff("player", 48107) then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -5876,7 +5872,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInRange and (HasBuff("player", 48107) or HasDebuff("target", 11129)) then
+if HasBuff("player", 48107) then
     return true;
 end
 ]]></Lua>
@@ -5938,7 +5934,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- ???
 if HasBuff("player", 87959) then
     return true;
 end
