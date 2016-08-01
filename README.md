@@ -11,7 +11,7 @@
 |Hunter|Beastmaster|Basic|
 |Hunter|Marksmanship|Basic|
 |Hunter|Survival|Basic|
-|Rogue|Assassination|
+|Rogue|Assassination|Basic|
 |Rogue|Combat|
 |Rogue|Subtlety|
 |Priest|Discipline|
@@ -28,7 +28,7 @@
 |Mage|Frost|
 |Warlock|Affliction|Basic|
 |Warlock|Demonology|Basic|
-|Warlock|Destruction|Basic|
+|Warlock|Destruction|
 |Monk|Brewmaster|
 |Monk|Windwalker|
 |Monk|Mistweaver|
