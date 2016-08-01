@@ -6183,6 +6183,30 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
+
+SUMMON_STALKERS = 1;
+SUMMON_IMPS     = 2;
+
+PETS = {
+    list = { },
+
+    Init = function(self)
+        for slot = 1, 4 do
+            local haveTotem, name, startTime, duration, icon = GetTotemInfo(slot);
+            if string.match(icon, "calldreadstalkers") then
+                self.list[SUMMON_STALKERS] = GetTotemTimeLeft(slot);
+            elseif string.match(icon, "summonimpoutland") then
+                self.list[SUMMON_IMPS] = GetTotemTimeLeft(slot);
+            end
+        end
+    end,
+
+    GetSummonInfo = function(self, id)
+        return self.list[id] or -1;
+    end,
+};
+
+
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -6199,24 +6223,15 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-power2 = UnitPower("player", SPELL_POWER_DEMONIC_FURY);
-isInRange = IsSpellInRange(GetSpellInfo(172), "target") == 1;
-]]></Lua>
-      </Ability>
-      <Ability Name="Метаморфоза">
-        <SpellID>103958</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if GetShapeshiftForm() ~= 1 and power2 > 150 then
-    if power2 > 990 or select(3, HasDebuff("target", 603, "PLAYER")) < 2 then
-        return true;
-    end
+isInRange = IsSpellInRange(GetSpellInfo(686), "target") == 1;
+PETS:Init();
+
+-- Установка пета в указанную позицию
+if IsMouseButtonDown(4) then
+    PetMoveTo();
+    CameraOrSelectOrMoveStart();
+    CameraOrSelectOrMoveStop();
+    PetMoveTo();
 end
 ]]></Lua>
       </Ability>
@@ -6230,63 +6245,38 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInRange then
-    if GetShapeshiftForm() == 1 then
-        if select(3, HasDebuff("target", 603, "PLAYER")) < 2 then
-            return true;
-        end
-    end
+if isInRange and select(3, HasDebuff(target, 603, "PLAYER")) < 5 then
+    return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Порча (Target)">
-        <SpellID>172</SpellID>
+      <Ability Name="Жизнеотвод">
+        <SpellID>1454</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if PowerByPercent("player") < 60 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Призыв зловещих охотников">
+        <SpellID>104316</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
+        <RecastDelay>3</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if GetShapeshiftForm() ~= 1 then
-    if select(3, HasDebuff("target", 172, "PLAYER")) < 2 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Порча (Focus)">
-        <SpellID>172</SpellID>
-        <Target>Focus</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if GetShapeshiftForm() ~= 1 then
-    if select(3, HasDebuff("focus", 172, "PLAYER")) < 2 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Порча (Mouseover)">
-        <SpellID>172</SpellID>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if GetShapeshiftForm() ~= 1 then
-    if select(3, HasDebuff("mouseover", 172, "PLAYER")) < 2 then
-        return true;
-    end
+if PETS:GetSummonInfo(SUMMON_STALKERS) <= 0 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -6300,14 +6290,14 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasBuff("target", 47960) then
+if UnitPower("player", 7) > 3 and PETS:GetSummonInfo(SUMMON_IMPS) <= 0 then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Ожег души">
-        <SpellID>6353</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Демонический гнев">
+        <SpellID>193440</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -6315,8 +6305,29 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("target", 122351) then
-    return true;
+if setAoE then
+    if PETS:GetSummonInfo(SUMMON_STALKERS) > 4
+    or PETS:GetSummonInfo(SUMMON_IMPS) > 4 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Демоническое усиление">
+        <SpellID>193396</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasBuff("pet", 193396, "PLAYER")) < 2 then
+    if PETS:GetSummonInfo(SUMMON_STALKERS) > 3        -- Охотники
+    or PETS:GetSummonInfo(SUMMON_IMPS) > 3 then   -- Импы
+        return true;
+    end
 end
 ]]></Lua>
       </Ability>
@@ -6333,24 +6344,9 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Узы тьмы">
-        <SpellID>109773</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if UnitLevel("player") > 81 and not HasBuff("player", 109773) then
-    return true;
-end
-]]></Lua>
-      </Ability>
     </Rotation>
     <Rotation Name="Разрушение" Spec="Warlock_Destruction">
-      <HotKey Key="Z" Modifier="Alt" />
+      <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
 useChaosBold = true;
 
