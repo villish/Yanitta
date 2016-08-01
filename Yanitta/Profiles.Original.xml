@@ -6295,24 +6295,6 @@ if UnitPower("player", 7) > 3 and PETS:GetSummonInfo(SUMMON_IMPS) <= 0 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Демонический гнев">
-        <SpellID>193440</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if setAoE then
-    if PETS:GetSummonInfo(SUMMON_STALKERS) > 4
-    or PETS:GetSummonInfo(SUMMON_IMPS) > 4 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Демоническое усиление">
         <SpellID>193396</SpellID>
         <Target>None</Target>
@@ -6326,6 +6308,24 @@ end
 if select(3, HasBuff("pet", 193396, "PLAYER")) < 2 then
     if PETS:GetSummonInfo(SUMMON_STALKERS) > 3        -- Охотники
     or PETS:GetSummonInfo(SUMMON_IMPS) > 3 then   -- Импы
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Демонический гнев">
+        <SpellID>193440</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInRange then
+    if PETS:GetSummonInfo(SUMMON_STALKERS) > 4
+    or PETS:GetSummonInfo(SUMMON_IMPS) > 4 then
         return true;
     end
 end
