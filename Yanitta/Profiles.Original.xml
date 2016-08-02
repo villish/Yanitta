@@ -3325,7 +3325,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
 end
 
 -- Если мы в скрытности, то всегда, если возможно прыгаем в форму незаметности
-if GetSpecialization() == 3 then
+if not PLAYER.InCombat and GetSpecialization() == 3  then
     if GetShapeshiftForm() ~= 1 then
         local start, duration, enable = GetShapeshiftFormCooldown(1);
         if enable == 1 and start == 0 then
@@ -3333,6 +3333,8 @@ if GetSpecialization() == 3 then
         end
     end
 end
+
+max_cp = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
 ]]></Lua>
       </Ability>
       <Ability Name="Смертоносный яд">
@@ -3529,6 +3531,174 @@ end
     </Rotation>
     <Rotation Name="Скрытность" Spec="Rogue_Subtlety">
       <HotKey Key="C" Modifier="Alt" />
+      <Ability Name="Инициализаця">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- если персонаж на маунте, тогда не выполняем ротацию дальше
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
+    return true;
+end
+
+-- Если мы в скрытности, то всегда, если возможно прыгаем в форму незаметности
+if not PLAYER.InCombat and GetSpecialization() == 3  then
+    if GetShapeshiftForm() ~= 1 then
+        local start, duration, enable = GetShapeshiftFormCooldown(1);
+        if enable == 1 and start == 0 then
+            CastShapeshiftForm(1);
+        end
+    end
+end
+
+max_cp = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
+]]></Lua>
+      </Ability>
+      <Ability Name="Теневые клинки">
+        <SpellID>121471</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useCooldown;
+]]></Lua>
+      </Ability>
+      <Ability Name="Танец теней">
+        <SpellID>185313</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if useCooldown and not HasBuff("player", 196976) then
+    if select(3, HasBuff("player", 212283)) <= 10 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Символы смерти">
+        <SpellID>212283</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- With active buff "Shadowdace"
+if HasBuff("player", 185422) or GetShapeshiftForm() == 1 then
+    if select(3, HasBuff("player", 212283)) <= 10 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Окутывающая тень">
+        <SpellID>206237</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") >= max_cp then
+    if select(3, HasBuff("player", 206237)) < 10 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ночной клинок">
+        <SpellID>195452</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") >= max_cp then
+    if select(3, HasDebuff(target, 195452)) < 7 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Потрошение">
+        <SpellID>196819</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") >= max_cp then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар тьмы">
+        <SpellID>185438</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetShapeshiftForm() == 1 or HasBuff("player", 185422) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар в спину">
+        <SpellID>53</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", target) <= max_cp then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок сюрикена">
+        <SpellID>114014</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
     </Rotation>
     <Rotation Name="Бой" Spec="Rogue_Combat">
       <HotKey Key="V" Modifier="Alt" />
