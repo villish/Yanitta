@@ -3700,9 +3700,6 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Бой" Spec="Rogue_Combat">
-      <HotKey Key="V" Modifier="Alt" />
-    </Rotation>
     <Rotation Name="Фарм ларей" Spec="None">
       <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
