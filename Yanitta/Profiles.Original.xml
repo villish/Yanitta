@@ -2088,17 +2088,13 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-isInMeele  = IsSpellInRange(GetSpellInfo(35395), "target") == 1;
-hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
+isInMeele = IsSpellInRange(GetSpellInfo(96231), "target") == 1;
 
-divine_purpose = HasBuff("player", 90174);  -- Божественный замысел
-holy_avenger   = HasBuff("player", 105809); -- Святая клятва
-inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
 ]]></Lua>
       </Ability>
-      <Ability Name="Щит небес">
-        <SpellID>20925</SpellID>
-        <Target>Player</Target>
+      <Ability Name="Свет защитника">
+        <SpellID>184092</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -2106,59 +2102,7 @@ inquisition,_,inquisition_rem = HasBuff("player", 84963); -- дознание
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not HasBuff("player", 20925, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Вечное пламя">
-        <SpellID>114163</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if hollyPower > 2 and select(2, HasBuff("player", 114637)) < 4 then
-    if select(3, HasBuff("player", 156322, "PLAYER")) < 4 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Торжество">
-        <SpellID>130551</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PLAYER.HP < 70 then
-    if divine_purpose or hollyPower > 2 then
-        -- Бастион славы (114637)
-        if (select(2, HasBuff("player", 114637)) or 0) > 4 then
-            return true;
-        end
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Щит праведника">
-        <SpellID>53600</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if divine_purpose or hollyPower > 2 then
+if PLAYER.HP < 70 and HasBuff("player", 188370) then
     return true;
 end
 ]]></Lua>
@@ -2193,9 +2137,9 @@ if PLAYER.HP < 40 then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Божественная защита">
-        <SpellID>498</SpellID>
-        <Target>Player</Target>
+      <Ability Name="Щит праведника">
+        <SpellID>53600</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -2203,62 +2147,9 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.HP < 60 then
+if PLAYER.Agro > 2 and not HasBuff("player", 132403, "PLAYER") then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Молот праведника">
-        <SpellID>53595</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Должен быть дебаф на Слабые Удары (115798)
-return setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар воина света">
-        <SpellID>35395</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Молот гнева">
-        <SpellID>24275</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Божественная призма">
-        <SpellID>114165</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return PLAYER.HP < 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Щит мстителя">
@@ -2287,6 +2178,19 @@ return true;
 return true;
 ]]></Lua>
       </Ability>
+      <Ability Name="Молот праведника">
+        <SpellID>53595</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Освящение">
         <SpellID>26573</SpellID>
         <Target>None</Target>
@@ -2297,37 +2201,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and not HasDebuff("target", 26573, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Гнев небес">
-        <SpellID>119072</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return isInMeele;
-]]></Lua>
-      </Ability>
-      <Ability Name="Праведное неистовство">
-        <SpellID>25780</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasBuff("player", 25780) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>

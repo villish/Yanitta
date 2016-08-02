@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (17/36)
+# Progress (18/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -8,7 +8,7 @@
 |Warrior|Fury|Basic|
 |Warrior|Protection|Basic|
 |Paladin|Holy|
-|Paladin|Protection|
+|Paladin|Protection|Basic|
 |Paladin|Retribution|Basic|
 |Hunter|Beastmaster|Basic|
 |Hunter|Marksmanship|Basic|
