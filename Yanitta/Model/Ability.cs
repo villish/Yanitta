@@ -24,13 +24,21 @@ namespace Yanitta
         /// Ability name.
         /// </summary>
         [XmlAttribute]
-        public string Name { get { return name; } set { Set(ref name, value); } }
+        public string Name
+        {
+            get { return name; }
+            set { Set(ref name, value); }
+        }
 
         uint spellid;
         /// <summary>
         /// Spell id.
         /// </summary>
-        public uint SpellID { get { return spellid; } set { Set(ref spellid, value); } }
+        public uint SpellID
+        {
+            get { return spellid; }
+            set { Set(ref spellid, value); }
+        }
 
         /// <summary>
         /// Target type.
@@ -42,38 +50,62 @@ namespace Yanitta
         /// <summary>
         /// Cencel channel spells.
         /// </summary>
-        public bool CancelChannel { get { return cencelchanel; } set { Set(ref cencelchanel, value); } }
+        public bool CancelChannel
+        {
+            get { return cencelchanel; }
+            set { Set(ref cencelchanel, value); }
+        }
 
         bool cencelcasting;
         /// <summary>
         /// Cancel spell casting.
         /// </summary>
-        public bool CancelCasting { get { return cencelcasting; } set { Set(ref cencelcasting, value); } }
+        public bool CancelCasting
+        {
+            get { return cencelcasting; }
+            set { Set(ref cencelcasting, value); }
+        }
 
         bool useincombat;
         /// <summary>
         /// Combat check.
         /// </summary>
-        public bool IsUseIncombat { get { return useincombat; } set { Set(ref useincombat, value); } }
+        public bool IsUseIncombat
+        {
+            get { return useincombat; }
+            set { Set(ref useincombat, value); }
+        }
 
         bool isusablecheck = true;
         /// <summary>
         /// Usable spell check.
         /// </summary>
-        public bool IsUsableCheck { get { return isusablecheck; } set { Set(ref isusablecheck, value); } }
+        public bool IsUsableCheck
+        {
+            get { return isusablecheck; }
+            set { Set(ref isusablecheck, value); }
+        }
 
         float recastdelay;
         /// <summary>
         /// Delay for cast next spell.
         /// If 0 then not set delay.
         /// </summary>
-        public float RecastDelay { get { return recastdelay; } set { Set(ref recastdelay, value); } }
+        public float RecastDelay
+        {
+            get { return recastdelay; }
+            set { Set(ref recastdelay, value); }
+        }
 
         MovingStates movingstate;
         /// <summary>
         /// Moving state.
         /// </summary>
-        public MovingStates IsMovingCheck { get { return movingstate; } set { Set(ref movingstate, value); } }
+        public MovingStates IsMovingCheck
+        {
+            get { return movingstate; }
+            set { Set(ref movingstate, value); }
+        }
 
         /// <summary>
         /// Lua code to check for the use of ability.
