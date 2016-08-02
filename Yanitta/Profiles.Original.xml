@@ -643,7 +643,7 @@ function CheckKnownAbility(ability)
     ability.IsKnown = false;
 
     if not spellName then
-        print("|cff15bd05Invalid spell id ", ability.SpellId.."|r")
+        print("|cff15bd05Ability: "..ability.Name..", invalid spell id ", ability.SpellId.."|r")
         return;
     end
     --assert(spellName, "Invalid spell for id "..ability.SpellId);
