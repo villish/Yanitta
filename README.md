@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (15/36)
+# Progress (16/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -15,7 +15,7 @@
 |Hunter|Survival|Basic|
 |Rogue|Assassination|Basic|
 |Rogue|Combat|
-|Rogue|Subtlety|
+|Rogue|Subtlety|Basic|
 |Priest|Discipline|
 |Priest|Holy|
 |Priest|Shadow|
@@ -25,7 +25,7 @@
 |Shaman|Elemental|
 |Shaman|Enhancement|
 |Shaman|Restoration|
-|Mage|Arcane|
+|Mage|Arcane|Start|
 |Mage|Fire|Basic|
 |Mage|Frost|
 |Warlock|Affliction|Basic|
