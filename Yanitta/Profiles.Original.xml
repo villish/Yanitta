@@ -3592,8 +3592,8 @@ end
       </Ability>
       <Ability Name="Обшаривание карманов">
         <SpellID>921</SpellID>
-        <Target>Mouseover</Target>
         <Target>Target</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>false</IsUseIncombat>
@@ -3623,6 +3623,9 @@ if target == "target" and UnitExists(target) then
 end
 ]]></Lua>
       </Ability>
+    </Rotation>
+    <Rotation Name="Бой" Spec="Rogue_Combat">
+      <HotKey Key="V" Modifier="Alt" />
     </Rotation>
   </Profile>
   <Profile Class="Priest">
@@ -9008,6 +9011,16 @@ end
         <Lua><![CDATA[
 return true;
 ]]></Lua>
+      </Ability>
+      <Ability Name="Благословение древних">
+        <SpellID>202360</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
       </Ability>
     </Rotation>
     <Rotation Name="none" Spec="None">
