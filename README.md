@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (16/36)
+# Progress (17/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -14,7 +14,7 @@
 |Hunter|Marksmanship|Basic|
 |Hunter|Survival|Basic|
 |Rogue|Assassination|Basic|
-|Rogue|Combat|
+|Rogue|Combat|Basic|
 |Rogue|Subtlety|Basic|
 |Priest|Discipline|
 |Priest|Holy|

@@ -3319,37 +3319,12 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
     return true;
 end
 
--- Если мы в скрытности, то всегда, если возможно прыгаем в форму незаметности
-if not PLAYER.InCombat and GetSpecialization() == 3  then
-    if GetShapeshiftForm() ~= 1 then
-        local start, duration, enable = GetShapeshiftFormCooldown(1);
-        if enable == 1 and start == 0 then
-            CastShapeshiftForm(1);
-        end
-    end
-end
-
 max_cp = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
-]]></Lua>
-      </Ability>
-      <Ability Name="Смертоносный яд">
-        <SpellID>2823</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>3</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if not (UnitAffectingCombat("player") or HasBuff("player", 2823)) then
-    return true;
-end
+isInMeele  = IsSpellInRange(GetSpellInfo(8676), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Внезапный удар">
@@ -3357,7 +3332,7 @@ end
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -3700,8 +3675,193 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Фарм ларей" Spec="None">
+    <Rotation Name="Бой" Spec="Rogue_Combat">
       <HotKey Key="V" Modifier="Alt" />
+      <Ability Name="Инициализаця">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
+    return true;
+end
+
+max_cp = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
+isInMeele  = IsSpellInRange(GetSpellInfo(8676), "target") == 1;
+]]></Lua>
+      </Ability>
+      <Ability Name="Выброс адреналина">
+        <SpellID>13750</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInMeele and useCooldown;
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок костей">
+        <SpellID>193316</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+local buffs = {
+    199603, -- Веселый роджер
+    193358, -- Великая битва
+    193357, -- Море акул
+    193359, -- Истинный азимут
+    199600, -- Зарытое сокровище
+    193356, -- Бортовые залпы
+};
+
+if isInMeele and GetComboPoints("player", "target") >= max_cp then
+    if select(3, HasBuff("player", buffs)) < 10 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Мясорубка">
+        <SpellID>5171</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and GetComboPoints("player", "target") >= max_cp then
+    if select(3, HasBuff("player", 5171)) < 10 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Смерть с небес">
+        <SpellID>152150</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") >= max_cp then
+    -- выброс адреналина
+    if not HasBuff("player", 13750) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Промеж глаз">
+        <SpellID>199804</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", "target") >= max_cp then
+    -- Море акул
+    if HasBuff("player", 193357) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Круговая атака">
+        <SpellID>2098</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetComboPoints("player", target) >= max_cp then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Внезапный удар">
+        <SpellID>8676</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetShapeshiftForm() == 1 and IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Выстрел из пистоли">
+        <SpellID>185763</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+-- Замечательная возможность
+if HasBuff("player", 195627) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Удар саблей">
+        <SpellID>193315</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Выстрел из пистоли">
+        <SpellID>185763</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+    </Rotation>
+    <Rotation Name="Фарм ларей" Spec="None">
+      <HotKey Key="U" Modifier="Alt" />
       <Lua><![CDATA[
 mTempTable = { };
 AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
@@ -3793,9 +3953,6 @@ if target == "target" and UnitExists(target) then
 end
 ]]></Lua>
       </Ability>
-    </Rotation>
-    <Rotation Name="Бой" Spec="Rogue_Combat">
-      <HotKey Key="V" Modifier="Alt" />
     </Rotation>
   </Profile>
   <Profile Class="Priest">
@@ -6667,8 +6824,6 @@ PETS = {
         return self.list[id] or -1;
     end,
 };
-
-
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
