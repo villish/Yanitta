@@ -2089,7 +2089,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
 end
 
 isInMeele = IsSpellInRange(GetSpellInfo(96231), "target") == 1;
-
 ]]></Lua>
       </Ability>
       <Ability Name="Свет защитника">
@@ -5209,12 +5208,12 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
-      <Ability Name="Землятресение">
+      <Ability Name="Тотем землятресения">
         <SpellID>61882</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -5243,21 +5242,6 @@ end
 isInRange = IsSpellInRange(GetSpellInfo(403), "target") == 1;
 ]]></Lua>
       </Ability>
-      <Ability Name="Щит молний">
-        <SpellID>324</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasBuff("player", 324) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Пронизывающий ветер">
         <SpellID>57994</SpellID>
         <Target>Target</Target>
@@ -5273,43 +5257,9 @@ end
 return CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Исцеляющий всплеск">
-        <SpellID>8004</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---if UnitExists("mouseover") and HealthByPercent("mouseover") < 70 and UnitIsFriend("player", "mouseover") then
---    return true;
---end
---for _, member in ipairs(PartyLogic.members) do
---    if member.HP < 70 then
---        --print(UnitName(member.Unit), member.HP);
---        return member.Unit;
---    end
---end
-]]></Lua>
-      </Ability>
-      <Ability Name="Цепная молния">
-        <SpellID>421</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Опаляющий тотем">
-        <SpellID>3599</SpellID>
-        <Target>None</Target>
+      <Ability Name="Очищение духа">
+        <SpellID>51886</SpellID>
+        <Target>Player</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -5317,9 +5267,7 @@ return setAoE;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not setAoE and isInRange and UnitExists("target") and not GetTotemInfo(1) then
-    return true;
-end
+return PartyLogic:GetDispellInfo(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Перерождение">
@@ -5337,9 +5285,9 @@ if isInRange and useCooldown then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Высвободить чары стихий">
-        <SpellID>73680</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Покорение стихий">
+        <SpellID>16166</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -5347,44 +5295,13 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Освобожденная ярость
-if IsTalentSpell(GetSpellInfo(117012)) then
+if isInRange and useCooldown then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Удар духов стихии">
-        <SpellID>117014</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Земной шок">
-        <SpellID>8042</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if select(2, HasBuff("player", 324)) > 14 or UnitLevel("player") < 20 then
-    if select(3, HasDebuff(target, 8050, "PLAYER")) < 5 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Огненный шок">
-        <SpellID>8050</SpellID>
+        <SpellID>188389</SpellID>
         <Target>Target</Target>
         <Target>Focus</Target>
         <Target>Mouseover</Target>
@@ -5395,7 +5312,9 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(3, HasDebuff(target, 8050, "PLAYER")) <= 3 then
+if not HasDebuff(target, 188389, "PLAYER") then
+    return true;
+elseif UnitPower("player") >= 20 and select(3, HasDebuff(target, 188389, "PLAYER")) < 10 then
     return true;
 end
 ]]></Lua>
@@ -5417,8 +5336,21 @@ elseif HasBuff("player", 77756) or not PLAYER.IsMoving then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Молния">
-        <SpellID>403</SpellID>
+      <Ability Name="Удар духов стихии">
+        <SpellID>117014</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяной шок">
+        <SpellID>196840</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5427,12 +5359,14 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+if PLAYER.IsMoving or HasBuff("player", 210714) then
+    return true;
+end
 ]]></Lua>
       </Ability>
-      <Ability Name="Очищение духа">
-        <SpellID>51886</SpellID>
-        <Target>Player</Target>
+      <Ability Name="Земной шок">
+        <SpellID>8042</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -5440,7 +5374,33 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return PartyLogic:GetDispellInfo(target);
+return UnitPower("player") > 90;
+]]></Lua>
+      </Ability>
+      <Ability Name="Цепная молния">
+        <SpellID>421</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE;
+]]></Lua>
+      </Ability>
+      <Ability Name="Молния">
+        <SpellID>403</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
