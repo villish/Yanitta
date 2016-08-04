@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
-using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -55,7 +54,7 @@ namespace Yanitta
         {
             try
             {
-                XmlManager.Save(Settings.Default.ProfilesFileName, Instance);
+                XmlManager.Save(Settings.ProfilePath, Instance);
                 Console.WriteLine("Profiles Saved!");
             }
             catch (Exception ex)

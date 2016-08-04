@@ -26,8 +26,6 @@ namespace Yanitta
 
         void CommandBinding_Executed_ShowProfileWindow(object sender, ExecutedRoutedEventArgs e) => App.ShowWindow<WinProfileEditor>();
 
-        void CommandBinding_Executed_ShowSettingWindow(object sender, ExecutedRoutedEventArgs e) => App.ShowWindow<WindowSettings>();
-
         void CommandBinding_Executed_Minimize(object sender, ExecutedRoutedEventArgs e) => WindowState = WindowState.Minimized;
 
         void CommandBinding_Executed_OpenFile(object sender, ExecutedRoutedEventArgs e)
@@ -42,7 +40,7 @@ namespace Yanitta
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, Localization.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

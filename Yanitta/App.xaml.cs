@@ -34,10 +34,7 @@ namespace Yanitta
                 return;
             }
 
-            if (Settings.Default.Language != "auto")
-                Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo(Settings.Default.Language);
-
-            var fileName = Settings.Default.ProfilesFileName;
+            var fileName = Settings.ProfilePath;
             // Если файл профиля отсутствует, создаем новый (пустой) и запускаем редактор профилей.
             if (!File.Exists(fileName))
             {

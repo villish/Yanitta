@@ -27,7 +27,7 @@ namespace Yanitta.Windows
                 }
                 else
                 {
-                    MessageBox.Show(Localization.NotSelectedProcessMessage);
+                    MessageBox.Show("Process not selected");
                 }
             }
         }

@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Threading;
-using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -19,6 +18,8 @@ namespace Yanitta
             Interval = TimeSpan.FromSeconds(1)
         };
 
+        string[] ProcessNames = { "Wow", "WowB", "WowT", "Wow-64", "WowB-64", "WowT-64" };
+
         /// <summary>
         /// Inicialise new instace of the <see cref="ProcessList"/>
         /// </summary>
@@ -30,11 +31,8 @@ namespace Yanitta
 
         void CheckProcess()
         {
-            if (string.IsNullOrWhiteSpace(Settings.Default.ProcessName))
-                throw new Exception("ProcessName is empty");
-
-            var nameList = Settings.Default.ProcessName.ToLower().Split(new[] { ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            var wowProcessList = Process.GetProcesses().Where(n => nameList.Contains(n.ProcessName.ToLower()));
+            var wowProcessList = Process.GetProcesses().Where(
+                n => ProcessNames.Contains(n.ProcessName, StringComparer.CurrentCultureIgnoreCase));
 
             if (!wowProcessList.Any())
             {

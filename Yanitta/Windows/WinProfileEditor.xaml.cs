@@ -51,8 +51,7 @@ namespace Yanitta
                     {
                         if (!profile.RotationList.Any(r => r.Spec == spec))
                         {
-                            var name = Localization.ResourceManager.GetString($"WowSpecializations_{spec}", CultureInfo.CurrentUICulture);
-                            var rotation = new Rotation { Spec = spec, Name = name };
+                            var rotation = new Rotation { Spec = spec, Name = spec.ToString() };
                             if (profile.RotationList.Count < Keys.Length)
                                 rotation.HotKey = new HotKey(Keys[profile.RotationList.Count], ModifierKeys.Alt);
                             profile.RotationList.Add(rotation);
@@ -74,7 +73,7 @@ namespace Yanitta
         void CommandBinding_Executed_AddAbility(object sender, ExecutedRoutedEventArgs e)
         {
             if (CurrentRotation == null)
-                throw new YanittaException("Не выбрана ротация для новой способности!");
+                throw new YanittaException("Rotation is not selected");
 
             CurrentRotation.AbilityList.Add(new Ability
             {
@@ -91,7 +90,7 @@ namespace Yanitta
         void CommandBinding_Executed_CopyAbility(object sender, ExecutedRoutedEventArgs e)
         {
             if (CurrentAbility == null)
-                throw new YanittaException("Не выбрана способность для копирования!");
+                throw new YanittaException("Ability is not selected!");
 
             CurrentRotation.AbilityList.Add(CurrentAbility.Clone());
             abilityList.SelectedIndex = CurrentRotation.AbilityList.Count - 1;
@@ -104,9 +103,9 @@ namespace Yanitta
         void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
         {
             if (CurrentAbility == null)
-                throw new YanittaException("Не выбрана способность для удаления!");
+                throw new YanittaException("Ability is not selected");
 
-            var result = MessageBox.Show(Localization.AbilityDelQuestion,
+            var result = MessageBox.Show("Do remove the current ability?",
                 Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
@@ -119,7 +118,7 @@ namespace Yanitta
         void CommandBinding_Executed_AddRotation(object sender, ExecutedRoutedEventArgs e)
         {
             if (CurrentProfile == null)
-                throw new YanittaException("Не выбран класс для новой ротации!");
+                throw new YanittaException("Class is not selected");
 
             var mod = ModifierKeys.Alt | (CurrentProfile.Class == WowClass.None
                 ? ModifierKeys.Shift
@@ -139,7 +138,7 @@ namespace Yanitta
         void CommandBinding_Executed_CopyRotation(object sender, ExecutedRoutedEventArgs e)
         {
             if (CurrentRotation == null)
-                throw new YanittaException("Не выбрана ротация для копирования!");
+                throw new YanittaException("Rotation is not selected");
 
             CurrentProfile.RotationList.Add((Rotation)CurrentRotation.Clone());
             rotationList.SelectedIndex = CurrentProfile.RotationList.Count - 1;
@@ -152,9 +151,9 @@ namespace Yanitta
         void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
         {
             if (CurrentRotation == null)
-                throw new YanittaException("Не выбрана ротация для удаления!");
+                throw new YanittaException("Rotation is not selected");
 
-            var result = MessageBox.Show(Localization.RotationDelQuestion,
+            var result = MessageBox.Show("Do remove the current rotation?",
                    Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {

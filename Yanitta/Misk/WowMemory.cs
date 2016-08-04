@@ -6,11 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Linq;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -71,8 +69,6 @@ namespace Yanitta
         /// </summary>
         public ProcessMemory Memory { get; private set; }
 
-        public Offsets Offsets { get; private set; }
-
         /// <summary>
         /// Id процесса.
         /// </summary>
@@ -120,8 +116,8 @@ namespace Yanitta
                     isInGame = value;
                     OnPropertyChanged("IsInGame");
 
-                    Class = value ? Memory.Read<WowClass>(Memory.Rebase(Offsets.PlayerClass)) : WowClass.None;
-                    Name  = value ? Memory.ReadString(Memory.Rebase(Offsets.PlayerName)) : string.Empty;
+                    Class = value ? Memory.Read<WowClass>(Memory.Rebase(Settings.PlayerClass)) : WowClass.None;
+                    Name  = value ? Memory.ReadString(Memory.Rebase(Settings.PlayerName)) : string.Empty;
 
                     if (!Enum.IsDefined(typeof(WowClass), Class))
                         throw new Exception("Unsuported wow class: " + Class);
@@ -151,11 +147,9 @@ namespace Yanitta
             if (process == null)
                 throw new ArgumentNullException(nameof(process));
 
-            var section = $"{process.ProcessName}_{process.MainModule.FileVersionInfo.FilePrivatePart}";
-
-            Offsets = new Offsets(section);
-            if (Offsets == null)
-                throw new NullReferenceException($"Current game version ({section}) not supported!");
+            Settings.Build = process.MainModule.FileVersionInfo.FilePrivatePart;
+            if (Settings.PlayerName == 0L)
+                throw new NullReferenceException($"Current game version ({Settings.Build}) not supported!");
 
             Memory = new ProcessMemory(process);
 
@@ -166,10 +160,10 @@ namespace Yanitta
             mTimer.Tick += (o, e) => {
                 if (CheckProcess())
                 {
-                    IsInGame = Memory.Read<bool>(Memory.Rebase(Offsets.IsInGame));
-                    if (IsInGame && Offsets.FishEnbl != 0)
+                    IsInGame = Memory.Read<bool>(Memory.Rebase(Settings.IsInGame));
+                    if (IsInGame && Settings.FishEnbl != 0)
                     {
-                        var isBotEnable = Memory.Read<float>(Memory.Rebase(Offsets.FishEnbl));
+                        var isBotEnable = Memory.Read<float>(Memory.Rebase(Settings.FishEnbl));
                         if (Math.Abs(isBotEnable - 12.01f) < float.Epsilon)
                             TestBoober();
                     }
@@ -248,7 +242,6 @@ namespace Yanitta
             builder.AppendLine(rotation.Lua);
             builder.AppendLine();
 
-            builder.AppendLine($"DebugMode = {Settings.Default.DebugMode.ToString().ToLower()};");
             // Запуск ротации
             builder.AppendLine("assert(type(ChangeRotation) == \"function\", 'Не найдена функция \"ChangeRotation\"');");
             builder.AppendLine($"ChangeRotation(\"{rotation.Name}\");");
@@ -272,8 +265,8 @@ namespace Yanitta
             var len   = bytes.Length - 1;
             try
             {
-                var injAddress  = Memory.Rebase(Offsets.InjectedAddress);
-                var funcAddress = Memory.Rebase(Offsets.ExecuteBuffer);
+                var injAddress  = Memory.Rebase(Settings.InjectedAddress);
+                var funcAddress = Memory.Rebase(Settings.ExecuteBuffer);
 
                 //if (Memory.IsX64)
                 //    this.Memory.Call_x64(injAddress, funcAddress, code, path, IntPtr.Zero);
@@ -294,9 +287,9 @@ namespace Yanitta
         public RelayCommand<object> Test => new RelayCommand<object>((x) => TestBoober());
         private void TestBoober()
         {
-            var objManager = Memory.Read<IntPtr>(Memory.Rebase(Offsets.ObjectMr));
+            var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMr));
             var playerGuid = Memory.Read<WowGuid>(objManager + FieldOffsets.Player);
-            var state      = Memory.Read<byte>(Memory.Rebase(Offsets.TestClnt));
+            var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClnt));
             var baseAddr   = Memory.Read<IntPtr>(objManager + FieldOffsets.FirstObject);
 
             var cur = new WowObject(Memory, baseAddr);
@@ -313,7 +306,7 @@ namespace Yanitta
                     Memory.SendMessage(0x101, new IntPtr(0x13), IntPtr.Zero); // Break/Pause
 
                     // write boobers guid to "mouseover"
-                    Memory.Write(Memory.Rebase(Offsets.ObjTrack), cur.Guid);
+                    Memory.Write(Memory.Rebase(Settings.ObjTrack), cur.Guid);
                     break;
                 }
 
@@ -329,7 +322,7 @@ namespace Yanitta
             if (state != found)
             {
                 Console.WriteLine($"Write state: state {state} / found {found}");
-                Memory.Write(Memory.Rebase(Offsets.TestClnt), found);
+                Memory.Write(Memory.Rebase(Settings.TestClnt), found);
             }
         }
 

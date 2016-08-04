@@ -5,7 +5,7 @@
         WindowStyle="ToolWindow"
         WindowStartupLocation="CenterOwner"
         Style="{StaticResource KamillaStyle}"
-        Title="{x:Static yanitta:Localization.CopyFromRotation}"
+        Title="Copy from rotation"
         Height="400" Width="355">
     <Window.CommandBindings>
         <CommandBinding Command="Close" Executed="CommandBinding_Close_Executed" />
@@ -34,13 +34,13 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding SpellID}" Header="{x:Static yanitta:Localization.Spell}"/>
-                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"   Header="{x:Static yanitta:Localization.Name}"/>
+                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding SpellID}" Header="Id"/>
+                    <GridViewColumn Width="200" DisplayMemberBinding="{Binding Name}"   Header="Name"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <Button Grid.Row="2" Grid.Column="0" Content="{x:Static yanitta:Localization.Cencel}" Command="Close"/>
-        <Button Grid.Row="2" Grid.Column="1" Content="{x:Static yanitta:Localization.OK}"     Command="Copy" />
+        <Button Grid.Row="2" Grid.Column="0" Content="Cencel" Command="Close"/>
+        <Button Grid.Row="2" Grid.Column="1" Content="OK"     Command="Copy" />
     </Grid>
 </Window>

@@ -5,9 +5,6 @@ using System.Windows.Input;
 
 namespace Yanitta
 {
-    /// <summary>
-    /// Логика взаимодействия для CopyAbilitysWindow.xaml
-    /// </summary>
     public partial class CopyAbilitysWindow : Window
     {
         public CopyAbilitysWindow(Profile profile)
@@ -20,10 +17,7 @@ namespace Yanitta
                 cbRotation.SelectedIndex = 0;
         }
 
-        public IEnumerable<Ability> SelectedAbilitys
-        {
-            get { return (cbRotation?.SelectedValue as Rotation)?.AbilityList?.Where(a => a.IsChecked); }
-        }
+        public IEnumerable<Ability> SelectedAbilitys => (cbRotation?.SelectedValue as Rotation)?.AbilityList?.Where(a => a.IsChecked);
 
         void CommandBinding_Copy_Executed(object sender, ExecutedRoutedEventArgs e)
         {

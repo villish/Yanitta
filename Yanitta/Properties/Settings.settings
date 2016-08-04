@@ -1,18 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Yanitta.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-    <Setting Name="ProfilesFileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">..\..\Yanitta\Profiles.Original.xml</Value>
-    </Setting>
-    <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="ProcessName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Wow;WowB;WowT; Wow-64;WowB-64;WowT-64</Value>
-    </Setting>
-    <Setting Name="Language" Type="System.String" Scope="User">
-      <Value Profile="(Default)">auto</Value>
-    </Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>

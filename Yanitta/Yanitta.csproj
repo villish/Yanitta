@@ -98,6 +98,7 @@
     <Compile Include="Misk\WowObject.cs" />
     <Compile Include="Misk\WowGuid.cs" />
     <Compile Include="Model\RelayCommand.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Windows\CopyAbilitysWindow.xaml.cs">
       <DependentUpon>CopyAbilitysWindow.xaml</DependentUpon>
     </Compile>
@@ -113,13 +114,7 @@
     <Compile Include="Windows\MultySelectedComboBox.xaml.cs">
       <DependentUpon>MultySelectedComboBox.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Misk\Offsets.cs" />
     <Compile Include="Model\HotKey.cs" />
-    <Compile Include="Localization.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Localization.resx</DependentUpon>
-    </Compile>
     <Compile Include="Misk\WowTypes.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -133,9 +128,6 @@
     </Compile>
     <Compile Include="Windows\WinCodeExecute.xaml.cs">
       <DependentUpon>WinCodeExecute.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\WinSettings.xaml.cs">
-      <DependentUpon>WinSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\WinProfileEditor.xaml.cs">
       <DependentUpon>WinProfileEditor.xaml</DependentUpon>
@@ -178,10 +170,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\WinSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\WinProfileEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -192,11 +180,6 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="Localization.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Localization.ru.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -208,7 +191,7 @@
     <None Include="app.manifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="offsets.ini">
+    <None Include="settings.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Properties\app.manifest" />
