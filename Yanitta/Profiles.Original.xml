@@ -4098,19 +4098,6 @@ end
 return PartyLogic:LowHP(50) > 3;
 ]]></Lua>
       </Ability>
-      <Ability Name="Архангел">
-        <SpellID>81700</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return PartyLogic:LowHP(70) > 3;
-]]></Lua>
-      </Ability>
       <Ability Name="Слово силы: Щит">
         <SpellID>17</SpellID>
         <Target>None</Target>
