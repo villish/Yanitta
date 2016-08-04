@@ -5247,7 +5247,6 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
@@ -5455,7 +5454,6 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
@@ -5674,7 +5672,6 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- если персонаж на маунте, тогда не выполняем ротацию дальше
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
@@ -8273,13 +8270,12 @@ end
         <Lua><![CDATA[
 -- если персонаж на маунте, или в инвизе или не в форме медведа или кота
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted
-    or not (GetShapeshiftForm() == 2 or GetShapeshiftForm() == 1)
+    or GetShapeshiftForm() ~= 1
     or IsStealthed() then
     return true;
 end
 
 isInMeele  = IsSpellInRange(GetSpellInfo(33917), "target") == 1;
-isCat      = GetShapeshiftForm() == 2;
 
 if isInMeele and useCooldown and SpellCD(33917) == 0 and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND);
@@ -8335,22 +8331,6 @@ if isAltMod then
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Дикая защита">
-        <SpellID>62606</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PLAYER.Agro > 0 and
-    UnitCastingInfo("target") == GetSpellInfo(180199) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Дубовая кожа">
         <SpellID>22812</SpellID>
         <Target>None</Target>
@@ -8391,9 +8371,7 @@ end
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Взбучка">
@@ -8448,64 +8426,6 @@ if not isCat and select(2, HasDebuff("target", 33745, "PLAYER")) > 2 then
         return true;
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Растерзать">
-        <SpellID>33745</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not isCat then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Свирепый укус">
-        <SpellID>22568</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat and UnitPower("player") > 30 and GetComboPoints("player") > 4 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Полоснуть">
-        <SpellID>5221</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isCat then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Волшебный огонь">
-        <SpellID>770</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not isCat;
 ]]></Lua>
       </Ability>
     </Rotation>
