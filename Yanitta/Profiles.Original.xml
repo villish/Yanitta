@@ -6044,25 +6044,6 @@ end
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="none" Spec="None">
-      <HotKey Key="B" Modifier="Alt" />
-      <Ability Name="Удар бури">
-        <SpellID>17364</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Вестник шторма
-if HasBuff("player", 201846) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-    </Rotation>
   </Profile>
   <Profile Class="Mage">
     <Lua><![CDATA[
