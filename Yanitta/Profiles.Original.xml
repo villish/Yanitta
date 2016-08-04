@@ -2136,6 +2136,19 @@ if PLAYER.HP < 40 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Очищение от токсинов">
+        <SpellID>213644</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return PartyLogic:GetDispellInfo(target);
+]]></Lua>
+      </Ability>
       <Ability Name="Щит праведника">
         <SpellID>53600</SpellID>
         <Target>Target</Target>
@@ -2200,7 +2213,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return isInMeele;
 ]]></Lua>
       </Ability>
     </Rotation>
