@@ -6468,16 +6468,9 @@ end
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
-      </Ability>
-      <Ability Name="Чародейские стрелы">
-        <SpellID>5143</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useCooldown and not GetTotemInfo(1);
+]]></Lua>
       </Ability>
       <Ability Name="Сверхновая">
         <SpellID>157980</SpellID>
@@ -6488,6 +6481,96 @@ end
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Мощь тайной магии">
+        <SpellID>12042</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInRange and useCooldown  then
+    if SpellCD(12051) == 0 and UnitPower("player", 16) >= 4 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейские стрелы">
+        <SpellID>5143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+-- save
+if select(2, HasBuff("player", 79683)) >= 3 then
+    return true;
+-- burn
+elseif HasBuff("player", 12042) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Прилив сил">
+        <SpellID>12051</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if SpellCD(12042) > 10 and PLAYER:Power() < 50 then
+    if UnitPower("player", 16) >= 4 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейская вспышка">
+        <SpellID>30451</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+-- save
+if PLAYER:Power() > 90 and UnitPower("player", 16) >= 4 then
+    return true;
+-- burn
+elseif PLAYER:Power() > 50 and HasBuff("player", 12042) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Чародейские стрелы">
+        <SpellID>5143</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if UnitPower("player", 16) >= 4 then
+    return true;
+end
+]]></Lua>
       </Ability>
       <Ability Name="Чародейный обстрел">
         <SpellID>44425</SpellID>
@@ -6498,6 +6581,11 @@ end
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if UnitPower("player", 16) >= 4 then
+    return true;
+end
+]]></Lua>
       </Ability>
       <Ability Name="Чародейская вспышка">
         <SpellID>30451</SpellID>
@@ -6507,7 +6595,12 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if SpellCD(44425) > 0 or UnitPower("player", 16) < 4 then
+    return true;
+end
+]]></Lua>
       </Ability>
     </Rotation>
   </Profile>
@@ -9064,7 +9157,7 @@ return true;
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -9074,7 +9167,7 @@ return true;
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -9084,7 +9177,7 @@ return true;
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -9094,7 +9187,7 @@ return true;
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
@@ -9104,7 +9197,7 @@ return true;
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
+        <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
