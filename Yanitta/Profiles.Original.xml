@@ -2050,25 +2050,35 @@ setAoE      = nil;
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
+useInterrupt = true;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
-    if modifier == "LCTRL" then
-        if setAoE then
-            setAoE = false;
-            AddonFrame.print("|cff00ff00Одиночная цель", true);
-        else
-            setAoE = true;
-            AddonFrame.print("|cffff0000AOE", true);
-        end
-    elseif modifier == "RSHIFT" then
+    --if modifier == "LCTRL" then
+    --    if setAoE then
+    --        setAoE = false;
+    --        AddonFrame.print("|cff00ff00Одиночная цель", true);
+    --    else
+    --        setAoE = true;
+    --        AddonFrame.print("|cffff0000AOE", true);
+    --    end
+    --else
+    if modifier == "RSHIFT" then
         if useCooldown then
             useCooldown = false;
             AddonFrame.print("|cffff0000Кулдауны выключены", true);
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
         end
     end
 end
@@ -2091,6 +2101,19 @@ end
 isInMeele = IsSpellInRange(GetSpellInfo(96231), "target") == 1;
 ]]></Lua>
       </Ability>
+      <Ability Name="Укор">
+        <SpellID>96231</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useInterrupt and CheckInterrupt("target");
+]]></Lua>
+      </Ability>
       <Ability Name="Свет защитника">
         <SpellID>184092</SpellID>
         <Target>None</Target>
@@ -2102,6 +2125,21 @@ isInMeele = IsSpellInRange(GetSpellInfo(96231), "target") == 1;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 70 and HasBuff("player", 188370) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Гнев карателя">
+        <SpellID>31884</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -2225,6 +2263,7 @@ return isInMeele;
       <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
+useInterrupt = true;
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -2244,6 +2283,14 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         else
             useCooldown = true;
             AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
         end
     end
 end
@@ -2277,7 +2324,7 @@ hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return CheckInterrupt("target");
+return useInterrupt and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
       <Ability Name="Очищение">
