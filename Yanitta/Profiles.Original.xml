@@ -5481,6 +5481,24 @@ return setAoE;
 return true;
 ]]></Lua>
       </Ability>
+      <Ability Name="Дух предков">
+        <SpellID>2008</SpellID>
+        <Target>Target</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if not UnitAffectingCombat("player") then
+    if UnitIsDeadOrGhost(target) and UnitIsPlayer(target) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
     </Rotation>
     <Rotation Name="Совершенствование" Spec="Shaman_Enhancement">
       <HotKey Key="V" Modifier="Alt" />
@@ -5798,7 +5816,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") then
     if UnitIsDeadOrGhost(target) and UnitIsPlayer(target) then
