@@ -4030,7 +4030,6 @@ return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftControl);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- надо тестировать
 if not IsFalling() then
     falingStartTime = 0;
 elseif IsFalling() and (falingStartTime or 0) == 0 then
@@ -4345,6 +4344,26 @@ end
 return IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
+      <Ability Name="Левитация">
+        <SpellID>1706</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not IsFalling() then
+    falingStartTime = 0;
+elseif IsFalling() and (falingStartTime or 0) == 0 then
+    falingStartTime = GetTime();
+elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 111759) then
+    falingStartTime = 0;
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -4360,46 +4379,11 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
 end
 
 isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
-isBurst = IsModKeyDown(mkLeftShift);
 ]]></Lua>
       </Ability>
-      <Ability Name="Левитация">
-        <SpellID>1706</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- надо тестировать
-if not IsFalling() then
-    falingStartTime = 0;
-elseif IsFalling() and (falingStartTime or 0) == 0 then
-    falingStartTime = GetTime();
-elseif GetTime() - (falingStartTime or 0) > 1 and not HasBuff("player", 111759) then
-    falingStartTime = 0;
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Массовое разсеивание">
-        <SpellID>32375</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftAlt);
-]]></Lua>
-      </Ability>
-      <Ability Name="Искушение разума">
-        <SpellID>48045</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Придание сил">
+        <SpellID>10060</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -4407,11 +4391,11 @@ return IsModKeyDown(mkLeftAlt);
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-return setAoE;
+return isInRange and useCooldown;
 ]]></Lua>
       </Ability>
-      <Ability Name="Всепожирающая чума">
-        <SpellID>2944</SpellID>
+      <Ability Name="Извержение Бездны">
+        <SpellID>228260</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -4420,64 +4404,14 @@ return setAoE;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if UnitPower("player", SPELL_POWER_SHADOW_ORBS) > 2 then
-    UseItemBySlot(INVSLOT_HAND);
-    UseItemBySlot(INVSLOT_TRINKET1);
-    UseItemBySlot(INVSLOT_TRINKET2);
+if HasBuff("player", 194249) or UnitPower("player") > 85 then
     return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Пытка разума (Безумие)">
-        <SpellID>15407</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HasDebuff("target", 2944, "PLAYER") then
-    return isInRange;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Взрыв разума">
-        <SpellID>8092</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasDebuff("target", 2944, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Слово Тьмы: Смерть">
-        <SpellID>32379</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasDebuff(target, 2944, "PLAYER") then
-    return HealthByPercent(target) < 20;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Сияние">
-        <SpellID>120517</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Темное сокрушение">
+        <SpellID>205385</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -4488,7 +4422,69 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Исчадие тьмы">
+      <Ability Name="Слово Тьмы: Смерть">
+        <SpellID>32379</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Взрыв разума">
+        <SpellID>8092</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Слово Тьмы: Боль">
+        <SpellID>589</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, 589, "PLAYER")) < 5 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Прикосновение вампира">
+        <SpellID>34914</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, 34914, "PLAYER")) < 6 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Исчадие Тьмы">
         <SpellID>34433</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4501,73 +4497,17 @@ return true;
 return useCooldown;
 ]]></Lua>
       </Ability>
-      <Ability Name="Пронзание разума">
-        <SpellID>73510</SpellID>
+      <Ability Name="Иссушение разума">
+        <SpellID>48045</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HasBuff("player", 87160) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Слово тьмы: Боль">
-        <SpellID>589</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- 18 sec
-local remains = select(3, HasDebuff(target, ability.SpellId, "PLAYER"));
-local orbs = UnitPower("player", SPELL_POWER_SHADOW_ORBS);
-
-if not HasDebuff("target", 2944, "PLAYER") then
-    if SpellCD(8092) < 4 and remains < 8 and orbs > 1 then
-        return true;
-    end
-
-    if PLAYER.IsMoving or remains < 2 then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Прикосновение вампира">
-        <SpellID>34914</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>true</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>2</RecastDelay>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
--- 15 sec
-local remains = select(3, HasDebuff(target, ability.SpellId, "PLAYER"));
-local orbs = UnitPower("player", SPELL_POWER_SHADOW_ORBS);
-
-if not HasDebuff("target", 2944, "PLAYER") then
-    if SpellCD(8092) < 3 and remains < 8 and orbs > 1 then
-        return true;
-    end
-
-    if remains < 3.5 then
-        return true;
-    end
-end
+return setAoE;
 ]]></Lua>
       </Ability>
       <Ability Name="Пытка разума">
