@@ -5527,6 +5527,19 @@ end
 isInMeele = IsSpellInRange(GetSpellInfo(60103), "target") == 1;
 ]]></Lua>
       </Ability>
+      <Ability Name="Очищение духа">
+        <SpellID>51886</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return PartyLogic:GetDispellInfo(target);
+]]></Lua>
+      </Ability>
       <Ability Name="Пронизывающий ветер">
         <SpellID>57994</SpellID>
         <Target>Target</Target>
@@ -5774,6 +5787,24 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Дух предков">
+        <SpellID>2008</SpellID>
+        <Target>Target</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if not UnitAffectingCombat("player") then
+    if UnitIsDeadOrGhost(target) and UnitIsPlayer(target) then
+        return true;
+    end
+end
 ]]></Lua>
       </Ability>
     </Rotation>
