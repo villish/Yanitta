@@ -11,19 +11,19 @@
         <Setter Property="ContextMenu">
             <Setter.Value>
                 <ContextMenu>
-                    <MenuItem Command="Cut"    Header="{x:Static AvalonEdit:Localization.Cut}" />
-                    <MenuItem Command="Copy"   Header="{x:Static AvalonEdit:Localization.Copy}" />
-                    <MenuItem Command="Paste"  Header="{x:Static AvalonEdit:Localization.Paste}" />
-                    <MenuItem Command="Delete" Header="{x:Static AvalonEdit:Localization.Delete}" />
+                    <MenuItem Command="Cut"    Header="Cut" />
+                    <MenuItem Command="Copy"   Header="Copy" />
+                    <MenuItem Command="Paste"  Header="Paste" />
+                    <MenuItem Command="Delete" Header="Delete" />
                     <Separator />
-                    <MenuItem Command="Undo"   Header="{x:Static AvalonEdit:Localization.Undo}" />
-                    <MenuItem Command="Redo"   Header="{x:Static AvalonEdit:Localization.Redo}" />
+                    <MenuItem Command="Undo"   Header="Undo" />
+                    <MenuItem Command="Redo"   Header="Redo" />
                     <Separator />
-                    <MenuItem Command="AvalonEdit:AvalonEditCommands.Comment"   Header="{x:Static AvalonEdit:Localization.Comment}" />
-                    <MenuItem Command="AvalonEdit:AvalonEditCommands.UnComment" Header="{x:Static AvalonEdit:Localization.Uncomment}" />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.Comment"   Header="Comment" />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.UnComment" Header="Uncomment" />
                     <Separator />
-                    <MenuItem Command="AvalonEdit:AvalonEditCommands.ConvertTabsToSpaces"       Header="{x:Static AvalonEdit:Localization.ConvertTabsToSpaces}" />
-                    <MenuItem Command="AvalonEdit:AvalonEditCommands.RemoveTrailingWhitespace"  Header="{x:Static AvalonEdit:Localization.RemoveTrailingWhitespace}" />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.ConvertTabsToSpaces"       Header="Convert Tab to Spaces" />
+                    <MenuItem Command="AvalonEdit:AvalonEditCommands.RemoveTrailingWhitespace"  Header="Remove Trailing Whitespace" />
                 </ContextMenu>
             </Setter.Value>
         </Setter>

@@ -86,10 +86,10 @@
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
-                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="-1">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="-1" ToolTip="Move Up">
                                     <Image Source="/Yanitta;component/Resources/Button_Up.png" />
                                 </Button>
-                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="1">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="1" ToolTip="Move Down">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                             </ToolBar>
@@ -149,10 +149,10 @@
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
-                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="-1">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="-1" ToolTip="Move Up">
                                     <Image Source="/Yanitta;component/Resources/Button_Up.png" />
                                 </Button>
-                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="1">
+                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="1" ToolTip="Move Down">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                                 <Separator />
@@ -324,8 +324,7 @@
         <ListBox x:Name="profiLeList" IsSynchronizedWithCurrentItem="true" ItemsSource="{Binding ProfileList}" Grid.Row="1" HorizontalContentAlignment="Center" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Image Source="{Binding ImageSource}" Width="64"
-                        ToolTip="{Binding Class}" Cursor="Hand" />
+                    <Image Source="{Binding ImageSource}" Width="64" ToolTip="{Binding Class}" Cursor="Hand" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

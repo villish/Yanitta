@@ -134,11 +134,6 @@
     <Compile Include="Highlighting\Bracket\BracketSearchResult.cs" />
     <Compile Include="Highlighting\Resources\RegexFoldingStrategy.cs" />
     <Compile Include="Indentation\LuaIndentationStrategy.cs" />
-    <Compile Include="Localization.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Localization.resx</DependentUpon>
-    </Compile>
     <Compile Include="AvalonEditCommands.cs" />
     <Compile Include="CodeCompletion\CompletionListBox.cs" />
     <Compile Include="CodeCompletion\CompletionWindowBase.cs" />
@@ -328,11 +323,6 @@
     <Compile Include="Utils\PixelSnapHelpers.cs" />
     <Compile Include="Utils\ThrowUtil.cs" />
     <Compile Include="Utils\Win32.cs" />
-    <EmbeddedResource Include="Localization.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Localization.ru.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
