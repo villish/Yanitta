@@ -2,15 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:yanitta="clr-namespace:Yanitta"
-        x:Class="Yanitta.MainWindow"
+        x:Class="Yanitta.Windows.MainWindow"
         Title="Yanitta"
         AllowsTransparency="True"
         Background="#00000000"
         FontFamily="../Resources/#MORPHEUS"
         Icon="/Yanitta;component/Resources/Google Black Alt.ico"
         SizeToContent="WidthAndHeight"
-        WindowStyle="None"
-        Closing="Window_Closing">
+        WindowStyle="None">
 
     <Window.Resources>
         <RoutedUICommand x:Key="CloseWindow"    />
@@ -19,10 +18,6 @@
         <RoutedUICommand x:Key="OpenProfiles"   />
         <RoutedUICommand x:Key="OpenSettings"   />
     </Window.Resources>
-
-    <Window.InputBindings>
-        <KeyBinding Command="Close" Modifiers="Alt" Key="F4" />
-    </Window.InputBindings>
 
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource CloseWindow}"    Executed="CommandBinding_Executed_Close" />
@@ -35,13 +30,11 @@
     <Grid x:Name="mainGrid" DataContext="{Binding Source={StaticResource processList}}" Style="{StaticResource KamillaStyle}">
         <Rectangle Fill="Black" Margin="10,80,10,60"/>
         <Image Width="750" MouseLeftButtonDown="Image_MouseDown" Source="../Resources/wow_frame_empty.png" />
-        <Button Width="100" Height="24" Margin="37,55,0,0"   HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenProfiles}" Content="Constructor" />
-        <Button Width="100" Height="24" Margin="151,55,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenCodeExec}" Content="Console" />
-        <Button Width="100" Height="24" Margin="37,544,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="Open" CommandParameter="Yanitta.log" Content="Open log" />
-        <Button Width="100" Height="24" Margin="151,544,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Open" CommandParameter="InjectedLuaCode.lua" Content="Open Lua code" />
-
-        <Button Content="X" Width="22" Height="24" Margin="702,56,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource CloseWindow}"    ToolTip="Close window" />
-        <Button Content="_" Width="22" Height="24" Margin="680,56,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource MinimizeWindow}" ToolTip="Minimise window" />
+        <Button Width="100" Height="24" Margin="37,55,0,0"  HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenProfiles}" Content="Constructor" />
+        <Button Width="100" Height="24" Margin="151,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource OpenCodeExec}" Content="Console" />
+        <Button Width="100" Height="24" Margin="508,55,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="Open" CommandParameter="InjectedLuaCode.lua" Content="Open Lua code" />
+        <Button Width="22"  Height="24" Margin="702,56,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource CloseWindow}" Content="X"    ToolTip="Close window" />
+        <Button Width="22"  Height="24" Margin="680,56,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Command="{StaticResource MinimizeWindow}" Content="_" ToolTip="Minimise window" />
 
         <TreeView HorizontalAlignment="Left" Height="425" Margin="37,101,0,0" VerticalAlignment="Top" Width="678" ItemsSource="{Binding}">
             <TreeView.ItemContainerStyle>

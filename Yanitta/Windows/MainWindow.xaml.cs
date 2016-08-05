@@ -1,14 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using Yanitta.Windows;
 
-namespace Yanitta
+namespace Yanitta.Windows
 {
-    /// <summary>
-    /// Главное окно программы.
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -17,8 +12,6 @@ namespace Yanitta
         }
 
         void Image_MouseDown(object o, RoutedEventArgs e) => DragMove();
-
-        void Window_Closing(object sender, CancelEventArgs e) => Application.Current.Shutdown();
 
         void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e) => Close();
 

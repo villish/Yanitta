@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Yanitta
+namespace Yanitta.Windows
 {
     public partial class CopyAbilitysWindow : Window
     {

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Threading;
 using System.Linq;
 using System.Windows;
-using Yanitta.Properties;
 
 namespace Yanitta
 {
@@ -19,8 +16,7 @@ namespace Yanitta
             Dispatcher.UnhandledException += (o, ex) => {
                 if (ex.Exception is YanittaException)
                 {
-                    MessageBox.Show(ex.Exception.Message,
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(ex.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     Console.WriteLine(ex.Exception.Message);
                     ex.Handled = true;
                 }
@@ -40,7 +36,7 @@ namespace Yanitta
             {
                 ProfileDb.Instance = new ProfileDb();
                 File.WriteAllText(fileName, "");
-                ShowWindow<WinProfileEditor>();
+                ShowWindow<Windows.WinProfileEditor>();
             }
             else
             {

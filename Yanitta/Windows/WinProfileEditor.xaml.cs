@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Yanitta.Windows;
 
-namespace Yanitta
+namespace Yanitta.Windows
 {
     public partial class WinProfileEditor : Window
     {
