@@ -67,12 +67,12 @@ namespace Yanitta
         public ObservableCollection<Ability> AbilityList { get; set; } = new ObservableCollection<Ability>();
 
         /// <summary>
-        /// Создает новый экземпляр класса с текщими значениями.
+        /// Create deep copy from curent instance <see cref="Rotation"/>
         /// </summary>
         public object Clone()
         {
             var rotation = new Rotation {
-                Name   = Name + " (Копия)",
+                Name   = Name + " (Copy)",
                 Lua    = Lua,
                 HotKey = new HotKey(),
             };

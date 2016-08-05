@@ -46,6 +46,17 @@ namespace Yanitta
 
         public override void Write(string format, params object[] arg) => InternalWrite(string.Format(format, arg));
 
+        void InternalWrite(string text) => m_writer?.Write($"[{DateTime.Now:HH:mm:ss.fff}] {text}");
+
+        public static void CloseWriter() => Instance?.Close();
+
+        void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var exception = e.ExceptionObject as Exception;
+            if (exception != null)
+                Console.WriteLine(exception);
+        }
+
         public override void Close()
         {
             base.Close();
@@ -58,23 +69,6 @@ namespace Yanitta
                 m_writer = null;
             }
             AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
-        }
-
-        void InternalWrite(string text)
-        {
-            m_writer?.Write($"[{DateTime.Now:HH:mm:ss.fff}] {text}");
-        }
-
-        void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var exception = e.ExceptionObject as Exception;
-            if (exception != null)
-                Console.WriteLine(exception);
-        }
-
-        public static void CloseWriter()
-        {
-            Instance?.Close();
         }
     }
 }

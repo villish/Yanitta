@@ -50,12 +50,11 @@ namespace Yanitta
         #endregion
 
         /// <summary>
-        /// Событие для обработки закрытия процесса.
+        /// Event for handle closing process.
         /// </summary>
         [SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event WowMemoryHandler GameExited;
 
-        // Сохраним ссылку на обработчик, чтобы ее не трогал сборщик мусора.
         KeyBoardProc KeyBoardProck;
         bool isInGame;
         IntPtr keyboardHook;
@@ -65,12 +64,12 @@ namespace Yanitta
         };
 
         /// <summary>
-        /// Текущий процесс <see cref="ProcessMemory"/>
+        /// Curent process <see cref="ProcessMemory"/>
         /// </summary>
         public ProcessMemory Memory { get; private set; }
 
         /// <summary>
-        /// Id процесса.
+        /// Process Id.
         /// </summary>
         public int ProcessId => Memory?.Process?.Id ?? 0;
 
@@ -141,7 +140,7 @@ namespace Yanitta
         /// <summary>
         /// Create new instance of the <see cref="WowMemory"/>.
         /// </summary>
-        /// <param name="process">Процесс WoW.</param>
+        /// <param name="process">Wow process.</param>
         public WowMemory(Process process)
         {
             if (process == null)
@@ -153,7 +152,6 @@ namespace Yanitta
 
             Memory = new ProcessMemory(process);
 
-            // Мы должны сохранить ссылку на делегат, чтобы его не трогал сборщик мусора
             KeyBoardProck = new KeyBoardProc(HookCallback);
             keyboardHook = SetWindowsHookEx(13, KeyBoardProck, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
 
@@ -184,7 +182,6 @@ namespace Yanitta
                 var vkCode = Marshal.ReadInt32(lParam);
                 var key = KeyInterop.KeyFromVirtualKey(vkCode);
 
-                // не будем обрабатывать, если просто зажат модификатор [116...121]
                 if (!(key >= Key.LeftShift && key <= Key.RightAlt))
                 {
                     //Debug.WriteLine("[{3}] Mod: {0}, Key: {1} ({2})", Keyboard.Modifiers, key, VkCode, nCode);
@@ -220,9 +217,9 @@ namespace Yanitta
         }
 
         /// <summary>
-        /// Запускает/останавливает ротацию.
+        /// Start/Stop rotation
         /// </summary>
-        /// <param name="rotation">Текущая ротация.</param>
+        /// <param name="rotation">Curent rotation.</param>
         void ExecuteProfile(Rotation rotation)
         {
             if (rotation == null)
@@ -242,7 +239,7 @@ namespace Yanitta
             builder.AppendLine(rotation.Lua);
             builder.AppendLine();
 
-            // Запуск ротации
+            // Run rotation
             builder.AppendLine("assert(type(ChangeRotation) == \"function\", 'Не найдена функция \"ChangeRotation\"');");
             builder.AppendLine($"ChangeRotation(\"{rotation.Name}\");");
 
@@ -256,7 +253,7 @@ namespace Yanitta
         /// <summary>
         /// Выполняет в текущем процессе указанный скрипт Lua.
         /// </summary>
-        /// <param name="command">Скрипт Lua, который неоходимо выполнить.</param>
+        /// <param name="command">Lua code.</param>
         public void LuaExecute(string command)
         {
             var bytes = Encoding.UTF8.GetBytes(command + '\0');
@@ -330,16 +327,7 @@ namespace Yanitta
 
         ~WowMemory()
         {
-            Dispose(false);
-        }
-
-        /// <summary>
-        /// Closes an open wow memory.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            Dispose();
         }
 
         const string StopCode =
@@ -348,7 +336,10 @@ namespace Yanitta
  end
  ABILITY_TABLE = { };";
 
-        void Dispose(bool disposing)
+        /// <summary>
+        /// Closes an open wow memory.
+        /// </summary>
+        public void Dispose()
         {
             if (IsDisposed)
                 return;
@@ -364,6 +355,7 @@ namespace Yanitta
             keyboardHook = IntPtr.Zero;
             Memory = null;
             IsDisposed = true;
+            GC.SuppressFinalize(this);
         }
     }
 }

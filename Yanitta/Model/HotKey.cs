@@ -62,18 +62,12 @@ namespace Yanitta
         ///
         /// </summary>
         [XmlIgnore]
-        public int RawHotKey
-        {
-            get { return KeyInterop.VirtualKeyFromKey(Key) << 16 | (int)Modifier & 0xFFFF; }
-        }
+        public int RawHotKey => KeyInterop.VirtualKeyFromKey(Key) << 16 | (int)Modifier & 0xFFFF;
 
         /// <summary>
         ///
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return Key == Key.None || Modifier == ModifierKeys.None; }
-        }
+        public bool IsEmpty => Key == Key.None || Modifier == ModifierKeys.None;
 
         [XmlIgnore]
         public bool Control
@@ -156,10 +150,7 @@ namespace Yanitta
         ///
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return RawHotKey ^ RawHotKey;
-        }
+        public override int GetHashCode() => RawHotKey ^ RawHotKey;
 
         /// <summary>
         ///

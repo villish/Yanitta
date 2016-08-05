@@ -22,29 +22,31 @@ namespace Yanitta
                 }
             };
 
-            if (e.Args.Length > 0 && e.Args[0] == "/e")
+            if (e.Args.Length > 0 && e.Args[0] == "/editor")
+            {
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
-            else if (e.Args.Length > 0 && e.Args[0] == "/ex")
+            }
+            else if (e.Args.Length > 0 && e.Args[0] == "/console")
             {
                 StartupUri = new Uri("Windows/WinCodeExecute.xaml", UriKind.Relative);
-                return;
-            }
-
-            var fileName = Settings.ProfilePath;
-            // Если файл профиля отсутствует, создаем новый (пустой) и запускаем редактор профилей.
-            if (!File.Exists(fileName))
-            {
-                ProfileDb.Instance = new ProfileDb();
-                File.WriteAllText(fileName, "");
-                ShowWindow<Windows.WinProfileEditor>();
             }
             else
             {
-                ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
-                if (File.Exists(fileName))
-                    File.Copy(fileName, fileName + ".bak", true);
+                var fileName = Settings.ProfilePath;
+                if (!File.Exists(fileName))
+                {
+                    ProfileDb.Instance = new ProfileDb();
+                    File.WriteAllText(fileName, "");
+                    ShowWindow<Windows.WinProfileEditor>();
+                }
+                else
+                {
+                    ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
+                    if (File.Exists(fileName))
+                        File.Copy(fileName, fileName + ".bak", true);
 
-                Console.WriteLine("База успешно загружена, резервная копия создана.");
+                    Console.WriteLine("База успешно загружена, резервная копия создана.");
+                }
             }
 
             base.OnStartup(e);

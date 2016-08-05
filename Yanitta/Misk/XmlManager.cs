@@ -10,7 +10,7 @@ namespace Yanitta
     public static class XmlManager
     {
         /// <summary>
-        /// Десериализирует файл в объект.
+        /// Deserialize object from file.
         /// </summary>
         /// <typeparam name="T">Тип объекта для десериализации.</typeparam>
         /// <param name="path">Файл который надо десериализовать.</param>

@@ -13,9 +13,6 @@ namespace Yanitta
     [Serializable]
     public class Ability : ViewModelBase
     {
-        /// <summary>
-        /// Служебное поле.
-        /// </summary>
         [XmlIgnore]
         public bool IsChecked { get; set; }
 
@@ -44,7 +41,7 @@ namespace Yanitta
         /// Target type.
         /// </summary>
         [XmlElement("Target")]
-        public List<TargetType> TargetList { get; set; } = new List<TargetType>();
+        public List<TargetType> TargetList { get; set; } = new List<TargetType> { TargetType.Target };
 
         bool cencelchanel;
         /// <summary>
@@ -135,7 +132,6 @@ namespace Yanitta
             var isUseIncombat     = IsUseIncombat.ToString().ToLower();
             var isUsableCheck     = IsUsableCheck.ToString().ToLower();
             var isMovingCheck     = IsMovingCheck.ToString().ToLower();
-            var name              = Name.Replace("\"", @"\""");
 
             // targets
             var targetList = string.Join($",\n{T + T + T}",
@@ -148,7 +144,7 @@ namespace Yanitta
                 lua.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
 
             var builder = new StringBuilder();
-            builder.AppendLine($"    {{   SpellId = {SpellID,6}, Name = \"{name}\",");
+            builder.AppendLine($"    {{   SpellId = {SpellID,6}, Name = \"{name.Replace("\"", @"\""")}\",");
             builder.AppendLine($"        IsMovingCheck     = \"{isMovingCheck}\",");
             builder.AppendLine($"        RecastDelay       = {RecastDelay},");
             builder.AppendLine($"        DropChanel        = {cancelChannel},");

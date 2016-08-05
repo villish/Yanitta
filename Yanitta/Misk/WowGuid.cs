@@ -50,8 +50,8 @@
 
     public struct WowGuid
     {
-        private long lo;
-        private long hi;
+        readonly long lo;
+        readonly long hi;
 
         public static readonly WowGuid Empty = new WowGuid(0L, 0L);
 

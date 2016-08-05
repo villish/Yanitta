@@ -12,7 +12,7 @@ namespace Yanitta
     public class ProcessList : ObservableCollection<WowMemory>, IDisposable
     {
         // Track whether Dispose has been called.
-        bool disposed = false;
+        bool disposed;
 
         DispatcherTimer refreshTimer = new DispatcherTimer {
             Interval = TimeSpan.FromSeconds(1)
