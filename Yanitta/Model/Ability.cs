@@ -41,7 +41,7 @@ namespace Yanitta
         /// Target type.
         /// </summary>
         [XmlElement("Target")]
-        public List<TargetType> TargetList { get; set; } = new List<TargetType> { TargetType.Target };
+        public List<TargetType> TargetList { get; set; } = new List<TargetType>();
 
         bool cencelchanel;
         /// <summary>
