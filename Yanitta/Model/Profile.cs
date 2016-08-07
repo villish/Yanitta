@@ -54,5 +54,26 @@ namespace Yanitta
                         yield return spec;
             }
         }
+
+        #region Commands
+
+        public RelayCommand<object> Add { get; }
+
+        public RelayCommand<Rotation> Copy { get; }
+
+        public RelayCommand<Rotation> Delete { get; }
+
+        public RelayCommand<object> Up { get; }
+
+        public RelayCommand<object> Down { get; }
+
+        public Profile()
+        {
+            Add    = new RelayCommand<object>(  _ => RotationList.Add(new Rotation()));
+            Delete = new RelayCommand<Rotation>(r => RotationList.Remove(r),      r => r == null);
+            Copy   = new RelayCommand<Rotation>(r => RotationList.Add(r.Clone()), r => r == null);
+        }
+
+        #endregion
     }
 }

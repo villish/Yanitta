@@ -14,12 +14,6 @@
         Icon="/Yanitta;component/Resources/BNUpdate.png">
 
     <Window.Resources>
-        <RoutedUICommand x:Key="AddAbility" />
-        <RoutedUICommand x:Key="CopyAbility" />
-        <RoutedUICommand x:Key="DeleteAbility" />
-        <RoutedUICommand x:Key="AddRotation" />
-        <RoutedUICommand x:Key="CopyRotation" />
-        <RoutedUICommand x:Key="DeleteRotation" />
         <RoutedUICommand x:Key="MoveRotation" />
         <RoutedUICommand x:Key="MoveAbility" />
         <RoutedUICommand x:Key="CopyFromRotation" />
@@ -28,18 +22,11 @@
     <Window.InputBindings>
         <KeyBinding Command="Save"  Key="S"  Modifiers="Control" />
         <KeyBinding Command="Close" Key="F4" Modifiers="Alt" />
-        <KeyBinding Command="{StaticResource AddAbility}" Key="Insert" />
     </Window.InputBindings>
 
     <Window.CommandBindings>
         <CommandBinding Command="Close"                             Executed="CommandBinding_Executed_Close" />
         <CommandBinding Command="Save"                              Executed="CommandBinding_Executed_Save" />
-        <CommandBinding Command="{StaticResource AddAbility}"       Executed="CommandBinding_Executed_AddAbility" />
-        <CommandBinding Command="{StaticResource CopyAbility}"      Executed="CommandBinding_Executed_CopyAbility" />
-        <CommandBinding Command="{StaticResource DeleteAbility}"    Executed="CommandBinding_Executed_DeleteAbility" />
-        <CommandBinding Command="{StaticResource AddRotation}"      Executed="CommandBinding_Executed_AddRotation" />
-        <CommandBinding Command="{StaticResource CopyRotation}"     Executed="CommandBinding_Executed_CopyRotation" />
-        <CommandBinding Command="{StaticResource DeleteRotation}"   Executed="CommandBinding_Executed_DeleteRotation" />
         <CommandBinding Command="{StaticResource MoveRotation}"     Executed="CommandBinding_MoveRotation_Executed" />
         <CommandBinding Command="{StaticResource MoveAbility}"      Executed="CommandBinding_MoveAbility_Executed" />
         <CommandBinding Command="{StaticResource CopyFromRotation}" Executed="CommandBinding_CopyFromRotation_Executed" />
@@ -76,13 +63,13 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <ToolBar VerticalAlignment="Top">
-                                <Button Command="{StaticResource AddRotation}" Foreground="Transparent" ToolTip="Add rotation">
+                                <Button Command="{Binding ProfileList/Add}" Foreground="Transparent" ToolTip="Add rotation">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
-                                <Button Command="{StaticResource CopyRotation}" Foreground="Transparent" ToolTip="Copy rotation">
+                                <Button Command="{Binding ProfileList/Copy}" Foreground="Transparent" ToolTip="Copy rotation">
                                     <Image Source="/Yanitta;component/Resources/Clipboard.png" />
                                 </Button>
-                                <Button Command="{StaticResource DeleteRotation}" Foreground="Transparent" ToolTip="Delete rotation">
+                                <Button Command="{Binding ProfileList/Delete}" Foreground="Transparent" ToolTip="Delete rotation">
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
@@ -139,13 +126,13 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <ToolBar VerticalAlignment="Top" >
-                                <Button Command="{StaticResource AddAbility}" Foreground="Transparent" ToolTip="Add ability">
+                                <Button Command="{Binding ProfileList/AbilityList/Add}" Foreground="Transparent" ToolTip="Add ability">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
-                                <Button  Command="{StaticResource CopyAbility}" Foreground="Transparent" ToolTip="Copy ability">
+                                <Button  Command="{Binding ProfileList/AbilityList/Copy}" Foreground="Transparent" ToolTip="Copy ability">
                                     <Image Source="/Yanitta;component/Resources/Clipboard.png" />
                                 </Button>
-                                <Button Command="{StaticResource DeleteAbility}" Foreground="Transparent" ToolTip="Delete ability">
+                                <Button Command="{Binding ProfileList/AbilityList/Delete}" Foreground="Transparent" ToolTip="Delete ability">
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />

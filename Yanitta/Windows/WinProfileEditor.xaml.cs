@@ -18,20 +18,9 @@ namespace Yanitta.Windows
             InitialiseEmptyProfiles();
         }
 
-        Profile CurrentProfile
-        {
-            get { return profiLeList?.SelectedValue as Profile; }
-        }
-
-        Rotation CurrentRotation
-        {
-            get { return rotationList?.SelectedValue as Rotation; }
-        }
-
-        Ability CurrentAbility
-        {
-            get { return abilityList?.SelectedValue as Ability; }
-        }
+        Profile CurrentProfile   => profiLeList?.SelectedValue  as Profile;
+        Rotation CurrentRotation => rotationList?.SelectedValue as Rotation;
+        Ability CurrentAbility   => abilityList?.SelectedValue  as Ability;
 
         void InitialiseEmptyProfiles()
         {

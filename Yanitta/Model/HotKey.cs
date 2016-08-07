@@ -17,7 +17,6 @@ namespace Yanitta
         [XmlIgnore]
         ModifierKeys modifier;
 
-
         /// <summary>
         ///
         /// </summary>

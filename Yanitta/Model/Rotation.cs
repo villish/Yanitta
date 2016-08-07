@@ -10,7 +10,7 @@ namespace Yanitta
     /// Rotation structure.
     /// </summary>
     [Serializable]
-    public class Rotation : ViewModelBase, ICloneable
+    public class Rotation : ViewModelBase
     {
         string name = "none";
         /// <summary>
@@ -69,7 +69,7 @@ namespace Yanitta
         /// <summary>
         /// Create deep copy from curent instance <see cref="Rotation"/>
         /// </summary>
-        public object Clone()
+        public Rotation Clone()
         {
             var rotation = new Rotation {
                 Name   = Name + " (Copy)",
@@ -81,5 +81,26 @@ namespace Yanitta
                 rotation.AbilityList.Add(ability.Clone());
             return rotation;
         }
+
+        #region Commands
+
+        public RelayCommand<object> Add { get; }
+
+        public RelayCommand<Ability> Copy { get; }
+
+        public RelayCommand<Ability> Delete { get; }
+
+        public RelayCommand<object> Up { get; }
+
+        public RelayCommand<object> Down { get; }
+
+        public Rotation()
+        {
+            Add    = new RelayCommand<object>( _ => AbilityList.Add(new Ability()));
+            Delete = new RelayCommand<Ability>(a => AbilityList.Remove(a),      a => a == null);
+            Copy   = new RelayCommand<Ability>(a => AbilityList.Add(a.Clone()), a => a == null);
+        }
+
+        #endregion
     }
 }
