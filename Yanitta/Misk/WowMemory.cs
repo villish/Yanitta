@@ -73,7 +73,9 @@ namespace Yanitta
         /// </summary>
         public int ProcessId => Memory?.Process?.Id ?? 0;
 
-        public string ProcessName => $"{Memory.Process.ProcessName}_{Memory.Process.MainModule.FileVersionInfo.FilePrivatePart}";
+        public string ProcessName => $"{Memory.Process.ProcessName}_{Build}";
+
+        public int Build => Memory.Process.MainModule.FileVersionInfo.FilePrivatePart;
 
         public IEnumerable<Rotation> Rotations
         {
@@ -146,11 +148,11 @@ namespace Yanitta
             if (process == null)
                 throw new ArgumentNullException(nameof(process));
 
-            Settings.Build = process.MainModule.FileVersionInfo.FilePrivatePart;
-            if (Settings.PlayerName == 0L)
-                throw new NullReferenceException($"Current game version ({Settings.Build}) not supported!");
-
             Memory = new ProcessMemory(process);
+
+            Settings.Load(Build);
+            if (Settings.PlayerName == 0L)
+                throw new NullReferenceException($"Current game version ({Build}) not supported!");
 
             KeyBoardProck = new KeyBoardProc(HookCallback);
             keyboardHook = SetWindowsHookEx(13, KeyBoardProck, Process.GetCurrentProcess().MainModule.BaseAddress, 0);
@@ -158,6 +160,7 @@ namespace Yanitta
             mTimer.Tick += (o, e) => {
                 if (CheckProcess())
                 {
+                    Settings.Load(Build);// reload offsets
                     IsInGame = Memory.Read<bool>(Memory.Rebase(Settings.IsInGame));
                     if (IsInGame && Settings.FishEnbl != 0)
                     {
@@ -264,10 +267,6 @@ namespace Yanitta
             {
                 var injAddress  = Memory.Rebase(Settings.InjectedAddress);
                 var funcAddress = Memory.Rebase(Settings.ExecuteBuffer);
-
-                //if (Memory.IsX64)
-                //    this.Memory.Call_x64(injAddress, funcAddress, code, path, IntPtr.Zero);
-                //else
                 Memory.Call_x32(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
             }
             catch (Exception ex)
@@ -284,7 +283,7 @@ namespace Yanitta
         public RelayCommand<object> Test => new RelayCommand<object>((x) => TestBoober());
         private void TestBoober()
         {
-            var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMr));
+            var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMgr));
             var playerGuid = Memory.Read<WowGuid>(objManager + FieldOffsets.Player);
             var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClnt));
             var baseAddr   = Memory.Read<IntPtr>(objManager + FieldOffsets.FirstObject);

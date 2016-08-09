@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
@@ -13,6 +15,8 @@ namespace Yanitta
     [Serializable]
     public class Profile : ViewModelBase
     {
+        public Rotation Current => CollectionViewSource.GetDefaultView(RotationList)?.CurrentItem as Rotation;
+
         /// <summary>
         /// Character's class.
         /// </summary>
@@ -59,9 +63,9 @@ namespace Yanitta
 
         public RelayCommand<object> Add { get; }
 
-        public RelayCommand<Rotation> Copy { get; }
+        public RelayCommand<object> Copy { get; }
 
-        public RelayCommand<Rotation> Delete { get; }
+        public RelayCommand<object> Delete { get; }
 
         public RelayCommand<object> Up { get; }
 
@@ -69,9 +73,14 @@ namespace Yanitta
 
         public Profile()
         {
-            Add    = new RelayCommand<object>(  _ => RotationList.Add(new Rotation()));
-            Delete = new RelayCommand<Rotation>(r => RotationList.Remove(r),      r => r == null);
-            Copy   = new RelayCommand<Rotation>(r => RotationList.Add(r.Clone()), r => r == null);
+            Add    = new RelayCommand<object>(_ => RotationList.Add(new Rotation()));
+            Copy   = new RelayCommand<object>(_ => RotationList.Add(Current.Clone()), _ => Current != null);
+            Up     = new RelayCommand<object>(_ => Move(RotationList,-1), _ => CanMove(RotationList,-1));
+            Down   = new RelayCommand<object>(_ => Move(RotationList, 1), _ => CanMove(RotationList, 1));
+            Delete = new RelayCommand<object>(_ => {
+                if (MessageBox.Show($"Do you remove the '{Current?.Name}' rotation?", "Yanitta", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    RotationList.Remove(Current);
+            }, _ => Current != null);
         }
 
         #endregion

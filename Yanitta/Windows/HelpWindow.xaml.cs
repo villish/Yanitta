@@ -44,10 +44,12 @@ namespace Yanitta.Windows
             InitializeComponent();
         }
 
-        Spell GetSpellData(string url)
+        public static Spell GetSpellData(uint spellId)
         {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentNullException(nameof(url));
+            if (spellId == 0)
+                throw new ArgumentNullException(nameof(spellId));
+
+            var url = $"https://eu.api.battle.net/wow/spell/{spellId}?locale=ru_RU&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue";
 
             Spell result = new Spell();
 
@@ -80,17 +82,15 @@ namespace Yanitta.Windows
             return result;
         }
 
-        public void GetSpellData(uint spellId)
+        public void SetSpellData(uint spellId)
         {
             this.spellId = spellId;
-
-            var url = $"https://eu.api.battle.net/wow/spell/{spellId}?locale=ru_RU&apikey=ggj4gnyuywzcsdnehuznf6bjdvhfwfue";
-            DataContext = GetSpellData(url);
+            DataContext = GetSpellData(spellId);
         }
 
         void CommandBinding_GetSpellData_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            GetSpellData(spellId);
+            SetSpellData(spellId);
         }
     }
 }

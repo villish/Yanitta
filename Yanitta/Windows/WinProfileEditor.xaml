@@ -7,6 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:yanitta="clr-namespace:Yanitta"
         Title="Profile editor"
+        Name="profileEditor"
         Width="1280"
         Height="950"
         KeyDown="TextBox_KeyDown"
@@ -14,21 +15,15 @@
         Icon="/Yanitta;component/Resources/BNUpdate.png">
 
     <Window.Resources>
-        <RoutedUICommand x:Key="MoveRotation" />
-        <RoutedUICommand x:Key="MoveAbility" />
         <RoutedUICommand x:Key="CopyFromRotation" />
     </Window.Resources>
 
     <Window.InputBindings>
-        <KeyBinding Command="Save"  Key="S"  Modifiers="Control" />
-        <KeyBinding Command="Close" Key="F4" Modifiers="Alt" />
+        <KeyBinding Command="Save" Key="S" Modifiers="Control" />
     </Window.InputBindings>
 
     <Window.CommandBindings>
-        <CommandBinding Command="Close"                             Executed="CommandBinding_Executed_Close" />
-        <CommandBinding Command="Save"                              Executed="CommandBinding_Executed_Save" />
-        <CommandBinding Command="{StaticResource MoveRotation}"     Executed="CommandBinding_MoveRotation_Executed" />
-        <CommandBinding Command="{StaticResource MoveAbility}"      Executed="CommandBinding_MoveAbility_Executed" />
+        <CommandBinding Command="Save" Executed="CommandBinding_Executed_Save" />
         <CommandBinding Command="{StaticResource CopyFromRotation}" Executed="CommandBinding_CopyFromRotation_Executed" />
     </Window.CommandBindings>
 
@@ -73,14 +68,15 @@
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
-                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="-1" ToolTip="Move Up">
+                                <Button Foreground="Transparent" Command="{Binding ProfileList/Up}" ToolTip="Move Up">
                                     <Image Source="/Yanitta;component/Resources/Button_Up.png" />
                                 </Button>
-                                <Button Foreground="Transparent" Command="{StaticResource MoveRotation}" CommandParameter="1" ToolTip="Move Down">
+                                <Button Foreground="Transparent" Command="{Binding ProfileList/Down}"  ToolTip="Move Down">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                             </ToolBar>
-                            <ListView x:Name="rotationList"
+                            <Windows:ListViewEx x:Name="rotationList"
+                                      ItemsChanged="listView_ItemsChanged"
                                       IsSynchronizedWithCurrentItem="true"
                                       ItemsSource="{Binding ProfileList/RotationList}"
                                       Grid.Row="1" Margin="0,0,0,5">
@@ -118,7 +114,7 @@
                                         </GridViewColumn>
                                     </GridView>
                                 </ListView.View>
-                            </ListView>
+                            </Windows:ListViewEx>
                         </Grid>
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
@@ -126,20 +122,20 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <ToolBar VerticalAlignment="Top" >
-                                <Button Command="{Binding ProfileList/AbilityList/Add}" Foreground="Transparent" ToolTip="Add ability">
+                                <Button Command="{Binding ProfileList/RotationList/Add}" Foreground="Transparent" ToolTip="Add ability">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
-                                <Button  Command="{Binding ProfileList/AbilityList/Copy}" Foreground="Transparent" ToolTip="Copy ability">
+                                <Button  Command="{Binding ProfileList/RotationList/Copy}" Foreground="Transparent" ToolTip="Copy ability">
                                     <Image Source="/Yanitta;component/Resources/Clipboard.png" />
                                 </Button>
-                                <Button Command="{Binding ProfileList/AbilityList/Delete}" Foreground="Transparent" ToolTip="Delete ability">
+                                <Button Command="{Binding ProfileList/RotationList/Delete}" Foreground="Transparent" ToolTip="Delete ability">
                                     <Image Source="/Yanitta;component/Resources/Denided.png" />
                                 </Button>
                                 <Separator />
-                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="-1" ToolTip="Move Up">
+                                <Button Foreground="Transparent" Command="{Binding ProfileList/RotationList/Up}" ToolTip="Move Up">
                                     <Image Source="/Yanitta;component/Resources/Button_Up.png" />
                                 </Button>
-                                <Button Foreground="Transparent" Command="{StaticResource MoveAbility}" CommandParameter="1" ToolTip="Move Down">
+                                <Button Foreground="Transparent" Command="{Binding ProfileList/RotationList/Down}" ToolTip="Move Down">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
                                 <Separator />
@@ -150,11 +146,12 @@
                                 <TextBlock Text="Ability filter:" VerticalAlignment="Center" HorizontalAlignment="Left" />
                                 <TextBox Width="150" TextChanged="tbAbilityFilter_TextChanged" />
                             </ToolBar>
-                            <ListView x:Name="abilityList"
+                            <Windows:ListViewEx x:Name="abilityList"
+                                      ItemsChanged="listView_ItemsChanged"
                                       IsSynchronizedWithCurrentItem="True"
                                       ItemsSource="{Binding ProfileList/RotationList/AbilityList}"
                                       Grid.Row="1">
-                                <ListView.View>
+                                <Windows:ListViewEx.View>
                                     <GridView>
                                         <GridViewColumn Width="30" DisplayMemberBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ContentControl}, Converter={yanitta:ItemsControlIndexConverter}}" />
                                         <GridViewColumn DisplayMemberBinding="{Binding SpellID}" Header="Spell Id" />
@@ -195,8 +192,8 @@
 
                                         <GridViewColumn Width="50" DisplayMemberBinding="{Binding RecastDelay}" Header="Recast delay" />
                                     </GridView>
-                                </ListView.View>
-                            </ListView>
+                                </Windows:ListViewEx.View>
+                            </Windows:ListViewEx>
                         </Grid>
                     </Grid>
                     <GridSplitter  Grid.Column="1" Width="5" HorizontalAlignment="Left" />
@@ -260,28 +257,31 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="150"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="185*"/>
+                                        <ColumnDefinition Width="49*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,0" Text="Spell Id" VerticalAlignment="Center"/>
-                                    <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Center" />
 
-                                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,0" Text="Ability name" VerticalAlignment="Center"/>
-                                    <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,0" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Name="tbAbilityName"  VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,4" Text="Spell Id" VerticalAlignment="Center"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,3,0,3" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Center" x:Name="tbSpellId" />
+                                    <Button    Grid.Column="2" Grid.Row="0" Margin="1,3,5,3" Content="{}>>" ToolTip="Set spell name" Click="Button_Click" />
 
-                                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,0" Text="Target" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,4" Text="Ability name" VerticalAlignment="Center"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="1" Margin="5,4,5,3" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Name="tbAbilityName"  VerticalAlignment="Center" Grid.ColumnSpan="2"/>
+
+                                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,4" Text="Target" VerticalAlignment="Center"/>
 
                                     <yanitta:MultySelectedComboBox Grid.Column="1" Grid.Row="2" Margin="5,0"
                                                                    EnumSource="{x:Type yanitta:TargetType}"
-                                                                   SelectedItems="{Binding TargetList}" />
+                                                                   SelectedItems="{Binding TargetList}" Grid.ColumnSpan="2" />
 
-                                    <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,0" Text="Moving state" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,4" Text="Moving state" VerticalAlignment="Center"/>
                                     <ComboBox  Grid.Column="1" Grid.Row="3" Margin="5,0" ItemsSource="{Binding Source={StaticResource MovingValues}}"
-                                                          SelectedValue="{Binding IsMovingCheck}" />
+                                                          SelectedValue="{Binding IsMovingCheck}" Grid.ColumnSpan="2" />
 
-                                    <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,0" Text="Recast delay" VerticalAlignment="Center"/>
-                                    <TextBox   Grid.Column="1" Grid.Row="4" Margin="5,0" Text="{Binding RecastDelay, UpdateSourceTrigger=PropertyChanged}" Name="tbRecastDelay"
-                                               VerticalAlignment="Center" MaxLength="4" />
+                                    <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,4" Text="Recast delay" VerticalAlignment="Center"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="4" Margin="5,4,5,3" Text="{Binding RecastDelay, UpdateSourceTrigger=PropertyChanged}" Name="tbRecastDelay"
+                                               VerticalAlignment="Center" MaxLength="4" Grid.ColumnSpan="2" />
                                 </Grid>
 
                                 <StackPanel Grid.Column="1">

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Xml;
 using System.Xml.Serialization;
@@ -12,6 +14,8 @@ namespace Yanitta
     [Serializable]
     public class Rotation : ViewModelBase
     {
+        public Ability Current => CollectionViewSource.GetDefaultView(AbilityList)?.CurrentItem as Ability;
+
         string name = "none";
         /// <summary>
         /// Rotation name.
@@ -86,9 +90,9 @@ namespace Yanitta
 
         public RelayCommand<object> Add { get; }
 
-        public RelayCommand<Ability> Copy { get; }
+        public RelayCommand<object> Copy { get; }
 
-        public RelayCommand<Ability> Delete { get; }
+        public RelayCommand<object> Delete { get; }
 
         public RelayCommand<object> Up { get; }
 
@@ -96,9 +100,13 @@ namespace Yanitta
 
         public Rotation()
         {
-            Add    = new RelayCommand<object>( _ => AbilityList.Add(new Ability()));
-            Delete = new RelayCommand<Ability>(a => AbilityList.Remove(a),      a => a == null);
-            Copy   = new RelayCommand<Ability>(a => AbilityList.Add(a.Clone()), a => a == null);
+            Add    = new RelayCommand<object>(_ => AbilityList.Add(new Ability()));
+            Copy   = new RelayCommand<object>(_ => AbilityList.Add(Current.Clone()), _ => Current != null);
+            Up     = new RelayCommand<object>(_ => Move(AbilityList,-1), _ => CanMove(AbilityList,-1));
+            Down   = new RelayCommand<object>(_ => Move(AbilityList, 1), _ => CanMove(AbilityList, 1));
+            Delete = new RelayCommand<object>(_ => {
+                if (MessageBox.Show($"Do you remove the '{Current?.Name}' ability?", "Yanitta", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    AbilityList.Remove(Current); }, _ => Current != null);
         }
 
         #endregion

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Data;
 using System.Xml;
 
 namespace Yanitta
@@ -24,6 +26,18 @@ namespace Yanitta
         }
 
         #endregion
+
+        protected void Move<T>(ObservableCollection<T> list, int position)
+        {
+            var item = (T)CollectionViewSource.GetDefaultView(list)?.CurrentItem;
+            list.Move(list.IndexOf(item), list.IndexOf(item) + position);
+        }
+
+        protected bool CanMove<T>(ObservableCollection<T> list, int position)
+        {
+            var item = (T)CollectionViewSource.GetDefaultView(list)?.CurrentItem;
+            return list != null && list.IndexOf(item) + position >= 0 && list.IndexOf(item) + position < list.Count;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

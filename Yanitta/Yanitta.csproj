@@ -111,6 +111,7 @@
     <Compile Include="Windows\HelpWindow.xaml.cs">
       <DependentUpon>HelpWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\ListViewEx.cs" />
     <Compile Include="Windows\MultySelectedComboBox.xaml.cs">
       <DependentUpon>MultySelectedComboBox.xaml</DependentUpon>
     </Compile>

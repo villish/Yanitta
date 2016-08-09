@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -25,6 +24,7 @@ namespace Yanitta
             if (e.Args.Length > 0 && e.Args[0] == "/editor")
             {
                 StartupUri = new Uri("Windows/WinProfileEditor.xaml", UriKind.Relative);
+                ProfileDb.Load(Settings.ProfilePath);
             }
             else if (e.Args.Length > 0 && e.Args[0] == "/console")
             {
@@ -32,23 +32,8 @@ namespace Yanitta
             }
             else
             {
-                var fileName = Settings.ProfilePath;
-                if (!File.Exists(fileName))
-                {
-                    ProfileDb.Instance = new ProfileDb();
-                    File.WriteAllText(fileName, "");
-                    ShowWindow<Windows.WinProfileEditor>();
-                }
-                else
-                {
-                    ProfileDb.Instance = XmlManager.Load<ProfileDb>(fileName);
-                    if (File.Exists(fileName))
-                        File.Copy(fileName, fileName + ".bak", true);
-
-                    Console.WriteLine("База успешно загружена, резервная копия создана.");
-                }
+                ProfileDb.Load(Settings.ProfilePath);
             }
-
             base.OnStartup(e);
         }
 

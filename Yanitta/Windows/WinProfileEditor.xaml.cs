@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,202 +9,26 @@ namespace Yanitta.Windows
 {
     public partial class WinProfileEditor : Window
     {
-        Key[] Keys = { Key.X, Key.Z, Key.C, Key.V, Key.B, Key.N };
-
         public WinProfileEditor()
         {
             InitializeComponent();
-            InitialiseEmptyProfiles();
         }
 
-        Profile CurrentProfile   => profiLeList?.SelectedValue  as Profile;
-        Rotation CurrentRotation => rotationList?.SelectedValue as Rotation;
-        Ability CurrentAbility   => abilityList?.SelectedValue  as Ability;
-
-        void InitialiseEmptyProfiles()
-        {
-            foreach (WowClass wowClass in Enum.GetValues(typeof(WowClass)))
-            {
-                if (!ProfileDb.Instance.ProfileList.Any(profile => profile.Class == wowClass))
-                    ProfileDb.Instance.ProfileList.Add(new Profile { Class = wowClass });
-            }
-
-            foreach (var profile in ProfileDb.Instance.ProfileList)
-            {
-                foreach (WowSpecializations spec in Enum.GetValues(typeof(WowSpecializations)))
-                {
-                    if (((int)spec >> 16) == (byte)profile.Class)
-                    {
-                        if (!profile.RotationList.Any(r => r.Spec == spec))
-                        {
-                            var rotation = new Rotation { Spec = spec, Name = spec.ToString() };
-                            if (profile.RotationList.Count < Keys.Length)
-                                rotation.HotKey = new HotKey(Keys[profile.RotationList.Count], ModifierKeys.Alt);
-                            profile.RotationList.Add(rotation);
-                        }
-                    }
-                }
-            }
-
-            // Профиль общих ротаций должен быть в самом низу.
-            var old = ProfileDb.Instance.ProfileList.IndexOf(
-                ProfileDb.Instance.ProfileList.First(p => p.Class == WowClass.None));
-            if (old > -1 && old != ProfileDb.Instance.ProfileList.Count - 1)
-                ProfileDb.Instance.ProfileList.Move(old, ProfileDb.Instance.ProfileList.Count - 1);
-        }
-
-        #region Commands
-
-        // ability
-        void CommandBinding_Executed_AddAbility(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentRotation == null)
-                throw new YanittaException("Rotation is not selected");
-
-            CurrentRotation.AbilityList.Add(new Ability
-            {
-                IsUsableCheck = true,
-                TargetList = new List<TargetType> { TargetType.None }
-            });
-            abilityList.SelectedIndex = CurrentRotation.AbilityList.Count - 1;
-            tbAbilityName.Focus();
-            tbAbilityName.SelectAll();
-            abilityList.ScrollIntoView(abilityList.SelectedItem);
-            CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
-        }
-
-        void CommandBinding_Executed_CopyAbility(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentAbility == null)
-                throw new YanittaException("Ability is not selected!");
-
-            CurrentRotation.AbilityList.Add(CurrentAbility.Clone());
-            abilityList.SelectedIndex = CurrentRotation.AbilityList.Count - 1;
-            tbAbilityName.Focus();
-            tbAbilityName.SelectAll();
-            abilityList.ScrollIntoView(abilityList.SelectedItem);
-            CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
-        }
-
-        void CommandBinding_Executed_DeleteAbility(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentAbility == null)
-                throw new YanittaException("Ability is not selected");
-
-            var result = MessageBox.Show("Do remove the current ability?",
-                Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                CurrentRotation.AbilityList.Remove(CurrentAbility);
-                CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
-            }
-        }
-
-        // rotations
-        void CommandBinding_Executed_AddRotation(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentProfile == null)
-                throw new YanittaException("Class is not selected");
-
-            var mod = ModifierKeys.Alt | (CurrentProfile.Class == WowClass.None
-                ? ModifierKeys.Shift
-                : ModifierKeys.None);
-
-            var rotation = new Rotation();
-            if (CurrentProfile.RotationList.Count < Keys.Length)
-                rotation.HotKey = new HotKey(Keys[CurrentProfile.RotationList.Count], mod);
-            CurrentProfile.RotationList.Add(rotation);
-            rotationList.SelectedIndex = CurrentProfile.RotationList.Count - 1;
-            tbRotationName.Focus();
-            tbRotationName.SelectAll();
-            rotationList.ScrollIntoView(rotationList.SelectedItem);
-            CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
-        }
-
-        void CommandBinding_Executed_CopyRotation(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentRotation == null)
-                throw new YanittaException("Rotation is not selected");
-
-            CurrentProfile.RotationList.Add((Rotation)CurrentRotation.Clone());
-            rotationList.SelectedIndex = CurrentProfile.RotationList.Count - 1;
-            tbRotationName.Focus();
-            tbRotationName.SelectAll();
-            rotationList.ScrollIntoView(rotationList.SelectedItem);
-            CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
-        }
-
-        void CommandBinding_Executed_DeleteRotation(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (CurrentRotation == null)
-                throw new YanittaException("Rotation is not selected");
-
-            var result = MessageBox.Show("Do remove the current rotation?",
-                   Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                CurrentProfile.RotationList.Remove(CurrentRotation);
-                CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
-            }
-        }
-
-        void CommandBinding_MoveRotation_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var shift = int.Parse((string)e.Parameter);
-            var index = rotationList.SelectedIndex;
-            if (CurrentProfile != null && index > -1
-                && !(shift == -1 && index == 0)
-                && !(shift == 1 && index == CurrentProfile.RotationList.Count - 1))
-            {
-                CurrentProfile.RotationList.Move(index, index + shift);
-                rotationList.ScrollIntoView(rotationList.SelectedItem);
-                CollectionViewSource.GetDefaultView(rotationList.ItemsSource).Refresh();
-            }
-        }
-
-        void CommandBinding_MoveAbility_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var shift = int.Parse((string)e.Parameter);
-            var index = abilityList.SelectedIndex;
-            if (CurrentRotation != null && index > -1
-                && !(shift == -1 && index == 0)
-                && !(shift == 1 && index == CurrentRotation.AbilityList.Count - 1))
-            {
-                CurrentRotation.AbilityList.Move(index, index + shift);
-                abilityList.ScrollIntoView(abilityList.SelectedItem);
-                CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
-            }
-        }
+        void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e) => ProfileDb.Save();
 
         void CommandBinding_CopyFromRotation_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            if (CurrentProfile == null)
-                throw new YanittaException("Empty profile");
-
-            var window = new CopyAbilitysWindow(CurrentProfile);
+            var window = new CopyAbilitysWindow(profiLeList?.SelectedValue as Profile);
             window.Owner = this;
-            if (window.ShowDialog() == true)
+            var rotation = rotationList?.SelectedValue as Rotation;
+            if (window.ShowDialog() == true && rotation != null)
             {
                 foreach (var ability in window.SelectedAbilitys)
                 {
-                    CurrentRotation.AbilityList.Add(ability);
+                    rotation.AbilityList.Add(ability.Clone());
                 }
-                CollectionViewSource.GetDefaultView(abilityList.ItemsSource).Refresh();
             }
         }
-
-        void CommandBinding_Executed_Save(object sender, ExecutedRoutedEventArgs e)
-        {
-            ProfileDb.Save();
-        }
-
-        void CommandBinding_Executed_Close(object sender, ExecutedRoutedEventArgs e)
-        {
-            e.Handled = true;
-            Close();
-        }
-
-        #endregion Commands
 
         void tbAbilityFilter_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -247,9 +70,10 @@ namespace Yanitta.Windows
 
         void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.F1 && CurrentAbility.SpellID != 0)
+            var ability = abilityList?.SelectedValue as Ability;
+            if (e.Key == Key.F1 && ability.SpellID > 0)
             {
-                App.ShowWindow<HelpWindow>().GetSpellData(CurrentAbility.SpellID);
+                App.ShowWindow<HelpWindow>().SetSpellData(ability.SpellID);
             }
         }
 
@@ -260,7 +84,46 @@ namespace Yanitta.Windows
                 var spellId = 0u;
                 var spell = (sender as ICSharpCode.AvalonEdit.TextEditor).GetWord();
                 if (uint.TryParse(spell, out spellId))
-                    App.ShowWindow<HelpWindow>().GetSpellData(spellId);
+                    App.ShowWindow<HelpWindow>().SetSpellData(spellId);
+            }
+        }
+
+        void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var spellId = (abilityList?.SelectedItem as Ability)?.SpellID;
+            if (spellId > 0)
+            {
+                var data = HelpWindow.GetSpellData(spellId.Value);
+                tbAbilityName.Text = data?.Name;
+            }
+        }
+
+        void listView_ItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var listView = (ListView)sender;
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    if (listView.Name == "abilityList")
+                    {
+                        tbSpellId.Focus();
+                        tbSpellId.SelectAll();
+                    }
+                    else if (listView.Name == "rotationList")
+                    {
+                        tbRotationName.Focus();
+                        tbRotationName.SelectAll();
+                    }
+                    goto case NotifyCollectionChangedAction.Move;
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Move:
+                    if (listView.HasItems)
+                    {
+                        listView.SelectedIndex = e.NewStartingIndex > -1 ? e.NewStartingIndex : 0;
+                        listView.ScrollIntoView(listView.SelectedItem);
+                    }
+                    CollectionViewSource.GetDefaultView(listView.ItemsSource)?.Refresh();
+                    break;
             }
         }
     }

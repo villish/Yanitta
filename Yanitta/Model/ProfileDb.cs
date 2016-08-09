@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Windows.Input;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -47,6 +49,11 @@ namespace Yanitta
         /// <returns><see cref="Profile"/>.</returns>
         public Profile this[WowClass wowClass] => ProfileList.FirstOrDefault(n => n.Class == wowClass);
 
+        static ProfileDb()
+        {
+            Instance = new ProfileDb();
+        }
+
         /// <summary>
         /// Save batabase to file.
         /// </summary>
@@ -59,8 +66,52 @@ namespace Yanitta
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: {0}", ex);
+                Console.WriteLine($"Error: {ex}");
             }
+        }
+
+        public static void Load(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                Instance = XmlManager.Load<ProfileDb>(fileName);
+                if (File.Exists(fileName))
+                    File.Copy(fileName, fileName + ".bak", true);
+            }
+
+            Instance.InitStructure();
+        }
+
+        void InitStructure()
+        {
+            Key[] key_list = { Key.X, Key.C, Key.V, Key.B, Key.N };
+
+            foreach (WowClass wowClass in Enum.GetValues(typeof(WowClass)))
+            {
+                if (!ProfileList.Any(profile => profile.Class == wowClass))
+                    ProfileList.Add(new Profile { Class = wowClass });
+            }
+
+            foreach (var profile in ProfileList)
+            {
+                foreach (WowSpecializations spec in Enum.GetValues(typeof(WowSpecializations)))
+                {
+                    if (((int)spec >> 16) == (byte)profile.Class)
+                    {
+                        if (!profile.RotationList.Any(r => r.Spec == spec))
+                        {
+                            var rotation = new Rotation { Spec = spec, Name = spec.ToString().Split('_').Last() };
+                            if (profile.RotationList.Count < key_list.Length)
+                                rotation.HotKey = new HotKey(key_list[profile.RotationList.Count], ModifierKeys.Alt);
+                            profile.RotationList.Add(rotation);
+                        }
+                    }
+                }
+            }
+
+            var old = ProfileList.IndexOf(ProfileList.First(p => p.Class == WowClass.None));
+            if (old > -1 && old != ProfileList.Count - 1)
+                ProfileList.Move(old, ProfileList.Count - 1);
         }
     }
 }

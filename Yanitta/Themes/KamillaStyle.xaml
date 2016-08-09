@@ -171,7 +171,6 @@
                 <Setter Property="HasDropShadow"         Value="True" />
                 <Setter Property="Foreground"            Value="#FF17AD1A" />
                 <Setter Property="FontStyle"             Value="Normal" />
-                <!--<Setter Property="FontFamily"            Value="../resources/#MORPHEUS" />-->
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ToolTip}">
@@ -489,10 +488,10 @@
                                 <ControlTemplate TargetType="GridViewColumnHeader">
                                     <Grid>
                                         <Border Name="HeaderBorder"
-                                        Background="{StaticResource BackgroundBrush}"
-                                        BorderBrush="{StaticResource BorderBrush}"
-                                        BorderThickness="0,1,0,1"
-                                        Padding="{TemplateBinding Padding}">
+                                            Background="{StaticResource BackgroundBrush}"
+                                            BorderBrush="{StaticResource BorderBrush}"
+                                            BorderThickness="0,1,0,1"
+                                            Padding="{TemplateBinding Padding}">
                                             <ContentPresenter Name="HeaderContent"
                                                         Margin="0,0,0,1"
                                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -501,9 +500,9 @@
                                                         SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                         </Border>
                                         <Thumb x:Name="PART_HeaderGripper"
-                                        Margin="0,0,-5,0"
-                                        HorizontalAlignment="Right"
-                                        Style="{StaticResource GridViewColumnHeaderGripper}" />
+                                            Margin="0,0,-5,0"
+                                            HorizontalAlignment="Right"
+                                            Style="{StaticResource GridViewColumnHeaderGripper}" />
                                     </Grid>
 
                                     <ControlTemplate.Triggers>

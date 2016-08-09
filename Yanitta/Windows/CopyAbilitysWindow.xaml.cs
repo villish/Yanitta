@@ -10,7 +10,6 @@ namespace Yanitta.Windows
         public CopyAbilitysWindow(Profile profile)
         {
             DataContext = profile;
-
             InitializeComponent();
 
             if (cbRotation.Items.Count > 0)
