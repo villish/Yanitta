@@ -284,9 +284,9 @@ namespace Yanitta
         private void TestBoober()
         {
             var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMgr));
-            var playerGuid = Memory.Read<WowGuid>(objManager + (int)Settings.PlayerGuid);
+            var playerGuid = Memory.Read<WowGuid>(objManager + Settings.PlayerGuid);
             var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClient));
-            var baseAddr   = Memory.Read<IntPtr>(objManager + (int)Settings.FirstObject);
+            var baseAddr   = Memory.Read<IntPtr>(objManager + Settings.FirstObject);
 
             var cur = new WowObject(Memory, baseAddr);
 
@@ -306,7 +306,7 @@ namespace Yanitta
                     break;
                 }
 
-                cur.BaseAddr = Memory.Read<IntPtr>(cur.BaseAddr + (int)Settings.NextObject);
+                cur.BaseAddr = Memory.Read<IntPtr>(cur.BaseAddr + Settings.NextObject);
             }
 
             // lua_pushboolean(state, found)

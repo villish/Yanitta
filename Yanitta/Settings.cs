@@ -26,29 +26,30 @@ namespace Yanitta
 
         public static void Load(int build)
         {
-            Func<string, long> get = (key) => GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
+            Func<string, long> getLong = (key) => GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
+            Func<string, int> getInt = (key) => (int)GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
 
             // main offsets
-            PlayerName      = get("PlayerName");
-            PlayerClass     = get("PlayerClass");
-            IsInGame        = get("IsInGame");
-            ExecuteBuffer   = get("ExecuteBuffer");
-            InjectedAddress = get("InjectAddress");
+            PlayerName      = getLong("PlayerName");
+            PlayerClass     = getLong("PlayerClass");
+            IsInGame        = getLong("IsInGame");
+            ExecuteBuffer   = getLong("ExecuteBuffer");
+            InjectedAddress = getLong("InjectAddress");
 
             // fish bot offsets
-            ObjectMgr       = get("ObjectMgr");
-            ObjectTrack     = get("ObjectTrack");
-            TestClient      = get("TestClient");
-            FishEnbl        = get("FishEnable");
+            ObjectMgr       = getLong("ObjectMgr");
+            ObjectTrack     = getLong("ObjectTrack");
+            TestClient      = getLong("TestClient");
+            FishEnbl        = getLong("FishEnable");
 
             // update fields
-            FirstObject     = get("FirstObject");
-            NextObject      = get("NextObject");
-            ObjectType      = get("ObjectType");
-            PlayerGuid      = get("PlayerGuid");
-            VisibleGuid     = get("VisibleGuid");
-            AnimationState  = get("AnimationState");
-            CreatedBy       = get("CreatedBy");
+            FirstObject     = getInt("FirstObject");
+            NextObject      = getInt("NextObject");
+            ObjectType      = getInt("ObjectType");
+            PlayerGuid      = getInt("PlayerGuid");
+            VisibleGuid     = getInt("VisibleGuid");
+            AnimationState  = getInt("AnimationState");
+            CreatedBy       = getInt("CreatedBy");
         }
 
         public static long PlayerName       { get; private set; }
@@ -62,12 +63,12 @@ namespace Yanitta
         public static long TestClient       { get; private set; }
         public static long FishEnbl         { get; private set; }
 
-        public static long FirstObject      { get; private set; }
-        public static long NextObject       { get; private set; }
-        public static long ObjectType       { get; private set; }
-        public static long PlayerGuid       { get; private set; }
-        public static long VisibleGuid      { get; private set; }
-        public static long AnimationState   { get; private set; }
-        public static long CreatedBy        { get; private set; }
+        public static int FirstObject       { get; private set; }
+        public static int NextObject        { get; private set; }
+        public static int ObjectType        { get; private set; }
+        public static int PlayerGuid        { get; private set; }
+        public static int VisibleGuid       { get; private set; }
+        public static int AnimationState    { get; private set; }
+        public static int CreatedBy         { get; private set; }
     }
 }
