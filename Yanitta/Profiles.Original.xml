@@ -9152,59 +9152,101 @@ return true;
   <Profile Class="DemonHunter">
     <Rotation Name="Сокрушение" Spec="DemonHunter_Havoc">
       <HotKey Key="X" Modifier="Alt" />
-      <Ability Name="Удар демона">
+      <Lua><![CDATA[
+setAoE = false;
+useCooldown = true;
+useInterrupt = true;
+
+function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
+    if state == 0 then return end; -- release key
+
+    --if modifier == "LCTRL" then
+    --    if setAoE then
+    --        setAoE = false;
+    --        AddonFrame.print("|cff00ff00Одиночная цель", true);
+    --    else
+    --        setAoE = true;
+    --        AddonFrame.print("|cffff0000AOE", true);
+    --    end
+    --else
+    if modifier == "RSHIFT" then
+        if useCooldown then
+            useCooldown = false;
+            AddonFrame.print("|cffff0000Кулдауны выключены", true);
+        else
+            useCooldown = true;
+            AddonFrame.print("|cff00ff00Кулдауны включены", true);
+        end
+    elseif modifier == "RCTRL" then
+        if useInterrupt then
+            useInterrupt = false;
+            AddonFrame.print("|cff00ff00Автопрерывания выключены", true);
+        else
+            useInterrupt = true;
+            AddonFrame.print("|cffff0000Автопрерывания включены", true);
+        end
+    end
+end
+]]></Lua>
+      <Ability Name="Init">
         <SpellID>0</SpellID>
-        <Target>None</Target>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
-      </Ability>
-      <Ability Name="Удар хаоса">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
-      </Ability>
-      <Ability Name="Бросок глефы">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
+    return true;
+end
+]]></Lua>
       </Ability>
       <Ability Name="Поглощение магии">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
+        <SpellID>183752</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useInterrupt and CheckInterrupt("target");
+]]></Lua>
       </Ability>
-      <Ability Name="Метаморфоза">
-        <SpellID>0</SpellID>
-        <Target>None</Target>
+      <Ability Name="Удар Хаоса">
+        <SpellID>162794</SpellID>
+        <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Укус демона">
+        <SpellID>162243</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
       </Ability>
     </Rotation>
     <Rotation Name="Месть" Spec="DemonHunter_Vengeance">
-      <HotKey Key="Z" Modifier="Alt" />
+      <HotKey Key="C" Modifier="Alt" />
     </Rotation>
   </Profile>
   <Profile Class="None">
