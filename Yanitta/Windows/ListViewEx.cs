@@ -1,6 +1,5 @@
 ﻿using System.Collections.Specialized;
 using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace Yanitta.Windows
 {

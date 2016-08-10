@@ -36,5 +36,11 @@ namespace Yanitta.Windows
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            ProfileDb.Save();
+            Application.Current.Shutdown();
+        }
     }
 }

@@ -9,6 +9,7 @@
         FontFamily="../Resources/#MORPHEUS"
         Icon="/Yanitta;component/Resources/Google Black Alt.ico"
         SizeToContent="WidthAndHeight"
+        Closed="Window_Closed"
         WindowStyle="None">
 
     <Window.Resources>
