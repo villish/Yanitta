@@ -45,7 +45,7 @@ namespace Yanitta
             FirstObject     = get("FirstObject");
             NextObject      = get("NextObject");
             ObjectType      = get("ObjectType");
-            Player          = get("Player");
+            PlayerGuid      = get("PlayerGuid");
             VisibleGuid     = get("VisibleGuid");
             AnimationState  = get("AnimationState");
             CreatedBy       = get("CreatedBy");
@@ -65,7 +65,7 @@ namespace Yanitta
         public static long FirstObject      { get; private set; }
         public static long NextObject       { get; private set; }
         public static long ObjectType       { get; private set; }
-        public static long Player           { get; private set; }
+        public static long PlayerGuid       { get; private set; }
         public static long VisibleGuid      { get; private set; }
         public static long AnimationState   { get; private set; }
         public static long CreatedBy        { get; private set; }

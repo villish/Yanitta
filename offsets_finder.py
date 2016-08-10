@@ -129,23 +129,23 @@ FishEnbl=GetFishEnblOffset();
 
 print("["+GetClientBuild()+"]")
 print("# Yanitta offset's")
-print("PlayerName     = 0x%08X" % (UnitName-0x400000))
-print("PlayerClass    = 0x%08X" % (UnitClas-0x400000))
-print("IsInGame       = 0x%08X" % (IsInGame-0x400000))
-print("ExecuteBuffer  = 0x%08X" % (ExecBuff-0x400000))
-print("InjectAddress  = 0x%08X" % (Inj_Addr-0x400000))
+print("PlayerName      = 0x%08X" % (UnitName-0x400000))
+print("PlayerClass     = 0x%08X" % (UnitClas-0x400000))
+print("IsInGame        = 0x%08X" % (IsInGame-0x400000))
+print("ExecuteBuffer   = 0x%08X" % (ExecBuff-0x400000))
+print("InjectAddress   = 0x%08X" % (Inj_Addr-0x400000))
 print("")
 print("# Fish bot offset's")
-print("ObjectMgr      = 0x%08X" % (ObjectMr-0x400000))
-print("ObjectTrack    = 0x%08X" % (ObjTrack-0x400000))
-print("TestClient     = 0x%08X" % (TestClnt-0x400000))
-print("FishEnable     = 0x%08X" % (FishEnbl-0x400000))
+print("ObjectMgr       = 0x%08X" % (ObjectMr-0x400000))
+print("ObjectTrack     = 0x%08X" % (ObjTrack-0x400000))
+print("TestClient      = 0x%08X" % (TestClnt-0x400000))
+print("FishEnable      = 0x%08X" % (FishEnbl-0x400000))
 print("")
 print("# Field offset's")
-print("FirstObject    = 0xD8");
-print("NextObject     = 0xD0");
-print("ObjectType     = 0x20");
-print("Player         = 0x00");
-print("VisibleGuid    = 0x00");
-print("AnimationState = 0x68");
-print("CreatedBy      = 0x30");
+print("FirstObject     = 0xD8");
+print("NextObject      = 0xD0");
+print("ObjectType      = 0x20");
+print("PlayerGuid      = 0x00");
+print("VisibleGuid     = 0x00");
+print("AnimationState  = 0x68");
+print("CreatedBy       = 0x30");

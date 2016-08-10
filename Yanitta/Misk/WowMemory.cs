@@ -284,7 +284,7 @@ namespace Yanitta
         private void TestBoober()
         {
             var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMgr));
-            var playerGuid = Memory.Read<WowGuid>(objManager + (int)Settings.Player);
+            var playerGuid = Memory.Read<WowGuid>(objManager + (int)Settings.PlayerGuid);
             var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClient));
             var baseAddr   = Memory.Read<IntPtr>(objManager + (int)Settings.FirstObject);
 
