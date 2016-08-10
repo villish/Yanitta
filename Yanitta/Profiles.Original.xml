@@ -3303,7 +3303,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
 end
 
 max_cp = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
-isInMeele  = IsSpellInRange(GetSpellInfo(8676), "target") == 1;
+isInMeele  = IsSpellInRange(GetSpellInfo(703), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Внезапный удар">
@@ -3438,7 +3438,7 @@ return true;
         <RecastDelay>0</RecastDelay>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return true;
+return UnitPower("player") > 55;
 ]]></Lua>
       </Ability>
       <Ability Name="Смертоносный яд">
