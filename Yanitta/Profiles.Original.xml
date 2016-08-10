@@ -672,11 +672,40 @@ function CheckKnownAbility(ability)
     -- Есть заклинания, которые имеют одинаковое название и разные Id
     local spellId = select(2, GetSpellBookItemInfo(ability.SpellName));
     if spellId and ability.SpellId ~= spellId then
-        if DebugMode then
-            print(string.format("|cff15bd05Заклинание: %s Id %d -> %d|r", ability.SpellName, ability.SpellId, spellId));
-        end
+        print(string.format("|cff15bd05Заклинание: %s Id %d -> %d|r", ability.SpellName, ability.SpellId, spellId));
         ability.SpellId = spellId;
         ability.IsKnown = true;
+    end
+end
+
+function GetRangeCheckSpells(ability)
+    for spec = 1, 4 do
+        local spellList = { GetSpecializationSpells(spec) };
+        if spellList and #spellList > 0 then
+            for i = 1, #spellList, 2 do
+                local name, _, _, _, _, maxRange = GetSpellInfo(spellList[i]);
+                if name and tonumber(maxRange) > 0 and SpellHasRange(name) then
+                    if ability.RangeCheckSpellId == 0 then
+                        ability.RangeCheckSpellId = spellList[i];
+                    end
+                end
+            end
+        end
+    end
+end
+
+function InRange(self, ability, target)
+    if SpellHasRange(ability.SpellName) then
+        local result = IsSpellInRange(ability.SpellName, target);
+        if result then return result end
+    else
+        -- todo: append harmful/helpful split
+        if ability.RangeCheckSpellId > 0 then
+            -- fixed target object
+            target = target == "none" and "target" or target;
+            local result = IsSpellInRange(GetSpellInfo(ability.RangeCheckSpellId), target);
+            if result then return result end
+        end
     end
 end
 
@@ -686,6 +715,7 @@ function CheckAllSpells()
         for _,ability in ipairs(ABILITY_TABLE) do
             if ability.SpellId > 0 then
                 CheckKnownAbility(ability);
+                GetRangeCheckSpells(ability);
             end
         end
     end
@@ -750,7 +780,7 @@ function CheckAndCastAbility(ability, targetInfo)
     if targetInfo.Target ~= "none" and targetInfo.Target ~= "player" and targetInfo.Target ~= "mouselocation" then
         if not UnitExists(targetInfo.Target) then
             return;
-        elseif SpellHasRange(spellName) and IsSpellInRange(spellName, targetInfo.Target) == 0 then
+        elseif InRange(ability, targetInfo.Target) == 0 then
             return;
         elseif IsHelpfulSpell(spellName) and not UnitIsFriend("player", targetInfo.Target) then
             return;
@@ -1259,6 +1289,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -1272,6 +1303,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(3) then
@@ -1287,6 +1319,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -1304,6 +1337,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
@@ -1318,6 +1352,7 @@ return NeedReflect(target, "player");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsKeyDown("F") then
@@ -1333,6 +1368,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -1346,6 +1382,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP <= 80 then
@@ -1361,6 +1398,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsLossOfControl();
@@ -1374,6 +1412,7 @@ return IsLossOfControl();
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and not HasBuff("player", 202574) then
@@ -1389,6 +1428,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and HasBuff("player", 202574) then
@@ -1408,6 +1448,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 132404 Блок щитом
@@ -1424,6 +1465,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 30 and PLAYER.Agro > 2 and useCooldown then
@@ -1439,6 +1481,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 20 and PLAYER.Agro > 2 and useCooldown then
@@ -1454,6 +1497,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP <= 50 and isInMeele and useCooldown then
@@ -1469,6 +1513,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and setAoE then
@@ -1484,6 +1529,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1497,6 +1543,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- дает 20 ярости
@@ -1511,6 +1558,7 @@ return isInMeele;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele;
@@ -1566,6 +1614,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -1579,6 +1628,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if type(setAoE) ~= "number" then
@@ -1615,6 +1665,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -1628,6 +1679,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsLossOfControl();
@@ -1641,6 +1693,7 @@ return IsLossOfControl();
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele then
@@ -1658,6 +1711,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele then
@@ -1675,6 +1729,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local setAoE = setAoE or 0;
@@ -1695,6 +1750,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1708,6 +1764,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1721,6 +1778,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1734,6 +1792,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1747,6 +1806,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele;
@@ -1760,6 +1820,7 @@ return isInMeele;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1773,6 +1834,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1786,6 +1848,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -1841,6 +1904,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -1854,6 +1918,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if type(setAoE) ~= "number" then
@@ -1875,6 +1940,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(772), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PLAYER.HP <= 80;
@@ -1888,6 +1954,7 @@ return PLAYER.HP <= 80;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -1901,6 +1968,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsLossOfControl();
@@ -1914,6 +1982,7 @@ return IsLossOfControl();
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele then
@@ -1931,6 +2000,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and setAoE > 0 then
@@ -1946,6 +2016,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele and setAoE > 0;
@@ -1959,6 +2030,7 @@ return isInMeele and setAoE > 0;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 772, "PLAYER")) < 5 then
@@ -1974,6 +2046,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff(target, 208086, "PLAYER") then
@@ -1989,6 +2062,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2002,6 +2076,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2015,6 +2090,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2028,6 +2104,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE == 0;
@@ -2086,6 +2163,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -2103,6 +2181,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(96231), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -2116,6 +2195,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 70 and HasBuff("player", 188370) then
@@ -2131,6 +2211,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
@@ -2146,6 +2227,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 15 then
@@ -2161,6 +2243,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 40 then
@@ -2176,6 +2259,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:GetDispellInfo(target);
@@ -2189,6 +2273,7 @@ return PartyLogic:GetDispellInfo(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.Agro > 2 and not HasBuff("player", 132403, "PLAYER") then
@@ -2204,6 +2289,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2217,6 +2303,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2230,6 +2317,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2243,6 +2331,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele;
@@ -2257,6 +2346,7 @@ return isInMeele;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") then
@@ -2277,6 +2367,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -2295,6 +2386,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(96231), "target") == 1;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") then
@@ -2350,6 +2442,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -2368,6 +2461,7 @@ hollyPower = UnitPower("player", SPELL_POWER_HOLY_POWER);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -2383,6 +2477,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:GetDispellInfo(target);
@@ -2397,6 +2492,7 @@ return PartyLogic:GetDispellInfo(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Самоотверженный целитель (3 стака)
@@ -2413,6 +2509,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele then
@@ -2428,6 +2525,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and hollyPower <= 2 and isInMeele then
@@ -2446,6 +2544,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2459,6 +2558,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return (isInMeele and ( (setAoE and hollyPower > 2) or HasBuff("player", 144595) ~= nil));
@@ -2472,6 +2572,7 @@ return (isInMeele and ( (setAoE and hollyPower > 2) or HasBuff("player", 144595)
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return hollyPower < 4;
@@ -2485,6 +2586,7 @@ return hollyPower < 4;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return hollyPower > 4;
@@ -2498,6 +2600,7 @@ return hollyPower > 4;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if hollyPower > 4 or HasBuff("player", 223819) then
@@ -2513,6 +2616,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2526,6 +2630,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not setAoE and hollyPower > 2;
@@ -2540,6 +2645,7 @@ return not setAoE and hollyPower > 2;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") then
@@ -2595,6 +2701,7 @@ NOTIFY_CAST_TABLE[19801] = "|cff15bd05>> Снимаю исступление!";
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or IsStealthed() then
@@ -2625,6 +2732,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(5) then
@@ -2646,6 +2754,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -2659,6 +2768,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele;
@@ -2672,6 +2782,7 @@ return isInMeele;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local pethp = HealthByPercent("pet");
@@ -2690,6 +2801,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele then
@@ -2705,6 +2817,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and isInMeele then
@@ -2720,6 +2833,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2733,6 +2847,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2746,6 +2861,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2784,6 +2900,7 @@ SteadyShot = 0;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or IsStealthed() or PLAYER.IsMounted then
@@ -2814,6 +2931,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not select(2, GetSpellAutocast(GetSpellInfo(ability.SpellId), "pet")) then
@@ -2833,6 +2951,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(5) then
@@ -2854,6 +2973,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -2867,6 +2987,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local pethp = HealthByPercent("pet");
@@ -2885,6 +3006,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown;
@@ -2898,6 +3020,7 @@ return useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange then
@@ -2913,6 +3036,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2926,6 +3050,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff("target", 187131, "PLAYER") then
@@ -2941,6 +3066,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -2960,6 +3086,7 @@ NOTIFY_CAST_TABLE[19801] = "|cff15bd05>> Снимаю исступление!";
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or IsStealthed() then
@@ -2990,6 +3117,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkRightAlt);
@@ -3003,6 +3131,7 @@ return IsModKeyDown(mkRightAlt);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте, тогда не выполняем ротацию дальше
@@ -3025,6 +3154,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(5) then
@@ -3046,6 +3176,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -3059,6 +3190,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local pethp = HealthByPercent("pet");
@@ -3077,6 +3209,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown;
@@ -3090,6 +3223,7 @@ return useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInRange and useCooldown then
@@ -3105,6 +3239,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown and isInRange;
@@ -3118,6 +3253,7 @@ return useCooldown and isInRange;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown;
@@ -3131,6 +3267,7 @@ return useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE;
@@ -3144,6 +3281,7 @@ return setAoE;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsSpellInRange(GetSpellInfo(2649), "target") == 1 then
@@ -3159,6 +3297,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3172,6 +3311,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3185,6 +3325,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3198,6 +3339,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local focus = SpellCD(120360) < 3 and 60 or 40;
@@ -3296,6 +3438,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
@@ -3314,6 +3457,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(703), "target") == 1;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetShapeshiftForm() == 1 and IsModKeyDown(mkLeftShift) then
@@ -3329,6 +3473,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftShift) and GetShapeshiftForm() == 0 then
@@ -3344,6 +3489,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and IsSpellInRange(GetSpellInfo(1329), "target") == 1 then
@@ -3359,6 +3505,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", target) > 4 then
@@ -3376,6 +3523,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", target) > 4 then
@@ -3393,6 +3541,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 5 then
@@ -3408,6 +3557,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 6 then
@@ -3423,6 +3573,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3436,6 +3587,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return UnitPower("player") > 55;
@@ -3449,6 +3601,7 @@ return UnitPower("player") > 55;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>3</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 local buffs = {
@@ -3470,6 +3623,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>3</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 local buffs = {
@@ -3493,6 +3647,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
@@ -3519,6 +3674,7 @@ max_cp = UnitPowerMax("player", SPELL_POWER_COMBO_POINTS);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown;
@@ -3532,6 +3688,7 @@ return useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and not HasBuff("player", 196976) then
@@ -3549,6 +3706,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- With active buff "Shadowdace"
@@ -3567,6 +3725,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") >= max_cp then
@@ -3584,6 +3743,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") >= max_cp then
@@ -3601,6 +3761,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") >= max_cp then
@@ -3616,6 +3777,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetShapeshiftForm() == 1 or HasBuff("player", 185422) then
@@ -3631,6 +3793,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", target) <= max_cp then
@@ -3646,6 +3809,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3662,6 +3826,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
@@ -3680,6 +3845,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(8676), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele and useCooldown;
@@ -3693,6 +3859,7 @@ return isInMeele and useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local buffs = {
@@ -3719,6 +3886,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and GetComboPoints("player", "target") >= max_cp then
@@ -3736,6 +3904,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") >= max_cp then
@@ -3754,6 +3923,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") >= max_cp then
@@ -3772,6 +3942,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", target) >= max_cp then
@@ -3787,6 +3958,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetShapeshiftForm() == 1 and IsModKeyDown(mkLeftShift) then
@@ -3802,6 +3974,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Замечательная возможность
@@ -3818,6 +3991,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3831,6 +4005,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -3890,6 +4065,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff(target, 6770) then
@@ -3906,6 +4082,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.IsMounted or IsModKeyDown(mkLeftAlt) then
@@ -3974,6 +4151,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -3987,6 +4165,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -4002,6 +4181,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return IsMouseButtonDown(4);-- IsModKeyDown(mkLeftAlt);
@@ -4015,6 +4195,7 @@ return IsMouseButtonDown(4);-- IsModKeyDown(mkLeftAlt);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftControl);
@@ -4028,6 +4209,7 @@ return IsMouseButtonDown(3);-- IsModKeyDown(mkLeftControl);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IsFalling() then
@@ -4048,6 +4230,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useAutoDispell then
@@ -4063,6 +4246,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and PartyLogic.First.HP < 30 then
@@ -4078,6 +4262,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsSpellInRange(GetSpellInfo(585), "target") == 1 then
@@ -4093,6 +4278,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:LowHP(50) > 3;
@@ -4106,6 +4292,7 @@ return PartyLogic:LowHP(50) > 3;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Ослабленная душа (6788)
@@ -4139,6 +4326,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic.First.HP < 40 then
@@ -4154,6 +4342,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic:LowHP(90) > 2 and PartyLogic.First.HP < 85 then
@@ -4169,6 +4358,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- Если активен щит души, тогда настакиваем щит
@@ -4185,6 +4375,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic.First.HP < 60 then
@@ -4200,6 +4391,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(PartyLogic.members) do
@@ -4219,6 +4411,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitIsFriend("target", "player") then
@@ -4236,6 +4429,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4251,6 +4445,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return HealthByPercent("target") < 20;
@@ -4266,6 +4461,7 @@ return HealthByPercent("target") < 20;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff("target", 589, "PLAYER")) < 2 then
@@ -4281,6 +4477,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4326,6 +4523,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -4339,6 +4537,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IsFalling() then
@@ -4359,6 +4558,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -4376,6 +4576,7 @@ isInRange = IsSpellInRange(GetSpellInfo(8092), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return isInRange and useCooldown;
@@ -4389,6 +4590,7 @@ return isInRange and useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 194249) or UnitPower("player") > 85 then
@@ -4404,6 +4606,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4419,6 +4622,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4432,6 +4636,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4447,6 +4652,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 589, "PLAYER")) < 5 then
@@ -4464,6 +4670,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 34914, "PLAYER")) < 6 then
@@ -4479,6 +4686,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown;
@@ -4492,6 +4700,7 @@ return useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE;
@@ -4505,6 +4714,7 @@ return setAoE;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return isInRange;
@@ -4559,6 +4769,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -4572,6 +4783,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -4591,6 +4803,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(49998), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt(target);
@@ -4604,6 +4817,7 @@ return useInterrupt and CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 55078, "PLAYER")) < 4 then
@@ -4619,6 +4833,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4632,6 +4847,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(2, HasBuff("player", 195181)) < 7 then
@@ -4647,6 +4863,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele then
@@ -4662,6 +4879,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not setAoE and HealthByPercent(target) <= 35 then
@@ -4677,6 +4895,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetRuneCount(1) > 2 then
@@ -4692,6 +4911,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and PLAYER.HP < 50 then
@@ -4715,6 +4935,7 @@ simulacrSpellTable = {
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -4728,6 +4949,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -4747,6 +4969,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt(target);
@@ -4762,6 +4985,7 @@ return useInterrupt and CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>1</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _, spellId in ipairs(simulacrSpellTable) do
@@ -4782,6 +5006,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local frost = DK_RUNES.FROST.FullCount;
@@ -4802,6 +5027,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
@@ -4817,6 +5043,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
@@ -4832,6 +5059,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local diseases = {
@@ -4851,6 +5079,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
@@ -4866,6 +5095,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
@@ -4881,6 +5111,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HealthByPercent(target) < 35 then
@@ -4896,6 +5127,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE then
@@ -4912,6 +5144,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return select(3, HasDebuff(target, 55078, "PLAYER")) < 3 -- Кровавая чума
@@ -4925,6 +5158,7 @@ return select(3, HasDebuff(target, 55078, "PLAYER")) < 3 -- Кровавая ч�
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Для одноручного оружия и при проке "Машина для убийств"
@@ -4941,6 +5175,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not isTwoHand;
@@ -4954,6 +5189,7 @@ return not isTwoHand;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -4967,6 +5203,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Для двуручного оружия или при максимуме рунической силы
@@ -4981,6 +5218,7 @@ return isTwoHand or DK_RUNES.Power > 90;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Используем с двуручным оружием при проке "59057 - Инея"
@@ -5000,6 +5238,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -5019,6 +5258,7 @@ local curses = {
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -5032,6 +5272,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if DK_RUNES.Death.Count < 1 then
@@ -5049,6 +5290,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local diseases = {
@@ -5068,6 +5310,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff("target", curses, "PLAYER") then  -- Озноб
@@ -5083,6 +5326,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HealthByPercent("target") < 45 then
@@ -5098,6 +5342,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not setAoE and select(3, HasDebuff("target", curses)) < 10 then
@@ -5113,6 +5358,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 --Вливание тьмы
@@ -5129,6 +5375,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Неумолимый рок (81340)
@@ -5149,6 +5396,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local debuff,_,rem = HasDebuff("target", 91342, "PLAYER");
@@ -5165,6 +5413,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not setAoE;
@@ -5178,6 +5427,7 @@ return not setAoE;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5223,6 +5473,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(3) then
@@ -5238,6 +5489,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -5257,6 +5509,7 @@ isInRange = IsSpellInRange(GetSpellInfo(403), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -5270,6 +5523,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:GetDispellInfo(target);
@@ -5283,6 +5537,7 @@ return PartyLogic:GetDispellInfo(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if isInRange and useCooldown then
@@ -5298,6 +5553,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInRange and useCooldown then
@@ -5315,6 +5571,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff(target, 188389, "PLAYER") then
@@ -5332,6 +5589,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and HasBuff("player", 77756) then
@@ -5349,6 +5607,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5362,6 +5621,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.IsMoving or HasBuff("player", 210714) then
@@ -5377,6 +5637,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return UnitPower("player") > 90;
@@ -5390,6 +5651,7 @@ return UnitPower("player") > 90;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE;
@@ -5403,6 +5665,7 @@ return setAoE;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5417,6 +5680,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") then
@@ -5463,6 +5727,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -5480,6 +5745,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(60103), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:GetDispellInfo(target);
@@ -5495,6 +5761,7 @@ return PartyLogic:GetDispellInfo(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -5508,6 +5775,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5521,6 +5789,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele and useCooldown;
@@ -5534,6 +5803,7 @@ return isInMeele and useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown and isInMeele;
@@ -5547,6 +5817,7 @@ return useCooldown and isInMeele;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Буря с градом
@@ -5563,6 +5834,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Тяжелый кулак
@@ -5581,6 +5853,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Вестник шторма
@@ -5597,6 +5870,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Горячая рука
@@ -5613,6 +5887,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5626,6 +5901,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Язык пламени
@@ -5642,6 +5918,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5655,6 +5932,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(10, GetTalentInfo(1, 3, 1)) then
@@ -5670,6 +5948,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5683,6 +5962,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(10, GetTalentInfo(5, 2, 1)) then
@@ -5698,6 +5978,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and
@@ -5714,6 +5995,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitPower("player") > 80 then
@@ -5729,6 +6011,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -5743,6 +6026,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") then
@@ -5798,6 +6082,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -5813,6 +6098,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return IsMouseButtonDown(3);
@@ -5826,6 +6112,7 @@ return IsMouseButtonDown(3);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasBuff("player", 52127) then
@@ -5841,6 +6128,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(PartyLogic.members) do
@@ -5869,6 +6157,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -5882,6 +6171,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(5) then
@@ -5902,6 +6192,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic:LowHP(70) > 2 then
@@ -5917,6 +6208,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(PartyLogic.members) do
@@ -5936,6 +6228,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic.First.HP < 60 then
@@ -5951,6 +6244,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic:LowHP(80) > 2 and not GetTotemInfo(3) then
@@ -5966,6 +6260,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not setAoE and isInRange and UnitExists("target") and not GetTotemInfo(1) then
@@ -5981,6 +6276,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if UnitIsDead("mouseover") and not UnitAffectingCombat("player") and UnitIsPlayer("mouseover") then
@@ -6027,6 +6323,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsMouseButtonDown(3);
@@ -6040,6 +6337,7 @@ return IsMouseButtonDown(3);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -6053,6 +6351,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -6074,6 +6373,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IsFalling() then
@@ -6094,6 +6394,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -6107,6 +6408,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInRange and useCooldown;
@@ -6120,6 +6422,7 @@ return isInRange and useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 48108) then
@@ -6135,6 +6438,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff(target, ability.SpellId, "PLAYER")
@@ -6151,6 +6455,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange then
@@ -6166,6 +6471,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 48107) then
@@ -6181,6 +6487,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>Moving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -6194,6 +6501,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -6210,6 +6518,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkRightAlt);
@@ -6223,6 +6532,7 @@ return IsModKeyDown(mkRightAlt);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -6253,6 +6563,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- надо тестировать
@@ -6274,6 +6585,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -6287,6 +6599,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -6300,6 +6613,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInRange and useCooldown;
@@ -6313,6 +6627,7 @@ return isInRange and useCooldown;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not HasBuff("player", 1463);
@@ -6326,6 +6641,7 @@ return not HasBuff("player", 1463);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not HasBuff("player", 11426);
@@ -6341,6 +6657,7 @@ return not HasBuff("player", 11426);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsSpellInRange(GetSpellInfo(116), target) == 1 then
@@ -6358,6 +6675,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 44549) then
@@ -6373,6 +6691,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 112965) or (PLAYER.IsMoving and not HasBuff("player", 108839)) then
@@ -6388,6 +6707,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>Moving</IsMovingCheck>
         <Lua><![CDATA[
 if isInRange then
@@ -6410,6 +6730,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -6423,6 +6744,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return not HasBuff("player", 1459);
@@ -6436,6 +6758,7 @@ return not HasBuff("player", 1459);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>3</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return not HasBuff("player", 7302);
@@ -6452,6 +6775,7 @@ return not HasBuff("player", 7302);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -6467,6 +6791,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return useCooldown and not GetTotemInfo(1);
@@ -6480,6 +6805,7 @@ return useCooldown and not GetTotemInfo(1);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -6493,6 +6819,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInRange and useCooldown  then
@@ -6510,6 +6837,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- save
@@ -6529,6 +6857,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if SpellCD(12042) > 10 and PLAYER:Power() < 50 then
@@ -6546,6 +6875,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- save
@@ -6565,6 +6895,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if UnitPower("player", 16) >= 4 then
@@ -6580,6 +6911,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitPower("player", 16) >= 4 then
@@ -6595,6 +6927,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if SpellCD(44425) > 0 or UnitPower("player", 16) < 4 then
@@ -6670,6 +7003,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -6695,6 +7029,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if CheckInterrupt(target) then
@@ -6710,6 +7045,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>3</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE then
@@ -6734,6 +7070,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not AhonyImmune:IsImmune(target)
@@ -6757,6 +7094,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasDebuff(target, ability.SpellId, "PLAYER") then
@@ -6779,6 +7117,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 5 then
@@ -6801,6 +7140,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>1</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 4 then
@@ -6819,6 +7159,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PowerByPercent("player") < 60 then
@@ -6834,6 +7175,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -6895,6 +7237,7 @@ PETS = {
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -6920,6 +7263,7 @@ PETS:Init();
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 603, "PLAYER")) < 5 then
@@ -6935,6 +7279,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PowerByPercent("player") < 60 then
@@ -6950,6 +7295,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>3</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PETS:GetSummonInfo(SUMMON_STALKERS) <= 0 then
@@ -6965,6 +7311,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitPower("player", SPELL_POWER_SOUL_SHARDS) > 3
@@ -6981,6 +7328,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasBuff("pet", 193396, "PLAYER")) < 2 then
@@ -6999,6 +7347,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PETS:GetSummonInfo(SUMMON_STALKERS) > 4
@@ -7015,6 +7364,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7056,6 +7406,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted then
@@ -7079,6 +7430,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -7094,6 +7446,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>1</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, ability.SpellId, "PLAYER")) < 5 then
@@ -7109,6 +7462,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitPower("player", SPELL_POWER_SOUL_SHARDS) < 4 then
@@ -7125,6 +7479,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IsModKeyDown(mkLeftShift) then
@@ -7143,6 +7498,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not IsModKeyDown(mkLeftShift) then
@@ -7158,6 +7514,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7223,6 +7580,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -7250,6 +7608,7 @@ chi    = UnitPower("player",  12); -- chi
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftShift) then
@@ -7269,6 +7628,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if chi > 2 and not UnitIsPlayer("target") and UnitHealth("target") < UnitHealthMax("player") then
@@ -7284,6 +7644,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt("target");
@@ -7297,6 +7658,7 @@ return CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:GetDispellInfo(target);
@@ -7310,6 +7672,7 @@ return PartyLogic:GetDispellInfo(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local stac = useCooldown and 9 or 17;
@@ -7326,6 +7689,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return setAoE;
@@ -7339,6 +7703,7 @@ return setAoE;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if chi > 0 and select(3, HasBuff("player", 125359)) < 2 then
@@ -7354,6 +7719,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7367,6 +7733,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 116768) then
@@ -7382,6 +7749,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7395,6 +7763,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if chi > 2 and energy < 40 and SpellCD(107428) > 3 then
@@ -7410,6 +7779,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;--chi > 3 or HasBuff("player", 159407) ~= nil;
@@ -7423,6 +7793,7 @@ return true;--chi > 3 or HasBuff("player", 159407) ~= nil;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if chi > 1 or HasBuff("player", 118864) then
@@ -7438,6 +7809,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if energy < 40 and chi < 3 and IsSpellInRange(GetSpellInfo(100787), "target") == 1 then
@@ -7453,6 +7825,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitAffectingCombat("player") and HealthByPercent("player") < 75 then
@@ -7472,6 +7845,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7523,6 +7897,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftShift) then
@@ -7538,6 +7913,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(3) then
@@ -7553,6 +7929,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -7573,6 +7950,7 @@ additionalChi = IsSpellKnown(115396) and 1 or 0;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkRightAlt) then
@@ -7588,6 +7966,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if chi > 2 and not UnitIsPlayer("target") and
@@ -7604,6 +7983,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -7617,6 +7997,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(2, HasBuff("player", 128939)) > 9 then
@@ -7632,6 +8013,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- (124275) Легкое пошатывание
@@ -7651,6 +8033,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.Agro > 2 then
@@ -7671,6 +8054,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic:GetDispellInfo(target);
@@ -7684,6 +8068,7 @@ return PartyLogic:GetDispellInfo(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7697,6 +8082,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 40 and useCooldown then
@@ -7712,6 +8098,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 80 then
@@ -7727,6 +8114,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7740,6 +8128,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and setAoE and chi > 2 then
@@ -7762,6 +8151,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and not HasBuff("player", 116847) then
@@ -7777,6 +8167,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not IsPlayerSpell(116847) then
@@ -7800,6 +8191,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not HasBuff("player", 125359) then
@@ -7815,6 +8207,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Если талант "Взрыв ци" выбран, тогда используем при АОЕ на 4 ци при соло на 3
@@ -7833,6 +8226,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if SpellCD(121253) > 1 or energy > 80 then
@@ -7848,6 +8242,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -7864,6 +8259,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
       <Ability Name="Успокаивающий туман">
@@ -7874,6 +8270,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
       <Ability Name="Заживляющий туман">
@@ -7884,6 +8281,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
       <Ability Name="Духовный подъем">
@@ -7894,6 +8292,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
       <Ability Name="Окутывающий туман">
@@ -7904,6 +8303,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
     </Rotation>
@@ -7951,6 +8351,7 @@ NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- пауза
@@ -7973,6 +8374,7 @@ NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Перк "Усиленное возрождение" (157301)
@@ -7991,6 +8393,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitAffectingCombat("player") and UnitIsPlayer(target)
@@ -8008,6 +8411,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Колеcико мышки
@@ -8022,6 +8426,7 @@ return IsMouseButtonDown(3);
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- если персонаж на маунте или в форме или "Слился с тенью", тогда не выполняем ротацию дальше
@@ -8061,6 +8466,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsKeyDown("R") then
@@ -8076,6 +8482,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsKeyDown("T") then
@@ -8091,6 +8498,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift);
@@ -8104,6 +8512,7 @@ return IsModKeyDown(mkLeftShift);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(5) then
@@ -8124,6 +8533,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 for _,member in ipairs(PartyLogic.members) do
@@ -8142,6 +8552,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HealthByPercent("player") < 25 then
@@ -8157,6 +8568,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckEnrage(target);
@@ -8170,6 +8582,7 @@ return CheckEnrage(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local member_count = IsInRaid() and PartyLogic:LowHP(50) or PartyLogic:LowHP(70);
@@ -8186,6 +8599,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return PartyLogic.First.HP < 40;
@@ -8199,6 +8613,7 @@ return PartyLogic.First.HP < 40;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 132158 Природная стремительность
@@ -8222,6 +8637,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 16870 Ясность мысли
@@ -8251,6 +8667,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Либо обновляем Гармонию, либо хилим просевшую цель.
@@ -8272,6 +8689,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 -- Очень дорогой АОЕ-хил,
@@ -8295,6 +8713,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Проверяем наличе уже повешенного жизнецвета
@@ -8325,6 +8744,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local count = 0;
@@ -8351,6 +8771,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local hasGermination = IsSpellKnown(155675); -- Зарождеине (Талант)
@@ -8396,6 +8817,7 @@ if IsModKeyDown(mkLeftControl) or UnitAffectingCombat("player") then
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic.First.HP <= 30 then
@@ -8414,6 +8836,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if PartyLogic.First.HP <= 60 then
@@ -8429,6 +8852,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not (GetRaidBuffTrayAuraInfo(1) and GetRaidBuffTrayAuraInfo(9)) then
@@ -8482,6 +8906,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted
@@ -8507,6 +8932,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt("target");
@@ -8520,6 +8946,7 @@ return CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.HP < 80 and HasBuff("player", 145162) then
@@ -8535,6 +8962,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isAltMod then
@@ -8554,6 +8982,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and PLAYER.HP < 50 then
@@ -8569,6 +8998,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not isCat and useCooldown and PLAYER.HP < 35 then
@@ -8584,6 +9014,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -8597,6 +9028,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and not isCat then
@@ -8615,6 +9047,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- без ГКД
@@ -8634,6 +9067,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not isCat and select(2, HasDebuff("target", 33745, "PLAYER")) > 2 then
@@ -8689,6 +9123,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -8710,6 +9145,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(5221), "target") == 1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 69369) then
@@ -8727,6 +9163,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return false;-- надо доработать
@@ -8742,6 +9179,7 @@ return false;-- надо доработать
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt(target);
@@ -8755,6 +9193,7 @@ return useInterrupt and CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and useCooldown then
@@ -8772,6 +9211,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and UnitPower("player") < 50 then
@@ -8787,6 +9227,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInMeele and HasBuff("player", 106952) then
@@ -8804,6 +9245,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 69369) and HealthByPercent(terget) < 90 then
@@ -8819,6 +9261,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and select(3, HasBuff("player", 52610)) > 7 then
@@ -8834,6 +9277,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and setAoE then
@@ -8851,6 +9295,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE and isInMeele then
@@ -8866,6 +9311,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") > 4 and select(3, HasDebuff("target", 1079)) < 6 then
@@ -8881,6 +9327,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetComboPoints("player", "target") > 4 and UnitPower("player") >= 40 then
@@ -8896,6 +9343,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff("target", 1822)) < 3 then
@@ -8911,6 +9359,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return UnitPower("player") >= 50;
@@ -8953,6 +9402,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -8977,6 +9427,7 @@ power     = UnitPower("player", SPELL_POWER_ECLIPSE);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
@@ -8990,6 +9441,7 @@ return IsModKeyDown(mkLeftShift) and UnitIsDeadOrGhost(target) and UnitIsPlayer(
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HealthByPercent("player") < 25 then
@@ -9007,6 +9459,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return CheckInterrupt(target);
@@ -9020,6 +9473,7 @@ return CheckInterrupt(target);
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftShift) then
@@ -9035,6 +9489,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if useCooldown and isInRange then
@@ -9052,6 +9507,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if PLAYER.IsMoving or select(3, HasDebuff(target, 164812, "PLAYER")) < 7 then
@@ -9069,6 +9525,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if select(3, HasDebuff(target, 164815, "PLAYER")) < 6 then
@@ -9084,6 +9541,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local min_power = select(5, GetTalentInfo(5, 1, 1)) and 60 or 50;
@@ -9101,6 +9559,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if setAoE or HasBuff("player", 164547) then
@@ -9116,6 +9575,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -9129,6 +9589,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
       </Ability>
     </Rotation>
@@ -9142,6 +9603,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -9196,6 +9658,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -9213,6 +9676,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -9226,6 +9690,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -9239,6 +9704,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -9255,6 +9721,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftShift) then
@@ -9270,6 +9737,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsMouseButtonDown(3) then
@@ -9285,6 +9753,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
@@ -9304,6 +9773,7 @@ isInMeele = IsSpellInRange(GetSpellInfo(162243),"target")==1;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return useInterrupt and CheckInterrupt("target");
@@ -9317,6 +9787,7 @@ return useInterrupt and CheckInterrupt("target");
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele and PLAYER.Agro > 2 then
@@ -9335,6 +9806,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isInMeele then
@@ -9354,6 +9826,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return isInMeele;
@@ -9367,6 +9840,7 @@ return isInMeele;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -9380,6 +9854,7 @@ return true;
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
@@ -9398,6 +9873,7 @@ return true;
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitHasVehicleUI("player") then
@@ -9417,6 +9893,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetPetActionCooldown(4) == 0 then
@@ -9436,6 +9913,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetPetActionCooldown(3) == 0 then
@@ -9467,6 +9945,7 @@ end
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitExists("target") and UnitIsEnemy("player", "target")
@@ -9483,6 +9962,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitExists("target") and UnitIsEnemy("player", "target")
@@ -9502,6 +9982,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitHasVehicleUI("player") then
@@ -9521,6 +10002,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>1</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetPetActionCooldown(4) == 0 then
@@ -9539,6 +10021,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- как-то определть дистанцию до цели
@@ -9558,6 +10041,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- как-то определть дистанцию до цели
@@ -9577,6 +10061,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if UnitExists("target") and UnitIsEnemy("player", "target")
@@ -9596,6 +10081,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if not UnitHasVehicleUI("player") then
@@ -9615,6 +10101,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetPetActionCooldown(1) == 0 then
@@ -9630,6 +10117,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetPetActionCooldown(2) == 0 then
@@ -9645,6 +10133,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if GetPetActionCooldown(3) == 0 then
@@ -9663,6 +10152,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 ClearTarget();
@@ -9729,6 +10219,7 @@ ZONE_BUFF_TABLE = {
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if isFishPause then
@@ -9768,6 +10259,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Плот рыболова (предмет и бафф)
@@ -9797,6 +10289,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>false</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if not IsFishingLoot() then
@@ -9852,6 +10345,7 @@ end
         <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 if autoOpenEnabled then

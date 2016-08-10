@@ -94,6 +94,17 @@ namespace Yanitta
             set { Set(ref recastdelay, value); }
         }
 
+        RangeCheckType rangeCheck;
+
+        /// <summary>
+        /// Range check distance.
+        /// </summary>
+        public RangeCheckType RangeCheck
+        {
+            get { return rangeCheck; }
+            set { Set(ref rangeCheck, value); }
+        }
+
         MovingStates movingstate;
         /// <summary>
         /// Moving state.
@@ -151,6 +162,8 @@ namespace Yanitta
             builder.AppendLine($"        CancelCasting     = {cancelCasting},");
             builder.AppendLine($"        IsCheckInCombat   = {isUseIncombat},");
             builder.AppendLine($"        IsUsableCheck     = {isUsableCheck},");
+            builder.AppendLine($"        RangeCheck        = {(int)RangeCheck},");
+            builder.AppendLine($"        RangeCheckSpellId = 0,");
             builder.AppendLine($"        TargetList = {{\n{T + T + T}{targetList}\n{T + T}}},");
             builder.AppendLine($"        Func = function(ability, targetInfo, target)\n{T + T + T}{funcContent}\n{T + T}end");
             builder.Append("    }");

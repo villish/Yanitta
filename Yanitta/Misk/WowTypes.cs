@@ -1,7 +1,7 @@
 ﻿namespace Yanitta
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public enum WowClass : byte
     {
@@ -50,6 +50,17 @@
         None      = 0,
         Moving    = 1,
         NotMoving = 2,
+    }
+
+    public enum RangeCheckType
+    {
+        Auto     =  0,
+        Meele    =  8,
+        Range_25 = 25,
+        Range_30 = 30,
+        Range_35 = 35,
+        Range_40 = 40,
+        Range_45 = 45,
     }
 
     public enum WowSpecializations

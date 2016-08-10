@@ -18,6 +18,13 @@
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
 
+                    <!--RangeCheckTypes-->
+                    <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="RangeCheckTypes">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type TypeName="yanitta:RangeCheckType" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
+
                     <!--WowClass-->
                     <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="ClassValues">
                         <ObjectDataProvider.MethodParameters>
