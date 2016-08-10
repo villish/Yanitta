@@ -9150,9 +9150,7 @@ return true;
     </Rotation>
   </Profile>
   <Profile Class="DemonHunter">
-    <Rotation Name="Сокрушение" Spec="DemonHunter_Havoc">
-      <HotKey Key="X" Modifier="Alt" />
-      <Lua><![CDATA[
+    <Lua><![CDATA[
 setAoE = false;
 useCooldown = true;
 useInterrupt = true;
@@ -9188,6 +9186,8 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     end
 end
 ]]></Lua>
+    <Rotation Name="Сокрушение" Spec="DemonHunter_Havoc">
+      <HotKey Key="X" Modifier="Alt" />
       <Ability Name="Init">
         <SpellID>0</SpellID>
         <Target>Target</Target>
@@ -9247,6 +9247,144 @@ return true;
     </Rotation>
     <Rotation Name="Месть" Spec="DemonHunter_Vengeance">
       <HotKey Key="C" Modifier="Alt" />
+      <Ability Name="Инфернальный удар">
+        <SpellID>189110</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Печать огня">
+        <SpellID>204596</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsMouseButtonDown(3) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Init">
+        <SpellID>0</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>false</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
+    return true;
+end
+
+isInMeele = IsSpellInRange(GetSpellInfo(162243),"target")==1;
+]]></Lua>
+      </Ability>
+      <Ability Name="Поглощение магии">
+        <SpellID>183752</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return useInterrupt and CheckInterrupt("target");
+]]></Lua>
+      </Ability>
+      <Ability Name="Демонические шипы">
+        <SpellID>203720</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and PLAYER.Agro > 2 then
+    -- Демонические шипы
+    if not HasBuff("player", 203819) then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Раскалывание душ">
+        <SpellID>228477</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele then
+    if PLAYER.Agro > 2 and (UnitPower("player") > 50 and PLAYER.HP < 80) or PLAYER.HP > 90 then
+        return true;
+    elseif PLAYER.Agro < 2 then
+        return true;
+    end
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Жар преисподней">
+        <SpellID>178740</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInMeele;
+]]></Lua>
+      </Ability>
+      <Ability Name="Иссечение">
+        <SpellID>203782</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок боевого клинка">
+        <SpellID>204157</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
     </Rotation>
   </Profile>
   <Profile Class="None">

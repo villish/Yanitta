@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (21/36)
+# Progress (22/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -39,4 +39,4 @@
 |Druid|Guardian|
 |Druid|Restoration|
 |DemonHunter|Havoc|
-|DemonHunter|Vengeance|
+|DemonHunter|Vengeance|Basic|
