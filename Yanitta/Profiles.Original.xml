@@ -780,7 +780,8 @@ function CheckAndCastAbility(ability, targetInfo)
     if targetInfo.Target ~= "none" and targetInfo.Target ~= "player" and targetInfo.Target ~= "mouselocation" then
         if not UnitExists(targetInfo.Target) then
             return;
-        elseif InRange(ability, targetInfo.Target) == 0 then
+        elseif SpellHasRange(spellName) and IsSpellInRange(spellName, targetInfo.Target) == 0 then
+        --elseif InRange(ability, targetInfo.Target) == 0 then
             return;
         elseif IsHelpfulSpell(spellName) and not UnitIsFriend("player", targetInfo.Target) then
             return;
@@ -1722,7 +1723,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
-        <SpellID>1680</SpellID>
+        <SpellID>190411</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -2009,7 +2010,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Вихрь">
-        <SpellID>1680</SpellID>
+        <SpellID>190411</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
