@@ -162,7 +162,7 @@ namespace Yanitta
                 {
                     Settings.Load(Build);// reload offsets
                     IsInGame = Memory.Read<bool>(Memory.Rebase(Settings.IsInGame));
-                    if (IsInGame && Settings.FishEnbl != 0)
+                    if (IsInGame && Settings.FishEnbl != 0L)
                     {
                         var isBotEnable = Memory.Read<float>(Memory.Rebase(Settings.FishEnbl));
                         if (Math.Abs(isBotEnable - 12.01f) < float.Epsilon)
@@ -284,9 +284,9 @@ namespace Yanitta
         private void TestBoober()
         {
             var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMgr));
-            var playerGuid = Memory.Read<WowGuid>(objManager + FieldOffsets.Player);
-            var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClnt));
-            var baseAddr   = Memory.Read<IntPtr>(objManager + FieldOffsets.FirstObject);
+            var playerGuid = Memory.Read<WowGuid>(objManager + Settings.PlayerGuid);
+            var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClient));
+            var baseAddr   = Memory.Read<IntPtr>(objManager + Settings.FirstObject);
 
             var cur = new WowObject(Memory, baseAddr);
 
@@ -302,14 +302,12 @@ namespace Yanitta
                     Memory.SendMessage(0x101, new IntPtr(0x13), IntPtr.Zero); // Break/Pause
 
                     // write boobers guid to "mouseover"
-                    Memory.Write(Memory.Rebase(Settings.ObjTrack), cur.Guid);
+                    Memory.Write(Memory.Rebase(Settings.ObjectTrack), cur.Guid);
                     break;
                 }
 
-                cur.BaseAddr = Memory.Read<IntPtr>(cur.BaseAddr + FieldOffsets.NextObject);
+                cur.BaseAddr = Memory.Read<IntPtr>(cur.BaseAddr + Settings.NextObject);
             }
-
-            Console.WriteLine("stop >>>");
 
             // lua_pushboolean(state, found)
             // 6A 00          push    found ; change
@@ -318,7 +316,7 @@ namespace Yanitta
             if (state != found)
             {
                 Console.WriteLine($"Write state: state {state} / found {found}");
-                Memory.Write(Memory.Rebase(Settings.TestClnt), found);
+                Memory.Write(Memory.Rebase(Settings.TestClient), found);
             }
         }
 

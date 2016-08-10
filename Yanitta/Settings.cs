@@ -26,43 +26,49 @@ namespace Yanitta
 
         public static void Load(int build)
         {
-            Func<string, long> get = (key) => GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
+            Func<string, long> getLong = (key) => GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
+            Func<string, int> getInt = (key) => (int)GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
 
-            PlayerName      = get("UnitName");
-            PlayerClass     = get("UnitClas");
-            IsInGame        = get("IsInGame");
-            ExecuteBuffer   = get("ExecBuff");
-            InjectedAddress = get("Inj_Addr");
-            ObjectMgr       = get("ObjectMr");
-            ObjTrack        = get("ObjTrack");
-            TestClnt        = get("TestClnt");
-            FishEnbl        = get("FishEnbl");
-            FirstObject     = get("FirstObject");
-            NextObject      = get("NextObject");
-            Type            = get("Type");
-            Player          = get("Player");
-            VisibleGuid     = get("VisibleGuid");
-            AnimationState  = get("AnimationState");
-            CreatedBy       = get("CreatedBy");
+            // main offsets
+            PlayerName      = getLong("PlayerName");
+            PlayerClass     = getLong("PlayerClass");
+            IsInGame        = getLong("IsInGame");
+            ExecuteBuffer   = getLong("ExecuteBuffer");
+            InjectedAddress = getLong("InjectAddress");
+
+            // fish bot offsets
+            ObjectMgr       = getLong("ObjectMgr");
+            ObjectTrack     = getLong("ObjectTrack");
+            TestClient      = getLong("TestClient");
+            FishEnbl        = getLong("FishEnable");
+
+            // update fields
+            FirstObject     = getInt("FirstObject");
+            NextObject      = getInt("NextObject");
+            ObjectType      = getInt("ObjectType");
+            PlayerGuid      = getInt("PlayerGuid");
+            VisibleGuid     = getInt("VisibleGuid");
+            AnimationState  = getInt("AnimationState");
+            CreatedBy       = getInt("CreatedBy");
         }
 
-        public static long PlayerName { get; private set; }
-        public static long PlayerClass { get; private set; }
-        public static long IsInGame { get; private set; }
-        public static long ExecuteBuffer { get; private set; }
-        public static long InjectedAddress { get; private set; }
+        public static long PlayerName       { get; private set; }
+        public static long PlayerClass      { get; private set; }
+        public static long IsInGame         { get; private set; }
+        public static long ExecuteBuffer    { get; private set; }
+        public static long InjectedAddress  { get; private set; }
 
-        public static long ObjectMgr { get; private set; }
-        public static long ObjTrack { get; private set; }
-        public static long TestClnt { get; private set; }
-        public static long FishEnbl { get; private set; }
+        public static long ObjectMgr        { get; private set; }
+        public static long ObjectTrack      { get; private set; }
+        public static long TestClient       { get; private set; }
+        public static long FishEnbl         { get; private set; }
 
-        public static long FirstObject { get; private set; }
-        public static long NextObject { get; private set; }
-        public static long Type { get; private set; }
-        public static long Player { get; private set; }
-        public static long VisibleGuid { get; private set; }
-        public static long AnimationState { get; private set; }
-        public static long CreatedBy { get; private set; }
+        public static int FirstObject       { get; private set; }
+        public static int NextObject        { get; private set; }
+        public static int ObjectType        { get; private set; }
+        public static int PlayerGuid        { get; private set; }
+        public static int VisibleGuid       { get; private set; }
+        public static int AnimationState    { get; private set; }
+        public static int CreatedBy         { get; private set; }
     }
 }
