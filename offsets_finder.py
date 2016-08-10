@@ -121,7 +121,7 @@ ObjTrack=GetObjTrackOffset();
 TestClnt=GetTestClientOffset();
 FishEnbl=GetFishEnblOffset();
 
-print("[Wow_"+GetClientBuild()+"]")
+print("["+GetClientBuild()+"]")
 print("# Yanitta offset's")
 print("UnitName=0x%08X" % (UnitName-0x400000))
 print("UnitClas=0x%08X" % (UnitClas-0x400000))
