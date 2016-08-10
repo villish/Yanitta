@@ -28,41 +28,46 @@ namespace Yanitta
         {
             Func<string, long> get = (key) => GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
 
-            PlayerName      = get("UnitName");
-            PlayerClass     = get("UnitClas");
+            // main offsets
+            PlayerName      = get("PlayerName");
+            PlayerClass     = get("PlayerClass");
             IsInGame        = get("IsInGame");
-            ExecuteBuffer   = get("ExecBuff");
-            InjectedAddress = get("Inj_Addr");
-            ObjectMgr       = get("ObjectMr");
-            ObjTrack        = get("ObjTrack");
-            TestClnt        = get("TestClnt");
-            FishEnbl        = get("FishEnbl");
+            ExecuteBuffer   = get("ExecuteBuffer");
+            InjectedAddress = get("InjectAddress");
+
+            // fish bot offsets
+            ObjectMgr       = get("ObjectMgr");
+            ObjectTrack     = get("ObjectTrack");
+            TestClient      = get("TestClient");
+            FishEnbl        = get("FishEnable");
+
+            // update fields
             FirstObject     = get("FirstObject");
             NextObject      = get("NextObject");
-            Type            = get("Type");
+            ObjectType      = get("ObjectType");
             Player          = get("Player");
             VisibleGuid     = get("VisibleGuid");
             AnimationState  = get("AnimationState");
             CreatedBy       = get("CreatedBy");
         }
 
-        public static long PlayerName { get; private set; }
-        public static long PlayerClass { get; private set; }
-        public static long IsInGame { get; private set; }
-        public static long ExecuteBuffer { get; private set; }
-        public static long InjectedAddress { get; private set; }
+        public static long PlayerName       { get; private set; }
+        public static long PlayerClass      { get; private set; }
+        public static long IsInGame         { get; private set; }
+        public static long ExecuteBuffer    { get; private set; }
+        public static long InjectedAddress  { get; private set; }
 
-        public static long ObjectMgr { get; private set; }
-        public static long ObjTrack { get; private set; }
-        public static long TestClnt { get; private set; }
-        public static long FishEnbl { get; private set; }
+        public static long ObjectMgr        { get; private set; }
+        public static long ObjectTrack      { get; private set; }
+        public static long TestClient       { get; private set; }
+        public static long FishEnbl         { get; private set; }
 
-        public static long FirstObject { get; private set; }
-        public static long NextObject { get; private set; }
-        public static long Type { get; private set; }
-        public static long Player { get; private set; }
-        public static long VisibleGuid { get; private set; }
-        public static long AnimationState { get; private set; }
-        public static long CreatedBy { get; private set; }
+        public static long FirstObject      { get; private set; }
+        public static long NextObject       { get; private set; }
+        public static long ObjectType       { get; private set; }
+        public static long Player           { get; private set; }
+        public static long VisibleGuid      { get; private set; }
+        public static long AnimationState   { get; private set; }
+        public static long CreatedBy        { get; private set; }
     }
 }
