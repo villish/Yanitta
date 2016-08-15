@@ -715,7 +715,7 @@ function CheckAllSpells()
         for _,ability in ipairs(ABILITY_TABLE) do
             if ability.SpellId > 0 then
                 CheckKnownAbility(ability);
-                GetRangeCheckSpells(ability);
+                --GetRangeCheckSpells(ability);
             end
         end
     end
@@ -3386,48 +3386,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
-
-mTempTable = { };
-AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
-AddonFrame:RegisterEvent("LOOT_OPENED");
-
-function EVENT_MODS.UI_ERROR_MESSAGE(msg)
-    -- Если моба невозможно обократсть.
-    -- Или его уже обокрали или у него нет карманов.
-    -- Заносим его в таблицу для дальнейшей проверки.
-    if UnitExists("target")
-        and (msg == SPELL_FAILED_TARGET_NO_POCKETS
-          or msg == ERR_ALREADY_PICKPOCKETED) then
-        mTempTable[LAST_TARGET] = GetTime();
-    end
-end
-
-function EVENT_MODS.WORLD_MAP_UPDATE()
-    -- очистка таблицы мобов с обшареными карманами
-    mTempTable = { };
-end
-
--- Функция проверки на возможность обокрасть цель.
--- Проверяется таблица на присутствие "неправильного моба"
-function IsPickPocketed(unit)
-    if type(mTempTable) == "table" then
-        local lastTime = mTempTable[UnitGUID(unit)] or 0;
-        if (lastTime + 300) > GetTime() then
-            return true;
-        end
-    end
-end
-
-function EVENT_MODS.LOOT_OPENED()
-    for i = 1, GetNumLootItems() do
-        local texture, item, quantity = GetLootSlotInfo(i);
-        --print(item, quantity);
-        if quantity == 0 or item == GetItemInfo(16885) then
-            LootSlot(i);
-            --print("Looting: ", item);
-        end
-    end
-end
 ]]></Lua>
     <Rotation Name="Ликвидация" Spec="Rogue_Assassination">
       <HotKey Key="X" Modifier="Alt" />
@@ -4013,21 +3971,26 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Фарм ларей" Spec="None">
+    <Rotation Name="Обшаривание карманов" Spec="None">
       <HotKey Key="U" Modifier="Alt" />
       <Lua><![CDATA[
 mTempTable = { };
-AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
-AddonFrame:RegisterEvent("LOOT_OPENED");
+registerMsgIds = {
+    50,  -- У этого существа нет карманов
+    161, -- Нет добычи
+    625, -- Вашу цель уже обокрали
+};
 
-function EVENT_MODS.UI_ERROR_MESSAGE(msg)
-    -- Если моба невозможно обократсть.
-    -- Или его уже обокрали или у него нет карманов.
-    -- Заносим его в таблицу для дальнейшей проверки.
-    if UnitExists("target")
-        and (msg == SPELL_FAILED_TARGET_NO_POCKETS
-          or msg == ERR_ALREADY_PICKPOCKETED) then
-        mTempTable[LAST_TARGET] = GetTime();
+AddonFrame:RegisterEvent("UI_ERROR_MESSAGE");
+--AddonFrame:RegisterEvent("LOOT_OPENED");
+
+function EVENT_MODS.UI_ERROR_MESSAGE(id, msg)
+    --print(id, msg)
+    for _, msgId in ipairs(registerMsgIds) do
+        if msgId == id then
+            mTempTable[LAST_TARGET] = GetTime();
+            break;
+        end
     end
 end
 
@@ -4049,7 +4012,7 @@ end
 
 function EVENT_MODS.LOOT_OPENED()
     for i = 1, GetNumLootItems() do
-        local texture, item, quantity = GetLootSlotInfo(i);
+        --local texture, item, quantity = GetLootSlotInfo(i);
         --print(item, quantity);
         if quantity == 0 or item == GetItemInfo(16885) then
             LootSlot(i);
@@ -4058,6 +4021,22 @@ function EVENT_MODS.LOOT_OPENED()
     end
 end
 ]]></Lua>
+      <Ability Name="Init">
+        <SpellID>0</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>false</IsUseIncombat>
+        <IsUsableCheck>false</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if GetShapeshiftForm() == 0 and GetShapeshiftFormCooldown(1) == 0 then
+    CastShapeshiftForm(1);
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Ошеломление">
         <SpellID>6770</SpellID>
         <Target>Mouseover</Target>
@@ -4086,23 +4065,8 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.IsMounted or IsModKeyDown(mkLeftAlt) then
-    return true;
-end
-
-if GetShapeshiftForm() ~= 1 and GetShapeshiftFormCooldown(1) == 0 then
-    CastShapeshiftForm(1);
-end
-
-if target == "mouseover" and UnitExists(target) then
-    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
-        return true;
-    end
-end
-
-if target == "target" and UnitExists(target) then
-    --TargetNearestEnemy();
-    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) and UnitCreatureType(target) == "Гуманоид" then
+if UnitExists(target) then
+    if not IsPickPocketed(target) and not UnitIsDeadOrGhost(target) then
         return true;
     end
 end
