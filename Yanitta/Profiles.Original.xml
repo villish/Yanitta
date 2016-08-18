@@ -423,7 +423,6 @@ function CheckKnownAbility(ability)
         print("|cff15bd05Ability: "..ability.Name..", invalid spell id ", ability.SpellId.."|r")
         return;
     end
-    --assert(ability.SpellName, "Invalid spell for id "..ability.SpellId);
 
     -- Основная проверка
     if IsPlayerSpell(ability.SpellId)
@@ -455,44 +454,12 @@ function CheckKnownAbility(ability)
     end
 end
 
-function GetRangeCheckSpells(ability)
-    for spec = 1, 4 do
-        local spellList = { GetSpecializationSpells(spec) };
-        if spellList and #spellList > 0 then
-            for i = 1, #spellList, 2 do
-                local name, _, _, _, _, maxRange = GetSpellInfo(spellList[i]);
-                if name and tonumber(maxRange) > 0 and SpellHasRange(name) then
-                    if ability.RangeCheckSpellId == 0 then
-                        ability.RangeCheckSpellId = spellList[i];
-                    end
-                end
-            end
-        end
-    end
-end
-
-function InRange(self, ability, target)
-    if SpellHasRange(ability.SpellName) then
-        local result = IsSpellInRange(ability.SpellName, target);
-        if result then return result end
-    else
-        -- todo: append harmful/helpful split
-        if ability.RangeCheckSpellId > 0 then
-            -- fixed target object
-            target = target == "none" and "target" or target;
-            local result = IsSpellInRange(GetSpellInfo(ability.RangeCheckSpellId), target);
-            if result then return result end
-        end
-    end
-end
-
 -- Проверяем доступность заклинаний
 function CheckAllSpells()
     if type(ABILITY_TABLE) == "table" then
         for _,ability in ipairs(ABILITY_TABLE) do
             if ability.SpellId > 0 then
                 CheckKnownAbility(ability);
-                --GetRangeCheckSpells(ability);
             end
         end
     end
