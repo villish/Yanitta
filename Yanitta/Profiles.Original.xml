@@ -832,22 +832,15 @@ function AddonFrame_OnEvent(self, event, ...)
                 destGUID,  destName, destFlags,  destFlags2,
                 spellId,   spellName,spellSchool, param15 = ...;
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
-            if DebugMode and NOTIFY_CAST_TABLE[spellId] then
-                print(tostring(NOTIFY_CAST_TABLE[spellId]).." на "..(destName or ""));
-            end
             for _,ability in ipairs(ABILITY_TABLE) do
                 for _,targetInfo in ipairs(ability.TargetList) do
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
                         targetInfo.Guid = destGUID;
                         targetInfo.LastCastingTime = GetTime();
-                        --print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                     end
                 end
             end
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
-            if DebugMode then
-                print(format("%s - |cfff5360c%s|r", GetSpellLink(spellId), param15));
-            end
             if param15 == SPELL_FAILED_LINE_OF_SIGHT then
                 LOSS_TABLE[destGUID] = { ctime  = GetTime(), cspell = spellId };
             end
@@ -856,7 +849,6 @@ function AddonFrame_OnEvent(self, event, ...)
                     if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == LAST_TARGET then
                         targetInfo.Guid = nil;
                         targetInfo.LastCastingTime = 0;
-                        --print(string.format("%s %d (%s) guid: (%s) %s time: %s", subEvent,spellId, spellName, targetInfo.Target, destGUID, targetInfo.LastCastingTime));
                         if param15 == SPELL_FAILED_NOT_BEHIND or       -- Вы должны находиться позади цели.
                             --param15 == SPELL_FAILED_BAD_TARGETS or      -- Нельзя применить к этой цели.
                             param15 == SPELL_FAILED_UNIT_NOT_INFRONT or -- Цель должна быть перед вами.
@@ -868,64 +860,14 @@ function AddonFrame_OnEvent(self, event, ...)
                 end
             end
         end
-        if type(COMBATLOG_MODS[subEvent]) == "function" then
+
+        if COMBATLOG_MODS[subEvent] then
             COMBATLOG_MODS[subEvent](...);
         end
     end
 
-    if type(EVENT_MODS[event]) == "function" then
+    if EVENT_MODS[event] then
         EVENT_MODS[event](...);
-    end
-end
-
-function IsKeyDown(key)
-    assert(key, 'Не указана клавиша');
-    if AddonFrame.Buttons[key] then
-        return AddonFrame.Buttons[key].IsDown and not GetCurrentKeyBoardFocus();
-    end
-end
-
-function RegisterKeyHandler(key, handler)
-    assert(key, "Невозможно зарегистрировать пустую клавишу");
-    local bname = "__button_"..key.."__";
-
-    handler = type(handler) == "function" and handler or function(self, button, down)
-        if AddonFrame.Buttons[self.Key] then
-            AddonFrame.Buttons[self.Key].IsDown = down;
-        end
-    end
-
-    -- Сначала почистим старую кнопку
-    if type(AddonFrame.Buttons[key]) == "table" and type(AddonFrame.Buttons[key].UnregisterAllEvents) == "function" then
-        AddonFrame.Buttons[key]:SetScript("OnClick", nil);
-        AddonFrame.Buttons[key]:UnregisterAllEvents();
-        AddonFrame.Buttons[key] = nil;
-    end
-
-    AddonFrame.Buttons[key] = CreateFrame("BUTTON", bname, AddonFrame)
-    AddonFrame.Buttons[key].Key = key;
-    AddonFrame.Buttons[key].IsDown = nil;
-    AddonFrame.Buttons[key]:RegisterForClicks("AnyUp","AnyDown");
-    AddonFrame.Buttons[key]:SetScript("OnClick", handler);
-
-    local isBind = nil;
-    local bind = GetBindingByKey(key);
-    if bind and ActionBarButtonEventsFrame.frames then
-        -- Далее, надо сделать проверку по всех фреймах.
-        -- Но возможно обойдемся и панелями команд.
-        for _, frame in ipairs(ActionBarButtonEventsFrame.frames) do
-            if strupper(frame:GetName()) == bind then
-                SetOverrideBindingClick(frame, false, key, bname);
-                --print('Зарегистрирована клавиша', key);
-                isBind = 1;
-            end
-        end
-    else
-        AddonFrame.print("|cfff5360cНе удалось найти привязку для клавиши "..tostring(key).."|r", 1);
-    end
-
-    if not isBind then
-        AddonFrame.print("|cfff5360cНе удалось зарегистрировать обработку для клавиши \'"..tostring(key).."\'|r", 1);
     end
 end
 
@@ -975,27 +917,7 @@ end
 
 if type(AddonFrame) == "table" then
     AddonFrame:UnregisterAllEvents();
-    -- Очистим предыдущие биндинги
-    for _, frame in ipairs(ActionBarButtonEventsFrame.frames) do
-        ClearOverrideBindings(frame)
-    end
-
-    -- Снимем обработчики с уже существующих кнопок
-    if type(AddonFrame.Buttons) == "table" then
-        for _, button in ipairs(AddonFrame.Buttons) do
-            if type(button.UnregisterAllEvents) == "function" then
-                button:SetScript("OnClick", nil);
-                button:UnregisterAllEvents();
-                button = nil;
-            end
-        end
-    end
-
-    -- Пересоздадим таблицу кнопок
-    AddonFrame.Buttons = {};
 end
-
-
 
 if type(AddonFrame) ~= "table" then
     AddonFrame = CreateFrame("Frame");
@@ -1005,128 +927,14 @@ if type(AddonFrame) ~= "table" then
     AddonFrame:SetWidth(600);
     AddonFrame.Buttons = {};
     AddonFrame.Msg = AddonFrame:CreateFontString(nil, "BACKGROUND", "PVPInfoTextFont");
-
     AddonFrame.Msg:SetAllPoints();
     AddonFrame.print = function(msg, con)
         AddonFrame.Msg:SetText(msg);
         if con then print(msg) end
         AddonFrame.Duration = GetTime() + 5;
-    end
+    end;
     AddonFrame:SetPoint("CENTER", 0, 200);
     AddonFrame:Show();
-
-    AddonFrame.StateButtons = {
-        frame = CreateFrame("Frame", "Y_Buttons", AddonFrame),
-        buttonFrame = CreateFrame("Frame", "Y_Buttons_Container", AddonFrame),
-        buttons = { },
-        size    = 36,
-        padding = 6,
-
-        SavePosition = function(self)
-            local point, _, rpoint, x, y = self.frame:GetPoint();
-            SetCVar("Y_b_frame_point",  point);
-            SetCVar("Y_b_frame_rpoint", rpoint);
-            SetCVar("Y_b_frame_x",      x);
-            SetCVar("Y_b_frame_y",      y);
-        end,
-
-        Clear = function(self)
-            for i = 1, #self.buttons do
-                self.buttons[i]:Hide();
-                self.buttons[i] = nil;
-            end
-        end,
-
-        SetCaption = function(self, text)
-            self.statusText:SetText("|cff0000ff"..text.."|r");
-        end,
-
-        AddButton = function(self, title, tooltip, icon, bstate, action)
-            local button = CreateFrame("CheckButton", "Y_b_action_"..tostring(#self.buttons), self.buttonFrame, "ActionButtonTemplate");
-            button:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-            button:SetWidth(self.size);
-            button:SetHeight(self.size);
-            button:SetPoint("TOPLEFT", self.buttonFrame, "TOPLEFT", ((#self.buttons*self.size)+(#self.buttons*self.padding)+4), -3);
-            button.icon:SetTexture(icon);
-            button.checked = bstate;
-            button:SetPushedTexture(nil);
-            tinsert(self.buttons, button);
-
-            button:SetScript("OnClick", function(selfb)
-                    selfb.checked = not selfb.checked;
-                    -- Добавить закрашивание при нажатой/отпущенной кнопке
-                    if type(action) == "function" then
-                        action(selfb, selfb.checked);
-                    end
-                end);
-
-            if tooltip then
-                button:SetScript("OnEnter", function(self)
-                    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-                    GameTooltip:AddLine("|cff00ff00" .. tooltip .. "|r")
-                    GameTooltip:Show()
-                end);
-                button:SetScript("OnLeave", function(self)
-                    GameTooltip:Hide()
-                end);
-            end
-        end,
-
-        Init = function(self)
-            local point, rpoint, x, y =
-                GetCVar("Y_b_frame_point"),
-                GetCVar("Y_b_frame_rpoint"),
-                GetCVar("Y_b_frame_x"),
-                GetCVar("Y_b_frame_y");
-            if x and y and point and rpoint then
-                self.frame:SetPoint(point, UIParent, rpoint, tonumber(x), tonumber(y));
-            else
-                self.frame:SetPoint("CENTER", UIParent);
-            end
-
-            self.frame:SetWidth(170);
-            self.frame:SetHeight(AddonFrame.StateButtons.size+5);
-            self.frame:SetMovable(true);
-            self.frame:SetFrameStrata('HIGH');
-
-            self.frame:Hide();
-            self.buttonFrame:Hide();
-
-            self.statusText = AddonFrame.StateButtons.frame:CreateFontString('Y_StatusText');
-            self.statusText:SetFont("Fonts\\ARIALN.TTF", 16);
-            self.statusText:SetShadowColor(0,0,0, 0.8);
-            self.statusText:SetShadowOffset(-1,-1);
-            self.statusText:SetPoint("CENTER", AddonFrame.StateButtons.frame);
-            self.statusText:SetText("|cff0000ff<empty>|r");
-
-            self.frame.texture = AddonFrame.StateButtons.frame:CreateTexture();
-            self.frame.texture:SetAllPoints(AddonFrame.StateButtons.frame);
-            self.frame.texture:SetTexture(0,0,0,0.6);
-
-            self.frame:SetScript("OnMouseDown", function(self2, button)
-                if not self2.isMoving then
-                        self2:StartMoving();
-                        self2.isMoving = true;
-                    end
-                end);
-
-            self.frame:SetScript("OnMouseUp", function(self2, button)
-                    if self2.isMoving then
-                        self2:StopMovingOrSizing();
-                        self2.isMoving = false;
-                        self:SavePosition();
-                    end
-                end);
-
-            self.frame:SetScript("OnHide", function(self2)
-                    if self2.isMoving then
-                        self2:StopMovingOrSizing();
-                        self2.isMoving = false;
-                        self:SavePosition();
-                    end
-                end);
-        end,
-    };
 end
 
 function ChangeRotation(rotation)
@@ -1159,44 +967,42 @@ useCooldown = true;
 setAoE      = nil;
 isAltMod    = nil;
 
-reflect_table = {
-    PVP = {
-        33786,  -- DRUID   (Смерч)
-        28272,  -- MAGE    (Превращение - Свинья)
-        118,    -- MAGE    (Превращение - Овца)
-        61305,  -- MAGE    (Превращение - Кошка)
-        61721,  -- MAGE    (Превращение - Кролик)
-        61780,  -- MAGE    (Превращение - Индейка)
-        28271,  -- MAGE    (Превращение - Черепаха)
-        113092, -- MAGE    (Ледяная бомба)
-        30451,  -- MAGE    (Чародейская вспышка)
-        20066,  -- PALADIN (Покаяние)
-        605,    -- PRIEST  (Господство над разумом)
-        51514,  -- SHAMAN  (Сглаз)
-        51505,  -- SHAMAN  (Выброс лавы)
-        5782,   -- WARLOCK (Страх)
-        118699, -- WARLOCK (Страх)
-        116858  -- WARLOCK (Стрела Хаоса)
+SPELL_REFLECT_TABLE = {
+    list = {
+        -- PVP
+        GetSpellInfo(33786),  -- DRUID   (Смерч)
+        GetSpellInfo(28272),  -- MAGE    (Превращение - Свинья)
+        GetSpellInfo(118),    -- MAGE    (Превращение - Овца)
+        GetSpellInfo(61305),  -- MAGE    (Превращение - Кошка)
+        GetSpellInfo(61721),  -- MAGE    (Превращение - Кролик)
+        GetSpellInfo(61780),  -- MAGE    (Превращение - Индейка)
+        GetSpellInfo(28271),  -- MAGE    (Превращение - Черепаха)
+        GetSpellInfo(113092), -- MAGE    (Ледяная бомба)
+        GetSpellInfo(30451),  -- MAGE    (Чародейская вспышка)
+        GetSpellInfo(20066),  -- PALADIN (Покаяние)
+        GetSpellInfo(605),    -- PRIEST  (Господство над разумом)
+        GetSpellInfo(51514),  -- SHAMAN  (Сглаз)
+        GetSpellInfo(51505),  -- SHAMAN  (Выброс лавы)
+        GetSpellInfo(5782),   -- WARLOCK (Страх)
+        GetSpellInfo(118699), -- WARLOCK (Страх)
+        GetSpellInfo(116858), -- WARLOCK (Стрела Хаоса)
+        -- PVE
+        GetSpellInfo(144214), -- Стрела ледяной бури (Кор'кронские Тёмные Шаманы)
     },
-    RAIDS = {
-        144214, -- Стрела ледяной бури (Кор'кронские Тёмные Шаманы)
-    }
-};
 
-function NeedReflect(unitEnemy, unitFreind)
-    local spell_ids = UnitIsPVP("player") and reflect_table.PVP or reflect_table.RAIDS;
-
-    if UnitIsEnemy("player", unitEnemy) and UnitIsUnit(unitFreind, unitEnemy.."target") then
-        local name,_,_,_,_,endTime = UnitCastingInfo(unitEnemy);
-        if name and (((endTime / 1000) - GetTime()) - AddonFrame.ping) < 2 then
-            for _,spell_id in ipairs(spell_ids) do
-                if name == GetSpellInfo(spell_id) then
-                    return true;
+    NeedReflect = function(self, unitEnemy)
+        if UnitIsEnemy("player", unitEnemy) and UnitIsUnit("player", unitEnemy.."target") then
+            local name,_,_,_,_,endTime = UnitCastingInfo(unitEnemy);
+            if name and (((endTime / 1000) - GetTime()) - AddonFrame.ping) < 2 then
+                for _, spell in ipairs(self.list) do
+                    if name == spell then
+                        return true;
+                    end
                 end
             end
         end
     end
-end
+};
 
 function IsLossOfControl()
     --[[
@@ -1231,8 +1037,6 @@ setAoE = false;
 isAltMod = true;
 useInterrupt = true;
 useCooldown = true;
-
-RegisterKeyHandler('F');
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -1342,23 +1146,7 @@ isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- Код профиля
-return NeedReflect(target, "player");
-]]></Lua>
-      </Ability>
-      <Ability Name="Ударная волна">
-        <SpellID>46968</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsKeyDown("F") then
-    return true;
-end
+return SPELL_REFLECT_TABLE:NeedReflect(target);
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -1434,7 +1222,7 @@ end
         <Lua><![CDATA[
 if isInMeele and HasBuff("player", 202574) then
     if PLAYER.Agro > 2 and not HasBuff("player", 190456) then
-        if PLAYER:Power() > 30 then
+        if UnitPower("player") > 30 then
             return true;
         end
     end
@@ -1565,6 +1353,20 @@ return isInMeele;
 return isInMeele;
 ]]></Lua>
       </Ability>
+      <Ability Name="Героический бросок">
+        <SpellID>57755</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
     </Rotation>
     <Rotation Name="Неистовство" Spec="Warrior_Fury">
       <HotKey Key="V" Modifier="Alt" />
@@ -1650,11 +1452,6 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
--- камень здоровья
-if HealthByPercent("player") < 30 then
-    UseItemById(5512);
-end
-
 isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
 ]]></Lua>
       </Ability>
@@ -1722,6 +1519,20 @@ if useCooldown and isInMeele then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Буйство">
+        <SpellID>184367</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Вихрь">
         <SpellID>190411</SpellID>
         <Target>None</Target>
@@ -1741,20 +1552,6 @@ if isInMeele then
         return not HasBuff("player", 85739); -- Кровавый фарш
     end
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Буйство">
-        <SpellID>184367</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Казнь">
@@ -4032,6 +3829,10 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
+if PLAYER.IsMounted or IsModKeyDown(mkLeftShift) then
+    return true;
+end
+
 if GetShapeshiftForm() == 0 and GetShapeshiftFormCooldown(1) == 0 then
     CastShapeshiftForm(1);
 end
@@ -8286,10 +8087,6 @@ useAutoDispell = true;
 useAutoDispell = true;
 MAIN_CLASS_SPELL = 774;
 
-RegisterKeyHandler('F');
-RegisterKeyHandler('R');
-RegisterKeyHandler('T');
-
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
 
@@ -8303,10 +8100,6 @@ function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
         end
     end
 end
-
-NOTIFY_CAST_TABLE[2908]   = "|cff15bd05>> Снимаю исступление!";
-NOTIFY_CAST_TABLE[18562]  = "|cff00ff00>> Кастую Быстрое восстановление <<";
-NOTIFY_CAST_TABLE[145518] = "|cff00ff00>> Кастую Сотворение <<";
 ]]></Lua>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
@@ -8420,38 +8213,6 @@ end
 
 if HasBuff("player", 106898) and GetShapeshiftForm() == 1 then
     CancelShapeshiftForm();
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Астаральный скачек">
-        <SpellID>102280</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsKeyDown("R") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Тревожный рев">
-        <SpellID>106898</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsKeyDown("T") then
-    return true;
 end
 ]]></Lua>
       </Ability>
@@ -8605,13 +8366,6 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- 16870 Ясность мысли
-if IsKeyDown('F')
-    and UnitExists("mouseover")
-    and UnitHealth("mouseover") > 100 -- это хаковая проверка на призывных юнитов (гриб друида и т.п.)
-    and UnitCanAssist("player", "mouseover") then
-    return "mouseover";
-end
 if HasBuff("player", 16870) and UnitAffectingCombat("player") then
     -- Используем только под проком ясности мысли, в дереве хилим на ходу
     -- Хилим либо просевшие цели либо когда нам надо обновить Гармонию
