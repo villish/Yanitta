@@ -248,7 +248,7 @@ PartyLogic = {
             local disTypes = self[select(2, UnitClass("player"))];
             if disTypes then
                 local role = select(6, GetSpecializationInfo(GetSpecialization()));
-                return role == "HEALER" and dispelType == "Magic" or disTypes[dispelType] = 1;
+                return role == "HEALER" and dispelType == "Magic" or disTypes[dispelType] == 1;
             end
         end
     },
