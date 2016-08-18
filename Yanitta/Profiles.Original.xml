@@ -560,6 +560,18 @@ function CheckAndCastAbility(ability, targetInfo)
     return true;
 end
 
+function SetTargetCastintInfo(spellId, guid, castTime)
+    local dstGuid = guid and guid or LAST_TARGET;
+    for _,ability in ipairs(ABILITY_TABLE) do
+        for _,targetInfo in ipairs(ability.TargetList) do
+            if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == dstGuid then
+                targetInfo.Guid = guid;
+                targetInfo.LastCastingTime = castTime;
+            end
+        end
+    end
+end
+
 function AddonFrame_OnEvent(self, event, ...)
     if event == "PLAYER_ENTERING_WORLD" then
         self:Show();
@@ -569,28 +581,11 @@ function AddonFrame_OnEvent(self, event, ...)
     elseif event == "SPELLS_CHANGED" then
         CheckAllSpells();
     elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-        local timestamp, subEvent, hideCaster,
-                sourceGUID,srcName,  sourceFlags,sourceFlags2,
-                destGUID,  destName, destFlags,  destFlags2,
-                spellId,   spellName,spellSchool, param15 = ...;
+        local _,subEvent,_,sourceGUID,_,_,_,destGUID,_,_,_,spellId = ...;
         if subEvent == "SPELL_CAST_SUCCESS" and sourceGUID == UnitGUID("player") then
-            for _,ability in ipairs(ABILITY_TABLE) do
-                for _,targetInfo in ipairs(ability.TargetList) do
-                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == destGUID then
-                        targetInfo.Guid = destGUID;
-                        targetInfo.LastCastingTime = GetTime();
-                    end
-                end
-            end
+            SetTargetCastintInfo(spellId, destGUID, GetTime());
         elseif subEvent == "SPELL_CAST_FAILED" and sourceGUID == UnitGUID("player") then
-            for _,ability in ipairs(ABILITY_TABLE) do
-                for _,targetInfo in ipairs(ability.TargetList) do
-                    if spellId == ability.SpellId and UnitGUID(targetInfo.Target) == LAST_TARGET then
-                        targetInfo.Guid = nil;
-                        targetInfo.LastCastingTime = 0;
-                    end
-                end
-            end
+            SetTargetCastintInfo(spellId, nil, 0);
         end
 
         if COMBATLOG_MODS[subEvent] then
