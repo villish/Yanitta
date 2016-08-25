@@ -212,12 +212,23 @@
                                             <RowDefinition Height="*"/>
                                             <RowDefinition Height="25"/>
                                         </Grid.RowDefinitions>
-                                        <Label Content="Func = function(ability, targetInfo, target)" FontFamily="Consolas"/>
+                                        <TextBlock FontFamily="Consolas" VerticalAlignment="Center" FontWeight="Bold" Margin="5,0,0,0">
+                                            <Run Foreground="#FF9812C1">Func</Run>
+                                            <Run Foreground="#FFFF0F27"> = </Run>
+                                            <Run Foreground="#FF569CD6">function</Run>
+                                            <Run Foreground="#FFFF0F27">(</Run>
+                                            <Run>ability</Run>
+                                            <Run Foreground="#FFFF0F27">,</Run>
+                                            <Run>targetInfo</Run>
+                                            <Run Foreground="#FFFF0F27">,</Run>
+                                            <Run>target</Run>
+                                            <Run Foreground="#FFFF0F27">)</Run>
+                                        </TextBlock>
                                         <Border BorderThickness="1" BorderBrush="#FF009600" Grid.Row="1">
                                             <avalonedit:TextEditor FontFamily="Consolas" PreviewKeyDown="TextEditor_PreviewKeyDown"
                                                                    Text="{Binding ProfileList/RotationList/AbilityList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                                         </Border>
-                                        <Label Grid.Row="2" Content="end" FontFamily="Consolas" />
+                                        <Label Grid.Row="2" Content="end" FontFamily="Consolas" Foreground="#FF569CD6" FontWeight="Bold" />
                                     </Grid>
                                 </Border>
                             </TabItem>
