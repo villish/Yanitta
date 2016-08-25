@@ -1208,6 +1208,20 @@ return useInterrupt and CheckInterrupt("target");
 return IsLossOfControl();
 ]]></Lua>
       </Ability>
+      <Ability Name="Рев дракона">
+        <SpellID>118000</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInMeele and not HasBuff("player", 1719);
+]]></Lua>
+      </Ability>
       <Ability Name="Боевой крик">
         <SpellID>1719</SpellID>
         <Target>None</Target>
@@ -1340,20 +1354,6 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Рев дракона">
-        <SpellID>118000</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return isInMeele;
 ]]></Lua>
       </Ability>
       <Ability Name="Кровожадность">
