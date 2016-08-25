@@ -856,7 +856,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-isInMeele  = IsSpellInRange(GetSpellInfo(6552), "target") == 1 and UnitIsEnemy("target", "player");
+isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;-- and UnitIsEnemy("target", "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Отражение заклинания">
@@ -945,11 +945,8 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and PLAYER.Agro > 2
-    and not HasBuff("player", 190456)
-    and UnitPower("player") > 30 then
-    return not select(10, GetTalentInfo(6, 1, 1))
-            or HasBuff("player", 202574);
+if isInMeele and PLAYER.Agro > 2 and UnitPower("player") > 30 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -1176,8 +1173,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1
-            and UnitIsEnemy("target", "player");
+isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
