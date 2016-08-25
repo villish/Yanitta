@@ -73,7 +73,7 @@ namespace Yanitta
 
         public Profile()
         {
-            Add    = new RelayCommand<object>(_ => RotationList.Add(new Rotation()));
+            Add    = new RelayCommand<object>(_ => RotationList.Add(new Rotation { AbilityList = new ObservableCollection<Ability> { new Ability() } }));
             Copy   = new RelayCommand<object>(_ => RotationList.Add(Current.Clone()), _ => Current != null);
             Up     = new RelayCommand<object>(_ => Move(RotationList,-1), _ => CanMove(RotationList,-1));
             Down   = new RelayCommand<object>(_ => Move(RotationList, 1), _ => CanMove(RotationList, 1));
