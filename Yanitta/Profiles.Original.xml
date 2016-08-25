@@ -1295,6 +1295,20 @@ if HasBuff("player", 184362) or UnitPower("player") > 80 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Яростный выпад">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Буйство">
         <SpellID>184367</SpellID>
         <Target>Target</Target>
@@ -1326,20 +1340,6 @@ end
 if not HasBuff("player", 184362) then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Яростный выпад">
-        <SpellID>85288</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Удар громовержца">
