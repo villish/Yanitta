@@ -18,7 +18,7 @@ namespace Yanitta
             Interval = TimeSpan.FromSeconds(1)
         };
 
-        string[] ProcessNames = { "Wow", "WowB", "WowT", "Wow-64", "WowB-64", "WowT-64" };
+        string[] ProcessNames = { "Wow", "WowB", "WowT"/*, "Wow-64", "WowB-64", "WowT-64"*/ };
 
         /// <summary>
         /// Inicialise new instace of the <see cref="ProcessList"/>

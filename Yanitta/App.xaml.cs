@@ -13,12 +13,8 @@ namespace Yanitta
             ConsoleWriter.Initialize("Yanitta.log", true);
 
             Dispatcher.UnhandledException += (o, ex) => {
-                if (ex.Exception is YanittaException)
-                {
-                    MessageBox.Show(ex.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Console.WriteLine(ex.Exception.Message);
-                    ex.Handled = true;
-                }
+                Console.WriteLine(ex.Exception.Message);
+                ex.Handled = true;
             };
 
             if (e.Args.Length > 0 && e.Args[0] == "/editor")

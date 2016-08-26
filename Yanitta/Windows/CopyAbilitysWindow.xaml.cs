@@ -21,7 +21,10 @@ namespace Yanitta.Windows
         void CommandBinding_Copy_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             if (cbRotation.SelectedIndex == -1)
-                throw new YanittaException("Not selected rotation");
+            {
+                MessageBox.Show("Not selected rotation", "Yanitta", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             DialogResult = true;
         }
 

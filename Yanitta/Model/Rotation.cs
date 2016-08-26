@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Data;
@@ -100,12 +101,15 @@ namespace Yanitta
 
         public Rotation()
         {
-            Add    = new RelayCommand<object>(_ => AbilityList.Add(new Ability()));
+            Add    = new RelayCommand<object>(_ => AbilityList.Add(new Ability {
+                TargetList = new List<TargetType> { TargetType.None }
+            }));
             Copy   = new RelayCommand<object>(_ => AbilityList.Add(Current.Clone()), _ => Current != null);
             Up     = new RelayCommand<object>(_ => Move(AbilityList,-1), _ => CanMove(AbilityList,-1));
             Down   = new RelayCommand<object>(_ => Move(AbilityList, 1), _ => CanMove(AbilityList, 1));
             Delete = new RelayCommand<object>(_ => {
-                if (MessageBox.Show($"Do you remove the '{Current?.Name}' ability?", "Yanitta", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (MessageBox.Show($"Do you remove the '{Current?.Name}' ability?",
+                    "Yanitta", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     AbilityList.Remove(Current); }, _ => Current != null);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -96,11 +97,20 @@ namespace Yanitta
             {
                 foreach (WowSpecializations spec in Enum.GetValues(typeof(WowSpecializations)))
                 {
-                    if (((int)spec >> 16) == (byte)profile.Class)
+                    if (spec.IsWowClass(profile.Class))
                     {
                         if (!profile.RotationList.Any(r => r.Spec == spec))
                         {
-                            var rotation = new Rotation { Spec = spec, Name = spec.ToString().Split('_').Last() };
+                            var rotation = new Rotation {
+                                Spec = spec,
+                                Name = spec.ToString().Split('_').Last(),
+                                AbilityList = new ObservableCollection<Ability> {
+                                    new Ability {
+                                        TargetList = new List<TargetType> { TargetType.None }
+                                    }
+                                }
+                            };
+
                             if (profile.RotationList.Count < key_list.Length)
                                 rotation.HotKey = new HotKey(key_list[profile.RotationList.Count], ModifierKeys.Alt);
                             profile.RotationList.Add(rotation);

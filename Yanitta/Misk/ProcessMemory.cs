@@ -247,7 +247,7 @@ namespace Yanitta
         /// Параметры функции.
         /// Параметрами могут выступать как и значения так и указатели на значения.
         /// </param>
-        public void Call_x32(IntPtr injAddress, IntPtr callAddress, params int[] funcArgs)
+        public void Call(IntPtr injAddress, IntPtr callAddress, params int[] funcArgs)
         {
             var tHandle = OpenThread(ThreadAccess.All, false, Process.Threads[0].Id);
             if (SuspendThread(tHandle) == 0xFFFFFFFF)
@@ -339,11 +339,6 @@ namespace Yanitta
             Free(retaddr);
         }
 
-        public void Call_x64(IntPtr injAddress, IntPtr callAddress, params IntPtr[] funcArgs)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Возвращает абсолютный аддресс в процессе.
         /// </summary>
@@ -369,16 +364,6 @@ namespace Yanitta
                 int id;
                 GetWindowThreadProcessId(GetForegroundWindow(), out id);
                 return id == Process.Id;
-            }
-        }
-
-        public bool IsX64
-        {
-            get
-            {
-                bool wow64Process;
-                IsWow64Process(Process.Handle, out wow64Process);
-                return wow64Process;
             }
         }
     }
@@ -513,25 +498,6 @@ namespace Yanitta
         [FieldOffset(0xB8)]
         public uint Eip;
     };
-
-    /// <summary>
-    /// Contains processor-specific register data.
-    /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 1232, Pack = 16)]
-    public struct CONTEXT
-    {
-        /// <summary>
-        /// Context flag.
-        /// </summary>
-        [FieldOffset(0x30)]
-        public uint ContextFlags;
-
-        /// <summary>
-        /// Next instruction pointer.
-        /// </summary>
-        [FieldOffset(0xF8)]
-        public ulong Rip;
-    }
 
     #endregion
 }

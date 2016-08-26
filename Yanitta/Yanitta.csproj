@@ -107,7 +107,6 @@
     <Compile Include="Misk\Converters\YanittaConverters.cs" />
     <Compile Include="Misk\ProcessList.cs" />
     <Compile Include="Misk\ProcessMemory.cs" />
-    <Compile Include="Misk\YanittaException.cs" />
     <Compile Include="Windows\HelpWindow.xaml.cs">
       <DependentUpon>HelpWindow.xaml</DependentUpon>
     </Compile>

@@ -49,15 +49,7 @@ namespace Yanitta
         public ObservableCollection<Rotation> RotationList { get; set; } = new ObservableCollection<Rotation>();
 
         [XmlIgnore]
-        public IEnumerable<WowSpecializations> SpecList
-        {
-            get
-            {
-                foreach (WowSpecializations spec in Enum.GetValues(typeof(WowSpecializations)))
-                    if ((int)spec >> 16 == (byte)Class || spec == WowSpecializations.None)
-                        yield return spec;
-            }
-        }
+        public IEnumerable<WowSpecializations> SpecList => Class.GetSpecList();
 
         #region Commands
 
@@ -73,12 +65,18 @@ namespace Yanitta
 
         public Profile()
         {
-            Add    = new RelayCommand<object>(_ => RotationList.Add(new Rotation { AbilityList = new ObservableCollection<Ability> { new Ability() } }));
+            Add    = new RelayCommand<object>(_ => RotationList.Add(new Rotation {
+                AbilityList = new ObservableCollection<Ability> {
+                    new Ability { TargetList = new List<TargetType> { TargetType.None }
+                    }
+                }
+            }));
             Copy   = new RelayCommand<object>(_ => RotationList.Add(Current.Clone()), _ => Current != null);
             Up     = new RelayCommand<object>(_ => Move(RotationList,-1), _ => CanMove(RotationList,-1));
             Down   = new RelayCommand<object>(_ => Move(RotationList, 1), _ => CanMove(RotationList, 1));
             Delete = new RelayCommand<object>(_ => {
-                if (MessageBox.Show($"Do you remove the '{Current?.Name}' rotation?", "Yanitta", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                if (MessageBox.Show($"Do you remove the '{Current?.Name}' rotation?",
+                    "Yanitta", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     RotationList.Remove(Current);
             }, _ => Current != null);
         }

@@ -121,7 +121,7 @@ namespace Yanitta
                     Name  = value ? Memory.ReadString(Memory.Rebase(Settings.PlayerName)) : string.Empty;
 
                     if (!Enum.IsDefined(typeof(WowClass), Class))
-                        throw new Exception("Unsuported wow class: " + Class);
+                        throw new Exception("Unsupported wow class: " + Class);
 
                     foreach (var item in ProfileDb.Instance?.ProfileList)
                     {
@@ -267,7 +267,7 @@ namespace Yanitta
             {
                 var injAddress  = Memory.Rebase(Settings.InjectedAddress);
                 var funcAddress = Memory.Rebase(Settings.ExecuteBuffer);
-                Memory.Call_x32(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
+                Memory.Call(injAddress, funcAddress, code.ToInt32(), len, path.ToInt32(), 0, 0, 0);
             }
             catch (Exception ex)
             {
