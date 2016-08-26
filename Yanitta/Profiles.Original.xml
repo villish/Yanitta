@@ -856,7 +856,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-isInMeele  = IsSpellInRange(GetSpellInfo(6552), "target") == 1 and UnitIsEnemy("target", "player");
+isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;-- and UnitIsEnemy("target", "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Отражение заклинания">
@@ -945,11 +945,8 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and PLAYER.Agro > 2
-    and not HasBuff("player", 190456)
-    and UnitPower("player") > 30 then
-    return not select(10, GetTalentInfo(6, 1, 1))
-            or HasBuff("player", 202574);
+if isInMeele and PLAYER.Agro > 2 and UnitPower("player") > 30 then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -1176,8 +1173,7 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
 
-isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1
-            and UnitIsEnemy("target", "player");
+isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -1295,6 +1291,20 @@ if HasBuff("player", 184362) or UnitPower("player") > 80 then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Яростный выпад">
+        <SpellID>85288</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
       <Ability Name="Буйство">
         <SpellID>184367</SpellID>
         <Target>Target</Target>
@@ -1326,20 +1336,6 @@ end
 if not HasBuff("player", 184362) then
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Яростный выпад">
-        <SpellID>85288</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Удар громовержца">
