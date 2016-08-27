@@ -8348,7 +8348,8 @@ end
 
 isInMeele  = IsSpellInRange(GetSpellInfo(33917), "target") == 1;
 
-if isInMeele and useCooldown and SpellCD(33917) == 0 and UnitAffectingCombat("player") then
+if isInMeele and useCooldown and SpellCD(33917) == 0
+    and UnitAffectingCombat("player") then
     UseItemBySlot(INVSLOT_HAND);
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
@@ -8369,22 +8370,6 @@ end
 return CheckInterrupt("target");
 ]]></Lua>
       </Ability>
-      <Ability Name="Целительное прикосновение">
-        <SpellID>5185</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if PLAYER.HP < 80 and HasBuff("player", 145162) then
-    return true;
-end
-]]></Lua>
-      </Ability>
       <Ability Name="Неистовое восстановление">
         <SpellID>22842</SpellID>
         <Target>Player</Target>
@@ -8396,13 +8381,41 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isAltMod then
-    if PLAYER.HP < 80 and UnitPower("player") > 55 then
-        return true;
-    elseif PLAYER.HP < 30 and UnitPower("player") > 35 then
-        return true;
-    end
+if PLAYER.HP < 80 and not HasBuff("player", 22842) then
+    return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Железный мех">
+        <SpellID>192081</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if PLAYER.Agro > 2 and select(2, HasBuff("player", 192081)) < 2 then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Метка Урсола">
+        <SpellID>192083</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+--if PLAYER.Agro > 2 and not HasBuff("player", 192083) then
+--    return true;
+--end
 ]]></Lua>
       </Ability>
       <Ability Name="Дубовая кожа">
@@ -8432,7 +8445,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat and useCooldown and PLAYER.HP < 35 then
+if useCooldown and PLAYER.HP < 35 then
     return true;
 end
 ]]></Lua>
@@ -8462,12 +8475,39 @@ return true;
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and not isCat then
-    -- надо проверить ИД кровотечения.
-    if setAoE or select(3, HasDebuff("target", 77758, "PLAYER")) < 2 then
-        return true;
-    end
+return isInMeele;
+]]></Lua>
+      </Ability>
+      <Ability Name="Лунный огонь">
+        <SpellID>8921</SpellID>
+        <Target>Target</Target>
+        <Target>Focus</Target>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(3, HasDebuff(target, 164812, "PLAYER")) < 5 then
+    return true;
 end
+]]></Lua>
+      </Ability>
+      <Ability Name="Размах">
+        <SpellID>213764</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return isInMeele;
 ]]></Lua>
       </Ability>
       <Ability Name="Трепка">
@@ -8481,17 +8521,13 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- без ГКД
-if not isCat and PLAYER.HP > 30 and not IsModKeyDown(mkLeftShift) then
-    -- зубы и когти
-    if HasBuff("player", 135288) then
-        return true;
-    end
+if PLAYER.Agro < 3 or UnitPower("player") > 80 then
+    return true;
 end
 ]]></Lua>
       </Ability>
-      <Ability Name="Раздавить">
-        <SpellID>80313</SpellID>
+      <Ability Name="Лунный огонь">
+        <SpellID>8921</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -8501,11 +8537,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if not isCat and select(2, HasDebuff("target", 33745, "PLAYER")) > 2 then
-    if not HasBuff("player", 158792) then
-        return true;
-    end
-end
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>
