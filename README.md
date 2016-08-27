@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (22/36)
+# Progress (24/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -36,7 +36,7 @@
 |Monk|Mistweaver|
 |Druid|Balance|Basic|
 |Druid|Feral|Basic|
-|Druid|Guardian|
+|Druid|Guardian|Basic|
 |Druid|Restoration|
-|DemonHunter|Havoc|
+|DemonHunter|Havoc|Basic|
 |DemonHunter|Vengeance|Basic|
