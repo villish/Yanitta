@@ -44,7 +44,7 @@
 						Padding                         ="{TemplateBinding Padding}"
 						BorderBrush                     ="{TemplateBinding BorderBrush}"
 						BorderThickness                 ="{TemplateBinding BorderThickness}"
- />
+                    />
                     <ControlTemplate.Triggers>
                         <Trigger Property="WordWrap" Value="True">
                             <Setter TargetName="PART_ScrollViewer" Property="HorizontalScrollBarVisibility" Value="Disabled" />

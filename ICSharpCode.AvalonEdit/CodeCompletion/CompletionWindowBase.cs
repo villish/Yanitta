@@ -215,7 +215,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         protected static bool RaiseEventPair(UIElement target, RoutedEvent previewEvent, RoutedEvent @event, RoutedEventArgs args)
         {
             if (target == null)
-                throw new ArgumentNullException("target");
+                throw new ArgumentNullException(nameof(target));
             if (previewEvent == null)
                 throw new ArgumentNullException(nameof(previewEvent));
             if (@event == null)
@@ -259,10 +259,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         /// <summary>
         /// Gets whether the completion window should automatically close when the text editor looses focus.
         /// </summary>
-        protected virtual bool CloseOnFocusLost
-        {
-            get { return true; }
-        }
+        protected virtual bool CloseOnFocusLost => true;
 
         bool IsTextAreaFocused
         {

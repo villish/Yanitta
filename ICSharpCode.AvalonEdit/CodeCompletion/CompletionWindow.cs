@@ -21,16 +21,12 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         /// <summary>
         /// Gets the completion list used in this completion window.
         /// </summary>
-        public CompletionList CompletionList
-        {
-            get { return completionList; }
-        }
+        public CompletionList CompletionList => completionList;
 
         public CompletionWindow(TextEditor textEditor)
             : this(textEditor.TextArea)
         {
             this.textEditor = textEditor;
-            //toolTip.Style   = textEditor.Style;
         }
 
         /// <summary>
@@ -49,8 +45,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
             MinHeight = 15;
             MinWidth = 30;
 
-            Debug.Assert(Owner != null, "must by not null");
-            Style = Owner.Style;
+            Style = Owner?.Style;
 
             toolTip.PlacementTarget = this;
             toolTip.Placement = PlacementMode.Right;
@@ -172,10 +167,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         public bool CloseAutomatically { get; set; }
 
         /// <inheritdoc/>
-        protected override bool CloseOnFocusLost
-        {
-            get { return CloseAutomatically; }
-        }
+        protected override bool CloseOnFocusLost => CloseAutomatically;
 
         /// <summary>
         /// When this flag is set, code completion closes if the caret moves to the
