@@ -33,14 +33,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         {
             get
             {
-                if (scrollViewer == null || scrollViewer.ExtentHeight == 0)
+                if (scrollViewer == null || Math.Abs(scrollViewer.ExtentHeight) < double.Epsilon)
                 {
                     return 0;
                 }
-                else
-                {
-                    return (int)(Items.Count * scrollViewer.VerticalOffset / scrollViewer.ExtentHeight);
-                }
+                return (int)(Items.Count * scrollViewer.VerticalOffset / scrollViewer.ExtentHeight);
             }
             set
             {
@@ -59,17 +56,13 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
         {
             get
             {
-                if (scrollViewer == null || scrollViewer.ExtentHeight == 0)
+                if (scrollViewer == null || Math.Abs(scrollViewer.ExtentHeight) < double.Epsilon)
                 {
                     return 10;
                 }
-                else
-                {
-                    return Math.Max(
-                        3,
-                        (int)Math.Ceiling(Items.Count * scrollViewer.ViewportHeight
-                                          / scrollViewer.ExtentHeight));
-                }
+                return Math.Max(3,
+                    (int)Math.Ceiling(Items.Count * scrollViewer.ViewportHeight
+                                      / scrollViewer.ExtentHeight));
             }
         }
 

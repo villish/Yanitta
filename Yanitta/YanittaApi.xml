@@ -81,10 +81,10 @@
 Проверка дистанции между 2 игроками (рейд или группа)]]>
         </Description>
     </WowApi>
-    <WowApi ImageType="ExtensionMethod" Name="HasGlyph">
+    <WowApi ImageType="ExtensionMethod" Name="SetInRangeSpell">
         <Description>
-            <![CDATA[  HasGlyph(glyphid)
-Проверка, имеется ли у персонажа указанный символ]]>
+            <![CDATA[  SetInRangeSpell(rangeSpell)
+Установка заклинания для проверки нахождения персонажа в зоне досягаемости.]]>
         </Description>
     </WowApi>
 
@@ -124,6 +124,11 @@
         <Description>
             <![CDATA[Персонаж верхом]]>
         </Description>
+    </WowApi>
+    <WowApi ImageType="EnumValue" Name="PLAYER.InRange">
+      <Description>
+        <![CDATA[В зоне досягаемости]]>
+      </Description>
     </WowApi>
     <WowApi ImageType="EnumValue" Name="member.HP">
         <Description>

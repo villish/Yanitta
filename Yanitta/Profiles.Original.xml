@@ -207,6 +207,20 @@ function CheckEnrage(unit, ...)
     end
 end
 
+function SetInRangeSpell(rangeSpell)
+    AddonFrame.RangeSpell = nil;
+    if (rangeSpell or 0) > 0 then
+        local name = GetSpellInfo(rangeSpell);
+        if not name then
+            assert("Unknown spell by Id "..tostring(rangeSpell))
+        end
+        if not SpellHasRange(name) then
+            assert("Spell "..tostring(rangeSpell).." "..name.."not have range");
+        end
+        AddonFrame.RangeSpell = name;
+    end
+end
+
 PLAYER = {
     HP   = 0,
     Agro = 0,
@@ -218,6 +232,7 @@ PLAYER = {
         self.IsMoving = IsMoving("player");
         self.IsMounted= IsMounted() and not HasBuff("player", 165803);
         self.Agro     = UnitThreatSituation("player") or 0;
+        self.InRange  = false;
 
         if PLAYER.HP < 30 and UnitAffectingCombat("player") and not PLAYER.IsMounted then
             local _, durationH, enableH = GetItemCooldown(5512);   -- Камень здоровья
@@ -227,6 +242,9 @@ PLAYER = {
             elseif durationP == 0 and enableP and GetItemCount(109223) > 0 then
                 UseItemById(109223);
             end
+        end
+        if AddonFrame.RangeSpell then
+            self.InRange = IsSpellInRange(AddonFrame.RangeSpell, "target") == 1;
         end
     end,
 };
@@ -643,6 +661,7 @@ end
 
 if type(AddonFrame) == "table" then
     AddonFrame:UnregisterAllEvents();
+    AddonFrame.RangeSpell = nil;
 end
 
 if type(AddonFrame) ~= "table" then
@@ -8963,8 +8982,8 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Бросок боевого клинка">
-        <SpellID>185123</SpellID>
+      <Ability Name="Укус демона">
+        <SpellID>162243</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -8977,8 +8996,8 @@ return true;
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Укус демона">
-        <SpellID>162243</SpellID>
+      <Ability Name="Бросок боевого клинка">
+        <SpellID>185123</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>

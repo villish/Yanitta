@@ -314,7 +314,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Rotation code">
+            <TabItem Header="Profile code">
                 <avalonedit:TextEditor FontFamily="Consolas" Text="{Binding ProfileList/Lua, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" PreviewKeyDown="TextEditor_PreviewKeyDown" />
             </TabItem>
             <TabItem Header="Core code">

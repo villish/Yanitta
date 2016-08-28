@@ -82,6 +82,7 @@
             <Word>IncHeal</Word>
             <Word>Absorb</Word>
             <Word>DontHeal</Word>
+            <Word>InRange</Word>
         </Keywords>
 
         <Keywords color="Operators" fontStyle="oblique">
@@ -138,6 +139,8 @@
         </Keywords>
 
         <Keywords color="Functions">
+            <Word>string</Word>
+            <Word>math</Word>
             <Word>abs</Word>
             <Word>acos</Word>
             <Word>acos</Word>
@@ -280,12 +283,11 @@
             <Word>IsKeyDown</Word>
             <Word>RegisterKeyHandler</Word>
             <Word>GetDistance</Word>
-            <Word>HasGlyph</Word>
+            <Word>SetInRangeSpell</Word>
             <Word>UseItemBySlot</Word>
             <Word>UseItemById</Word>
             <Word>CheckInterrupt</Word>
             <Word>UnitId</Word>
-            <Word>IsNotLineOfSight</Word>
             <Word>CheckEnrage</Word>
             <Word>CheckKnownAbility</Word>
             <Word>CheckAllSpells</Word>
