@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (24/36)
+# Progress (26/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -31,8 +31,8 @@
 |Warlock|Affliction|Basic|
 |Warlock|Demonology|Basic|
 |Warlock|Destruction|Basic|
-|Monk|Brewmaster|
-|Monk|Windwalker|
+|Monk|Brewmaster|Basic|
+|Monk|Windwalker|Basic|
 |Monk|Mistweaver|
 |Druid|Balance|Basic|
 |Druid|Feral|Basic|
