@@ -8897,6 +8897,8 @@ end
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
+
+isInMeele = IsSpellInRange(GetSpellInfo(162243),"target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Поглощение магии">
@@ -8915,8 +8917,54 @@ end
 return useInterrupt and CheckInterrupt("target");
 ]]></Lua>
       </Ability>
+      <Ability Name="Метаморфоза">
+        <SpellID>191427</SpellID>
+        <Target>MouseLocation</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if IsModKeyDown(mkLeftShift) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Пронзающий взгляд">
+        <SpellID>198013</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if isInMeele and not HasBuff("player", 162264) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Удар Хаоса">
         <SpellID>162794</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>Auto</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return true;
+]]></Lua>
+      </Ability>
+      <Ability Name="Бросок боевого клинка">
+        <SpellID>185123</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
