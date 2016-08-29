@@ -5871,8 +5871,7 @@ return not HasBuff("player", 11426);
         <RangeCheck>false</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if select(2, HasBuff("player", 44544)) > 1
-    or (PLAYER.IsMoving and not HasBuff("player", 108839)) then
+if select(2, HasBuff("player", 44544)) > 1 then
     return true;
 end
 ]]></Lua>
@@ -5889,6 +5888,23 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 if HasBuff("player", 190446) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяное копье">
+        <SpellID>30455</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>false</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HasBuff("player", 44544)
+    or (PLAYER.IsMoving and not HasBuff("player", 108839)) then
     return true;
 end
 ]]></Lua>
