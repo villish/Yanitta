@@ -11,7 +11,6 @@
         Style="{DynamicResource KamillaStyle}"
         Width="1280"
         Height="950"
-        KeyDown="TextBox_KeyDown"
         Icon="/Yanitta;component/Resources/BNUpdate.png">
 
     <Window.Resources>
@@ -111,6 +110,7 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
+                                        <GridViewColumn Width="50" DisplayMemberBinding="{Binding InRangeSpell}" Header="Range check spell" />
                                     </GridView>
                                 </Windows:ListViewEx.View>
                             </Windows:ListViewEx>
@@ -198,8 +198,8 @@
                     <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Left" />
                     <Grid Grid.Column="1" Margin="5,0,0,0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="50"/>
-                            <RowDefinition Height="175"/>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="211"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TabControl Grid.Row="2">
@@ -238,14 +238,14 @@
                                 </Border>
                             </TabItem>
                         </TabControl>
-                        <GroupBox Header="Rotation">
+                        <GroupBox Header="Rotation" VerticalAlignment="Center">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="200"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <ComboBox  ItemsSource="{Binding ProfileList/SpecList}" SelectedValue="{Binding ProfileList/RotationList/Spec}" Margin="4"/>
-                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Center" Grid.Column="1" />
+                                <ComboBox ItemsSource="{Binding ProfileList/SpecList}" SelectedValue="{Binding ProfileList/RotationList/Spec}" />
+                                <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.Column="1" Margin="5,0,0,0" />
                             </Grid>
 
                         </GroupBox>
@@ -274,7 +274,7 @@
 
 
                                     <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,4" Text="Spell Id" VerticalAlignment="Center"/>
-                                    <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Center" x:Name="tbSpellId" />
+                                    <TextBox   Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" Text="{Binding SpellID, UpdateSourceTrigger=PropertyChanged}" TextAlignment="Right" VerticalAlignment="Center" x:Name="tbSpellId" KeyDown="TextBox_KeyDown"/>
                                     <Button    Grid.Column="2" Grid.Row="0" Margin="1,3,5,3" Content="{}>>" ToolTip="Set spell name" Click="Button_Click" />
 
                                     <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,4" Text="Ability name" VerticalAlignment="Center"/>
@@ -293,8 +293,11 @@
                                     <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,4" Text="Recast delay" VerticalAlignment="Center"/>
                                     <TextBox   Grid.Column="1" Grid.Row="4" Margin="5,4,5,3" Text="{Binding RecastDelay, UpdateSourceTrigger=PropertyChanged}" Name="tbRecastDelay"
                                                VerticalAlignment="Center" MaxLength="4" Grid.ColumnSpan="2" />
-                                    <TextBlock Grid.Column="0" Grid.Row="5" Margin="5,5,5,4" Text="Range check" VerticalAlignment="Center"/>
-                                    <ComboBox Grid.Column="1" Grid.Row="5" Margin="5,0" Grid.ColumnSpan="2" SelectedValue="{Binding RangeCheck}" ItemsSource="{Binding Source={StaticResource RangeCheckTypes}}"/>
+
+                                    <TextBlock Grid.Column="0" Grid.Row="5" Text="Range check spell" VerticalAlignment="Center" Margin="5,5,5,4"/>
+                                    <TextBox   Grid.Column="1" Grid.Row="5" Margin="5,3,5,4" KeyDown="TextBox_KeyDown"
+                                               Text="{Binding Source={x:Static yanitta:ProfileDb.Instance}, Path=ProfileList/RotationList/InRangeSpell, UpdateSourceTrigger=PropertyChanged}"
+                                               TextAlignment="Right" VerticalAlignment="Center" Grid.ColumnSpan="2" />
                                 </Grid>
 
                                 <StackPanel Grid.Column="1">
@@ -302,6 +305,7 @@
                                     <CheckBox Margin="3" IsChecked="{Binding IsUsableCheck}"  Content="Usable check" />
                                     <CheckBox Margin="3" IsChecked="{Binding CancelCasting}"  Content="Cancel casting" />
                                     <CheckBox Margin="3" IsChecked="{Binding CancelChannel}"  Content="Cancel chanel" />
+                                    <CheckBox Margin="3" IsChecked="{Binding RangeCheck}"     Content="Manual range check" />
                                 </StackPanel>
 
                                 <!-- todo: maybe use parent source -->

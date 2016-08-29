@@ -70,10 +70,11 @@ namespace Yanitta.Windows
 
         void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            var ability = abilityList?.SelectedValue as Ability;
-            if (e.Key == Key.F1 && ability.SpellID > 0)
+            uint spellId = 0;
+            if (e.Key == Key.F1
+                && uint.TryParse((sender as TextBox).Text, out spellId))
             {
-                App.ShowWindow<HelpWindow>().SetSpellData(ability.SpellID);
+                App.ShowWindow<HelpWindow>().SetSpellData(spellId);
             }
         }
 

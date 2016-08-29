@@ -240,6 +240,7 @@ namespace Yanitta
 
             builder.AppendLine(ProfileDb.Instance[WowClass.None].Lua);
             builder.AppendLine(rotation.Lua);
+            builder.AppendLine($"Yanitta_RANGE_CHECK_SPELL = {rotation.InRangeSpell};");
             builder.AppendLine();
 
             // Run rotation

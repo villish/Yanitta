@@ -82,7 +82,6 @@
             <Word>IncHeal</Word>
             <Word>Absorb</Word>
             <Word>DontHeal</Word>
-            <Word>InRange</Word>
         </Keywords>
 
         <Keywords color="Operators" fontStyle="oblique">
@@ -4886,8 +4885,6 @@
 
             <Word>setAoE</Word>
             <Word>useCooldown</Word>
-            <Word>isInRange</Word>
-            <Word>isInMeele</Word>
             <Word>useAutoDispell</Word>
             <Word>useInterrupt</Word>
 

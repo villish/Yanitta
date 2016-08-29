@@ -40,6 +40,18 @@ namespace Yanitta
             set { Set(ref spec, value, "Spec", "ImageSource"); }
         }
 
+
+        int inRangeSpell;
+        /// <summary>
+        /// Spell for range check.
+        /// </summary>
+        [XmlElement]
+        public int InRangeSpell
+        {
+            get { return inRangeSpell; }
+            set { Set(ref inRangeSpell, value); }
+        }
+
         [XmlIgnore]
         public BitmapImage ImageSource => Extensions.GetIconFromEnum(spec);
 

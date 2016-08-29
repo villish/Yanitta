@@ -125,11 +125,6 @@
             <![CDATA[Персонаж верхом]]>
         </Description>
     </WowApi>
-    <WowApi ImageType="EnumValue" Name="PLAYER.InRange">
-      <Description>
-        <![CDATA[В зоне досягаемости]]>
-      </Description>
-    </WowApi>
     <WowApi ImageType="EnumValue" Name="member.HP">
         <Description>
             <![CDATA[Уровень здоровья в процентах]]>
@@ -224,25 +219,6 @@
 INVSLOT_*
 Использование предмета в инвентаре
 Если предмет (перчатка, тринька, пояс и т.п) юзабелен и не имеет КД - имитируем клик правой кн. мыши.]]>
-        </Description>
-    </WowApi>
-    <WowApi ImageType="ExtensionMethod" Name="IsKeyDown">
-        <Description>
-            <![CDATA[  IsKeyDown(key)
-Функция проверяет зажата ли клавиша (A-Z)]]>
-        </Description>
-    </WowApi>
-    <WowApi ImageType="ExtensionMethod" Name="RegisterKeyHandler">
-        <Description>
-            <![CDATA[  RegisterKeyHandler(key, [handler(self,button,down)])
-Регистрирует обработчик для гарячей клавиши.
-Если оработчик пустой, устанавливается обработчик по умлчанию (устанавливается флаг на то что клавиша зажата)
-Параметры:
-  key - клавиша для регистрации (A-Z)
-  handler - специальный обработчик (опционально)
-ВАЖНО:
-  Регистрация будет работать только для кавиш которые зарегистрированы для панели комманд (ActionBarButtonEventsFrame.frames)
-]]>
         </Description>
     </WowApi>
     <WowApi ImageType="ExtensionMethod" Name="SetTargetListState">
@@ -395,12 +371,6 @@ targetPattern - Шаблон поиска совпадения для цели, 
     </WowApi>
     <WowApi RawData="0" ImageType="EnumValue" Name="IS_MOVING">
         <Description><![CDATA[Движение персонажа]]></Description>
-    </WowApi>
-    <WowApi RawData="0" ImageType="EnumValue" Name="isInRange">
-        <Description><![CDATA[Нахождение на растоянии выстрела (40м)]]></Description>
-    </WowApi>
-    <WowApi RawData="0" ImageType="EnumValue" Name="isInMeele">
-        <Description><![CDATA[Нахождение в мили зоне (8м)]]></Description>
     </WowApi>
     <WowApi RawData="0" ImageType="EnumValue" Name="useAutoDispell">
         <Description><![CDATA[Автоматическое применения диспела]]></Description>
