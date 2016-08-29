@@ -354,7 +354,7 @@ namespace ICSharpCode.AvalonEdit
             {
                 if (double.IsNaN(value) || double.IsInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value), value, "value must not be NaN/infinity");
-                if (value != wordWrapIndentation)
+                if (Math.Abs(value - wordWrapIndentation) > double.Epsilon)
                 {
                     wordWrapIndentation = value;
                     OnPropertyChanged("WordWrapIndentation");

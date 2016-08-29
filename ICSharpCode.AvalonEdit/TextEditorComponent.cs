@@ -5,8 +5,8 @@ using System.ComponentModel;
 namespace ICSharpCode.AvalonEdit
 {
     /// <summary>
-    /// Represents a text editor control (<see cref="TextEditor"/>, <see cref="TextArea"/>
-    /// or <see cref="TextView"/>).
+    /// Represents a text editor control (<see cref="TextEditor"/>, <see cref="Editing.TextArea"/>
+    /// or <see cref="Rendering.TextView"/>).
     /// </summary>
     public interface ITextEditorComponent : IServiceProvider
     {

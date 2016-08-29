@@ -91,9 +91,7 @@ namespace ICSharpCode.AvalonEdit
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture,
-                                 "[TextViewPosition Line={0} Column={1} VisualColumn={2}]",
-                                 line, column, visualColumn);
+            return $"[TextViewPosition Line={line} Column={column} VisualColumn={visualColumn}]";
         }
 
         #region Equals and GetHashCode implementation
