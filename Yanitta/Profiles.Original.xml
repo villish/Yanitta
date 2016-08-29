@@ -781,6 +781,7 @@ setAoE = false;
 isAltMod = true;
 useInterrupt = true;
 useCooldown = true;
+SetInRangeSpell(23922);
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -874,8 +875,6 @@ end
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
-
-isInMeele  = IsSpellInRange(GetSpellInfo(23922), "target") == 1;-- and UnitIsEnemy("target", "player");
 ]]></Lua>
       </Ability>
       <Ability Name="Отражение заклинания">
@@ -918,9 +917,7 @@ return useInterrupt and CheckInterrupt("target");
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.HP <= 80 then
-    return true;
-end
+PLAYER.HP <= 80;
 ]]></Lua>
       </Ability>
       <Ability Name="Ярость берсерка">
@@ -948,7 +945,7 @@ return IsLossOfControl();
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and not HasBuff("player", 202574) then
+if PLAYER.InRange and not HasBuff("player", 202574) then
     return true;
 end
 ]]></Lua>
@@ -964,7 +961,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and PLAYER.Agro > 2 and UnitPower("player") > 30 then
+if PLAYER.InRange and PLAYER.Agro > 2 and UnitPower("player") > 30 then
     return true;
 end
 ]]></Lua>
@@ -981,7 +978,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- 132404 Блок щитом
-if PLAYER.Agro > 2 and not HasBuff("player", 132404) then
+if PLAYER.InRange and PLAYER.Agro > 2 and not HasBuff("player", 132404) then
     return true;
 end
 ]]></Lua>
@@ -997,7 +994,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.HP < 30 and PLAYER.Agro > 2 and useCooldown then
+if PLAYER.InRange and PLAYER.HP < 30 and PLAYER.Agro > 2 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1013,7 +1010,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.HP < 20 and PLAYER.Agro > 2 and useCooldown then
+if PLAYER.InRange and PLAYER.HP < 20 and PLAYER.Agro > 2 and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1029,7 +1026,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if PLAYER.HP <= 50 and isInMeele and useCooldown then
+if PLAYER.HP <= 50 and PLAYER.InRange and useCooldown then
     return true;
 end
 ]]></Lua>
@@ -1045,7 +1042,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and setAoE then
+if PLAYER.InRange and setAoE then
     return true;
 end
 ]]></Lua>
@@ -1076,7 +1073,7 @@ return true;
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 -- дает 20 ярости
-return isInMeele;
+return PLAYER.InRange;
 ]]></Lua>
       </Ability>
       <Ability Name="Сокрушение">
@@ -1090,7 +1087,7 @@ return isInMeele;
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return isInMeele;
+return PLAYER.InRange;
 ]]></Lua>
       </Ability>
       <Ability Name="Героический бросок">
@@ -1114,6 +1111,7 @@ return true;
 setAoE = 0;
 useCooldown = true;
 useInterrupt = true;
+SetInRangeSpell(5308); -- Казнь
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -1191,8 +1189,6 @@ end
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
-
-isInMeele = IsSpellInRange(GetSpellInfo(5308), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Зуботычина">
@@ -1234,7 +1230,7 @@ return IsLossOfControl();
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return isInMeele and not HasBuff("player", 1719);
+return PLAYER.InRange and not HasBuff("player", 1719);
 ]]></Lua>
       </Ability>
       <Ability Name="Боевой крик">
@@ -1248,7 +1244,7 @@ return isInMeele and not HasBuff("player", 1719);
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele then
+if useCooldown and PLAYER.InRange then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
     return true;
@@ -1266,7 +1262,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele then
+if useCooldown and PLAYER.InRange then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
     return true;
@@ -1285,7 +1281,7 @@ end
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
 local setAoE = setAoE or 0;
-if isInMeele then
+if PLAYER.InRange then
     if setAoE == 2 or HasBuff("player", 215570) then -- Пушечное ядро
         return true;
     elseif setAoE == 1 then
@@ -1337,22 +1333,6 @@ return true;
         <Lua><![CDATA[
 if not HasBuff("player", 184362)
     or UnitPower("player") >= UnitPowerMax("player")-1 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровожадность">
-        <SpellID>23881</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasBuff("player", 184362) then
     return true;
 end
 ]]></Lua>
@@ -1420,6 +1400,7 @@ return true;
 setAoE = 0;
 useCooldown = true;
 useInterrupt = true;
+SetInRangeSpell(772); -- Кровопускание
 
 function EVENT_MODS.MODIFIER_STATE_CHANGED(modifier, state)
     if state == 0 then return end; -- release key
@@ -1487,8 +1468,6 @@ end
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
-
-isInMeele = IsSpellInRange(GetSpellInfo(772), "target") == 1;
 ]]></Lua>
       </Ability>
       <Ability Name="Победный раж">
@@ -1544,7 +1523,7 @@ return IsLossOfControl();
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if useCooldown and isInMeele then
+if useCooldown and PLAYER.InRange then
     UseItemBySlot(INVSLOT_TRINKET1);
     UseItemBySlot(INVSLOT_TRINKET2);
     return true;
@@ -1562,7 +1541,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and setAoE > 0 then
+if PLAYER.InRange and setAoE > 0 then
     return true;
 end
 ]]></Lua>
@@ -1578,7 +1557,7 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return isInMeele and setAoE > 0;
+return PLAYER.InRange and setAoE > 0;
 ]]></Lua>
       </Ability>
       <Ability Name="Кровопускание">
@@ -1627,7 +1606,7 @@ end
 return true;
 ]]></Lua>
       </Ability>
-      <Ability Name="Превоскходство">
+      <Ability Name="Превосходство">
         <SpellID>7384</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
@@ -4420,26 +4399,10 @@ end
       </Ability>
     </Rotation>
     <Rotation Name="Лед" Spec="DeathKnight_Frost">
-      <HotKey Key="Z" Modifier="Alt" />
+      <HotKey Key="V" Modifier="Alt" />
       <Lua><![CDATA[
-simulacrSpellTable = {
-    0, -- Добавить сюда список заклинаний
-};
+SetInRangeSpell(49143);
 ]]></Lua>
-      <Ability Name="Смерть и разложение">
-        <SpellID>43265</SpellID>
-        <Target>MouseLocation</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
-]]></Lua>
-      </Ability>
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -4474,103 +4437,21 @@ isInMeele = IsSpellInRange(GetSpellInfo(49143), "target") == 1;
 return useInterrupt and CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Темный симулякр">
-        <SpellID>77606</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
+      <Ability Name="Незыблемость льда">
+        <SpellID>48792</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>1</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-for _, spellId in ipairs(simulacrSpellTable) do
-    local endTime,_,castId = UnitCastingInfo(target);
-    if spellId == castId then
-        if (((endTime / 1000) - GetTime()) - AddonFrame.ping) < 2 then
-            return true
-        end
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Кровоотвод">
-        <SpellID>45529</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local frost = DK_RUNES.FROST.FullCount;
-local unholy= DK_RUNES.UNHOLY.FullCount;
-
-if unholy == 0 or frost == 0 then
-    if select(2, HasBuff("player", 114851)) >= 5 then
-        return true;
-    end
-end
+return UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Ледяной столб">
-        <SpellID>51271</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Воскрешение мертвых">
-        <SpellID>46584</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Вспышка болезни">
-        <SpellID>77575</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local diseases = {
-    55078, -- Кровавая чума
-    55095, -- Озноб
-};
-if select(3, HasDebuff(target, diseases, "PLAYER")) < 3 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной столб">
+      <Ability Name="Ледяной столп">
         <SpellID>51271</SpellID>
         <Target>None</Target>
         <CancelChannel>false</CancelChannel>
@@ -4581,8 +4462,8 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return DK_RUNES.Total < 2;
+if PLAYER.InRange and useCooldown then
+    return true;
 end
 ]]></Lua>
       </Ability>
@@ -4597,23 +4478,12 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if isInMeele and useCooldown then
-    return DK_RUNES.Total < 2;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Жнец душ">
-        <SpellID>130735</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HealthByPercent(target) < 35 then
+if PLAYER.InRange and useCooldown then
+    for i = 1, 6 do
+        if GetRuneCount(i) > 0 then
+            return false;
+        end
+    end
     return true;
 end
 ]]></Lua>
@@ -4621,6 +4491,7 @@ end
       <Ability Name="Воющий ветер">
         <SpellID>49184</SpellID>
         <Target>Target</Target>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -4629,55 +4500,10 @@ end
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-if setAoE then
-    -- Используем только при АОЕ или когда надо обновить болезнь
-    return select(3, HasDebuff(target, 55095, "PLAYER")) < 2; -- Озноб
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар чумы">
-        <SpellID>45462</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return select(3, HasDebuff(target, 55078, "PLAYER")) < 3 -- Кровавая чума
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяной удар (1H)">
-        <SpellID>49143</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Для одноручного оружия и при проке "Машина для убийств"
-if not isTwoHand and HasBuff("player", 51124) then
+if not HasDebuff(target, 55095, "PLAYER") -- Озноб
+    or HasBuff("player", 59052) then -- Иней
     return true;
 end
-]]></Lua>
-      </Ability>
-      <Ability Name="Воющий ветер (1H)">
-        <SpellID>49184</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not isTwoHand;
 ]]></Lua>
       </Ability>
       <Ability Name="Уничтожение">
@@ -4699,31 +4525,13 @@ return true;
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
+        <IsUseIncombat>false</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <RangeCheck>Auto</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
--- Для двуручного оружия или при максимуме рунической силы
-return isTwoHand or DK_RUNES.Power > 90;
-]]></Lua>
-      </Ability>
-      <Ability Name="Воющий ветер (2H)">
-        <SpellID>49184</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>Auto</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Используем с двуручным оружием при проке "59057 - Инея"
-if isTwoHand and HasBuff("player", 59057) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
     </Rotation>

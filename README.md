@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (26/36)
+# Progress (27/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -20,7 +20,7 @@
 |Priest|Holy|
 |Priest|Shadow|Basic|
 |DeathKnight|Blood|Basic|
-|DeathKnight|Frost|
+|DeathKnight|Frost|Basic|
 |DeathKnight|Unholy|
 |Shaman|Elemental|Basic|
 |Shaman|Enhancement|Basic|
