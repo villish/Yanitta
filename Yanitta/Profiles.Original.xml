@@ -3277,7 +3277,7 @@ return true;
 ]]></Lua>
       </Ability>
     </Rotation>
-    <Rotation Name="Бой" Spec="Rogue_Combat">
+    <Rotation Name="Головорез" Spec="Rogue_Combat">
       <InRangeSpell>8676</InRangeSpell>
       <HotKey Key="V" Modifier="Alt" />
       <Ability Name="Инициализаця">
