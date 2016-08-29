@@ -4265,6 +4265,20 @@ if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Воскрешение союзника">
+        <SpellID>61999</SpellID>
+        <Target>Mouseover</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>false</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
+]]></Lua>
+      </Ability>
       <Ability Name="Заморозка разума">
         <SpellID>47528</SpellID>
         <Target>Target</Target>
@@ -4392,7 +4406,7 @@ end
     </Rotation>
     <Rotation Name="Лед" Spec="DeathKnight_Frost">
       <InRangeSpell>49143</InRangeSpell>
-      <HotKey Key="V" Modifier="Alt" />
+      <HotKey Key="C" Modifier="Alt" />
       <Lua><![CDATA[
 SetInRangeSpell(49143);
 ]]></Lua>
@@ -4428,8 +4442,8 @@ end
 return useInterrupt and CheckInterrupt(target);
 ]]></Lua>
       </Ability>
-      <Ability Name="Незыблемость льда">
-        <SpellID>48792</SpellID>
+      <Ability Name="Воскрешение союзника">
+        <SpellID>61999</SpellID>
         <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -4496,6 +4510,34 @@ if not HasDebuff(target, 55095, "PLAYER") -- Озноб
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Беспощадность зимы">
+        <SpellID>196770</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>true</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE;
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяная коса">
+        <SpellID>207230</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>true</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return setAoE;
+]]></Lua>
+      </Ability>
       <Ability Name="Уничтожение">
         <SpellID>49020</SpellID>
         <Target>Target</Target>
@@ -4527,7 +4569,7 @@ return true;
     </Rotation>
     <Rotation Name="Нечестивость" Spec="DeathKnight_Unholy">
       <InRangeSpell>0</InRangeSpell>
-      <HotKey Key="C" Modifier="Alt" />
+      <HotKey Key="V" Modifier="Alt" />
       <Ability Name="Инициализация">
         <SpellID>0</SpellID>
         <Target>None</Target>
@@ -4542,29 +4584,11 @@ return true;
 if IsModKeyDown(mkLeftAlt) or PLAYER.IsMounted or IsStealthed() then
     return true;
 end
-
-local curses = {
-    155159 -- Мертвящая чума
-};
 ]]></Lua>
       </Ability>
-      <Ability Name="Смерть и разложение">
-        <SpellID>43265</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return IsModKeyDown(mkLeftShift);
-]]></Lua>
-      </Ability>
-      <Ability Name="Вспышка болезни">
-        <SpellID>77575</SpellID>
-        <Target>Target</Target>
+      <Ability Name="Воскрешение союзника">
+        <SpellID>61999</SpellID>
+        <Target>Mouseover</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
@@ -4573,144 +4597,7 @@ return IsModKeyDown(mkLeftShift);
         <RangeCheck>false</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-local diseases = {
-    59879, -- Кровавая чума
-    59921, -- Озноб
-};
-if not HasDebuff("target", diseases, "PLAYER") then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар чумы">
-        <SpellID>45462</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not HasDebuff("target", curses, "PLAYER") then  -- Озноб
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Жнец душ">
-        <SpellID>130736</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HealthByPercent("target") < 45 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар разложения">
-        <SpellID>85948</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if not setAoE and select(3, HasDebuff("target", curses)) < 10 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Темное превращение">
-        <SpellID>63560</SpellID>
-        <Target>None</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
---Вливание тьмы
-if UnitExists("pet") and select(2, HasBuff("player", 91342, "PLAYER")) > 4 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Лик смерти">
-        <SpellID>47541</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
--- Неумолимый рок (81340)
-if DK_RUNES.Power > 90
-or HasBuff("player", 81340)
-or select(2, HasBuff("player", 91342)) < 4
-or HasBuff("pet", 63560)
-then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар плети">
-        <SpellID>55090</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-local debuff,_,rem = HasDebuff("target", 91342, "PLAYER");
-if not debuff or rem > 10 then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Удар разложения">
-        <SpellID>85948</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not setAoE;
-]]></Lua>
-      </Ability>
-      <Ability Name="Лик смерти">
-        <SpellID>47541</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return true;
+return UnitIsDeadOrGhost(target) and UnitIsPlayer(target);
 ]]></Lua>
       </Ability>
     </Rotation>
