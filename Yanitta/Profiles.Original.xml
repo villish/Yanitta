@@ -5740,7 +5740,7 @@ end
 ]]></Lua>
       </Ability>
       <Ability Name="Снежная Буря">
-        <SpellID>10</SpellID>
+        <SpellID>190356</SpellID>
         <Target>MouseLocation</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5781,56 +5781,22 @@ return CheckInterrupt(target);
 return useCooldown;
 ]]></Lua>
       </Ability>
-      <Ability Name="Щит заклинателя">
-        <SpellID>1463</SpellID>
-        <Target>Player</Target>
+      <Ability Name="Стылая кровь">
+        <SpellID>12472</SpellID>
+        <Target>None</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
         <IsUseIncombat>true</IsUseIncombat>
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
+        <RangeCheck>true</RangeCheck>
         <IsMovingCheck>None</IsMovingCheck>
         <Lua><![CDATA[
-return not HasBuff("player", 1463);
+return useCooldown;
 ]]></Lua>
       </Ability>
-      <Ability Name="Ледяная преграда">
-        <SpellID>11426</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not HasBuff("player", 11426);
-]]></Lua>
-      </Ability>
-      <Ability Name="Живая бомба">
-        <SpellID>44457</SpellID>
-        <Target>Target</Target>
-        <Target>Focus</Target>
-        <Target>Mouseover</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if IsSpellInRange(GetSpellInfo(116), target) == 1 then
-    if not HasDebuff(target, ability.SpellId, "PLAYER") then
-        return true;
-    end
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Стрела ледяного огня">
-        <SpellID>44614</SpellID>
+      <Ability Name="Ледовый шип">
+        <SpellID>199786</SpellID>
         <Target>Target</Target>
         <CancelChannel>false</CancelChannel>
         <CancelCasting>false</CancelCasting>
@@ -5838,27 +5804,9 @@ end
         <IsUsableCheck>true</IsUsableCheck>
         <RecastDelay>0</RecastDelay>
         <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
-if HasBuff("player", 44549) then
-    return true;
-end
-]]></Lua>
-      </Ability>
-      <Ability Name="Ледяное копье">
-        <SpellID>30455</SpellID>
-        <Target>Target</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>true</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-if HasBuff("player", 112965) or (PLAYER.IsMoving and not HasBuff("player", 108839)) then
-    return true;
-end
+return true;
 ]]></Lua>
       </Ability>
       <Ability Name="Плавучая льдина">
@@ -5882,6 +5830,69 @@ if not HasBuff("player", bufs) then
 end
 ]]></Lua>
       </Ability>
+      <Ability Name="Ледяная бомба">
+        <SpellID>112948</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>false</RangeCheck>
+        <IsMovingCheck>NotMoving</IsMovingCheck>
+        <Lua><![CDATA[
+if not HasDebuff(target, 112948, "PLAYER") then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяная преграда">
+        <SpellID>11426</SpellID>
+        <Target>Player</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>false</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+return not HasBuff("player", 11426);
+]]></Lua>
+      </Ability>
+      <Ability Name="Ледяное копье">
+        <SpellID>30455</SpellID>
+        <Target>Target</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>false</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if select(2, HasBuff("player", 44544)) > 1
+    or (PLAYER.IsMoving and not HasBuff("player", 108839)) then
+    return true;
+end
+]]></Lua>
+      </Ability>
+      <Ability Name="Шквал">
+        <SpellID>44614</SpellID>
+        <Target>None</Target>
+        <CancelChannel>false</CancelChannel>
+        <CancelCasting>false</CancelCasting>
+        <IsUseIncombat>true</IsUseIncombat>
+        <IsUsableCheck>true</IsUsableCheck>
+        <RecastDelay>0</RecastDelay>
+        <RangeCheck>false</RangeCheck>
+        <IsMovingCheck>None</IsMovingCheck>
+        <Lua><![CDATA[
+if HasBuff("player", 190446) then
+    return true;
+end
+]]></Lua>
+      </Ability>
       <Ability Name="Ледяная стрела">
         <SpellID>116</SpellID>
         <Target>Target</Target>
@@ -5894,34 +5905,6 @@ end
         <IsMovingCheck>NotMoving</IsMovingCheck>
         <Lua><![CDATA[
 return true;
-]]></Lua>
-      </Ability>
-      <Ability Name="Чародейская гениальность">
-        <SpellID>1459</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>0</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>None</IsMovingCheck>
-        <Lua><![CDATA[
-return not HasBuff("player", 1459);
-]]></Lua>
-      </Ability>
-      <Ability Name="Морозный доспех">
-        <SpellID>7302</SpellID>
-        <Target>Player</Target>
-        <CancelChannel>false</CancelChannel>
-        <CancelCasting>false</CancelCasting>
-        <IsUseIncombat>false</IsUseIncombat>
-        <IsUsableCheck>true</IsUsableCheck>
-        <RecastDelay>3</RecastDelay>
-        <RangeCheck>false</RangeCheck>
-        <IsMovingCheck>NotMoving</IsMovingCheck>
-        <Lua><![CDATA[
-return not HasBuff("player", 7302);
 ]]></Lua>
       </Ability>
     </Rotation>

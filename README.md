@@ -1,6 +1,6 @@
 # Yanitta
 
-# Progress (27/36)
+# Progress (28/36)
 
 |Class|Spec|Status|
 |---|---|---|
@@ -27,7 +27,7 @@
 |Shaman|Restoration|-|
 |Mage|Arcane|Start|
 |Mage|Fire|Basic|
-|Mage|Frost|-|
+|Mage|Frost|Basic|
 |Warlock|Affliction|Basic|
 |Warlock|Demonology|Basic|
 |Warlock|Destruction|Basic|
