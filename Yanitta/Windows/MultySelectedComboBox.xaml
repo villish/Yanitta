@@ -12,7 +12,7 @@
                 <ControlTemplate TargetType="{x:Type controls:MultySelectedComboBox}">
                     <Grid>
                         <ToggleButton Grid.Column="2" Focusable="false" ClickMode="Press" HorizontalContentAlignment="Left"
-                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                      IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Grid>

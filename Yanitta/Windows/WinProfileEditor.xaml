@@ -56,7 +56,7 @@
                                 <RowDefinition Height="40"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                            <ToolBar VerticalAlignment="Top">
                                 <Button Command="{Binding ProfileList/Add}" Foreground="Transparent" ToolTip="Add rotation">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
@@ -73,7 +73,7 @@
                                 <Button Foreground="Transparent" Command="{Binding ProfileList/Down}"  ToolTip="Move Down">
                                     <Image Source="/Yanitta;component/Resources/Button_Down.png" />
                                 </Button>
-                            </StackPanel>
+                            </ToolBar>
                             <Windows:ListViewEx x:Name="rotationList"
                                       ItemsChanged="listView_ItemsChanged"
                                       IsSynchronizedWithCurrentItem="true"
@@ -120,7 +120,7 @@
                                 <RowDefinition Height="40"/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <StackPanel VerticalAlignment="Top" Orientation="Horizontal" >
+                            <ToolBar VerticalAlignment="Top">
                                 <Button Command="{Binding ProfileList/RotationList/Add}" Foreground="Transparent" ToolTip="Add ability">
                                     <Image Source="/Yanitta;component/Resources/Add.png" />
                                 </Button>
@@ -144,7 +144,7 @@
                                 <Separator />
                                 <TextBlock Text="Ability filter:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,0" />
                                 <TextBox Width="150" TextChanged="tbAbilityFilter_TextChanged" Margin="7" />
-                            </StackPanel>
+                            </ToolBar>
                             <Windows:ListViewEx x:Name="abilityList"
                                       ItemsChanged="listView_ItemsChanged"
                                       IsSynchronizedWithCurrentItem="True"
@@ -244,7 +244,7 @@
                                     <ColumnDefinition Width="200"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox  ItemsSource="{Binding ProfileList/SpecList}" SelectedValue="{Binding ProfileList/RotationList/Spec}"/>
+                                <ComboBox  ItemsSource="{Binding ProfileList/SpecList}" SelectedValue="{Binding ProfileList/RotationList/Spec}" Margin="4"/>
                                 <TextBox Name="tbRotationName" Text="{Binding ProfileList/RotationList/Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  VerticalAlignment="Center" Grid.Column="1" />
                             </Grid>
 
