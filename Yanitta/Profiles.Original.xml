@@ -523,7 +523,7 @@ function CheckAndCastAbility(ability, targetInfo)
 
     if ability.RangeCheck then
         assert(AddonFrame.RangeSpell, "Ability: "..ability.Name.." set range check and not set range spell")
-        if IsSpellInRange(AddonFrame.RangeSpell, "target") == 0 then
+        if IsSpellInRange(AddonFrame.RangeSpell, "target") ~= 1 then
             return;
         end
     end
