@@ -26,13 +26,15 @@ namespace ICSharpCode.AvalonEdit
         public TextEditorOptions(TextEditorOptions options)
         {
             // get all the fields in the class
-            FieldInfo[] fields = typeof(TextEditorOptions).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            var fields = typeof(TextEditorOptions).GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
             // copy each value over to 'this'
             foreach (FieldInfo fi in fields)
             {
                 if (!fi.IsNotSerialized)
+                {
                     fi.SetValue(this, fi.GetValue(options));
+                }
             }
         }
 
@@ -340,7 +342,7 @@ namespace ICSharpCode.AvalonEdit
             }
         }
 
-        double wordWrapIndentation = 0;
+        double wordWrapIndentation;
 
         /// <summary>
         /// Gets/Sets the indentation used for all lines except the first when word-wrapping.

@@ -59,7 +59,7 @@ namespace Yanitta
         bool isInGame;
         IntPtr keyboardHook;
         bool IsDisposed;
-        DispatcherTimer mTimer = new DispatcherTimer {
+        readonly DispatcherTimer mTimer = new DispatcherTimer {
             Interval = TimeSpan.FromMilliseconds(1000)
         };
 

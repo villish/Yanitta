@@ -91,7 +91,7 @@ namespace Yanitta
             var rotation = new Rotation {
                 Name   = Name + " (Copy)",
                 Lua    = Lua,
-                HotKey = new HotKey(),
+                HotKey = new HotKey()
             };
 
             foreach (var ability in AbilityList)
