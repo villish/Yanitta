@@ -4,7 +4,7 @@ namespace Yanitta
 {
     public class WowObject
     {
-        ProcessMemory Wow;
+        readonly ProcessMemory Wow;
         public IntPtr BaseAddr { get; set; }
 
         public WowObject(ProcessMemory wow, IntPtr baseAddr)

@@ -115,8 +115,6 @@ namespace Yanitta
                 if (isInGame != value)
                 {
                     isInGame = value;
-                    OnPropertyChanged("IsInGame");
-
                     Class = value ? Memory.Read<WowClass>(Memory.Rebase(Settings.PlayerClass)) : WowClass.None;
                     Name  = value ? Memory.ReadString(Memory.Rebase(Settings.PlayerName)) : string.Empty;
 
@@ -129,6 +127,7 @@ namespace Yanitta
                         item.RotationList.CollectionChanged += OnRotationListChanged;
                     }
 
+                    OnPropertyChanged("IsInGame");
                     OnPropertyChanged("Class");
                     OnPropertyChanged("ImageSource");
                     OnPropertyChanged("Name");
@@ -282,12 +281,12 @@ namespace Yanitta
         }
 
         public RelayCommand<object> Test => new RelayCommand<object>((x) => TestBoober());
-        private void TestBoober()
+        void TestBoober()
         {
             var objManager = Memory.Read<IntPtr>(Memory.Rebase(Settings.ObjectMgr));
             var playerGuid = Memory.Read<WowGuid>(objManager + Settings.PlayerGuid);
+            var baseAddr   = Memory.Read<IntPtr>(objManager  + Settings.FirstObject);
             var state      = Memory.Read<byte>(Memory.Rebase(Settings.TestClient));
-            var baseAddr   = Memory.Read<IntPtr>(objManager + Settings.FirstObject);
 
             var cur = new WowObject(Memory, baseAddr);
 
