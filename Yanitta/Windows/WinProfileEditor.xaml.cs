@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit;
 
 namespace Yanitta.Windows
 {
@@ -42,8 +43,7 @@ namespace Yanitta.Windows
                 }
                 else
                 {
-                    int spellId = 0;
-                    if (int.TryParse(text, out spellId))
+                    if (int.TryParse(text, out var spellId))
                     {
                         abilityView.Filter = new Predicate<object>((raw_ability) =>
                         {
@@ -82,9 +82,7 @@ namespace Yanitta.Windows
         {
             if (e.Key == Key.F1)
             {
-                var spellId = 0u;
-                var spell = (sender as ICSharpCode.AvalonEdit.TextEditor).GetWord();
-                if (uint.TryParse(spell, out spellId))
+                if (uint.TryParse((sender as TextEditor).GetWord(), out var spellId))
                     App.ShowWindow<HelpWindow>().SetSpellData(spellId);
             }
         }
@@ -120,7 +118,7 @@ namespace Yanitta.Windows
                 case NotifyCollectionChangedAction.Move:
                     if (listView.HasItems)
                     {
-                        listView.SelectedIndex = e.NewStartingIndex > -1 ? e.NewStartingIndex : 0;
+                        listView.SelectedIndex = Math.Max(e.NewStartingIndex, 0);
                         listView.ScrollIntoView(listView.SelectedItem);
                     }
                     CollectionViewSource.GetDefaultView(listView.ItemsSource)?.Refresh();

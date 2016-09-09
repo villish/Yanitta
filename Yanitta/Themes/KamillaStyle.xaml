@@ -491,6 +491,9 @@
             </Style>
             <!--  SCROLLBAR STUFF  -->
 
+            <SolidColorBrush x:Key="ScrollBarGlyphBrush" Color="#FF17AD1A" />
+            <SolidColorBrush x:Key="ScrollBarBackgroundBrush" Color="#FF282828" />
+            <SolidColorBrush x:Key="ScrollBarThumbBorderBrush" Color="#FF454545" />
             <SolidColorBrush x:Key="ScrollBarPressedBackgroundBrush" Color="#FF454545" />
             <LinearGradientBrush x:Key="ScrollBarBorderBrush" StartPoint="0,0" EndPoint="0,1">
                 <LinearGradientBrush.GradientStops>
@@ -508,8 +511,6 @@
                     </GradientStopCollection>
                 </LinearGradientBrush.GradientStops>
             </LinearGradientBrush>
-            <SolidColorBrush x:Key="ScrollBarBackgroundBrush" Color="#FF282828" />
-            <SolidColorBrush x:Key="ScrollBarThumbBorderBrush" Color="#FF454545" />
             <LinearGradientBrush x:Key="ScrollBarThumbBackgroundBrush" StartPoint="0,0" EndPoint="1,0">
                 <GradientBrush.GradientStops>
                     <GradientStopCollection>
@@ -526,7 +527,6 @@
                     </GradientStopCollection>
                 </GradientBrush.GradientStops>
             </LinearGradientBrush>
-            <SolidColorBrush x:Key="ScrollBarGlyphBrush" Color="#FF17AD1A" />
 
             <!--  SrollViewer ScrollBar Repeat Buttons (at each end)  -->
             <Style x:Key="ScrollBarLineButton" TargetType="{x:Type RepeatButton}">
@@ -1008,7 +1008,6 @@
             <!--  GROUP BOX  -->
             <Style BasedOn="{StaticResource KamillaStyle}" TargetType="{x:Type GroupBox}">
                 <Setter Property="Background" Value="{StaticResource {x:Static SystemColors.WindowBrushKey}}" />
-
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type GroupBox}">
