@@ -27,7 +27,7 @@ namespace Yanitta
         public static void Load(int build)
         {
             Func<string, long> getLong = (key) => GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
-            Func<string, int> getInt = (key) => (int)GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
+            Func<string, int>  getInt  = (key) => (int)GetPrivateProfileInt(build.ToString(), key, 0, SettingsFileName);
 
             // main offsets
             PlayerName      = getLong("PlayerName");
