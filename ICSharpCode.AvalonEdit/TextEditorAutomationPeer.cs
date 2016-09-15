@@ -22,10 +22,7 @@ namespace ICSharpCode.AvalonEdit
 
         TextEditor TextEditor => (TextEditor)Owner;
 
-        void IValueProvider.SetValue(string value)
-        {
-            TextEditor.Text = value;
-        }
+        void IValueProvider.SetValue(string value) => TextEditor.Text = value;
 
         string IValueProvider.Value => TextEditor.Text;
 

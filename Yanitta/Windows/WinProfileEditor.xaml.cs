@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit;
+using System;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,8 +19,7 @@ namespace Yanitta.Windows
 
         void CommandBinding_CopyFromRotation_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var window = new CopyAbilitysWindow(profiLeList?.SelectedValue as Profile);
-            window.Owner = this;
+            var window = new CopyAbilitysWindow(this, profiLeList?.SelectedValue as Profile);
             var rotation = rotationList?.SelectedValue as Rotation;
             if (window.ShowDialog() == true && rotation != null)
             {
@@ -70,9 +70,8 @@ namespace Yanitta.Windows
 
         void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            uint spellId = 0;
             if (e.Key == Key.F1
-                && uint.TryParse((sender as TextBox).Text, out spellId))
+                && uint.TryParse((sender as TextBox).Text, out var spellId))
             {
                 App.ShowWindow<HelpWindow>().SetSpellData(spellId);
             }
@@ -82,9 +81,8 @@ namespace Yanitta.Windows
         {
             if (e.Key == Key.F1)
             {
-                var spellId = 0u;
-                var spell = (sender as ICSharpCode.AvalonEdit.TextEditor).GetWord();
-                if (uint.TryParse(spell, out spellId))
+                var spell = (sender as TextEditor).GetWord();
+                if (uint.TryParse(spell, out var spellId))
                     App.ShowWindow<HelpWindow>().SetSpellData(spellId);
             }
         }

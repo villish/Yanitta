@@ -7,8 +7,9 @@ namespace Yanitta.Windows
 {
     public partial class CopyAbilitysWindow : Window
     {
-        public CopyAbilitysWindow(Profile profile)
+        public CopyAbilitysWindow(Window owner, Profile profile)
         {
+            Owner = owner;
             DataContext = profile;
             InitializeComponent();
 
