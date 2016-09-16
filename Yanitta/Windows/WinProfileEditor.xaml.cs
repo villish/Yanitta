@@ -1,10 +1,10 @@
-﻿using System;
+﻿using ICSharpCode.AvalonEdit;
+using System;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using ICSharpCode.AvalonEdit;
 
 namespace Yanitta.Windows
 {
@@ -19,8 +19,7 @@ namespace Yanitta.Windows
 
         void CommandBinding_CopyFromRotation_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var window = new CopyAbilitysWindow(profiLeList?.SelectedValue as Profile);
-            window.Owner = this;
+            var window = new CopyAbilitysWindow(this, profiLeList?.SelectedValue as Profile);
             var rotation = rotationList?.SelectedValue as Rotation;
             if (window.ShowDialog() == true && rotation != null)
             {
@@ -43,7 +42,8 @@ namespace Yanitta.Windows
                 }
                 else
                 {
-                    if (int.TryParse(text, out var spellId))
+                    int spellId = 0;
+                    if (int.TryParse(text, out spellId))
                     {
                         abilityView.Filter = new Predicate<object>((raw_ability) =>
                         {
@@ -70,9 +70,8 @@ namespace Yanitta.Windows
 
         void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            uint spellId = 0;
             if (e.Key == Key.F1
-                && uint.TryParse((sender as TextBox).Text, out spellId))
+                && uint.TryParse((sender as TextBox).Text, out var spellId))
             {
                 App.ShowWindow<HelpWindow>().SetSpellData(spellId);
             }
@@ -82,7 +81,8 @@ namespace Yanitta.Windows
         {
             if (e.Key == Key.F1)
             {
-                if (uint.TryParse((sender as TextEditor).GetWord(), out var spellId))
+                var spell = (sender as TextEditor).GetWord();
+                if (uint.TryParse(spell, out var spellId))
                     App.ShowWindow<HelpWindow>().SetSpellData(spellId);
             }
         }
@@ -118,7 +118,7 @@ namespace Yanitta.Windows
                 case NotifyCollectionChangedAction.Move:
                     if (listView.HasItems)
                     {
-                        listView.SelectedIndex = Math.Max(e.NewStartingIndex, 0);
+                        listView.SelectedIndex = e.NewStartingIndex > -1 ? e.NewStartingIndex : 0;
                         listView.ScrollIntoView(listView.SelectedItem);
                     }
                     CollectionViewSource.GetDefaultView(listView.ItemsSource)?.Refresh();
